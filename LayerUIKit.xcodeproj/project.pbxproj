@@ -1,0 +1,566 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0A82596119DF4FA200ACCC8E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A82596019DF4FA200ACCC8E /* main.m */; };
+		0A82596419DF4FA200ACCC8E /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A82596319DF4FA200ACCC8E /* AppDelegate.m */; };
+		0A82597B19DF4FA200ACCC8E /* LayerUIKitTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A82597A19DF4FA200ACCC8E /* LayerUIKitTests.m */; };
+		0A8259BD19DF501A00ACCC8E /* LYRUIAvatarImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A82598619DF501A00ACCC8E /* LYRUIAvatarImageView.m */; };
+		0A8259BE19DF501A00ACCC8E /* LYRUIChangeNotificationObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A82598819DF501A00ACCC8E /* LYRUIChangeNotificationObserver.m */; };
+		0A8259BF19DF501A00ACCC8E /* LYRUIConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A82598A19DF501A00ACCC8E /* LYRUIConstants.m */; };
+		0A8259C019DF501A00ACCC8E /* LYRUIConversationCollectionViewFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A82598C19DF501A00ACCC8E /* LYRUIConversationCollectionViewFlowLayout.m */; };
+		0A8259C119DF501A00ACCC8E /* LYRUIConversationCollectionViewFooter.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A82598E19DF501A00ACCC8E /* LYRUIConversationCollectionViewFooter.m */; };
+		0A8259C219DF501A00ACCC8E /* LYRUIConversationCollectionViewHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A82599019DF501A00ACCC8E /* LYRUIConversationCollectionViewHeader.m */; };
+		0A8259C319DF501A00ACCC8E /* LYRUIConversationListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A82599219DF501A00ACCC8E /* LYRUIConversationListViewController.m */; };
+		0A8259C419DF501A00ACCC8E /* LYRUIConversationNotificationObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A82599419DF501A00ACCC8E /* LYRUIConversationNotificationObserver.m */; };
+		0A8259C519DF501A00ACCC8E /* LYRUIConversationTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A82599719DF501A00ACCC8E /* LYRUIConversationTableViewCell.m */; };
+		0A8259C619DF501A00ACCC8E /* LYRUIConversationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A82599919DF501A00ACCC8E /* LYRUIConversationViewController.m */; };
+		0A8259C719DF501A00ACCC8E /* LYRUIDataSourceChange.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A82599B19DF501A00ACCC8E /* LYRUIDataSourceChange.m */; };
+		0A8259C819DF501A00ACCC8E /* LYRUIErrors.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A82599D19DF501A00ACCC8E /* LYRUIErrors.m */; };
+		0A8259C919DF501A00ACCC8E /* LYRUIIncomingMessageCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A82599F19DF501A00ACCC8E /* LYRUIIncomingMessageCollectionViewCell.m */; };
+		0A8259CA19DF501A00ACCC8E /* LYRUIMediaAttachment.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A8259A119DF501A00ACCC8E /* LYRUIMediaAttachment.m */; };
+		0A8259CB19DF501A00ACCC8E /* LYRUIMessageBubbleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A8259A319DF501A00ACCC8E /* LYRUIMessageBubbleView.m */; };
+		0A8259CC19DF501A00ACCC8E /* LYRUIMessageCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A8259A519DF501A00ACCC8E /* LYRUIMessageCollectionViewCell.m */; };
+		0A8259CD19DF501A00ACCC8E /* LYRUIMessageComposeTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A8259A719DF501A00ACCC8E /* LYRUIMessageComposeTextView.m */; };
+		0A8259CE19DF501A00ACCC8E /* LYRUIMessageInputToolbar.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A8259A919DF501A00ACCC8E /* LYRUIMessageInputToolbar.m */; };
+		0A8259CF19DF501A00ACCC8E /* LYRUIMessageNotificationObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A8259AB19DF501A00ACCC8E /* LYRUIMessageNotificationObserver.m */; };
+		0A8259D019DF501A00ACCC8E /* LYRUIOutgoingMessageCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A8259AE19DF501A00ACCC8E /* LYRUIOutgoingMessageCollectionViewCell.m */; };
+		0A8259D119DF501A00ACCC8E /* LYRUIParticipantPickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A8259B119DF501A00ACCC8E /* LYRUIParticipantPickerController.m */; };
+		0A8259D219DF501A00ACCC8E /* LYRUIParticipantTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A8259B419DF501A00ACCC8E /* LYRUIParticipantTableViewCell.m */; };
+		0A8259D319DF501A00ACCC8E /* LYRUIParticipantTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A8259B619DF501A00ACCC8E /* LYRUIParticipantTableViewController.m */; };
+		0A8259D419DF501A00ACCC8E /* LYRUIPaticipantSectionHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A8259B819DF501A00ACCC8E /* LYRUIPaticipantSectionHeaderView.m */; };
+		0A8259D519DF501A00ACCC8E /* LYRUISelectionIndicator.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A8259BA19DF501A00ACCC8E /* LYRUISelectionIndicator.m */; };
+		0A8259D619DF501A00ACCC8E /* LYRUIUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A8259BC19DF501A00ACCC8E /* LYRUIUtilities.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		0A82597519DF4FA200ACCC8E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0A82595319DF4FA200ACCC8E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 0A82595A19DF4FA200ACCC8E;
+			remoteInfo = LayerUIKit;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		0A82595B19DF4FA200ACCC8E /* LayerUIKit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LayerUIKit.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		0A82595F19DF4FA200ACCC8E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		0A82596019DF4FA200ACCC8E /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		0A82596219DF4FA200ACCC8E /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		0A82596319DF4FA200ACCC8E /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		0A82597419DF4FA200ACCC8E /* LayerUIKitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LayerUIKitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		0A82597919DF4FA200ACCC8E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		0A82597A19DF4FA200ACCC8E /* LayerUIKitTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LayerUIKitTests.m; sourceTree = "<group>"; };
+		0A82598519DF501A00ACCC8E /* LYRUIAvatarImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUIAvatarImageView.h; sourceTree = "<group>"; };
+		0A82598619DF501A00ACCC8E /* LYRUIAvatarImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIAvatarImageView.m; sourceTree = "<group>"; };
+		0A82598719DF501A00ACCC8E /* LYRUIChangeNotificationObserver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUIChangeNotificationObserver.h; sourceTree = "<group>"; };
+		0A82598819DF501A00ACCC8E /* LYRUIChangeNotificationObserver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIChangeNotificationObserver.m; sourceTree = "<group>"; };
+		0A82598919DF501A00ACCC8E /* LYRUIConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUIConstants.h; sourceTree = "<group>"; };
+		0A82598A19DF501A00ACCC8E /* LYRUIConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIConstants.m; sourceTree = "<group>"; };
+		0A82598B19DF501A00ACCC8E /* LYRUIConversationCollectionViewFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUIConversationCollectionViewFlowLayout.h; sourceTree = "<group>"; };
+		0A82598C19DF501A00ACCC8E /* LYRUIConversationCollectionViewFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIConversationCollectionViewFlowLayout.m; sourceTree = "<group>"; };
+		0A82598D19DF501A00ACCC8E /* LYRUIConversationCollectionViewFooter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUIConversationCollectionViewFooter.h; sourceTree = "<group>"; };
+		0A82598E19DF501A00ACCC8E /* LYRUIConversationCollectionViewFooter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIConversationCollectionViewFooter.m; sourceTree = "<group>"; };
+		0A82598F19DF501A00ACCC8E /* LYRUIConversationCollectionViewHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUIConversationCollectionViewHeader.h; sourceTree = "<group>"; };
+		0A82599019DF501A00ACCC8E /* LYRUIConversationCollectionViewHeader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIConversationCollectionViewHeader.m; sourceTree = "<group>"; };
+		0A82599119DF501A00ACCC8E /* LYRUIConversationListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUIConversationListViewController.h; sourceTree = "<group>"; };
+		0A82599219DF501A00ACCC8E /* LYRUIConversationListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIConversationListViewController.m; sourceTree = "<group>"; };
+		0A82599319DF501A00ACCC8E /* LYRUIConversationNotificationObserver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUIConversationNotificationObserver.h; sourceTree = "<group>"; };
+		0A82599419DF501A00ACCC8E /* LYRUIConversationNotificationObserver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIConversationNotificationObserver.m; sourceTree = "<group>"; };
+		0A82599519DF501A00ACCC8E /* LYRUIConversationPresenting.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUIConversationPresenting.h; sourceTree = "<group>"; };
+		0A82599619DF501A00ACCC8E /* LYRUIConversationTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUIConversationTableViewCell.h; sourceTree = "<group>"; };
+		0A82599719DF501A00ACCC8E /* LYRUIConversationTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIConversationTableViewCell.m; sourceTree = "<group>"; };
+		0A82599819DF501A00ACCC8E /* LYRUIConversationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUIConversationViewController.h; sourceTree = "<group>"; };
+		0A82599919DF501A00ACCC8E /* LYRUIConversationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIConversationViewController.m; sourceTree = "<group>"; };
+		0A82599A19DF501A00ACCC8E /* LYRUIDataSourceChange.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUIDataSourceChange.h; sourceTree = "<group>"; };
+		0A82599B19DF501A00ACCC8E /* LYRUIDataSourceChange.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIDataSourceChange.m; sourceTree = "<group>"; };
+		0A82599C19DF501A00ACCC8E /* LYRUIErrors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUIErrors.h; sourceTree = "<group>"; };
+		0A82599D19DF501A00ACCC8E /* LYRUIErrors.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIErrors.m; sourceTree = "<group>"; };
+		0A82599E19DF501A00ACCC8E /* LYRUIIncomingMessageCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUIIncomingMessageCollectionViewCell.h; sourceTree = "<group>"; };
+		0A82599F19DF501A00ACCC8E /* LYRUIIncomingMessageCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIIncomingMessageCollectionViewCell.m; sourceTree = "<group>"; };
+		0A8259A019DF501A00ACCC8E /* LYRUIMediaAttachment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUIMediaAttachment.h; sourceTree = "<group>"; };
+		0A8259A119DF501A00ACCC8E /* LYRUIMediaAttachment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIMediaAttachment.m; sourceTree = "<group>"; };
+		0A8259A219DF501A00ACCC8E /* LYRUIMessageBubbleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUIMessageBubbleView.h; sourceTree = "<group>"; };
+		0A8259A319DF501A00ACCC8E /* LYRUIMessageBubbleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIMessageBubbleView.m; sourceTree = "<group>"; };
+		0A8259A419DF501A00ACCC8E /* LYRUIMessageCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUIMessageCollectionViewCell.h; sourceTree = "<group>"; };
+		0A8259A519DF501A00ACCC8E /* LYRUIMessageCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIMessageCollectionViewCell.m; sourceTree = "<group>"; };
+		0A8259A619DF501A00ACCC8E /* LYRUIMessageComposeTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUIMessageComposeTextView.h; sourceTree = "<group>"; };
+		0A8259A719DF501A00ACCC8E /* LYRUIMessageComposeTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIMessageComposeTextView.m; sourceTree = "<group>"; };
+		0A8259A819DF501A00ACCC8E /* LYRUIMessageInputToolbar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUIMessageInputToolbar.h; sourceTree = "<group>"; };
+		0A8259A919DF501A00ACCC8E /* LYRUIMessageInputToolbar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIMessageInputToolbar.m; sourceTree = "<group>"; };
+		0A8259AA19DF501A00ACCC8E /* LYRUIMessageNotificationObserver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUIMessageNotificationObserver.h; sourceTree = "<group>"; };
+		0A8259AB19DF501A00ACCC8E /* LYRUIMessageNotificationObserver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIMessageNotificationObserver.m; sourceTree = "<group>"; };
+		0A8259AC19DF501A00ACCC8E /* LYRUIMessagePresenting.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUIMessagePresenting.h; sourceTree = "<group>"; };
+		0A8259AD19DF501A00ACCC8E /* LYRUIOutgoingMessageCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUIOutgoingMessageCollectionViewCell.h; sourceTree = "<group>"; };
+		0A8259AE19DF501A00ACCC8E /* LYRUIOutgoingMessageCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIOutgoingMessageCollectionViewCell.m; sourceTree = "<group>"; };
+		0A8259AF19DF501A00ACCC8E /* LYRUIParticipant.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUIParticipant.h; sourceTree = "<group>"; };
+		0A8259B019DF501A00ACCC8E /* LYRUIParticipantPickerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUIParticipantPickerController.h; sourceTree = "<group>"; };
+		0A8259B119DF501A00ACCC8E /* LYRUIParticipantPickerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIParticipantPickerController.m; sourceTree = "<group>"; };
+		0A8259B219DF501A00ACCC8E /* LYRUIParticipantPresenting.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUIParticipantPresenting.h; sourceTree = "<group>"; };
+		0A8259B319DF501A00ACCC8E /* LYRUIParticipantTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUIParticipantTableViewCell.h; sourceTree = "<group>"; };
+		0A8259B419DF501A00ACCC8E /* LYRUIParticipantTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIParticipantTableViewCell.m; sourceTree = "<group>"; };
+		0A8259B519DF501A00ACCC8E /* LYRUIParticipantTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUIParticipantTableViewController.h; sourceTree = "<group>"; };
+		0A8259B619DF501A00ACCC8E /* LYRUIParticipantTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIParticipantTableViewController.m; sourceTree = "<group>"; };
+		0A8259B719DF501A00ACCC8E /* LYRUIPaticipantSectionHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUIPaticipantSectionHeaderView.h; sourceTree = "<group>"; };
+		0A8259B819DF501A00ACCC8E /* LYRUIPaticipantSectionHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIPaticipantSectionHeaderView.m; sourceTree = "<group>"; };
+		0A8259B919DF501A00ACCC8E /* LYRUISelectionIndicator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUISelectionIndicator.h; sourceTree = "<group>"; };
+		0A8259BA19DF501A00ACCC8E /* LYRUISelectionIndicator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUISelectionIndicator.m; sourceTree = "<group>"; };
+		0A8259BB19DF501A00ACCC8E /* LYRUIUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUIUtilities.h; sourceTree = "<group>"; };
+		0A8259BC19DF501A00ACCC8E /* LYRUIUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIUtilities.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		0A82595819DF4FA200ACCC8E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0A82597119DF4FA200ACCC8E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		0A82595219DF4FA200ACCC8E = {
+			isa = PBXGroup;
+			children = (
+				0A82595E19DF4FA200ACCC8E /* Supporting Files */,
+				0A82598419DF501100ACCC8E /* Code */,
+				0A82597719DF4FA200ACCC8E /* LayerUIKitTests */,
+				0A82595C19DF4FA200ACCC8E /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		0A82595C19DF4FA200ACCC8E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				0A82595B19DF4FA200ACCC8E /* LayerUIKit.app */,
+				0A82597419DF4FA200ACCC8E /* LayerUIKitTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		0A82595E19DF4FA200ACCC8E /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				0A82595F19DF4FA200ACCC8E /* Info.plist */,
+				0A82596019DF4FA200ACCC8E /* main.m */,
+			);
+			name = "Supporting Files";
+			path = LayerUIKit;
+			sourceTree = "<group>";
+		};
+		0A82597719DF4FA200ACCC8E /* LayerUIKitTests */ = {
+			isa = PBXGroup;
+			children = (
+				0A82597A19DF4FA200ACCC8E /* LayerUIKitTests.m */,
+				0A82597819DF4FA200ACCC8E /* Supporting Files */,
+			);
+			path = LayerUIKitTests;
+			sourceTree = "<group>";
+		};
+		0A82597819DF4FA200ACCC8E /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				0A82597919DF4FA200ACCC8E /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		0A82598419DF501100ACCC8E /* Code */ = {
+			isa = PBXGroup;
+			children = (
+				0A8259D719DF50AB00ACCC8E /* LayerUIKit */,
+				0A82596219DF4FA200ACCC8E /* AppDelegate.h */,
+				0A82596319DF4FA200ACCC8E /* AppDelegate.m */,
+			);
+			name = Code;
+			path = LayerUIKit;
+			sourceTree = "<group>";
+		};
+		0A8259D719DF50AB00ACCC8E /* LayerUIKit */ = {
+			isa = PBXGroup;
+			children = (
+				0A82598519DF501A00ACCC8E /* LYRUIAvatarImageView.h */,
+				0A82598619DF501A00ACCC8E /* LYRUIAvatarImageView.m */,
+				0A82598719DF501A00ACCC8E /* LYRUIChangeNotificationObserver.h */,
+				0A82598819DF501A00ACCC8E /* LYRUIChangeNotificationObserver.m */,
+				0A82598919DF501A00ACCC8E /* LYRUIConstants.h */,
+				0A82598A19DF501A00ACCC8E /* LYRUIConstants.m */,
+				0A82598B19DF501A00ACCC8E /* LYRUIConversationCollectionViewFlowLayout.h */,
+				0A82598C19DF501A00ACCC8E /* LYRUIConversationCollectionViewFlowLayout.m */,
+				0A82598D19DF501A00ACCC8E /* LYRUIConversationCollectionViewFooter.h */,
+				0A82598E19DF501A00ACCC8E /* LYRUIConversationCollectionViewFooter.m */,
+				0A82598F19DF501A00ACCC8E /* LYRUIConversationCollectionViewHeader.h */,
+				0A82599019DF501A00ACCC8E /* LYRUIConversationCollectionViewHeader.m */,
+				0A82599119DF501A00ACCC8E /* LYRUIConversationListViewController.h */,
+				0A82599219DF501A00ACCC8E /* LYRUIConversationListViewController.m */,
+				0A82599319DF501A00ACCC8E /* LYRUIConversationNotificationObserver.h */,
+				0A82599419DF501A00ACCC8E /* LYRUIConversationNotificationObserver.m */,
+				0A82599519DF501A00ACCC8E /* LYRUIConversationPresenting.h */,
+				0A82599619DF501A00ACCC8E /* LYRUIConversationTableViewCell.h */,
+				0A82599719DF501A00ACCC8E /* LYRUIConversationTableViewCell.m */,
+				0A82599819DF501A00ACCC8E /* LYRUIConversationViewController.h */,
+				0A82599919DF501A00ACCC8E /* LYRUIConversationViewController.m */,
+				0A82599A19DF501A00ACCC8E /* LYRUIDataSourceChange.h */,
+				0A82599B19DF501A00ACCC8E /* LYRUIDataSourceChange.m */,
+				0A82599C19DF501A00ACCC8E /* LYRUIErrors.h */,
+				0A82599D19DF501A00ACCC8E /* LYRUIErrors.m */,
+				0A82599E19DF501A00ACCC8E /* LYRUIIncomingMessageCollectionViewCell.h */,
+				0A82599F19DF501A00ACCC8E /* LYRUIIncomingMessageCollectionViewCell.m */,
+				0A8259A019DF501A00ACCC8E /* LYRUIMediaAttachment.h */,
+				0A8259A119DF501A00ACCC8E /* LYRUIMediaAttachment.m */,
+				0A8259A219DF501A00ACCC8E /* LYRUIMessageBubbleView.h */,
+				0A8259A319DF501A00ACCC8E /* LYRUIMessageBubbleView.m */,
+				0A8259A419DF501A00ACCC8E /* LYRUIMessageCollectionViewCell.h */,
+				0A8259A519DF501A00ACCC8E /* LYRUIMessageCollectionViewCell.m */,
+				0A8259A619DF501A00ACCC8E /* LYRUIMessageComposeTextView.h */,
+				0A8259A719DF501A00ACCC8E /* LYRUIMessageComposeTextView.m */,
+				0A8259A819DF501A00ACCC8E /* LYRUIMessageInputToolbar.h */,
+				0A8259A919DF501A00ACCC8E /* LYRUIMessageInputToolbar.m */,
+				0A8259AA19DF501A00ACCC8E /* LYRUIMessageNotificationObserver.h */,
+				0A8259AB19DF501A00ACCC8E /* LYRUIMessageNotificationObserver.m */,
+				0A8259AC19DF501A00ACCC8E /* LYRUIMessagePresenting.h */,
+				0A8259AD19DF501A00ACCC8E /* LYRUIOutgoingMessageCollectionViewCell.h */,
+				0A8259AE19DF501A00ACCC8E /* LYRUIOutgoingMessageCollectionViewCell.m */,
+				0A8259AF19DF501A00ACCC8E /* LYRUIParticipant.h */,
+				0A8259B019DF501A00ACCC8E /* LYRUIParticipantPickerController.h */,
+				0A8259B119DF501A00ACCC8E /* LYRUIParticipantPickerController.m */,
+				0A8259B219DF501A00ACCC8E /* LYRUIParticipantPresenting.h */,
+				0A8259B319DF501A00ACCC8E /* LYRUIParticipantTableViewCell.h */,
+				0A8259B419DF501A00ACCC8E /* LYRUIParticipantTableViewCell.m */,
+				0A8259B519DF501A00ACCC8E /* LYRUIParticipantTableViewController.h */,
+				0A8259B619DF501A00ACCC8E /* LYRUIParticipantTableViewController.m */,
+				0A8259B719DF501A00ACCC8E /* LYRUIPaticipantSectionHeaderView.h */,
+				0A8259B819DF501A00ACCC8E /* LYRUIPaticipantSectionHeaderView.m */,
+				0A8259B919DF501A00ACCC8E /* LYRUISelectionIndicator.h */,
+				0A8259BA19DF501A00ACCC8E /* LYRUISelectionIndicator.m */,
+				0A8259BB19DF501A00ACCC8E /* LYRUIUtilities.h */,
+				0A8259BC19DF501A00ACCC8E /* LYRUIUtilities.m */,
+			);
+			name = LayerUIKit;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		0A82595A19DF4FA200ACCC8E /* LayerUIKit */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0A82597E19DF4FA200ACCC8E /* Build configuration list for PBXNativeTarget "LayerUIKit" */;
+			buildPhases = (
+				0A82595719DF4FA200ACCC8E /* Sources */,
+				0A82595819DF4FA200ACCC8E /* Frameworks */,
+				0A82595919DF4FA200ACCC8E /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = LayerUIKit;
+			productName = LayerUIKit;
+			productReference = 0A82595B19DF4FA200ACCC8E /* LayerUIKit.app */;
+			productType = "com.apple.product-type.application";
+		};
+		0A82597319DF4FA200ACCC8E /* LayerUIKitTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0A82598119DF4FA200ACCC8E /* Build configuration list for PBXNativeTarget "LayerUIKitTests" */;
+			buildPhases = (
+				0A82597019DF4FA200ACCC8E /* Sources */,
+				0A82597119DF4FA200ACCC8E /* Frameworks */,
+				0A82597219DF4FA200ACCC8E /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				0A82597619DF4FA200ACCC8E /* PBXTargetDependency */,
+			);
+			name = LayerUIKitTests;
+			productName = LayerUIKitTests;
+			productReference = 0A82597419DF4FA200ACCC8E /* LayerUIKitTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		0A82595319DF4FA200ACCC8E /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0600;
+				ORGANIZATIONNAME = "Layer, Inc.";
+				TargetAttributes = {
+					0A82595A19DF4FA200ACCC8E = {
+						CreatedOnToolsVersion = 6.0.1;
+					};
+					0A82597319DF4FA200ACCC8E = {
+						CreatedOnToolsVersion = 6.0.1;
+						TestTargetID = 0A82595A19DF4FA200ACCC8E;
+					};
+				};
+			};
+			buildConfigurationList = 0A82595619DF4FA200ACCC8E /* Build configuration list for PBXProject "LayerUIKit" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 0A82595219DF4FA200ACCC8E;
+			productRefGroup = 0A82595C19DF4FA200ACCC8E /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				0A82595A19DF4FA200ACCC8E /* LayerUIKit */,
+				0A82597319DF4FA200ACCC8E /* LayerUIKitTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		0A82595919DF4FA200ACCC8E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0A82597219DF4FA200ACCC8E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		0A82595719DF4FA200ACCC8E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0A8259CD19DF501A00ACCC8E /* LYRUIMessageComposeTextView.m in Sources */,
+				0A8259C119DF501A00ACCC8E /* LYRUIConversationCollectionViewFooter.m in Sources */,
+				0A8259CE19DF501A00ACCC8E /* LYRUIMessageInputToolbar.m in Sources */,
+				0A8259CC19DF501A00ACCC8E /* LYRUIMessageCollectionViewCell.m in Sources */,
+				0A8259D619DF501A00ACCC8E /* LYRUIUtilities.m in Sources */,
+				0A8259C019DF501A00ACCC8E /* LYRUIConversationCollectionViewFlowLayout.m in Sources */,
+				0A8259C219DF501A00ACCC8E /* LYRUIConversationCollectionViewHeader.m in Sources */,
+				0A8259CF19DF501A00ACCC8E /* LYRUIMessageNotificationObserver.m in Sources */,
+				0A8259BE19DF501A00ACCC8E /* LYRUIChangeNotificationObserver.m in Sources */,
+				0A8259D519DF501A00ACCC8E /* LYRUISelectionIndicator.m in Sources */,
+				0A8259CB19DF501A00ACCC8E /* LYRUIMessageBubbleView.m in Sources */,
+				0A8259C519DF501A00ACCC8E /* LYRUIConversationTableViewCell.m in Sources */,
+				0A8259C419DF501A00ACCC8E /* LYRUIConversationNotificationObserver.m in Sources */,
+				0A8259C319DF501A00ACCC8E /* LYRUIConversationListViewController.m in Sources */,
+				0A8259C919DF501A00ACCC8E /* LYRUIIncomingMessageCollectionViewCell.m in Sources */,
+				0A8259C619DF501A00ACCC8E /* LYRUIConversationViewController.m in Sources */,
+				0A8259C819DF501A00ACCC8E /* LYRUIErrors.m in Sources */,
+				0A8259D419DF501A00ACCC8E /* LYRUIPaticipantSectionHeaderView.m in Sources */,
+				0A82596419DF4FA200ACCC8E /* AppDelegate.m in Sources */,
+				0A82596119DF4FA200ACCC8E /* main.m in Sources */,
+				0A8259CA19DF501A00ACCC8E /* LYRUIMediaAttachment.m in Sources */,
+				0A8259BD19DF501A00ACCC8E /* LYRUIAvatarImageView.m in Sources */,
+				0A8259D219DF501A00ACCC8E /* LYRUIParticipantTableViewCell.m in Sources */,
+				0A8259D319DF501A00ACCC8E /* LYRUIParticipantTableViewController.m in Sources */,
+				0A8259C719DF501A00ACCC8E /* LYRUIDataSourceChange.m in Sources */,
+				0A8259D019DF501A00ACCC8E /* LYRUIOutgoingMessageCollectionViewCell.m in Sources */,
+				0A8259BF19DF501A00ACCC8E /* LYRUIConstants.m in Sources */,
+				0A8259D119DF501A00ACCC8E /* LYRUIParticipantPickerController.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0A82597019DF4FA200ACCC8E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0A82597B19DF4FA200ACCC8E /* LayerUIKitTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		0A82597619DF4FA200ACCC8E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 0A82595A19DF4FA200ACCC8E /* LayerUIKit */;
+			targetProxy = 0A82597519DF4FA200ACCC8E /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		0A82597C19DF4FA200ACCC8E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		0A82597D19DF4FA200ACCC8E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		0A82597F19DF4FA200ACCC8E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = LayerUIKit/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		0A82598019DF4FA200ACCC8E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = LayerUIKit/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		0A82598219DF4FA200ACCC8E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+				);
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = LayerUIKitTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/LayerUIKit.app/LayerUIKit";
+			};
+			name = Debug;
+		};
+		0A82598319DF4FA200ACCC8E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = LayerUIKitTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/LayerUIKit.app/LayerUIKit";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		0A82595619DF4FA200ACCC8E /* Build configuration list for PBXProject "LayerUIKit" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0A82597C19DF4FA200ACCC8E /* Debug */,
+				0A82597D19DF4FA200ACCC8E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		0A82597E19DF4FA200ACCC8E /* Build configuration list for PBXNativeTarget "LayerUIKit" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0A82597F19DF4FA200ACCC8E /* Debug */,
+				0A82598019DF4FA200ACCC8E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		0A82598119DF4FA200ACCC8E /* Build configuration list for PBXNativeTarget "LayerUIKitTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0A82598219DF4FA200ACCC8E /* Debug */,
+				0A82598319DF4FA200ACCC8E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 0A82595319DF4FA200ACCC8E /* Project object */;
+}
