@@ -1,4 +1,4 @@
-#Layer UIKit
+#LayerUIKit
 LayerUIKit provides lightweight, customizable user interface components that allow developers to quickly build dynamic and responsive user interfaces on top of the LayerKit SDK.
 
 ##Installation
@@ -9,10 +9,12 @@ pod LayerUIKit
 
 ##Whats Included
 LayerUIKit provides the following components that must be used in conjunction with LayerKit.
+
 1. `LYRUIConversationViewController` - Displays an individual Layer conversation.
 2. `LYRUIConversationListViewController` - Displays a list of Layer conversation.
 
 LayerUIKit provides the following components that can be used independently of LayerKit.
+
 1. `LYRUIParticipantPicker` - Displays a list of participants conforming to the `LYRUIParticipant` protocol.
 2. `LYRUIMessageInputToolBar` - A message input toolbar similar in functionality to the toolbar used in iMessage.
 
@@ -40,12 +42,14 @@ The `LYRUIConversationListViewController` provides a customizable UITableViewCon
 
 ####Initializer
 The `LYRUIConversationListViewController` is initialized with a LYRClient object.
+
 ```
 LYRUIConversationListViewController *viewController = [LYRUIConversationListViewController conversationListViewControllerWithLayerClient:layerClient];
 ```
 
 ####Customization
 The `LYRUIConverationListViewController` displays `LYRUIConversationTableViewCells`. The cells themselves provide for customization via UIAppearanceSelectors.
+
 ```
 [[LYRUIConversationTableViewCell appearance] setConversationLabelFont:[UIFont boldSystemFontOfSize:14]];
 [[LYRUIConversationTableViewCell appearance] setConversationLabelColor:[UIColor blackColor]];
@@ -55,12 +59,14 @@ The `LYRUIConverationListViewController` displays `LYRUIConversationTableViewCel
 The `LYRUIConversationViewController` provides a customizable `UICollectionViewController` subclass for displaying individual Layer conversations. The controller is initialized with and `LYRClient` object and an `LYRConversation` object. It handles fetching, displaying and sending messages via LayerKit. The controller leverages the `LYRUIMessageInputToolbar` object to allow for text and content input.
 
 ####Initializer
+
 ```
 LYRUIConversationViewController *viewController = [LYRUIConversationViewController conversationViewControllerWithConversation:conversation layerClient:self.layerClient];
 ```
 
 ####Customization
 The `LYRUIConverationViewController` displays both incoming and outgoing flavors of `LYRUIMessageCollectionViewCell`. The cells themselves provide for customization via UIAppearanceSelectors.
+
 ```
 [[LYRUIOutgoingMessageCollectionViewCell appearance] setMessageTextColor:[UIColor whiteColor]];
 [[LYRUIOutgoingMessageCollectionViewCell appearance] setMessageTextFont:[UIFont systemFontOfSize:14]];
@@ -72,6 +78,7 @@ The `LYRUIParticipantPickerController` provides a `UINavigationController` subcl
 
 ####Initializer
 The `LYRUIParticipantPickerController` is initialized with an object conforming to the `LYRUIParticipantPickerDataSource` and a sortType.
+
 ```
 LYRUIParticipantPickerSortType sortType = LYRUIParticipantPickerControllerSortTypeFirst;
 LYRUIParticipantPickerController *controller = [LYRUIParticipantPickerController participantPickerWithDataSource:dataSource
@@ -80,6 +87,7 @@ LYRUIParticipantPickerController *controller = [LYRUIParticipantPickerController
 
 ####Customization
 The `LYRUIParticipantPickerController` displays `LYRUIParticipantTableViewCells`. The cells themselves provide for customization via UIAppearanceSelectors.
+
 ```
 [[LYRUIParticipantTableViewCell appearance] setTitleColor:[UIColor blackColor]];
 [[LYRUIParticipantTableViewCell appearance] setTitleFont:[UIFont systemFontOfSize:14]];
@@ -90,6 +98,7 @@ The `LYRMessageInputToolbar` provides a `UIToolbar` subclass that supports text 
 
 ####Initializer
 The `LYRMessageInputToolbar` is initialized with a UIViewController object and sets itself as the inputAccessoryView of the ViewController. In order to do this, the `inputAcccessoryView` property of the view controller must first be re-declared in the implementation file of the ViewController class.
+
 ```
 self.inputAccessoryView = [LYRUIMessageInputToolbar inputToolBarWithViewController:self];
 ```
@@ -104,5 +113,6 @@ The presenters are `LYRUIParticipantPresenting`, `LYRUIConversationPresenting`, 
 
 ##Contact
 LayerKit was developed in San Francisco by the Layer team. If you have any technical questions or concerns about this project feel free to reach out to engineers responsible for the development:
+
 * [Kevin Coleman](mailto:kevin@layer.com)
 * [Blake Watters](mailto:blake@layer.com)
