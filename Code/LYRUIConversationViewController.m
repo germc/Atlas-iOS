@@ -259,7 +259,7 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
     if ([self shouldDisplayReadReceiptForSection:section]) {
         return CGSizeMake(rect.size.width, 28);
     }
-    return CGSizeMake(rect.size.width, 10);
+    return CGSizeMake(rect.size.width, 4);
 }
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section
@@ -549,13 +549,15 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
 
 - (void)observer:(LYRUIChangeNotificationObserver *)observer updateWithChanges:(NSArray *)changes
 {
-    __block NSUInteger messageInsert;
+    [self fetchMessages];
+    [self.collectionView reloadData];
+//    __block NSUInteger messageInsert;
 //    [self.collectionView performBatchUpdates:^{
 //        for (LYRUIDataSourceChange *change in changes) {
 //            switch (change.type) {
 //                case LYRUIDataSourceChangeTypeInsert:
 //                    messageInsert = change.newIndex;
-//                    if (change.newIndex > 0) {
+//                    if (change.newIndex > 0 && changes.count == 1) {
 //                        [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:change.newIndex - 1]];
 //                    }
 //                    [self.collectionView insertSections:[NSIndexSet indexSetWithIndex:change.newIndex]];
@@ -579,8 +581,6 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
 //            [self scrollToBottomOfCollectionViewAnimated:TRUE];
 //        }
 //    }];
-    [self fetchMessages];
-    [self.collectionView reloadData];
 }
 
 - (void)scrollToBottomOfCollectionViewAnimated:(BOOL)animated

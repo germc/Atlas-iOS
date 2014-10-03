@@ -23,11 +23,9 @@
 {
     self = [super init];
     if (self) {
-        
         _type = type;
         _newIndex = newIndex;
         _oldIndex = oldIndex;
-        
     }
     return self;
 }

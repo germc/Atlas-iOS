@@ -111,6 +111,11 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
     self.isOnScreen = NO;
 }
 
+- (void)dealloc
+{
+    self.conversationsNotificationObserver.delegate = nil;
+    self.conversationsNotificationObserver = nil;
+}
 #pragma mark - Public setters
 
 - (void)setAllowsEditing:(BOOL)allowsEditing
@@ -286,15 +291,11 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 
 - (void)observerWillChangeContent:(LYRUIChangeNotificationObserver *)observer
 {
-//    [self.tableView beginUpdates];
+    //[self.tableView beginUpdates];
 }
 
 - (void)observer:(LYRUIChangeNotificationObserver *)observer updateWithChanges:(NSArray *)changes
 {
-    [self fetchLayerConversationsWithCompletion:^{
-         [self.tableView reloadData];
-    }];
-   
 //    NSLog(@"Changes %@", changes);
 //    for (LYRUIDataSourceChange *change in changes) {
 //        if (change.type == LYRUIDataSourceChangeTypeUpdate) {
@@ -317,9 +318,9 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 
 - (void)observerdidChangeContent:(LYRUIChangeNotificationObserver *)observer
 {
-//    [self fetchLayerConversationsWithCompletion:^{
-//        [self.tableView endUpdates];
-//    }];
+    [self fetchLayerConversationsWithCompletion:^{
+        [self.tableView reloadData];
+    }];
 }
 
 - (void)configureTableViewCellAppearance

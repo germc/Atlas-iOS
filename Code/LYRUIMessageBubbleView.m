@@ -66,7 +66,7 @@
 
 - (void)updateWithLocation:(CLLocationCoordinate2D)location
 {
-    //[self removeSubviews];
+    //
 }
 
 - (void)updateConstraintsForTextView

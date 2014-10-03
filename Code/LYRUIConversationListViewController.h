@@ -106,7 +106,9 @@
  */
 @property (nonatomic, assign) BOOL showsConversationImage;
 
-
+/**
+ @abstract The given `LYRConversation` object
+ */
 @property (nonatomic) LYRClient *layerClient;
 
 @end
