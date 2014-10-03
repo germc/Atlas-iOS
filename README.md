@@ -4,7 +4,7 @@ LayerUIKit provides lightweight, customizable user interface components that all
 ##Installation
 LayerUIKit can be easily installed via Cocoapods. Include the following in your Podfile.
 ```
-pod LayerUIKit
+pod 'LayerUIKit', git: 'git@github.com:layerhq/LayerUIKit'
 ```
 
 ##Whats Included
@@ -109,7 +109,7 @@ While the LayerUIKit does provide highly customizable TableView and CollectionVi
 
 The presenters are `LYRUIParticipantPresenting`, `LYRUIConversationPresenting`, and `LYRUIMessagePresenting`.
 
-##Contributing 
+##Contributing
 
 ##Contact
 LayerKit was developed in San Francisco by the Layer team. If you have any technical questions or concerns about this project feel free to reach out to engineers responsible for the development:
