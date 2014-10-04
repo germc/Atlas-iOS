@@ -26,7 +26,7 @@ static NSString *const LYRUIPlaceHolderText = @"Enter Message";
     if (self) {
         self.textContainerInset = UIEdgeInsetsMake(6, 0, 6, 0);
         self.font = [UIFont systemFontOfSize:14];
-        self.text = @"Enter Message";
+
         self.textColor = [UIColor lightGrayColor];
         [self layoutIfNeeded];
         
@@ -95,7 +95,7 @@ static NSString *const LYRUIPlaceHolderText = @"Enter Message";
 
 - (void)insertLineBreak:(NSMutableAttributedString *)mutableAttributedString
 {
-    [mutableAttributedString insertAttributedString:[[NSMutableAttributedString alloc] initWithString:@" \n "] atIndex:mutableAttributedString.length];
+    [mutableAttributedString insertAttributedString:[[NSMutableAttributedString alloc] initWithString:@" \n"] atIndex:mutableAttributedString.length];
     [mutableAttributedString addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:14] range:NSMakeRange(0, mutableAttributedString.length)];
     self.attributedText = mutableAttributedString;
 }

@@ -30,6 +30,8 @@ static CGFloat const LSLeftAccessoryButtonWidth = 40;
 static CGFloat const LSRightAccessoryButtonWidth = 46;
 static CGFloat const LSButtonHeight = 28;
 
+static NSString *const LYRUIPlaceHolderText = @"Enter Message";
+
 + (instancetype)inputToolBarWithViewController:(UIViewController<LYRUIMessageInputToolbarDelegate> *)viewController
 {
     return [[self alloc] initWithViewController:viewController];
@@ -58,6 +60,7 @@ static CGFloat const LSButtonHeight = 28;
         // Initialize the Text Input View
         self.textInputView = [[LYRUIMessageComposeTextView alloc] init];
         self.textInputView.delegate = self;
+        self.textInputView.text = LYRUIPlaceHolderText;
         self.textInputView.translatesAutoresizingMaskIntoConstraints = NO;
         self.textInputView.layer.borderColor = [UIColor lightGrayColor].CGColor;
         self.textInputView.layer.borderWidth = 1;
@@ -74,6 +77,7 @@ static CGFloat const LSButtonHeight = 28;
         [self.rightAccessoryButton setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
         [self.rightAccessoryButton setTitleColor:LSBlueColor() forState:UIControlStateHighlighted];
         [self.rightAccessoryButton addTarget:self action:@selector(rightAccessoryButtonTapped) forControlEvents:UIControlEventTouchUpInside];
+        [self.rightAccessoryButton setHighlighted:FALSE];
         [self addSubview:self.rightAccessoryButton];
         NSLog(@"Right accessory button state %lu", self.rightAccessoryButton.state);
         [self setupLayoutConstraints];
@@ -137,6 +141,7 @@ static CGFloat const LSButtonHeight = 28;
 
 - (void)rightAccessoryButtonTapped
 {
+    if ([self.textInputView.text isEqualToString:LYRUIPlaceHolderText]) return;
     [self filterMessageParts];
     if (self.textInputView.text.length > 0 || self.messageParts) {
         [self.inputToolBarDelegate messageInputToolbar:self didTapRightAccessoryButton:self.rightAccessoryButton];
@@ -181,6 +186,7 @@ static CGFloat const LSButtonHeight = 28;
 
 - (BOOL)textViewShouldBeginEditing:(UITextView *)textView
 {
+    [self.rightAccessoryButton setHighlighted:TRUE];
     return YES;
 }
 

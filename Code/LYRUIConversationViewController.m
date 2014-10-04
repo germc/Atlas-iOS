@@ -70,7 +70,9 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
 {
     [super viewDidLoad];
     
-    [self fetchMessages];
+    [self fetchMessagesWithCompletion:^{
+        //
+    }];
     
     // Setup Collection View
     self.collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero
@@ -174,9 +176,15 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
 
 #pragma mark - Refresh Data Source
 
-- (void)fetchMessages
+- (void)fetchMessagesWithCompletion:(void(^)(void))completion
 {
-    self.messages = [self.layerClient messagesForConversation:self.conversation];
+    dispatch_async(self.layerOperationQueue, ^{
+        self.messages = [self.layerClient messagesForConversation:self.conversation];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.collectionView reloadData];
+            [self scrollToBottomOfCollectionViewAnimated:TRUE];
+        });
+    });
 }
 
 # pragma mark - Collection View Data Source
@@ -549,8 +557,12 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
 
 - (void)observer:(LYRUIChangeNotificationObserver *)observer updateWithChanges:(NSArray *)changes
 {
-    [self fetchMessages];
-    [self.collectionView reloadData];
+    [self fetchMessagesWithCompletion:^{
+        
+    }];
+  
+
+//    NSLog(@"Changes %@", changes);
 //    __block NSUInteger messageInsert;
 //    [self.collectionView performBatchUpdates:^{
 //        for (LYRUIDataSourceChange *change in changes) {
