@@ -181,8 +181,9 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
     dispatch_async(self.layerOperationQueue, ^{
         self.messages = [self.layerClient messagesForConversation:self.conversation];
         dispatch_async(dispatch_get_main_queue(), ^{
+            completion();
             [self.collectionView reloadData];
-            [self scrollToBottomOfCollectionViewAnimated:TRUE];
+            //[self scrollToBottomOfCollectionViewAnimated:TRUE];
         });
     });
 }
@@ -582,42 +583,39 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
 
 - (void)observer:(LYRUIChangeNotificationObserver *)observer updateWithChanges:(NSArray *)changes
 {
+    NSLog(@"Changes %@", changes);
     [self fetchMessagesWithCompletion:^{
-        
-    }];
-  
-
-//    NSLog(@"Changes %@", changes);
-//    __block NSUInteger messageInsert;
-//    [self.collectionView performBatchUpdates:^{
-//        for (LYRUIDataSourceChange *change in changes) {
-//            switch (change.type) {
-//                case LYRUIDataSourceChangeTypeInsert:
-//                    messageInsert = change.newIndex;
-//                    if (change.newIndex > 0 && changes.count == 1) {
-//                        [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:change.newIndex - 1]];
-//                    }
-//                    [self.collectionView insertSections:[NSIndexSet indexSetWithIndex:change.newIndex]];
-//                    break;
-//                case LYRUIDataSourceChangeTypeMove:
-//                    [self.collectionView deleteSections:[NSIndexSet indexSetWithIndex:change.oldIndex]];
-//                    [self.collectionView insertSections:[NSIndexSet indexSetWithIndex:change.newIndex]];
-//                    break;
-//                case LYRUIDataSourceChangeTypeUpdate:
-//                    [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:change.newIndex]];
-//                    break;
-//                case LYRUIDataSourceChangeTypeDelete:
-//                    [self.collectionView deleteSections:[NSIndexSet indexSetWithIndex:change.newIndex]];
-//                    break;
-//                default:
-//                    break;
+//        __block NSUInteger messageInsert;
+//        [self.collectionView performBatchUpdates:^{
+//            for (LYRUIDataSourceChange *change in changes) {
+//                switch (change.type) {
+//                    case LYRUIDataSourceChangeTypeInsert:
+//                        messageInsert = change.newIndex;
+//                        if (change.newIndex > 0 && changes.count == 1) {
+//                            [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:change.newIndex - 1]];
+//                        }
+//                        [self.collectionView insertSections:[NSIndexSet indexSetWithIndex:change.newIndex]];
+//                        break;
+//                    case LYRUIDataSourceChangeTypeMove:
+//                        [self.collectionView deleteSections:[NSIndexSet indexSetWithIndex:change.oldIndex]];
+//                        [self.collectionView insertSections:[NSIndexSet indexSetWithIndex:change.newIndex]];
+//                        break;
+//                    case LYRUIDataSourceChangeTypeUpdate:
+//                        [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:change.newIndex]];
+//                        break;
+//                    case LYRUIDataSourceChangeTypeDelete:
+//                        [self.collectionView deleteSections:[NSIndexSet indexSetWithIndex:change.newIndex]];
+//                        break;
+//                    default:
+//                        break;
+//                }
 //            }
-//        }
-//    } completion:^(BOOL finished) {
-//        if (messageInsert == self.messages.count - 1) {
-//            [self scrollToBottomOfCollectionViewAnimated:TRUE];
-//        }
-//    }];
+//        } completion:^(BOOL finished) {
+//            if (messageInsert == self.messages.count - 1) {
+//                [self scrollToBottomOfCollectionViewAnimated:TRUE];
+//            }
+//        }];
+    }];
 }
 
 - (void)scrollToBottomOfCollectionViewAnimated:(BOOL)animated
