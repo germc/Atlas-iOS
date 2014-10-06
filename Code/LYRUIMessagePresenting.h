@@ -26,4 +26,14 @@
  */
 - (void)updateBubbleViewWidth:(CGFloat)width;
 
+/**
+ @abstract Tells the reciever if it should display an avatarImage
+ */
+- (void)shouldDisplayAvatarImage:(BOOL)shouldDisplayAvatarImage;
+
+/**
+ @abstract Tells the reciever if the cell is in a group conversation
+ */
+- (void)isGroupConversation:(BOOL)isGroupConversation;
+
 @end

@@ -112,6 +112,15 @@
      [self.contentView addConstraint:self.bubbleViewWidthConstraint];
 }
 
+- (void)shouldDisplayAvatarImage:(BOOL)shouldDisplayAvatarImage
+{
+    if (shouldDisplayAvatarImage) {
+        self.avatarImage.alpha = 1.0;
+    } else {
+        self.avatarImage.alpha = 0.0;
+    }
+}
+
 - (void)updateMessageCellConstraints
 {
     //***************Avatar Image Constraints***************//

@@ -30,8 +30,6 @@ static CGFloat const LSLeftAccessoryButtonWidth = 40;
 static CGFloat const LSRightAccessoryButtonWidth = 46;
 static CGFloat const LSButtonHeight = 28;
 
-static NSString *const LYRUIPlaceHolderText = @"Enter Message";
-
 + (instancetype)inputToolBarWithViewController:(UIViewController<LYRUIMessageInputToolbarDelegate> *)viewController
 {
     return [[self alloc] initWithViewController:viewController];
@@ -60,12 +58,12 @@ static NSString *const LYRUIPlaceHolderText = @"Enter Message";
         // Initialize the Text Input View
         self.textInputView = [[LYRUIMessageComposeTextView alloc] init];
         self.textInputView.delegate = self;
-        self.textInputView.text = LYRUIPlaceHolderText;
         self.textInputView.translatesAutoresizingMaskIntoConstraints = NO;
         self.textInputView.layer.borderColor = [UIColor lightGrayColor].CGColor;
         self.textInputView.layer.borderWidth = 1;
         self.textInputView.layer.cornerRadius = 4.0f;
         self.textInputView.accessibilityLabel = @"Text Input View";
+        self.textInputView.text = LYRUIPlaceHolderText;
         [self addSubview:self.textInputView];
         
         // Initialize the Send Button

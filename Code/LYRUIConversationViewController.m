@@ -106,7 +106,7 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
     [panGestureRecognizer setMinimumNumberOfTouches:1];
     [panGestureRecognizer setMaximumNumberOfTouches:1];
     panGestureRecognizer.delegate = self;
-    [self.collectionView  addGestureRecognizer:panGestureRecognizer];
+    //[self.collectionView  addGestureRecognizer:panGestureRecognizer];
     
     self.accessibilityLabel = @"Conversation";
 }
@@ -204,7 +204,6 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     LYRMessage *message = [self.messages objectAtIndex:indexPath.section];
-    LYRMessagePart *messagePart = [message.parts objectAtIndex:indexPath.row];
     LYRUIMessageCollectionViewCell <LYRUIMessagePresenting> *cell;
     if ([self.layerClient.authenticatedUserID isEqualToString:message.sentByUserID]) {
         // If the message was sent by the currently authenticated user, it is outgoing
@@ -213,12 +212,20 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
         // If the message was sent by someone other than the currently authenticated user, it is incoming
         cell = [self.collectionView dequeueReusableCellWithReuseIdentifier:LYRUIIncomingMessageCellIdentifier forIndexPath:indexPath];
     }
+    [self configureCell:cell atIndexPath:indexPath];
+    return cell;
+}
+
+- (void)configureCell:(LYRUIMessageCollectionViewCell <LYRUIMessagePresenting> *)cell atIndexPath:(NSIndexPath *)indexPath
+{
+    LYRMessage *message = [self.messages objectAtIndex:indexPath.section];
+    LYRMessagePart *messagePart = [message.parts objectAtIndex:indexPath.row];
     [cell presentMessagePart:messagePart];
     [cell updateBubbleViewWidth:[self sizeForItemAtIndexPath:indexPath].width];
+    [cell shouldDisplayAvatarImage:[self shouldDisplayAvatarImageForIndexPath:indexPath]];
     if ([self.dataSource converationViewController:self shouldUpdateRecipientStatusForMessage:message]) {
         [self updateRecipientStatusForMessage:message];
     }
-    return cell;
 }
 
 #pragma mark
@@ -267,7 +274,7 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
     if ([self shouldDisplayReadReceiptForSection:section]) {
         return CGSizeMake(rect.size.width, 28);
     }
-    return CGSizeMake(rect.size.width, 4);
+    return CGSizeMake(rect.size.width, 8);
 }
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section
@@ -299,13 +306,13 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
     dispatch_async(self.layerOperationQueue, ^{
         NSNumber *recipientStatus = [message.recipientStatusByUserID objectForKey:self.layerClient.authenticatedUserID];
         if (![recipientStatus isEqualToNumber:[NSNumber numberWithInteger:LYRRecipientStatusRead]] ) {
-                NSError *error;
-                BOOL success = [self.layerClient markMessageAsRead:message error:&error];
-                if (success) {
-                    NSLog(@"Message successfully marked as read");
-                } else {
-                    NSLog(@"Failed to mark message as read with error %@", error);
-                }
+            NSError *error;
+            BOOL success = [self.layerClient markMessageAsRead:message error:&error];
+            if (success) {
+                NSLog(@"Message successfully marked as read");
+            } else {
+                NSLog(@"Failed to mark message as read with error %@", error);
+            }
         }
     });
 }
@@ -355,6 +362,24 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
         return YES;
     }
     return NO;
+}
+
+- (BOOL)shouldDisplayAvatarImageForIndexPath:(NSIndexPath *)indexPath
+{
+    if (indexPath.section == self.collectionView.numberOfSections - 1) {
+        return TRUE;
+    }
+    LYRMessage *message = [self.messages objectAtIndex:indexPath.section];
+    if (indexPath.section < self.collectionView.numberOfSections - 1) {
+        LYRMessage *nextMessage = [self.messages objectAtIndex:indexPath.section + 1];
+        // If the next message is sent by the same user, no
+        if ([nextMessage.sentByUserID isEqualToString:message.sentByUserID]) {
+            return FALSE;
+        } else {
+            return TRUE;
+        }
+    }
+    return TRUE;
 }
 
 - (CGSize)sizeForItemAtIndexPath:(NSIndexPath *)indexPath
@@ -450,7 +475,7 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
     LYRMessagePart *part = [LYRMessagePart messagePartWithMIMEType:LYRUIMIMETypeImageJPEG data:compressedImageData];
     NSAssert(part.data != (NSData *)[NSNull null], @"Can't send a null message part");
     LYRMessage *message = [LYRMessage messageWithConversation:self.conversation parts:@[ part ]];
-    [self sendMessage:message pushText:@"New Image"];
+    [self sendMessage:message pushText:@"Attachment: Image"];
 }
 
 - (void)sendMessageWithLocation:(CLLocation *)location
@@ -460,7 +485,7 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
     LYRMessagePart *part = [LYRMessagePart messagePartWithMIMEType:LYRUIMIMETypeLocation data:[NSJSONSerialization dataWithJSONObject: @{@"lat" : lat, @"lon" : lon} options:0 error:nil]];
     NSAssert(part.data != (NSData *)[NSNull null], @"Can't send a null message part");
     LYRMessage *message = [LYRMessage messageWithConversation:self.conversation parts:@[ part ]];
-    [self sendMessage:message pushText:@"New Location"];
+    [self sendMessage:message pushText:@"Attachment: Location"];
 }
 
 - (void)sendMessage:(LYRMessage *)message pushText:(NSString *)pushText

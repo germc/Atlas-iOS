@@ -18,18 +18,17 @@
 
 @implementation LYRUIMessageComposeTextView
 
-static NSString *const LYRUIPlaceHolderText = @"Enter Message";
+NSString *const LYRUIPlaceHolderText = @"Enter Message";
 
 - (id)init
 {
     self = [super init];
     if (self) {
+        
         self.textContainerInset = UIEdgeInsetsMake(6, 0, 6, 0);
         self.font = [UIFont systemFontOfSize:14];
-
         self.textColor = [UIColor lightGrayColor];
-        [self layoutIfNeeded];
-        
+        [self layoutSubviews];
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(textViewBeganEditing)
                                                      name:UITextViewTextDidBeginEditingNotification
@@ -51,28 +50,33 @@ static NSString *const LYRUIPlaceHolderText = @"Enter Message";
 
 - (void)scrollRectToVisible:(CGRect)rect animated:(BOOL)animated
 {
-    // Don'd do anything here to prevent autoscrolling.
-    // Unless you plan on using this method in another fashion.
+    // Don't do anything here to prevent auto-scrolling.
 }
 
 - (void)insertImage:(UIImage *)image
 {
-    // Check for place holder text and remove if present
-    [self displayPlaceHolderText:NO];
     // Create a text attachement with the image
     LYRUIMediaAttachment *textAttachment = [[LYRUIMediaAttachment alloc] init];
     textAttachment.image = image;
-    // Make an Mutable attributed copy of the current attributed string
-    NSMutableAttributedString *attributedString = [self.attributedText mutableCopy];
-    [attributedString addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:12] range:NSMakeRange(0, self.attributedText.length)];
-    // If we have text, add a line break
-    if (attributedString.length > 0) {
-        [self insertLineBreak:attributedString];
+    
+    // Create a mutable attributed string with an attachment
+    NSMutableAttributedString *attachmentString = [[NSMutableAttributedString attributedStringWithAttachment:textAttachment] mutableCopy];
+    [attachmentString addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:14] range:NSMakeRange(attachmentString.length, 0)];
+    
+    NSMutableAttributedString *mutableAttributedString;
+    if ([self.text isEqualToString:LYRUIPlaceHolderText]) {
+        mutableAttributedString = attachmentString;
+    } else {
+        mutableAttributedString = [self.attributedText mutableCopy];
+        if (mutableAttributedString.length > 0) {
+            [self insertLineBreak:mutableAttributedString];
+        }
+        [mutableAttributedString replaceCharactersInRange:NSMakeRange(mutableAttributedString.length, 0)
+                                     withAttributedString:attachmentString];
     }
-    // Add the attachemtn as an attribtued string
-    [attributedString replaceCharactersInRange:NSMakeRange(attributedString.length, 0)
-                          withAttributedString:[NSAttributedString attributedStringWithAttachment:textAttachment]];
-    self.attributedText = attributedString;
+    [self insertLineBreak:mutableAttributedString];
+    self.attributedText = mutableAttributedString;
+    
     [self layoutIfNeeded];
 }
 
@@ -97,7 +101,6 @@ static NSString *const LYRUIPlaceHolderText = @"Enter Message";
 {
     [mutableAttributedString insertAttributedString:[[NSMutableAttributedString alloc] initWithString:@" \n"] atIndex:mutableAttributedString.length];
     [mutableAttributedString addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:14] range:NSMakeRange(0, mutableAttributedString.length)];
-    self.attributedText = mutableAttributedString;
 }
 
 - (BOOL)previousIndexIsAttachement
@@ -128,9 +131,6 @@ static NSString *const LYRUIPlaceHolderText = @"Enter Message";
 - (void)textViewBeganEditing
 {
     [self displayPlaceHolderText:NO];
-    if ([self previousIndexIsAttachement]) {
-        [self insertLineBreak:[self.attributedText mutableCopy]];
-    }
     self.textColor = [UIColor blackColor];
     [self layoutIfNeeded];
 }
@@ -139,4 +139,5 @@ static NSString *const LYRUIPlaceHolderText = @"Enter Message";
 {
     [self layoutIfNeeded];
 }
+
 @end
