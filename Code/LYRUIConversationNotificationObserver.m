@@ -40,7 +40,11 @@
 - (NSArray *)refreshConversations
 {
     NSSet *conversations = [self.layerClient conversationsForIdentifiers:nil];
-    NSArray *sortedConversations = [conversations sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"lastMessage.sentAt" ascending:NO]]];
+    // NSArray *sortedConversations = [conversations sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"lastMessage.sentAt" ascending:NO]]];
+    NSArray *sortedConversations = [conversations sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"lastMessage.sentAt" ascending:NO comparator:^NSComparisonResult(NSDate *obj1, NSDate *obj2) {
+        if (obj1 == nil) return NSOrderedAscending;
+        return [obj1 compare:obj2];
+    }]]];
     return [sortedConversations valueForKeyPath:@"identifier"];
 }
 
@@ -80,6 +84,7 @@
     NSMutableArray *changeObjects = [[NSMutableArray alloc] init];
     for (NSDictionary *conversationChange in conversationChanges) {
         LYRConversation *conversation = [conversationChange objectForKey:LYRObjectChangeObjectKey];
+        if (conversation.lastMessage.sentAt == nil) continue;
         NSUInteger newIndex = [self.tempIdentifiers indexOfObject:conversation.identifier];
         LYRObjectChangeType changeType = (LYRObjectChangeType)[[conversationChange objectForKey:LYRObjectChangeTypeKey] integerValue];
         switch (changeType) {

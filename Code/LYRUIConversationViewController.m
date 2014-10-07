@@ -182,8 +182,6 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
         self.messages = [self.layerClient messagesForConversation:self.conversation];
         dispatch_async(dispatch_get_main_queue(), ^{
             completion();
-            [self.collectionView reloadData];
-            //[self scrollToBottomOfCollectionViewAnimated:TRUE];
         });
     });
 }
@@ -583,8 +581,11 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
 
 - (void)observer:(LYRUIChangeNotificationObserver *)observer updateWithChanges:(NSArray *)changes
 {
-    NSLog(@"Changes %@", changes);
     [self fetchMessagesWithCompletion:^{
+        [self.collectionView reloadData];
+    }];
+//    NSLog(@"Changes %@", changes);
+//    [self fetchMessagesWithCompletion:^{
 //        __block NSUInteger messageInsert;
 //        [self.collectionView performBatchUpdates:^{
 //            for (LYRUIDataSourceChange *change in changes) {
@@ -615,7 +616,7 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
 //                [self scrollToBottomOfCollectionViewAnimated:TRUE];
 //            }
 //        }];
-    }];
+//    }];
 }
 
 - (void)scrollToBottomOfCollectionViewAnimated:(BOOL)animated

@@ -107,7 +107,6 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 - (void)viewDidDisappear:(BOOL)animated
 {
     [super viewDidDisappear:animated];
-    
     self.isOnScreen = NO;
 }
 
@@ -291,12 +290,11 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 
 - (void)observerWillChangeContent:(LYRUIChangeNotificationObserver *)observer
 {
-    //[self.tableView beginUpdates];
+//    [self.tableView beginUpdates];
 }
 
 - (void)observer:(LYRUIChangeNotificationObserver *)observer updateWithChanges:(NSArray *)changes
 {
-    NSLog(@"Changes %@", changes);
 //    for (LYRUIDataSourceChange *change in changes) {
 //        if (change.type == LYRUIDataSourceChangeTypeUpdate) {
 //            [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:change.newIndex inSection:0]]
@@ -320,6 +318,7 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 {
     [self fetchLayerConversationsWithCompletion:^{
         [self.tableView reloadData];
+        //[self.tableView endUpdates];
     }];
 }
 
