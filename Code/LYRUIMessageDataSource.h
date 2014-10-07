@@ -10,10 +10,11 @@
 #import <LayerKit/LayerKit.h>
 #import "LYRUIChangeNotificationObserver.h"
 
-@interface LYRUIMessageNotificationObserver : LYRUIChangeNotificationObserver
+@interface LYRUIMessageDataSource : LYRUIChangeNotificationObserver
 
 - (id)initWithClient:(LYRClient *)layerClient conversation:(LYRConversation *)conversation;
 
-@property (nonatomic)NSArray *messageIdentifiers;
+@property (nonatomic) NSArray *messages;
 
 @end
+ 

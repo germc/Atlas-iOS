@@ -19,7 +19,7 @@
 
 - (void)observer:(LYRUIChangeNotificationObserver *)observer updateWithChanges:(NSArray *)changes;
 
-- (void)observerdidChangeContent:(LYRUIChangeNotificationObserver *)observer;
+- (void)observer:(LYRUIChangeNotificationObserver *)observer didChangeContent:(BOOL)didChangeContent;
 
 @end
 

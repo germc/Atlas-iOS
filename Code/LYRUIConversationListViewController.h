@@ -34,6 +34,14 @@
 - (NSString *)conversationLabelForParticipants:(NSSet *)participants inConversationListViewController:(LYRUIConversationListViewController *)conversationListViewController;
 
 /**
+ @abstract Asks the delegate for the Conversation Image for a given set of participants in a conversation.
+ @param participants The identifiers for participants in a conversation within the conversation list.
+ @param conversationListViewController The conversation list in which the image appears.
+ @return The conversation image to be displayed for a given conversation in the conversation list.
+ */
+- (UIImage *)conversationImageForParticipants:(NSSet *)participants inConversationListViewController:(LYRUIConversationListViewController *)conversationListViewController;
+
+/**
  @abstract Informs the data source that a search has been made with the following search string. After the completion block is called, the `comversationListViewController:presenterForConversationAtIndex:` method will be called for each search result.  
  @param conversationListViewController An object representing the conversation list view controller.
  @param searchString The search string that was just used for search.
@@ -104,7 +112,7 @@
  @default TRUE
  @raises NSInternalInconsistencyException Raised if the value is mutated after the receiver has been presented.
  */
-@property (nonatomic, assign) BOOL showsConversationImage;
+@property (nonatomic, assign) BOOL displaysConversationImage;
 
 /**
  @abstract The given `LYRConversation` object

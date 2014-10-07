@@ -42,6 +42,7 @@ static CGFloat const LSButtonHeight = 28;
         self.inputToolBarDelegate = viewController;
         
         self.autoresizingMask = UIViewAutoresizingFlexibleHeight;
+        
         // Setup
         self.backgroundColor =  LSLighGrayColor();
         self.messageParts = [[NSMutableArray alloc] init];
@@ -77,8 +78,9 @@ static CGFloat const LSButtonHeight = 28;
         [self.rightAccessoryButton addTarget:self action:@selector(rightAccessoryButtonTapped) forControlEvents:UIControlEventTouchUpInside];
         [self.rightAccessoryButton setHighlighted:FALSE];
         [self addSubview:self.rightAccessoryButton];
-        NSLog(@"Right accessory button state %lu", self.rightAccessoryButton.state);
         [self setupLayoutConstraints];
+        
+        [self adjustFrame];
     }
     
     return self;

@@ -6,16 +6,16 @@
 //
 //
 
-#import "LYRUIMessageNotificationObserver.h"
+#import "LYRUIMessageDataSource.h"
 #import "LYRUIDataSourceChange.h"
 
-@interface LYRUIMessageNotificationObserver ()
+@interface LYRUIMessageDataSource ()
 
 @property (nonatomic) LYRConversation *conversation;
 
 @end
 
-@implementation LYRUIMessageNotificationObserver
+@implementation LYRUIMessageDataSource
 
 - (id)initWithClient:(LYRClient *)layerClient conversation:(LYRConversation *)conversation
 {
@@ -24,7 +24,8 @@
         
         self.layerClient = layerClient;
         self.conversation = conversation;
-        [self refreshIdentifiers];
+        self.messages = [self fetchMessages];
+        
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveLayerObjectsDidChangeNotification:)
                                                      name:LYRClientObjectsDidChangeNotification
                                                    object:layerClient];
@@ -37,9 +38,9 @@
     @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Failed to call designated initializer." userInfo:nil];
 }
 
-- (void)refreshIdentifiers
+- (NSArray *)fetchMessages
 {
-    self.messageIdentifiers = [[self.layerClient messagesForConversation:self.conversation] valueForKeyPath:@"identifier"];
+    return [[self.layerClient messagesForConversation:self.conversation] array];
 }
 
 - (void)didReceiveLayerObjectsDidChangeNotification:(NSNotification *)notification;
@@ -69,6 +70,7 @@
 
 - (void)processMessageChanges:(NSMutableArray *)messageChanges completion:(void(^)(NSArray *messageChanges))completion
 {
+    self.messages = [self fetchMessages];
     NSMutableArray *changeObjects = [[NSMutableArray alloc] init];
     for (NSDictionary *messageChange in messageChanges) {
         LYRMessage *message = [messageChange objectForKey:LYRObjectChangeObjectKey];

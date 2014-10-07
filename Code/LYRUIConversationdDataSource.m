@@ -6,25 +6,24 @@
 //
 //
 
-#import "LYRUIConversationNotificationObserver.h"
+#import "LYRUIConversationdDataSource.h"
 #import "LYRUIDataSourceChange.h"
 
-@interface LYRUIConversationNotificationObserver ()
+@interface LYRUIConversationdDataSource ()
 
 @property (nonatomic) NSArray *conversations;
 @property (nonatomic) NSArray *tempIdentifiers;
 
 @end
 
-@implementation LYRUIConversationNotificationObserver
+@implementation LYRUIConversationdDataSource
 
-- (instancetype)initWithLayerClient:(LYRClient *)layerClient conversations:(NSArray *)conversations
+- (instancetype)initWithLayerClient:(LYRClient *)layerClient
 {
     self = [super init];
     if (self) {
         self.layerClient = layerClient;
-        self.conversations = conversations;
-        self.conversationIdentifiers = [self refreshConversations];
+        self.identifiers = [self refreshConversations];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveLayerObjectsDidChangeNotification:)
                                                      name:LYRClientObjectsDidChangeNotification
                                                    object:layerClient];
@@ -40,16 +39,13 @@
 - (NSArray *)refreshConversations
 {
     NSSet *conversations = [self.layerClient conversationsForIdentifiers:nil];
-    // NSArray *sortedConversations = [conversations sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"lastMessage.sentAt" ascending:NO]]];
-    NSArray *sortedConversations = [conversations sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"lastMessage.sentAt" ascending:NO comparator:^NSComparisonResult(NSDate *obj1, NSDate *obj2) {
-        if (obj1 == nil) return NSOrderedAscending;
-        return [obj1 compare:obj2];
-    }]]];
+    NSArray *sortedConversations = [conversations sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"lastMessage.sentAt" ascending:NO]]];
     return [sortedConversations valueForKeyPath:@"identifier"];
 }
 
 - (void)didReceiveLayerObjectsDidChangeNotification:(NSNotification *)notification;
 {
+    NSLog(@"NEW FUCKING CHANGES");
     [self.delegate observerWillChangeContent:self];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
         [self processLayerChangeNotification:notification completion:^(NSMutableArray *conversationArray) {
@@ -59,7 +55,7 @@
                 }];
             } else {
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    [self.delegate observerdidChangeContent:self];
+                    [self.delegate observer:self didChangeContent:FALSE];
                 });
             }
         }];
@@ -81,10 +77,10 @@
 - (void)processConversationChanges:(NSMutableArray *)conversationChanges completion:(void(^)(NSArray *conversationChanges))completion
 {
     self.tempIdentifiers = [self refreshConversations];
+    NSMutableArray *updateIndexes = [[NSMutableArray alloc] init];
     NSMutableArray *changeObjects = [[NSMutableArray alloc] init];
     for (NSDictionary *conversationChange in conversationChanges) {
         LYRConversation *conversation = [conversationChange objectForKey:LYRObjectChangeObjectKey];
-        if (conversation.lastMessage.sentAt == nil) continue;
         NSUInteger newIndex = [self.tempIdentifiers indexOfObject:conversation.identifier];
         LYRObjectChangeType changeType = (LYRObjectChangeType)[[conversationChange objectForKey:LYRObjectChangeTypeKey] integerValue];
         switch (changeType) {
@@ -93,11 +89,14 @@
                 break;
                 
             case LYRObjectChangeTypeUpdate: {
-                 NSUInteger oldIndex = [self.conversationIdentifiers indexOfObject:conversation.identifier];
+                 NSUInteger oldIndex = [self.identifiers indexOfObject:conversation.identifier];
                 if (oldIndex != newIndex) {
                     [changeObjects addObject:[LYRUIDataSourceChange changeObjectWithType:LYRUIDataSourceChangeTypeMove newIndex:newIndex oldIndex:oldIndex]];
                 } else {
-                    [changeObjects addObject:[LYRUIDataSourceChange changeObjectWithType:LYRUIDataSourceChangeTypeUpdate newIndex:newIndex oldIndex:0]];
+                    if (![updateIndexes containsObject:[NSNumber numberWithInteger:newIndex]]) {
+                        [changeObjects addObject:[LYRUIDataSourceChange changeObjectWithType:LYRUIDataSourceChangeTypeUpdate newIndex:newIndex oldIndex:0]];
+                        [updateIndexes addObject:[NSNumber numberWithInteger:newIndex]];
+                    }
                 }
             }
                 break;
@@ -110,15 +109,16 @@
                 break;
         }
     }
-    self.conversationIdentifiers = self.tempIdentifiers;
+    self.identifiers = self.tempIdentifiers;
     completion(changeObjects);
 }
 
 - (void)dispatchChanges:(NSArray *)changes
 {
     dispatch_async(dispatch_get_main_queue(), ^{
+        NSLog(@"CHANGES FUCKING ENDED");
         [self.delegate observer:self updateWithChanges:changes];
-        [self.delegate observerdidChangeContent:self];
+        [self.delegate observer:self didChangeContent:TRUE];
     });
 }
 
