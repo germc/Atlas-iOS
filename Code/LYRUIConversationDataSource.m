@@ -6,24 +6,24 @@
 //
 //
 
-#import "LYRUIConversationdDataSource.h"
+#import "LYRUIConversationDataSource.h"
 #import "LYRUIDataSourceChange.h"
 
-@interface LYRUIConversationdDataSource ()
+@interface LYRUIConversationDataSource ()
 
 @property (nonatomic) NSArray *conversations;
 @property (nonatomic) NSArray *tempIdentifiers;
 
 @end
 
-@implementation LYRUIConversationdDataSource
+@implementation LYRUIConversationDataSource
 
 - (instancetype)initWithLayerClient:(LYRClient *)layerClient
 {
     self = [super init];
     if (self) {
-        self.layerClient = layerClient;
-        self.identifiers = [self refreshConversations];
+        _layerClient = layerClient;
+        _identifiers = [self refreshConversations];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveLayerObjectsDidChangeNotification:)
                                                      name:LYRClientObjectsDidChangeNotification
                                                    object:layerClient];

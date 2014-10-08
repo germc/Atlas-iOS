@@ -20,9 +20,9 @@
  */
 @class LYRUIMessageInputToolbar;
 
-//************************************
+//---------------------------------
 // Message Input Toolbar Delegate
-//************************************
+//---------------------------------
 
 /**
  @abstract The `LYRUIMessageInputToolbarDelegate` notifies its reciever when buttons have been 
@@ -44,18 +44,18 @@
 
 @interface LYRUIMessageInputToolbar : UIToolbar
 
-//************************************
+//-----------------------------
 // Designated Initializer
-//************************************
+//-----------------------------
 
 /**
  @abstract Designated initialzer.
  */
 + (instancetype)inputToolBarWithViewController:(UIViewController<LYRUIMessageInputToolbarDelegate> *)collectionViewController;
 
-//************************************
+//------------------------------
 // Content Display Methods
-//************************************
+//------------------------------
 
 /**
  @abstract Displays an image in the textInputView.

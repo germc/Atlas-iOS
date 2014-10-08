@@ -8,13 +8,23 @@
 
 #import <Foundation/Foundation.h>
 #import <LayerKit/LayerKit.h>
-#import "LYRUIChangeNotificationObserver.h"
 
-@interface LYRUIMessageDataSource : LYRUIChangeNotificationObserver
+@class LYRUIMessageDataSource;
+
+@protocol LYRUIMessageDataSourceDelegate <NSObject>
+
+- (void)observer:(LYRUIMessageDataSource *)observer updateWithChanges:(NSArray *)changes;
+
+@end
+
+@interface LYRUIMessageDataSource : NSObject
 
 - (id)initWithClient:(LYRClient *)layerClient conversation:(LYRConversation *)conversation;
 
 @property (nonatomic) NSArray *messages;
 
+@property (nonatomic) LYRClient *layerClient;
+
+@property (nonatomic) id<LYRUIMessageDataSourceDelegate>delegate;
+
 @end
- 

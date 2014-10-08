@@ -10,16 +10,16 @@
 #import "LYRUIConversationListViewController.h"
 #import "LYRUIDataSourceChange.h"
 #import "LYRUIConstants.h"
-#import "LYRUIConversationdDataSource.h"
+#import "LYRUIConversationDataSource.h"
 
-@interface LYRUIConversationListViewController () <UISearchBarDelegate, UISearchDisplayDelegate, LYRUIChangeNotificationObserverDelegate>
+@interface LYRUIConversationListViewController () <UISearchBarDelegate, UISearchDisplayDelegate, LYRUIConversationDataSourceDelegate>
 
 @property (nonatomic) UISearchBar *searchBar;
 @property (nonatomic) UISearchDisplayController *searchController;
 @property (nonatomic) NSArray *conversations;
 @property (nonatomic) NSMutableArray *filteredConversations;
 @property (nonatomic) NSPredicate *searchPredicate;
-@property (nonatomic) LYRUIConversationdDataSource *conversationListDataSource;
+@property (nonatomic) LYRUIConversationDataSource *conversationListDataSource;
 @property (nonatomic) BOOL isOnScreen;
 
 @end
@@ -78,7 +78,7 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
     self.tableView.accessibilityLabel = @"Conversation List";
     
     // DataSoure
-    self.conversationListDataSource = [[LYRUIConversationdDataSource alloc] initWithLayerClient:self.layerClient];
+    self.conversationListDataSource = [[LYRUIConversationDataSource alloc] initWithLayerClient:self.layerClient];
     self.conversationListDataSource.delegate = self;
     
     // UIAppearace Protocol Config
@@ -292,12 +292,12 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 #pragma mark
 #pragma mark Notification Observer Delegate Methods
 
-- (void)observerWillChangeContent:(LYRUIChangeNotificationObserver *)observer
+- (void)observerWillChangeContent:(LYRUIConversationDataSource *)observer
 {
     //[self.tableView beginUpdates];
 }
 
-- (void)observer:(LYRUIChangeNotificationObserver *)observer updateWithChanges:(NSArray *)changes
+- (void)observer:(LYRUIConversationDataSource *)observer updateWithChanges:(NSArray *)changes
 {
 //    NSLog(@"Changes: %@", changes);
 //    for (LYRUIDataSourceChange *change in changes) {
@@ -319,7 +319,7 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 //    }
 }
 
-- (void)observer:(LYRUIChangeNotificationObserver *)observer didChangeContent:(BOOL)didChangeContent
+- (void)observer:(LYRUIConversationDataSource *)observer didChangeContent:(BOOL)didChangeContent
 {
 //    [self.tableView endUpdates];
     [self.tableView reloadData];

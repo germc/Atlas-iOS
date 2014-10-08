@@ -24,7 +24,7 @@
 /**
  @abstract Tells the reciever how wide it's bubble view should be
  */
-- (void)updateBubbleViewWidth:(CGFloat)width;
+- (void)updateWithBubbleViewWidth:(CGFloat)bubbleViewWidth;
 
 /**
  @abstract Tells the reciever if it should display an avatarImage

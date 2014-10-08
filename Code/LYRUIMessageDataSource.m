@@ -22,9 +22,9 @@
     self = [super init];
     if (self) {
         
-        self.layerClient = layerClient;
-        self.conversation = conversation;
-        self.messages = [self fetchMessages];
+        _layerClient = layerClient;
+        _conversation = conversation;
+        _messages = [self fetchMessages];
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveLayerObjectsDidChangeNotification:)
                                                      name:LYRClientObjectsDidChangeNotification

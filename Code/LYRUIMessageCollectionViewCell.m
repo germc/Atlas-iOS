@@ -96,12 +96,12 @@
     }
 }
 
-- (void)updateBubbleViewWidth:(CGFloat)width
+- (void)updateWithBubbleViewWidth:(CGFloat)bubbleViewWidth
 {
     if ([[self.contentView constraints] containsObject:self.bubbleViewWidthConstraint]) {
         [self.contentView removeConstraint:self.bubbleViewWidthConstraint];
     }
-    self.bubbleViewWidth = width + 25; //Adding 24px for bubble view horizontal padding + 1px for extra coverage
+    self.bubbleViewWidth = bubbleViewWidth + 25; //Adding 24px for bubble view horizontal padding + 1px for extra coverage
     self.bubbleViewWidthConstraint = [NSLayoutConstraint constraintWithItem:self.bubbleView
                                                                   attribute:NSLayoutAttributeWidth
                                                                   relatedBy:NSLayoutRelationEqual
