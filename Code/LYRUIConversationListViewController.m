@@ -201,7 +201,11 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
-    // Hmmm..
+    if ([self.dataSource respondsToSelector:@selector(conversationListViewController:didSearchWithString:completion:)]) {
+        [self.dataSource conversationListViewController:self didSearchWithString:searchText completion:^{
+            [self.tableView reloadData];
+        }];
+    }
 }
 
 #pragma mark - Table view data source methods
@@ -228,14 +232,21 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
     
     // Update cell with image if needed
     if (self.displaysConversationImage) {
-        UIImage *conversationImage = [self.dataSource conversationImageForParticipants:conversation.participants inConversationListViewController:self];
-        [conversationCell updateWithConversationImage:conversationImage];
+        if ([self.dataSource respondsToSelector:@selector(conversationImageForParticipants:inConversationListViewController:)]) {
+            UIImage *conversationImage = [self.dataSource conversationImageForParticipants:conversation.participants inConversationListViewController:self];
+            [conversationCell updateWithConversationImage:conversationImage];
+        } else {
+           @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Conversation View Delegate must return a conversation image" userInfo:nil]; 
+        }
     }
     
     // Update Cell with Label
-     NSString *conversationLabel = [self.dataSource conversationLabelForParticipants:conversation.participants inConversationListViewController:self];
-    [conversationCell updateWithConversationLabel:conversationLabel];
-
+    if ([self.dataSource respondsToSelector:@selector(conversationLabelForParticipants:inConversationListViewController:)]) {
+        NSString *conversationLabel = [self.dataSource conversationLabelForParticipants:conversation.participants inConversationListViewController:self];
+        [conversationCell updateWithConversationLabel:conversationLabel];
+    } else {
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Conversation View Delegate must return a conversation label" userInfo:nil];
+    }
 }
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
@@ -256,7 +267,9 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 {
     NSURL *conversationID = [[self currentDataSet] objectAtIndex:indexPath.row];
     LYRConversation *conversation = [[[self.layerClient conversationsForIdentifiers:[NSSet setWithObject:conversationID]] allObjects] firstObject];
-    [self.delegate conversationListViewController:self didSelectConversation:conversation];
+    if ([self.delegate respondsToSelector:@selector(conversationListViewController:didSelectConversation:)]){
+        [self.delegate conversationListViewController:self didSelectConversation:conversation];
+    }
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath

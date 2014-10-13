@@ -48,21 +48,10 @@
     self.participantLabel.text = nil;
 }
 
-- (void)updateWithAttributedStringForDate:(NSString *)date
+- (void)updateWithAttributedStringForDate:(NSAttributedString *)date
 {
     if (!date) return;
-    NSMutableAttributedString *dateString = [[NSMutableAttributedString alloc] initWithString:date];
-    NSRange range = [date rangeOfString:@","];
-    NSRange boldedRange = NSMakeRange(0, range.location);
-    [dateString beginEditing];
-    
-    [dateString addAttribute:NSFontAttributeName
-                       value:[UIFont boldSystemFontOfSize:12]
-                       range:boldedRange];
-    
-    [dateString endEditing];
-    
-    self.dateLabel.attributedText = dateString;
+    self.dateLabel.attributedText = date;
     [self.dateLabel sizeToFit];
     
     if ([self.constraints containsObject:self.dateLabelWidthConstraint]) {

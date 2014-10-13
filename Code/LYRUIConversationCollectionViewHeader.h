@@ -18,12 +18,12 @@
  @abstract Displays a string of text representing a date
  @param date The date string to be displayed
  */
-- (void)updateWithAttributedStringForDate:(NSString *)date;
+- (void)updateWithAttributedStringForDate:(NSAttributedString *)date;
 
 /**
  @abstract Displays a string of text representing a participant
  @param participantName The string of text to be displayed
  */
-- (void)updateWithAttributedStringForParticipantName:(NSString *)participantName;
+- (void)updateWithAttributedStringForParticipantName:(NSAttributedString *)participantName;
 
 @end

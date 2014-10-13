@@ -118,18 +118,7 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
 {
     [super viewWillAppear:animated];
     // Setting the title
-    if (self.conversation.participants.count == 2) {
-        NSMutableSet *participants = [self.conversation.participants mutableCopy];
-        [participants removeObject:self.layerClient.authenticatedUserID];
-        id<LYRUIParticipant> participant = [self.dataSource conversationViewController:self participantForIdentifier:[[participants allObjects] lastObject]];
-        if (participant) {
-            self.title = participant.firstName;
-        } else {
-            self.title = @"Unknown";
-        }
-    } else {
-        self.title = @"Group";
-    }
+    [self setConversationViewTitle];
     [self scrollToBottomOfCollectionViewAnimated:NO];
 }
 
@@ -174,6 +163,22 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
     return YES;
 }
 
+- (void) setConversationViewTitle
+{
+    if (self.conversation.participants.count == 2) {
+        NSMutableSet *participants = [self.conversation.participants mutableCopy];
+        [participants removeObject:self.layerClient.authenticatedUserID];
+        id<LYRUIParticipant> participant = [self participantForIdentifier:[[participants allObjects] lastObject]];
+        if (participant) {
+            self.title = participant.firstName;
+        } else {
+            self.title = @"Unknown";
+        }
+    } else {
+        self.title = @"Group";
+    }
+}
+
 # pragma mark - Collection View Data Source
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
@@ -211,8 +216,10 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
     [cell presentMessagePart:messagePart];
     [cell updateWithBubbleViewWidth:[self sizeForItemAtIndexPath:indexPath].width];
     [cell shouldDisplayAvatarImage:[self shouldDisplayAvatarImageForIndexPath:indexPath]];
-    if ([self.dataSource converationViewController:self shouldUpdateRecipientStatusForMessage:message]) {
-        [self updateRecipientStatusForMessage:message];
+    if ([self.dataSource respondsToSelector:@selector(conversationViewController:shouldUpdateRecipientStatusForMessage:)]) {
+        if ([self.dataSource conversationViewController:self shouldUpdateRecipientStatusForMessage:message]) {
+            [self updateRecipientStatusForMessage:message];
+        }
     }
 }
 
@@ -240,19 +247,29 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
         LYRUIConversationCollectionViewHeader *header = [self.collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:LYRUIMessageCellHeaderIdentifier forIndexPath:indexPath];
         // Should we display a sender label
         if ([self shouldDisplaySenderLabelForSection:indexPath.section]) {
-            id<LYRUIParticipant>participant = [self.dataSource conversationViewController:self participantForIdentifier:message.sentByUserID];
+            id<LYRUIParticipant>participant = [self participantForIdentifier:message.sentByUserID];
             [header updateWithAttributedStringForParticipantName:participant.fullName];
         }
         // Should we display a date label
         if ([self shouldDisplayDateLabelForSection:indexPath.section]) {
-            [header updateWithAttributedStringForDate:[self.dataSource conversationViewController:self attributedStringForDisplayOfDate:message.sentAt]];
+            if ([self.dataSource respondsToSelector:@selector(conversationViewController:attributedStringForDisplayOfDate:)]) {
+                NSAttributedString *dateString = [self.dataSource conversationViewController:self attributedStringForDisplayOfDate:message.sentAt];
+                [header updateWithAttributedStringForDate:dateString];
+            } else {
+                @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"LYRUIConversationViewControllerDataSource must return an attributed string for Data" userInfo:nil];
+            }
         }
         return header;
     } else {
         LYRUIConversationCollectionViewFooter *footer = [self.collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:LYRUIMessageCellFooterIdentifier forIndexPath:indexPath];
         // Should we display a read receipt
         if ([self shouldDisplayReadReceiptForSection:indexPath.section]) {
-            [footer updateWithAttributedStringForRecipientStatus:[self.dataSource conversationViewController:self attributedStringForDisplayOfRecipientStatus:message.recipientStatusByUserID]];
+            if ([self.dataSource respondsToSelector:@selector(conversationViewController:attributedStringForDisplayOfRecipientStatus:)]) {
+                NSAttributedString *recipientStatusString = [self.dataSource conversationViewController:self attributedStringForDisplayOfRecipientStatus:message.recipientStatusByUserID];
+                [footer updateWithAttributedStringForRecipientStatus:recipientStatusString];
+            } else {
+                @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"LYRUIConversationViewControllerDataSource must return an attributed string for recipient status" userInfo:nil];
+            }
         }
         return footer;
     }
@@ -475,7 +492,7 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
 - (void)sendMessage:(LYRMessage *)message pushText:(NSString *)pushText
 {
     dispatch_async(self.layerOperationQueue,^{
-        id<LYRUIParticipant>sender = [self.dataSource conversationViewController:self participantForIdentifier:self.layerClient.authenticatedUserID];
+        id<LYRUIParticipant>sender = [self participantForIdentifier:self.layerClient.authenticatedUserID];
         NSString *text = [NSString stringWithFormat:@"%@: %@", [sender fullName], pushText];
         [self.layerClient setMetadata:@{LYRMessagePushNotificationAlertMessageKey: text,
                                         LYRMessagePushNotificationSoundNameKey : @"default"} onObject:message];
@@ -483,11 +500,15 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
         BOOL success = [self.layerClient sendMessage:message error:&error];
         if (success) {
             dispatch_async(dispatch_get_main_queue(), ^{
-                [self.delegate conversationViewController:self didSendMessage:message];
+                if ([self.delegate respondsToSelector:@selector(conversationViewController:didSendMessage:)]) {
+                    [self.delegate conversationViewController:self didSendMessage:message];
+                }
             });
         } else {
             dispatch_async(dispatch_get_main_queue(), ^{
-                [self.delegate conversationViewController:self didFailSendingMessageWithError:error];
+                if ([self.delegate respondsToSelector:@selector(conversationViewController:didFailSendingMessageWithError:)]) {
+                    [self.delegate conversationViewController:self didFailSendingMessageWithError:error];
+                }
             });
         }
     });
@@ -675,6 +696,16 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
 {
     return YES;
+}
+
+- (id<LYRUIParticipant>)participantForIdentifier:(NSString *)identifier
+{
+    if ([self.dataSource respondsToSelector:@selector(conversationViewController:participantForIdentifier:)]) {
+        return [self.dataSource conversationViewController:self participantForIdentifier:identifier];
+    } else {
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"LYRUIConversationViewControllerDelegate must return a particpant for an identier" userInfo:nil];
+    }
+    
 }
 
 #pragma mark Default Message Cell Appearance

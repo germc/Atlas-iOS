@@ -18,6 +18,6 @@
  @abstract Displays a string of text representing the read status of the message
  @param recipientStatus the string representing the status
  */
-- (void)updateWithAttributedStringForRecipientStatus:(NSString *)recipientStatus;
+- (void)updateWithAttributedStringForRecipientStatus:(NSAttributedString *)recipientStatus;
 
 @end

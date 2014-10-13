@@ -25,6 +25,7 @@
 
 @protocol LYRUIConversationListViewControllerDataSource <NSObject>
 
+@required
 /**
  @abstract Asks the delegate for the Conversation Label for a given set of participants in a conversation.
  @param participants The identifiers for participants in a conversation within the conversation list.
@@ -33,6 +34,7 @@
  */
 - (NSString *)conversationLabelForParticipants:(NSSet *)participants inConversationListViewController:(LYRUIConversationListViewController *)conversationListViewController;
 
+@optional
 /**
  @abstract Asks the delegate for the Conversation Image for a given set of participants in a conversation.
  @param participants The identifiers for participants in a conversation within the conversation list.
