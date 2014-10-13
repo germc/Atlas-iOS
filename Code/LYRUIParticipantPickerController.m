@@ -33,9 +33,11 @@
     LYRUIParticipantTableViewController *controller = [[LYRUIParticipantTableViewController alloc] initWithStyle:UITableViewStyleGrouped];
     self = [super initWithRootViewController:controller];
     if (self) {
-        controller.participants = [dataSource participants];
         controller.delegate = self;
+        controller.sortType = sortType;
+        controller.participants = [dataSource participants];
         
+        _sortType = sortType;
         _participantTableViewController = controller;
         _dataSource = dataSource;
     }
@@ -57,7 +59,6 @@
     self.allowsMultipleSelection = YES;
     self.cellClass = [LYRUIParticipantTableViewCell class];
     self.rowHeight = 48;
-    self.sortType = LYRUIParticipantPickerControllerSortTypeFirst;
     self.title = @"Participants";
     self.accessibilityLabel = @"Participants";
 }

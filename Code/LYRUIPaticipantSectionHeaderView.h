@@ -20,4 +20,9 @@
  */
 - (id)initWithKey:(NSString *)key;
 
+/**
+ @abstract The key representing the section of the participant picker
+ */
+@property (nonatomic) UILabel *keyLabel;
+
 @end

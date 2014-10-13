@@ -12,12 +12,11 @@
 @interface LYRUIPaticipantSectionHeaderView ()
 
 @property (nonatomic) UIView *bottomBar;
-@property (nonatomic) UILabel *keyLabel;
 
 @end
 
 @implementation LYRUIPaticipantSectionHeaderView
-\
+
 - (id)initWithKey:(NSString *)key
 {
     self = [super init];

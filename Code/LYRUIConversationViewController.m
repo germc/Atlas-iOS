@@ -248,12 +248,13 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
         // Should we display a sender label
         if ([self shouldDisplaySenderLabelForSection:indexPath.section]) {
             id<LYRUIParticipant>participant = [self participantForIdentifier:message.sentByUserID];
-            [header updateWithAttributedStringForParticipantName:participant.fullName];
+            [header updateWithAttributedStringForParticipantName:[[NSAttributedString alloc] initWithString:participant.fullName]];
         }
         // Should we display a date label
         if ([self shouldDisplayDateLabelForSection:indexPath.section]) {
             if ([self.dataSource respondsToSelector:@selector(conversationViewController:attributedStringForDisplayOfDate:)]) {
                 NSAttributedString *dateString = [self.dataSource conversationViewController:self attributedStringForDisplayOfDate:message.sentAt];
+                NSAssert([dateString isKindOfClass:[NSAttributedString class]], @"`Date String must be an attributed string");
                 [header updateWithAttributedStringForDate:dateString];
             } else {
                 @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"LYRUIConversationViewControllerDataSource must return an attributed string for Data" userInfo:nil];
@@ -266,6 +267,7 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
         if ([self shouldDisplayReadReceiptForSection:indexPath.section]) {
             if ([self.dataSource respondsToSelector:@selector(conversationViewController:attributedStringForDisplayOfRecipientStatus:)]) {
                 NSAttributedString *recipientStatusString = [self.dataSource conversationViewController:self attributedStringForDisplayOfRecipientStatus:message.recipientStatusByUserID];
+                NSAssert([recipientStatusString isKindOfClass:[NSAttributedString class]], @"`Date String must be an attributed string");
                 [footer updateWithAttributedStringForRecipientStatus:recipientStatusString];
             } else {
                 @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"LYRUIConversationViewControllerDataSource must return an attributed string for recipient status" userInfo:nil];
@@ -703,7 +705,7 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
     if ([self.dataSource respondsToSelector:@selector(conversationViewController:participantForIdentifier:)]) {
         return [self.dataSource conversationViewController:self participantForIdentifier:identifier];
     } else {
-        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"LYRUIConversationViewControllerDelegate must return a particpant for an identier" userInfo:nil];
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"LYRUIConversationViewControllerDelegate must return a particpant for an identifier" userInfo:nil];
     }
     
 }

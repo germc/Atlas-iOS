@@ -68,10 +68,10 @@
     [self addConstraint:[NSLayoutConstraint constraintWithItem:self.dateLabel attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1.0 constant:12]];
 }
 
-- (void)updateWithAttributedStringForParticipantName:(NSString *)participantName
+- (void)updateWithAttributedStringForParticipantName:(NSAttributedString *)participantName
 {
     if (participantName.length) {
-        self.participantLabel.text = participantName;
+        self.participantLabel.text = participantName.string;
     } else {
         self.participantLabel.text = @"Unknown User";
     }
