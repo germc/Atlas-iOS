@@ -67,6 +67,14 @@
  */
 - (NSAttributedString *)conversationViewController:(LYRUIConversationViewController *)conversationViewController attributedStringForDisplayOfRecipientStatus:(NSDictionary *)recipientStatus;
 
+/**
+ @abstract Asks the data source for a to be sent as the push notification alert via Layer
+ @param conversationListViewController The conversation view controller requesting the string
+ @param message The message object to be sent by the Layer SDK
+ @return a string representing the push notification text
+ */
+- (NSString *)conversationViewController:(LYRUIConversationViewController *)conversationViewController pushNotificationTextForMessage:(LYRMessage *)messages;
+
 @optional
 /**
  @abstract Asks the data source if the LRYRecipientStatus should be updated

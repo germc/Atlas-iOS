@@ -179,14 +179,16 @@
                                                                    attribute:NSLayoutAttributeCenterY
                                                                   multiplier:1.0
                                                                     constant:0];
-    
+    // Add avatar constraints
     [self.contentView addConstraint:self.avatarImageHeightConstraint];
     [self.contentView addConstraint:self.avatarImageBottomConstraint];
     [self.contentView addConstraint:self.avatarImageWidthConstraint];
     
+    // Add bubbleView constraints
     [self.contentView addConstraint:self.bubbleViewHeightConstraint];
     [self.contentView addConstraint:self.bubbleViewTopConstraint];
     
+    // Add date label constraints
     [self.contentView addConstraint:self.dateLabelLeftConstraint];
     [self.contentView addConstraint:self.dateLabelCenterYConstraint];
 }

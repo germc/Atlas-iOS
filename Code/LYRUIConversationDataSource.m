@@ -49,29 +49,26 @@
 {
     dispatch_async(self.conversationOperationQueue, ^{
         NSArray *conversationDelta = [self refreshConversations];
-        [self processLayerChangeNotification:notification completion:^(NSMutableArray *conversationArray) {
-            if (conversationArray.count > 0) {
-                [self processConversationChanges:conversationArray withDelta:conversationDelta completion:^(NSArray *conversationChanges) {
-                    [self dispatchChanges:conversationChanges];
-                }];
-            }
-        }];
+        NSMutableArray *conversationChanges = [self processLayerChangeNotification:notification];
+        if (conversationChanges.count > 0) {
+            [self dispatchChanges:[self processConversationChanges:conversationChanges withDelta:conversationDelta]];
+        }
     });
 }
 
-- (void)processLayerChangeNotification:(NSNotification *)notification completion:(void(^)(NSMutableArray *conversationArray))completion
+- (NSMutableArray *)processLayerChangeNotification:(NSNotification *)notification
 {
-    NSMutableArray *conversationArray = [[NSMutableArray alloc] init];
+    NSMutableArray *conversationChanges = [[NSMutableArray alloc] init];
     NSArray *changes = [notification.userInfo objectForKey:LYRClientObjectChangesUserInfoKey];
     for (NSDictionary *change in changes) {
         if ([[change objectForKey:LYRObjectChangeObjectKey] isKindOfClass:[LYRConversation class]]) {
-            [conversationArray addObject:change];
+            [conversationChanges addObject:change];
         }
     }
-    completion(conversationArray);
+    return conversationChanges;
 }
 
-- (void)processConversationChanges:(NSMutableArray *)conversationChanges withDelta:(NSArray *)conversationDelta completion:(void(^)(NSArray *conversationChanges))completion
+- (NSArray *)processConversationChanges:(NSMutableArray *)conversationChanges withDelta:(NSArray *)conversationDelta
 {
     NSMutableArray *updateIndexes = [[NSMutableArray alloc] init];
     NSMutableArray *changeObjects = [[NSMutableArray alloc] init];
@@ -85,7 +82,12 @@
                 break;
                 
             case LYRObjectChangeTypeUpdate: {
-                 NSUInteger oldIndex = [self.identifiers indexOfObject:conversation.identifier];
+                NSUInteger oldIndex;
+                if ([[conversationChange objectForKey:LYRObjectChangePropertyKey] isEqualToString:@"identifier"]){
+                    oldIndex = [self.identifiers indexOfObject:[conversationChange objectForKey:LYRObjectChangeOldValueKey]];
+                } else {
+                    oldIndex = [self.identifiers indexOfObject:conversation.identifier];
+                }
                 if (oldIndex != newIndex) {
                     [changeObjects addObject:[LYRUIDataSourceChange changeObjectWithType:LYRUIDataSourceChangeTypeMove newIndex:newIndex oldIndex:oldIndex]];
                 } else {
@@ -106,7 +108,7 @@
         }
     }
     self.identifiers = conversationDelta;
-    completion(changeObjects);
+    return changeObjects;
 }
 
 - (void)dispatchChanges:(NSArray *)changes

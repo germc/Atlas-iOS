@@ -477,7 +477,7 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
 {
     LYRMessagePart *part = [LYRMessagePart messagePartWithMIMEType:@"text/plain" data:[text dataUsingEncoding:NSUTF8StringEncoding]];
     LYRMessage *message = [LYRMessage messageWithConversation:self.conversation parts:@[ part ]];
-    [self sendMessage:message pushText:text];
+    [self sendMessage:message pushText:[self pushNotificationStringForMessage:message]];
 }
 
 - (void)sendMessageWithImage:(UIImage *)image
@@ -486,7 +486,7 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
     NSData *compressedImageData =  LYRUIJPEGDataForImageWithConstraint(adjustedImage, 300);
     LYRMessagePart *part = [LYRMessagePart messagePartWithMIMEType:LYRUIMIMETypeImageJPEG data:compressedImageData];
     LYRMessage *message = [LYRMessage messageWithConversation:self.conversation parts:@[ part ]];
-    [self sendMessage:message pushText:@"Attachment: Image"];
+    [self sendMessage:message pushText:[self pushNotificationStringForMessage:message]];
 }
 
 - (void)sendMessageWithLocation:(CLLocation *)location
@@ -495,7 +495,18 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
     NSNumber *lon = [NSNumber numberWithDouble:location.coordinate.longitude];
     LYRMessagePart *part = [LYRMessagePart messagePartWithMIMEType:LYRUIMIMETypeLocation data:[NSJSONSerialization dataWithJSONObject: @{@"lat" : lat, @"lon" : lon} options:0 error:nil]];
     LYRMessage *message = [LYRMessage messageWithConversation:self.conversation parts:@[ part ]];
-    [self sendMessage:message pushText:@"Attachment: Location"];
+    [self sendMessage:message pushText:[self pushNotificationStringForMessage:message]];
+}
+
+- (NSString *)pushNotificationStringForMessage:(LYRMessage *)message
+{
+    NSString *pushText;
+    if ( [self.dataSource respondsToSelector:@selector(conversationViewController:pushNotificationTextForMessage:)]) {
+        pushText = [self.dataSource conversationViewController:self pushNotificationTextForMessage:message];
+    } else {
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"LYRUIConversationViewControllerDataSource must return a Push Notification string" userInfo:nil];
+    }
+    return pushText;
 }
 
 - (void)sendMessage:(LYRMessage *)message pushText:(NSString *)pushText
@@ -609,7 +620,6 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
 
 - (void)observer:(LYRUIMessageDataSource *)observer updateWithChanges:(NSArray *)changes
 {
-//    NSLog(@"Changes %@", changes);
     [self.collectionView performBatchUpdates:^{
         [self.collectionView reloadData];
         for (LYRUIDataSourceChange *change in changes) {
@@ -641,6 +651,7 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
             self.shouldScrollToBottom = FALSE;
         }
     }];
+    NSLog(@"CollectionView Section Count: %lu", (unsigned long)self.conversationDataSource.messages.count);
 }
 
 - (void)scrollToBottomOfCollectionViewAnimated:(BOOL)animated

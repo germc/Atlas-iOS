@@ -298,7 +298,7 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 
 - (void)doneButtonTapped
 {
-    [self.tableView setEditing:FALSE animated:TRUE];
+    [self.tableView setEditing:NO animated:YES];
     [self addEditButton];
 }
 
@@ -313,7 +313,6 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 - (void)observer:(LYRUIConversationDataSource *)observer updateWithChanges:(NSArray *)changes
 {
     [self.tableView beginUpdates];
-    //NSLog(@"Changes: %@", changes);
     for (LYRUIDataSourceChange *change in changes) {
         if (change.type == LYRUIDataSourceChangeTypeUpdate) {
             [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:change.newIndex inSection:0]]
@@ -335,7 +334,6 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 
 - (void)observer:(LYRUIConversationDataSource *)observer didChangeContent:(BOOL)didChangeContent
 {
-//    NSLog(@"End Changes");
     [self.tableView endUpdates];
 }
 
