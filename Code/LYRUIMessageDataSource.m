@@ -12,6 +12,7 @@
 @interface LYRUIMessageDataSource ()
 
 @property (nonatomic) LYRConversation *conversation;
+@property (nonatomic) dispatch_queue_t messageOperationQueue;
 
 @end
 
@@ -25,7 +26,7 @@
         _layerClient = layerClient;
         _conversation = conversation;
         _messages = [self fetchMessages];
-        
+        _messageOperationQueue = dispatch_queue_create("com.layer.messageProcess", NULL);
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveLayerObjectsDidChangeNotification:)
                                                      name:LYRClientObjectsDidChangeNotification
                                                    object:layerClient];
@@ -38,17 +39,31 @@
     @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Failed to call designated initializer." userInfo:nil];
 }
 
-- (NSArray *)fetchMessages
+- (void)sendMessages:(LYRMessage *)message
 {
-    return [[self.layerClient messagesForConversation:self.conversation] array];
+    dispatch_async(self.messageOperationQueue, ^{
+        NSUInteger insertIndex = self.messages.count;
+        [self.messages addObject:message];
+       
+        NSMutableArray *changeObjects = [[NSMutableArray alloc] init];
+        [changeObjects addObject:[LYRUIDataSourceChange changeObjectWithType:LYRUIDataSourceChangeTypeInsert newIndex:insertIndex oldIndex:0]];
+        [changeObjects addObject:[LYRUIDataSourceChange changeObjectWithType:LYRUIDataSourceChangeTypeUpdate newIndex:insertIndex - 1 oldIndex:0]];
+        [self dispatchChanges:changeObjects];
+    });
+}
+
+- (NSMutableArray *)fetchMessages
+{
+    return [[[self.layerClient messagesForConversation:self.conversation] array] mutableCopy];
 }
 
 - (void)didReceiveLayerObjectsDidChangeNotification:(NSNotification *)notification;
 {
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+    dispatch_async(self.messageOperationQueue, ^{
+        NSArray *messageDelta = [self fetchMessages];
         [self processLayerChangeNotification:notification completion:^(NSMutableArray *messageArray) {
             if (messageArray.count > 0) {
-                [self processMessageChanges:messageArray completion:^(NSArray *messageChanges) {
+                [self processMessageChanges:messageArray withDelta:messageDelta completion:^(NSArray *messageChanges) {
                     [self dispatchChanges:messageChanges];
                 }];
             }
@@ -68,9 +83,8 @@
     completion(messageArray);
 }
 
-- (void)processMessageChanges:(NSMutableArray *)messageChanges completion:(void(^)(NSArray *messageChanges))completion
+- (void)processMessageChanges:(NSMutableArray *)messageChanges withDelta:(NSArray *)messageDelta completion:(void(^)(NSArray *messageChanges))completion
 {
-    self.messages = [self fetchMessages];
     NSMutableArray *changeObjects = [[NSMutableArray alloc] init];
     for (NSDictionary *messageChange in messageChanges) {
         LYRMessage *message = [messageChange objectForKey:LYRObjectChangeObjectKey];
@@ -78,8 +92,6 @@
             LYRObjectChangeType updateKey = (LYRObjectChangeType)[[messageChange objectForKey:LYRObjectChangeTypeKey] integerValue];
             switch (updateKey) {
                 case LYRObjectChangeTypeCreate:
-                    NSLog(@"Insert Conversation");
-                    [changeObjects addObject:[LYRUIDataSourceChange changeObjectWithType:LYRUIDataSourceChangeTypeInsert newIndex:message.index oldIndex:0]];
                     break;
                     
                 case LYRObjectChangeTypeUpdate: {
@@ -102,6 +114,9 @@
             }
         }
     }
+    self.messages = messageDelta;
+    NSLog(@"messages count: %lu", (unsigned long)self.messages.count);
+    NSLog(@"Message Changes %@", changeObjects);
     completion(changeObjects);
 }
 

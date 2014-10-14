@@ -21,10 +21,12 @@
 
 - (id)initWithClient:(LYRClient *)layerClient conversation:(LYRConversation *)conversation;
 
-@property (nonatomic) NSArray *messages;
+- (void)sendMessages:(LYRMessage *)message;
+
+@property (nonatomic) NSMutableArray *messages;
 
 @property (nonatomic) LYRClient *layerClient;
 
-@property (nonatomic) id<LYRUIMessageDataSourceDelegate>delegate;
+@property (nonatomic, weak) id<LYRUIMessageDataSourceDelegate>delegate;
 
 @end

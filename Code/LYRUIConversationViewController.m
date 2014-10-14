@@ -29,6 +29,7 @@
 @property (nonatomic) BOOL keyboardIsOnScreen;
 @property (nonatomic) CGFloat keyboardHeight;
 @property (nonatomic) UIView *inputAccessoryView;
+@property (nonatomic) BOOL shouldScrollToBottom;
 
 @end
 
@@ -65,6 +66,8 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
         
         // Message send queue
         _layerOperationQueue = dispatch_queue_create("com.layer.messageSend", NULL);
+        
+        _shouldScrollToBottom - FALSE;
     }
     return self;
 }
@@ -248,7 +251,11 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
         // Should we display a sender label
         if ([self shouldDisplaySenderLabelForSection:indexPath.section]) {
             id<LYRUIParticipant>participant = [self participantForIdentifier:message.sentByUserID];
-            [header updateWithAttributedStringForParticipantName:[[NSAttributedString alloc] initWithString:participant.fullName]];
+            if(participant) {
+                [header updateWithAttributedStringForParticipantName:[[NSAttributedString alloc] initWithString:participant.fullName]];
+            } else {
+                [header updateWithAttributedStringForParticipantName:[[NSAttributedString alloc] initWithString:@"No Matching Participant"]];
+            }
         }
         // Should we display a date label
         if ([self shouldDisplayDateLabelForSection:indexPath.section]) {
@@ -493,6 +500,8 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
 
 - (void)sendMessage:(LYRMessage *)message pushText:(NSString *)pushText
 {
+    self.shouldScrollToBottom = TRUE;
+    [self.conversationDataSource sendMessages:message];
     dispatch_async(self.layerOperationQueue,^{
         id<LYRUIParticipant>sender = [self participantForIdentifier:self.layerClient.authenticatedUserID];
         NSString *text = [NSString stringWithFormat:@"%@: %@", [sender fullName], pushText];
@@ -600,38 +609,38 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
 
 - (void)observer:(LYRUIMessageDataSource *)observer updateWithChanges:(NSArray *)changes
 {
-    NSLog(@"Changes %@", changes);
-    [self.collectionView reloadData];
-    __block NSUInteger messageInsert;
-    //        [self.collectionView performBatchUpdates:^{
-    for (LYRUIDataSourceChange *change in changes) {
-        switch (change.type) {
-            case LYRUIDataSourceChangeTypeInsert:
-                messageInsert = change.newIndex;
-                //                        if (change.newIndex > 0 && changes.count == 1) {
-                //                            [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:change.newIndex - 1]];
-                //                        }
-                //                        [self.collectionView insertSections:[NSIndexSet indexSetWithIndex:change.newIndex]];
-                break;
-                //                    case LYRUIDataSourceChangeTypeMove:
-                //                        [self.collectionView deleteSections:[NSIndexSet indexSetWithIndex:change.oldIndex]];
-                //                        [self.collectionView insertSections:[NSIndexSet indexSetWithIndex:change.newIndex]];
-                //                        break;
-                //                    case LYRUIDataSourceChangeTypeUpdate:
-                //                        [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:change.newIndex]];
-                //                        break;
-                //                    case LYRUIDataSourceChangeTypeDelete:
-                //                        [self.collectionView deleteSections:[NSIndexSet indexSetWithIndex:change.newIndex]];
-                //                        break;
-            default:
-                break;
+//    NSLog(@"Changes %@", changes);
+    [self.collectionView performBatchUpdates:^{
+        [self.collectionView reloadData];
+        for (LYRUIDataSourceChange *change in changes) {
+            switch (change.type) {
+                case LYRUIDataSourceChangeTypeInsert:
+                    [self.collectionView insertSections:[NSIndexSet indexSetWithIndex:change.newIndex]];
+                    break;
+                    
+                case LYRUIDataSourceChangeTypeMove:
+                    [self.collectionView deleteSections:[NSIndexSet indexSetWithIndex:change.oldIndex]];
+                    [self.collectionView insertSections:[NSIndexSet indexSetWithIndex:change.newIndex]];
+                    break;
+                    
+                case LYRUIDataSourceChangeTypeUpdate:
+                    [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:change.newIndex]];
+                    break;
+                    
+                case LYRUIDataSourceChangeTypeDelete:
+                    [self.collectionView deleteSections:[NSIndexSet indexSetWithIndex:change.newIndex]];
+                    break;
+                    
+                default:
+                    break;
+            }
         }
-    }
-    //        } completion:^(BOOL finished) {
-    if (messageInsert == self.conversationDataSource.messages.count - 1) {
-        [self scrollToBottomOfCollectionViewAnimated:TRUE];
-    }
-    //        }];
+    } completion:^(BOOL finished) {
+        if (self.shouldScrollToBottom) {
+            [self scrollToBottomOfCollectionViewAnimated:TRUE];
+            self.shouldScrollToBottom = FALSE;
+        }
+    }];
 }
 
 - (void)scrollToBottomOfCollectionViewAnimated:(BOOL)animated

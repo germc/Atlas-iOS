@@ -31,6 +31,6 @@
 
 @property (nonatomic) LYRClient *layerClient;
 
-@property (nonatomic) id<LYRUIConversationDataSourceDelegate>delegate;
+@property (nonatomic, weak) id<LYRUIConversationDataSourceDelegate>delegate;
 
 @end
