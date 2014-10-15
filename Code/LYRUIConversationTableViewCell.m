@@ -121,6 +121,11 @@ static CGFloat const LSUnreadMessageCountLabelSize = 24.0f;
     return self;
 }
 
+- (void)setConversationLabelFont:(UIFont *)conversationLabelFont
+{
+    _conversationLabelFont = conversationLabelFont;
+}
+
 - (void)presentConversation:(LYRConversation *)conversation
 {
     self.dateLabel.text = [self dateLabelForLastMessage:conversation.lastMessage];

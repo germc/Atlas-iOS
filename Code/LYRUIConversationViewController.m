@@ -67,7 +67,7 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
         // Message send queue
         _layerOperationQueue = dispatch_queue_create("com.layer.messageSend", NULL);
         
-        _shouldScrollToBottom - FALSE;
+        _shouldScrollToBottom = FALSE;
     }
     return self;
 }
