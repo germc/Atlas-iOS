@@ -110,10 +110,6 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
     panGestureRecognizer.delegate = self;
     //[self.collectionView  addGestureRecognizer:panGestureRecognizer];
     
-    // Setup Layer Change notification observer
-    self.conversationDataSource = [[LYRUIMessageDataSource alloc] initWithClient:self.layerClient conversation:self.conversation];
-    self.conversationDataSource.delegate = self;
-    
     self.accessibilityLabel = @"Conversation";
 }
 
@@ -121,6 +117,11 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
 {
     [super viewWillAppear:animated];
     // Setting the title
+    
+    // Setup Layer Change notification observer
+    self.conversationDataSource = [[LYRUIMessageDataSource alloc] initWithClient:self.layerClient conversation:self.conversation];
+    self.conversationDataSource.delegate = self;
+    
     [self setConversationViewTitle];
     [self scrollToBottomOfCollectionViewAnimated:NO];
 }
@@ -128,6 +129,10 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
+    
+    // Setup Layer Change notification observer
+    self.conversationDataSource = [[LYRUIMessageDataSource alloc] initWithClient:self.layerClient conversation:self.conversation];
+    self.conversationDataSource.delegate = self;
     
     // Register for keyboard notifications
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -513,7 +518,7 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
 - (void)sendMessage:(LYRMessage *)message pushText:(NSString *)pushText
 {
     self.shouldScrollToBottom = TRUE;
-    [self.conversationDataSource sendMessages:message];
+    //[self.conversationDataSource sendMessages:message];
     dispatch_async(self.layerOperationQueue,^{
         id<LYRUIParticipant>sender = [self participantForIdentifier:self.layerClient.authenticatedUserID];
         NSString *text = [NSString stringWithFormat:@"%@: %@", [sender fullName], pushText];
@@ -621,38 +626,43 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
 
 - (void)observer:(LYRUIMessageDataSource *)observer updateWithChanges:(NSArray *)changes
 {
-    NSLog(@"Update happening with changes:%@", changes);
-    [self.collectionView performBatchUpdates:^{
-        [self.collectionView reloadData];
-        for (LYRUIDataSourceChange *change in changes) {
-            switch (change.type) {
-                case LYRUIDataSourceChangeTypeInsert:
-                    [self.collectionView insertSections:[NSIndexSet indexSetWithIndex:change.newIndex]];
-                    break;
-                    
-                case LYRUIDataSourceChangeTypeMove:
-                    [self.collectionView deleteSections:[NSIndexSet indexSetWithIndex:change.oldIndex]];
-                    [self.collectionView insertSections:[NSIndexSet indexSetWithIndex:change.newIndex]];
-                    break;
-                    
-                case LYRUIDataSourceChangeTypeUpdate:
-                    [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:change.newIndex]];
-                    break;
-                    
-                case LYRUIDataSourceChangeTypeDelete:
-                    [self.collectionView deleteSections:[NSIndexSet indexSetWithIndex:change.newIndex]];
-                    break;
-                    
-                default:
-                    break;
-            }
-        }
-    } completion:^(BOOL finished) {
-        if (self.shouldScrollToBottom) {
-            [self scrollToBottomOfCollectionViewAnimated:TRUE];
-            self.shouldScrollToBottom = FALSE;
-        }
-    }];
+//    NSLog(@"Update happening with changes:%@", changes);
+//    [self.collectionView performBatchUpdates:^{
+//        [self.collectionView reloadData];
+//        for (LYRUIDataSourceChange *change in changes) {
+//            switch (change.type) {
+//                case LYRUIDataSourceChangeTypeInsert:
+//                    [self.collectionView insertSections:[NSIndexSet indexSetWithIndex:change.newIndex]];
+//                    break;
+//                    
+//                case LYRUIDataSourceChangeTypeMove:
+//                    [self.collectionView deleteSections:[NSIndexSet indexSetWithIndex:change.oldIndex]];
+//                    [self.collectionView insertSections:[NSIndexSet indexSetWithIndex:change.newIndex]];
+//                    break;
+//                    
+//                case LYRUIDataSourceChangeTypeUpdate:
+//                    [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:change.newIndex]];
+//                    break;
+//                    
+//                case LYRUIDataSourceChangeTypeDelete:
+//                    [self.collectionView deleteSections:[NSIndexSet indexSetWithIndex:change.newIndex]];
+//                    break;
+//                    
+//                default:
+//                    break;
+//            }
+//        }
+//    } completion:^(BOOL finished) {
+//        if (self.shouldScrollToBottom) {
+//            [self scrollToBottomOfCollectionViewAnimated:TRUE];
+//            self.shouldScrollToBottom = FALSE;
+//        }
+//    }];
+    [self.collectionView reloadData];
+    if (self.shouldScrollToBottom) {
+        [self scrollToBottomOfCollectionViewAnimated:TRUE];
+        self.shouldScrollToBottom = FALSE;
+    }
 }
 
 - (void)scrollToBottomOfCollectionViewAnimated:(BOOL)animated

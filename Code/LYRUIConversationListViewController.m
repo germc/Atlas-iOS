@@ -339,30 +339,31 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 
 - (void)observer:(LYRUIConversationDataSource *)observer updateWithChanges:(NSArray *)changes
 {
-    NSLog(@"Changes %@", changes);
-    [self.tableView beginUpdates];
-    for (LYRUIDataSourceChange *change in changes) {
-        if (change.type == LYRUIDataSourceChangeTypeUpdate) {
-            [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:change.newIndex inSection:0]]
-                                  withRowAnimation:UITableViewRowAnimationAutomatic];
-        } else if (change.type == LYRUIDataSourceChangeTypeInsert) {
-            [self.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:change.newIndex inSection:0]]
-                                  withRowAnimation:UITableViewRowAnimationAutomatic];
-        } else if (change.type == LYRUIDataSourceChangeTypeMove) {
-            [self.tableView deleteRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:change.oldIndex inSection:0]]
-                                  withRowAnimation:UITableViewRowAnimationAutomatic];
-            [self.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:change.newIndex inSection:0]]
-                                  withRowAnimation:UITableViewRowAnimationAutomatic];
-        } else if (change.type == LYRUIDataSourceChangeTypeDelete) {
-            [self.tableView deleteRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:change.newIndex inSection:0]]
-                                  withRowAnimation:UITableViewRowAnimationAutomatic];
-        }
-    }
+//    NSLog(@"Changes %@", changes);
+//    [self.tableView beginUpdates];
+//    for (LYRUIDataSourceChange *change in changes) {
+//        if (change.type == LYRUIDataSourceChangeTypeUpdate) {
+//            [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:change.newIndex inSection:0]]
+//                                  withRowAnimation:UITableViewRowAnimationAutomatic];
+//        } else if (change.type == LYRUIDataSourceChangeTypeInsert) {
+//            [self.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:change.newIndex inSection:0]]
+//                                  withRowAnimation:UITableViewRowAnimationAutomatic];
+//        } else if (change.type == LYRUIDataSourceChangeTypeMove) {
+//            [self.tableView deleteRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:change.oldIndex inSection:0]]
+//                                  withRowAnimation:UITableViewRowAnimationAutomatic];
+//            [self.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:change.newIndex inSection:0]]
+//                                  withRowAnimation:UITableViewRowAnimationAutomatic];
+//        } else if (change.type == LYRUIDataSourceChangeTypeDelete) {
+//            [self.tableView deleteRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:change.newIndex inSection:0]]
+//                                  withRowAnimation:UITableViewRowAnimationAutomatic];
+//        }
+//    }
 }
 
 - (void)observer:(LYRUIConversationDataSource *)observer didChangeContent:(BOOL)didChangeContent
 {
-    [self.tableView endUpdates];
+//    [self.tableView endUpdates];
+    [self.tableView reloadData];
 }
 
 - (void)configureTableViewCellAppearance

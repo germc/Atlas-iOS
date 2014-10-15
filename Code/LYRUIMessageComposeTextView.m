@@ -74,7 +74,7 @@ NSString *const LYRUIPlaceHolderText = @"Enter Message";
         [mutableAttributedString replaceCharactersInRange:NSMakeRange(mutableAttributedString.length, 0)
                                      withAttributedString:attachmentString];
     }
-    [self insertLineBreak:mutableAttributedString];
+//    [self insertLineBreak:mutableAttributedString];
     self.attributedText = mutableAttributedString;
     
     [self layoutIfNeeded];

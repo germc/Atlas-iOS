@@ -100,6 +100,7 @@ static NSString *const LYRParticipantCellIdentifier = @"participantCellIdentifie
 {
     _allowsMultipleSelection = allowsMultipleSelection;
     self.tableView.allowsMultipleSelection = allowsMultipleSelection;
+    self.searchDisplayController.searchResultsTableView.allowsMultipleSelection = TRUE;
 }
 
 - (NSDictionary *)currentDataArray
@@ -120,12 +121,13 @@ static NSString *const LYRParticipantCellIdentifier = @"participantCellIdentifie
 
 - (void)searchDisplayControllerWillBeginSearch:(UISearchDisplayController *)controller
 {
-    //
+    
 }
 
 - (void)searchDisplayControllerDidEndSearch:(UISearchDisplayController *)controller
 {
-    //
+    self.filteredParticipants = self.sortedParticipants;
+    [self.tableView reloadData];
 }
 
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
@@ -156,13 +158,27 @@ static NSString *const LYRParticipantCellIdentifier = @"participantCellIdentifie
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    UITableViewCell <LYRUIParticipantPresenting> *participantCell = [self.tableView dequeueReusableCellWithIdentifier:LYRParticipantCellIdentifier];
+    [self configureCell:participantCell atIndexPath:indexPath];
+    return participantCell;
+}
+
+- (void)configureCell:(UITableViewCell<LYRUIParticipantPresenting> *)cell atIndexPath:(NSIndexPath *)indexPath
+{
+    NSString *key = [[self sortedContactKeys] objectAtIndex:indexPath.section];
+    id<LYRUIParticipant> participant = [[[self currentDataArray] objectForKey:key] objectAtIndex:indexPath.row];
+    [cell presentParticipant:participant];
+    [cell shouldDisplaySelectionIndicator:TRUE];
+}
+
+- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
+{
     NSString *key = [[self sortedContactKeys] objectAtIndex:indexPath.section];
     id<LYRUIParticipant> participant = [[[self currentDataArray] objectForKey:key] objectAtIndex:indexPath.row];
 
-    UITableViewCell <LYRUIParticipantPresenting> *participantCell = [self.tableView dequeueReusableCellWithIdentifier:LYRParticipantCellIdentifier];
-    [participantCell presentParticipant:participant];
-    [participantCell shouldDisplaySelectionIndicator:TRUE];
-    return participantCell;
+    if ([self.selectedParticipants containsObject:participant]) {
+        [tableView selectRowAtIndexPath:indexPath animated:TRUE scrollPosition:UITableViewScrollPositionNone];
+    }
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
@@ -178,8 +194,13 @@ static NSString *const LYRParticipantCellIdentifier = @"participantCellIdentifie
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    NSString *key = [[self sortedContactKeys] objectAtIndex:indexPath.section];
+    id<LYRUIParticipant> participant = [[[self currentDataArray] objectForKey:key] objectAtIndex:indexPath.row];
     if ([[tableView indexPathsForSelectedRows] containsObject:indexPath]) {
         [tableView deselectRowAtIndexPath:indexPath animated:TRUE];
+        if ([self.selectedParticipants containsObject:participant]) {
+            [self.selectedParticipants removeObject:participant];
+        }
     } else {
         return indexPath;
     }
@@ -190,6 +211,7 @@ static NSString *const LYRParticipantCellIdentifier = @"participantCellIdentifie
 {
     NSString *key = [[self sortedContactKeys] objectAtIndex:indexPath.section];
     id<LYRUIParticipant> participant = [[[self currentDataArray] objectForKey:key] objectAtIndex:indexPath.row];
+    [self.selectedParticipants addObject:participant];
     [self.delegate participantTableViewController:self didSelectParticipant:participant];
 }
 
@@ -197,6 +219,7 @@ static NSString *const LYRParticipantCellIdentifier = @"participantCellIdentifie
 
 - (void)cancelButtonTapped
 {
+    [self.tableView reloadData];
     [self.delegate participantTableViewControllerDidSelectCancelButton];
 }
 

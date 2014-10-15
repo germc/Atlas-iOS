@@ -99,11 +99,7 @@
             LYRObjectChangeType updateKey = (LYRObjectChangeType)[[messageChange objectForKey:LYRObjectChangeTypeKey] integerValue];
             switch (updateKey) {
                 case LYRObjectChangeTypeCreate:
-                    if (!self.newMessageSend) {
-                        [changeObjects addObject:[LYRUIDataSourceChange changeObjectWithType:LYRUIDataSourceChangeTypeInsert newIndex:message.index oldIndex:0]];
-                    } else {
-                        self.newMessageSend = FALSE;
-                    }
+                    [changeObjects addObject:[LYRUIDataSourceChange changeObjectWithType:LYRUIDataSourceChangeTypeInsert newIndex:message.index oldIndex:0]];
                     break;
                     
                 case LYRObjectChangeTypeUpdate: {
