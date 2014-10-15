@@ -302,6 +302,7 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
     }
     return CGSizeMake([[UIScreen mainScreen] bounds].size.width, height);
 }
+
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout referenceSizeForFooterInSection:(NSInteger)section
 {
     CGRect rect = [[UIScreen mainScreen] bounds];
@@ -315,9 +316,9 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
 
 - (void)updateRecipientStatusForMessage:(LYRMessage *)message
 {
-    dispatch_async(self.layerOperationQueue, ^{
-        NSNumber *recipientStatus = [message.recipientStatusByUserID objectForKey:self.layerClient.authenticatedUserID];
-        if (![recipientStatus isEqualToNumber:[NSNumber numberWithInteger:LYRRecipientStatusRead]] ) {
+    NSNumber *recipientStatus = [message.recipientStatusByUserID objectForKey:self.layerClient.authenticatedUserID];
+    if (![recipientStatus isEqualToNumber:[NSNumber numberWithInteger:LYRRecipientStatusRead]] ) {
+        dispatch_async(self.layerOperationQueue, ^{
             NSError *error;
             BOOL success = [self.layerClient markMessageAsRead:message error:&error];
             if (success) {
@@ -325,8 +326,8 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
             } else {
                 NSLog(@"Failed to mark message as read with error %@", error);
             }
-        }
-    });
+        });
+    }
 }
 
 #pragma mark - UI Configuration Methods
@@ -620,6 +621,7 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
 
 - (void)observer:(LYRUIMessageDataSource *)observer updateWithChanges:(NSArray *)changes
 {
+    NSLog(@"Update happening with changes:%@", changes);
     [self.collectionView performBatchUpdates:^{
         [self.collectionView reloadData];
         for (LYRUIDataSourceChange *change in changes) {
@@ -651,7 +653,6 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
             self.shouldScrollToBottom = FALSE;
         }
     }];
-    NSLog(@"CollectionView Section Count: %lu", (unsigned long)self.conversationDataSource.messages.count);
 }
 
 - (void)scrollToBottomOfCollectionViewAnimated:(BOOL)animated

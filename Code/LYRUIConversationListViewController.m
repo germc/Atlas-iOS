@@ -20,6 +20,7 @@
 @property (nonatomic) NSMutableArray *filteredConversations;
 @property (nonatomic) NSPredicate *searchPredicate;
 @property (nonatomic) LYRUIConversationDataSource *conversationListDataSource;
+@property (nonatomic) NSIndexPath *selectedIndexPath;
 @property (nonatomic) BOOL isOnScreen;
 
 @end
@@ -100,7 +101,12 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
         [self addEditButton];
     }
     
+    if (self.selectedIndexPath) {
+        [self.tableView reloadRowsAtIndexPaths:@[self.selectedIndexPath]
+                              withRowAnimation:UITableViewRowAnimationAutomatic];
+    }
     self.isOnScreen = TRUE;
+    
 }
 
 - (void)viewDidDisappear:(BOOL)animated
@@ -245,6 +251,9 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
         }
     }
     
+    // Update Cell with unread message count
+    [conversationCell updateWithUnreadMessageCount:[self unreadMessageCountForConversation:conversation]];
+    
     // Update Cell with Label
     if ([self.dataSource respondsToSelector:@selector(conversationLabelForParticipants:inConversationListViewController:)]) {
         NSString *conversationLabel = [self.dataSource conversationLabelForParticipants:conversation.participants inConversationListViewController:self];
@@ -275,11 +284,30 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
     if ([self.delegate respondsToSelector:@selector(conversationListViewController:didSelectConversation:)]){
         [self.delegate conversationListViewController:self didSelectConversation:conversation];
     }
+    self.selectedIndexPath = indexPath;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     return self.rowHeight;
+}
+
+- (NSUInteger)unreadMessageCountForConversation:(LYRConversation *)conversation
+{
+    NSOrderedSet *messages = [self.layerClient messagesForConversation:conversation];
+    NSUInteger unreadMessageCount = 0;
+    for (LYRMessage *message in messages) {
+        LYRRecipientStatus status = [[message.recipientStatusByUserID objectForKey:self.layerClient.authenticatedUserID] integerValue];
+        switch (status) {
+            case LYRRecipientStatusDelivered:
+                unreadMessageCount += 1;
+                break;
+                
+            default:
+                break;
+        }
+    }
+    return unreadMessageCount;
 }
 
 #pragma mark - Conversation Editing Methods
@@ -312,6 +340,7 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 
 - (void)observer:(LYRUIConversationDataSource *)observer updateWithChanges:(NSArray *)changes
 {
+    NSLog(@"Changes %@", changes);
     [self.tableView beginUpdates];
     for (LYRUIDataSourceChange *change in changes) {
         if (change.type == LYRUIDataSourceChangeTypeUpdate) {
@@ -341,10 +370,17 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 {
     [[LYRUIConversationTableViewCell appearance] setConversationLabelFont:[UIFont boldSystemFontOfSize:14]];
     [[LYRUIConversationTableViewCell appearance] setConversationLableColor:[UIColor blackColor]];
+    
     [[LYRUIConversationTableViewCell appearance] setLastMessageTextFont:[UIFont systemFontOfSize:12]];
     [[LYRUIConversationTableViewCell appearance] setLastMessageTextColor:[UIColor grayColor]];
+    
     [[LYRUIConversationTableViewCell appearance] setDateLabelFont:[UIFont systemFontOfSize:12]];
     [[LYRUIConversationTableViewCell appearance] setDateLabelColor:[UIColor darkGrayColor]];
+    
+    [[LYRUIConversationTableViewCell appearance] setUnreadMessageCountBackgroundColor:LSBlueColor()];
+    [[LYRUIConversationTableViewCell appearance] setUnreadMessageCountFont:[UIFont systemFontOfSize:14]];
+    [[LYRUIConversationTableViewCell appearance] setUnreadMessageCountTextColor:[UIColor whiteColor]];
+    
     [[LYRUIConversationTableViewCell appearance] setBackgroundColor:[UIColor whiteColor]];
 }
 

@@ -73,7 +73,7 @@
  @param message The message object to be sent by the Layer SDK
  @return a string representing the push notification text
  */
-- (NSString *)conversationViewController:(LYRUIConversationViewController *)conversationViewController pushNotificationTextForMessage:(LYRMessage *)messages;
+- (NSString *)conversationViewController:(LYRUIConversationViewController *)conversationViewController pushNotificationTextForMessage:(LYRMessage *)message;
 
 @optional
 /**

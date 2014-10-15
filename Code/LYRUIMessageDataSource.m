@@ -90,6 +90,7 @@
 
 - (NSMutableArray *)processMessageChanges:(NSMutableArray *)messageChanges withDelta:(NSArray *)messageDelta
 {
+//    NSLog(@"%@", messageChanges);
     NSMutableArray *updateIndexes = [[NSMutableArray alloc] init];
     NSMutableArray *changeObjects = [[NSMutableArray alloc] init];
     for (NSDictionary *messageChange in messageChanges) {
@@ -106,6 +107,9 @@
                     break;
                     
                 case LYRObjectChangeTypeUpdate: {
+                    if ([[messageChange objectForKey:LYRObjectChangePropertyKey] isEqualToString:@"recipientStatusByUserID"]) {
+                        break;
+                    }
                     if ([[messageChange objectForKey:LYRObjectChangePropertyKey] isEqualToString:@"index"]) {
                         NSUInteger newIndex = [[messageChange objectForKey:LYRObjectChangeNewValueKey] integerValue];
                         NSUInteger oldIndex = [[messageChange objectForKey:LYRObjectChangeOldValueKey] integerValue];
@@ -128,9 +132,7 @@
             }
         }
     }
-    NSLog(@"Changes %@", changeObjects);
     self.messages = [messageDelta mutableCopy];
-     NSLog(@"Message Count: %lu", (unsigned long)self.messages.count);
     return changeObjects;
 }
 
