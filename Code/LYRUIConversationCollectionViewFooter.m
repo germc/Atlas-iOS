@@ -39,9 +39,9 @@
     self.recipientStatusLabel.text = nil;
 }
 
-- (void)updateWithAttributedStringForRecipientStatus:(NSString *)recipientStatus
+- (void)updateWithAttributedStringForRecipientStatus:(NSAttributedString *)recipientStatus
 {
-    self.recipientStatusLabel.text = recipientStatus;
+    self.recipientStatusLabel.attributedText = recipientStatus;
     [self.recipientStatusLabel sizeToFit];
     if ([self.constraints containsObject:self.recipientStatusLabelWidthConstraint]) {
         [self removeConstraint:self.recipientStatusLabelWidthConstraint];

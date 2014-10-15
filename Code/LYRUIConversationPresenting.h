@@ -24,17 +24,24 @@ NSString *LYRUIMIMETypeLocation;  /// location
  @abstract Tells the receiver to present a given Layer Conversation.
  @param conversation The conversation to present.
  */
-- (void)presentConversation:(LYRConversation *)conversation withLabel:(NSString *)conversationLabel;
+- (void)presentConversation:(LYRConversation *)conversation;
 
 /**
- @abstract Tells the receiver to display an avatar image or no.
+ @abstract Gives the receiver a string to display representing the conversation label
+ @param conversation The conversation label to display
  */
-- (void)shouldShowConversationImage:(BOOL)shouldShowConversationImage;
+- (void)updateWithConversationLabel:(NSString *)conversationLabel;
 
 /**
- @abstract The image to be displayed with the conversation. If `shouldShowConversationImage:` is set to `NO`
- no, image will be displayed
+ @abstract Gives the receiver an image to display representing the conversation image
+ @param conversation The conversation image to display
  */
-@property (nonatomic) UIImage *conversationImage;
+- (void)updateWithConversationImage:(UIImage *)image;
+
+/**
+ @abstract Gives the receiver a number to display representing the number of unread messages in a conversation
+ @param conversation The conversation image to display
+ */
+- (void)updateWithUnreadMessageCount:(NSUInteger)unreadMessageCount;
 
 @end

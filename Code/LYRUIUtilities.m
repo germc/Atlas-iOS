@@ -16,7 +16,7 @@ NSString * const LYRUIMIMETypeLocation = @"location/coordinate";
 
 CGFloat LYRUIMaxCellWidth()
 {
-    return 200;
+    return 220;
 }
 
 CGSize LYRUITextPlainSize(NSString *text, UIFont *font)

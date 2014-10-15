@@ -7,7 +7,7 @@ LayerUIKit can be easily installed via Cocoapods. Include the following in your 
 pod 'LayerUIKit', git: 'git@github.com:layerhq/LayerUIKit'
 ```
 
-##Whats Included
+##What's Included
 LayerUIKit provides the following components that must be used in conjunction with LayerKit.
 
 1. `LYRUIConversationViewController` - Displays an individual Layer conversation.
@@ -115,4 +115,5 @@ The presenters are `LYRUIParticipantPresenting`, `LYRUIConversationPresenting`, 
 LayerKit was developed in San Francisco by the Layer team. If you have any technical questions or concerns about this project feel free to reach out to engineers responsible for the development:
 
 * [Kevin Coleman](mailto:kevin@layer.com)
+* [Klemen Verdnik](mailto:klemen@layer.com)
 * [Blake Watters](mailto:blake@layer.com)

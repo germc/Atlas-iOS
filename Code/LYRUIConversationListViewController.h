@@ -25,6 +25,7 @@
 
 @protocol LYRUIConversationListViewControllerDataSource <NSObject>
 
+@required
 /**
  @abstract Asks the delegate for the Conversation Label for a given set of participants in a conversation.
  @param participants The identifiers for participants in a conversation within the conversation list.
@@ -32,6 +33,15 @@
  @return The conversation label to be displayed for a given conversation in the conversation list.
  */
 - (NSString *)conversationLabelForParticipants:(NSSet *)participants inConversationListViewController:(LYRUIConversationListViewController *)conversationListViewController;
+
+@optional
+/**
+ @abstract Asks the delegate for the Conversation Image for a given set of participants in a conversation.
+ @param participants The identifiers for participants in a conversation within the conversation list.
+ @param conversationListViewController The conversation list in which the image appears.
+ @return The conversation image to be displayed for a given conversation in the conversation list.
+ */
+- (UIImage *)conversationImageForParticipants:(NSSet *)participants inConversationListViewController:(LYRUIConversationListViewController *)conversationListViewController;
 
 /**
  @abstract Informs the data source that a search has been made with the following search string. After the completion block is called, the `comversationListViewController:presenterForConversationAtIndex:` method will be called for each search result.  
@@ -104,9 +114,11 @@
  @default TRUE
  @raises NSInternalInconsistencyException Raised if the value is mutated after the receiver has been presented.
  */
-@property (nonatomic, assign) BOOL showsConversationImage;
+@property (nonatomic, assign) BOOL displaysConversationImage;
 
-
+/**
+ @abstract The given `LYRConversation` object
+ */
 @property (nonatomic) LYRClient *layerClient;
 
 @end

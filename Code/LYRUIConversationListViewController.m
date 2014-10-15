@@ -10,16 +10,17 @@
 #import "LYRUIConversationListViewController.h"
 #import "LYRUIDataSourceChange.h"
 #import "LYRUIConstants.h"
-#import "LYRUIConversationNotificationObserver.h"
+#import "LYRUIConversationDataSource.h"
 
-@interface LYRUIConversationListViewController () <UISearchBarDelegate, UISearchDisplayDelegate, LYRUIChangeNotificationObserverDelegate>
+@interface LYRUIConversationListViewController () <UISearchBarDelegate, UISearchDisplayDelegate, LYRUIConversationDataSourceDelegate>
 
 @property (nonatomic) UISearchBar *searchBar;
 @property (nonatomic) UISearchDisplayController *searchController;
 @property (nonatomic) NSArray *conversations;
 @property (nonatomic) NSMutableArray *filteredConversations;
 @property (nonatomic) NSPredicate *searchPredicate;
-@property (nonatomic) LYRUIConversationNotificationObserver *conversationsNotificationObserver;
+@property (nonatomic) LYRUIConversationDataSource *conversationListDataSource;
+@property (nonatomic) NSIndexPath *selectedIndexPath;
 @property (nonatomic) BOOL isOnScreen;
 
 @end
@@ -39,13 +40,13 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
     self = [super initWithStyle:UITableViewStylePlain];
     if (self)  {
         // Set properties from designated initializer
-        self.layerClient = layerClient;
+        _layerClient = layerClient;
         
         // Set default configuration for public properties
-        self.cellClass = [LYRUIConversationTableViewCell class];
-        self.rowHeight = 72;
-        self.allowsEditing = TRUE;
-        self.showsConversationImage = TRUE;
+        _cellClass = [LYRUIConversationTableViewCell class];
+        _rowHeight = 72;
+        _allowsEditing = TRUE;
+        _displaysConversationImage = TRUE;
     }
     return self;
 }
@@ -62,11 +63,9 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
     [super viewDidLoad];
     // Accessibility
     self.title = @"Messages";
-    self.accessibilityLabel = @"Conversations";
-    [self fetchLayerConversationsWithCompletion:^{
-        [self reloadConversations];
-    }];
+    self.accessibilityLabel = @"Messages";
     
+    // Searchbar Setup
     self.searchBar = [[UISearchBar alloc] initWithFrame:CGRectZero];
     self.searchBar.accessibilityLabel = @"Search Bar";
     self.searchBar.delegate = self;
@@ -76,9 +75,12 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
     self.searchController.searchResultsDataSource = self;
     
     //self.tableView.tableHeaderView = self.searchBar;
+    //[self.tableView setContentOffset:CGPointMake(0, 44)];
     self.tableView.accessibilityLabel = @"Conversation List";
     
-    //[self.tableView setContentOffset:CGPointMake(0, 44)];
+    // DataSoure
+    self.conversationListDataSource = [[LYRUIConversationDataSource alloc] initWithLayerClient:self.layerClient];
+    self.conversationListDataSource.delegate = self;
     
     [self configureTableViewCellAppearance];
 }
@@ -87,6 +89,7 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 {
     [super viewWillAppear:animated];
     
+    // Set public configuration properties once view has loaded
     self.tableView.rowHeight = self.rowHeight;
     [self.tableView registerClass:self.cellClass forCellReuseIdentifier:LYRUIConversationCellReuseIdentifier];
     
@@ -96,19 +99,24 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
     if (self.allowsEditing) {
         [self addEditButton];
     }
-    
-    self.conversationsNotificationObserver = [[LYRUIConversationNotificationObserver alloc] initWithLayerClient:self.layerClient
-                                                                                                  conversations:self.conversations];
-    self.conversationsNotificationObserver.delegate = self;
-    
+
+    if (self.selectedIndexPath) {
+        [self.tableView reloadRowsAtIndexPaths:@[self.selectedIndexPath]
+                              withRowAnimation:UITableViewRowAnimationAutomatic];
+    }
     self.isOnScreen = TRUE;
+    
 }
 
 - (void)viewDidDisappear:(BOOL)animated
 {
     [super viewDidDisappear:animated];
-    
     self.isOnScreen = NO;
+}
+
+- (void)dealloc
+{
+    self.conversationListDataSource = nil;
 }
 
 #pragma mark - Public setters
@@ -118,7 +126,6 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
     if (self.isOnScreen) {
         @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Cannot set editing mode after the view has been loaded" userInfo:nil];
     }
-    
     _allowsEditing = allowsEditing;
 
     if (self.navigationItem.leftBarButtonItem && !allowsEditing) {
@@ -147,6 +154,14 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
     _rowHeight = rowHeight;
 }
 
+- (void)setDisplaysConversationImage:(BOOL)displaysConversationImage
+{
+    if (self.isOnScreen) {
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Cannot set displaysConversationImage after the view has been loaded" userInfo:nil];
+    }
+    _displaysConversationImage = displaysConversationImage;
+}
+
 #pragma mark - Navigation Bar Edit Button
 
 - (void)addEditButton
@@ -157,21 +172,6 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
                                                                       action:@selector(editButtonTapped)];
     editButtonItem.accessibilityLabel = @"Edit";
     self.navigationItem.leftBarButtonItem = editButtonItem;
-}
-
-#pragma mark Data source load and configuration methods
-
-- (void)fetchLayerConversationsWithCompletion:(void (^)(void))completion
-{
-    NSSet *conversations = [self.layerClient conversationsForIdentifiers:nil];
-    self.conversations = [conversations sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"lastMessage.sentAt" ascending:NO]]];
-    
-    if (!self.searchPredicate) {
-        self.filteredConversations = [NSMutableArray arrayWithArray:self.conversations];
-    } else {
-        // perform search
-    }
-    completion();
 }
 
 - (void)reloadConversations
@@ -189,7 +189,7 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
     if (self.isSearching) {
         return self.filteredConversations;
     }
-    return self.conversations;
+    return self.conversationListDataSource.identifiers;
 }
 
 - (BOOL)isSearching
@@ -211,7 +211,11 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
-
+    if ([self.dataSource respondsToSelector:@selector(conversationListViewController:didSearchWithString:completion:)]) {
+        [self.dataSource conversationListViewController:self didSearchWithString:searchText completion:^{
+            [self.tableView reloadData];
+        }];
+    }
 }
 
 #pragma mark - Table view data source methods
@@ -223,13 +227,39 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    LYRConversation *conversation = [[self currentDataSet] objectAtIndex:indexPath.row];
-    NSString *conversationLabel = [self.dataSource conversationLabelForParticipants:conversation.participants inConversationListViewController:self];
-    
     UITableViewCell<LYRUIConversationPresenting> *conversationCell = [tableView dequeueReusableCellWithIdentifier:LYRUIConversationCellReuseIdentifier forIndexPath:indexPath];
-    [conversationCell shouldShowConversationImage:self.showsConversationImage];
-    [conversationCell presentConversation:conversation withLabel:conversationLabel];
+    [self configureCell:conversationCell atIndexPath:indexPath];
     return conversationCell;
+}
+
+- (void)configureCell:(UITableViewCell<LYRUIConversationPresenting> *)conversationCell atIndexPath:(NSIndexPath *)indexPath
+{
+    NSURL *conversationID = [[self currentDataSet] objectAtIndex:indexPath.row];
+   
+    // Present Conversation
+    LYRConversation *conversation = [[[self.layerClient conversationsForIdentifiers:[NSSet setWithObject:conversationID]] allObjects] firstObject];
+    [conversationCell presentConversation:conversation];
+    
+    // Update cell with image if needed
+    if (self.displaysConversationImage) {
+        if ([self.dataSource respondsToSelector:@selector(conversationImageForParticipants:inConversationListViewController:)]) {
+            UIImage *conversationImage = [self.dataSource conversationImageForParticipants:conversation.participants inConversationListViewController:self];
+            [conversationCell updateWithConversationImage:conversationImage];
+        } else {
+           @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Conversation View Delegate must return a conversation image" userInfo:nil]; 
+        }
+    }
+    
+    // Update Cell with unread message count
+    [conversationCell updateWithUnreadMessageCount:[self unreadMessageCountForConversation:conversation]];
+    
+    // Update Cell with Label
+    if ([self.dataSource respondsToSelector:@selector(conversationLabelForParticipants:inConversationListViewController:)]) {
+        NSString *conversationLabel = [self.dataSource conversationLabelForParticipants:conversation.participants inConversationListViewController:self];
+        [conversationCell updateWithConversationLabel:conversationLabel];
+    } else {
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Conversation View Delegate must return a conversation label" userInfo:nil];
+    }
 }
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
@@ -248,7 +278,12 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    [self.delegate conversationListViewController:self didSelectConversation:[[self currentDataSet] objectAtIndex:indexPath.row]];
+    NSURL *conversationID = [[self currentDataSet] objectAtIndex:indexPath.row];
+    LYRConversation *conversation = [[[self.layerClient conversationsForIdentifiers:[NSSet setWithObject:conversationID]] allObjects] firstObject];
+    if ([self.delegate respondsToSelector:@selector(conversationListViewController:didSelectConversation:)]){
+        [self.delegate conversationListViewController:self didSelectConversation:conversation];
+    }
+    self.selectedIndexPath = indexPath;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -256,12 +291,30 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
     return self.rowHeight;
 }
 
+- (NSUInteger)unreadMessageCountForConversation:(LYRConversation *)conversation
+{
+    NSOrderedSet *messages = [self.layerClient messagesForConversation:conversation];
+    NSUInteger unreadMessageCount = 0;
+    for (LYRMessage *message in messages) {
+        LYRRecipientStatus status = [[message.recipientStatusByUserID objectForKey:self.layerClient.authenticatedUserID] integerValue];
+        switch (status) {
+            case LYRRecipientStatusDelivered:
+                unreadMessageCount += 1;
+                break;
+                
+            default:
+                break;
+        }
+    }
+    return unreadMessageCount;
+}
+
 #pragma mark - Conversation Editing Methods
 
 // Set table view into editing mode and change left bar buttong to a done button
 - (void)editButtonTapped
 {
-    [self.tableView setEditing:YES animated:YES];
+    [self.tableView setEditing:TRUE animated:TRUE];
     UIBarButtonItem *doneButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Done"
                                                                        style:UIBarButtonItemStylePlain
                                                                       target:self
@@ -284,52 +337,49 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 #pragma mark
 #pragma mark Notification Observer Delegate Methods
 
-- (void)observerWillChangeContent:(LYRUIChangeNotificationObserver *)observer
+- (void)observer:(LYRUIConversationDataSource *)observer updateWithChanges:(NSArray *)changes
 {
-//    [self.tableView beginUpdates];
+    NSLog(@"Changes %@", changes);
+    [self.tableView beginUpdates];
+    for (LYRUIDataSourceChange *change in changes) {
+        if (change.type == LYRUIDataSourceChangeTypeUpdate) {
+            [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:change.newIndex inSection:0]]
+                                  withRowAnimation:UITableViewRowAnimationAutomatic];
+        } else if (change.type == LYRUIDataSourceChangeTypeInsert) {
+            [self.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:change.newIndex inSection:0]]
+                                  withRowAnimation:UITableViewRowAnimationAutomatic];
+        } else if (change.type == LYRUIDataSourceChangeTypeMove) {
+            [self.tableView deleteRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:change.oldIndex inSection:0]]
+                                  withRowAnimation:UITableViewRowAnimationAutomatic];
+            [self.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:change.newIndex inSection:0]]
+                                  withRowAnimation:UITableViewRowAnimationAutomatic];
+        } else if (change.type == LYRUIDataSourceChangeTypeDelete) {
+            [self.tableView deleteRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:change.newIndex inSection:0]]
+                                  withRowAnimation:UITableViewRowAnimationAutomatic];
+        }
+    }
 }
 
-- (void)observer:(LYRUIChangeNotificationObserver *)observer updateWithChanges:(NSArray *)changes
+- (void)observer:(LYRUIConversationDataSource *)observer didChangeContent:(BOOL)didChangeContent
 {
-    [self fetchLayerConversationsWithCompletion:^{
-         [self.tableView reloadData];
-    }];
-   
-//    NSLog(@"Changes %@", changes);
-//    for (LYRUIDataSourceChange *change in changes) {
-//        if (change.type == LYRUIDataSourceChangeTypeUpdate) {
-//            [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:change.newIndex inSection:0]]
-//                                  withRowAnimation:UITableViewRowAnimationAutomatic];
-//        } else if (change.type == LYRUIDataSourceChangeTypeInsert) {
-//            [self.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:change.newIndex inSection:0]]
-//                                  withRowAnimation:UITableViewRowAnimationAutomatic];
-//        } else if (change.type == LYRUIDataSourceChangeTypeMove) {
-//            [self.tableView deleteRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:change.oldIndex inSection:0]]
-//                                  withRowAnimation:UITableViewRowAnimationAutomatic];
-//            [self.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:change.newIndex inSection:0]]
-//                                  withRowAnimation:UITableViewRowAnimationAutomatic];
-//        } else if (change.type == LYRUIDataSourceChangeTypeDelete) {
-//            [self.tableView deleteRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:change.newIndex inSection:0]]
-//                                  withRowAnimation:UITableViewRowAnimationAutomatic];
-//        }
-//    }
-}
-
-- (void)observerdidChangeContent:(LYRUIChangeNotificationObserver *)observer
-{
-//    [self fetchLayerConversationsWithCompletion:^{
-//        [self.tableView endUpdates];
-//    }];
+    [self.tableView endUpdates];
 }
 
 - (void)configureTableViewCellAppearance
 {
     [[LYRUIConversationTableViewCell appearance] setConversationLabelFont:[UIFont boldSystemFontOfSize:14]];
     [[LYRUIConversationTableViewCell appearance] setConversationLableColor:[UIColor blackColor]];
+    
     [[LYRUIConversationTableViewCell appearance] setLastMessageTextFont:[UIFont systemFontOfSize:12]];
     [[LYRUIConversationTableViewCell appearance] setLastMessageTextColor:[UIColor grayColor]];
-    [[LYRUIConversationTableViewCell appearance] setDateLabelFont:LSLightFont(12)];
+    
+    [[LYRUIConversationTableViewCell appearance] setDateLabelFont:[UIFont systemFontOfSize:12]];
     [[LYRUIConversationTableViewCell appearance] setDateLabelColor:[UIColor darkGrayColor]];
+    
+    [[LYRUIConversationTableViewCell appearance] setUnreadMessageCountBackgroundColor:LSBlueColor()];
+    [[LYRUIConversationTableViewCell appearance] setUnreadMessageCountFont:[UIFont systemFontOfSize:14]];
+    [[LYRUIConversationTableViewCell appearance] setUnreadMessageCountTextColor:[UIColor whiteColor]];
+    
     [[LYRUIConversationTableViewCell appearance] setBackgroundColor:[UIColor whiteColor]];
 }
 

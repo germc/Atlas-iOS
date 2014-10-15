@@ -96,12 +96,12 @@
     }
 }
 
-- (void)updateBubbleViewWidth:(CGFloat)width
+- (void)updateWithBubbleViewWidth:(CGFloat)bubbleViewWidth
 {
     if ([[self.contentView constraints] containsObject:self.bubbleViewWidthConstraint]) {
         [self.contentView removeConstraint:self.bubbleViewWidthConstraint];
     }
-    self.bubbleViewWidth = width + 25; //Adding 24px for bubble view horizontal padding + 1px for extra coverage
+    self.bubbleViewWidth = bubbleViewWidth + 25; //Adding 24px for bubble view horizontal padding + 1px for extra coverage
     self.bubbleViewWidthConstraint = [NSLayoutConstraint constraintWithItem:self.bubbleView
                                                                   attribute:NSLayoutAttributeWidth
                                                                   relatedBy:NSLayoutRelationEqual
@@ -110,6 +110,15 @@
                                                                  multiplier:1.0
                                                                    constant:self.bubbleViewWidth];
      [self.contentView addConstraint:self.bubbleViewWidthConstraint];
+}
+
+- (void)shouldDisplayAvatarImage:(BOOL)shouldDisplayAvatarImage
+{
+    if (shouldDisplayAvatarImage) {
+        self.avatarImage.alpha = 1.0;
+    } else {
+        self.avatarImage.alpha = 0.0;
+    }
 }
 
 - (void)updateMessageCellConstraints
@@ -170,14 +179,16 @@
                                                                    attribute:NSLayoutAttributeCenterY
                                                                   multiplier:1.0
                                                                     constant:0];
-    
+    // Add avatar constraints
     [self.contentView addConstraint:self.avatarImageHeightConstraint];
     [self.contentView addConstraint:self.avatarImageBottomConstraint];
     [self.contentView addConstraint:self.avatarImageWidthConstraint];
     
+    // Add bubbleView constraints
     [self.contentView addConstraint:self.bubbleViewHeightConstraint];
     [self.contentView addConstraint:self.bubbleViewTopConstraint];
     
+    // Add date label constraints
     [self.contentView addConstraint:self.dateLabelLeftConstraint];
     [self.contentView addConstraint:self.dateLabelCenterYConstraint];
 }

@@ -17,19 +17,26 @@
 
 @protocol LYRUIConversationViewControllerDelegate <NSObject>
 
+@optional
 /**
- @abstract Tells the delegate that a user sent the supplied message parts.
+ @abstract Informs the delegate that a user sent the given message
  @param conversationViewController The conversation view controller in which the selection occurred.
  @param message The message object that was sent via Layer.
  */
 - (void)conversationViewController:(LYRUIConversationViewController *)viewController didSendMessage:(LYRMessage *)message;
 
+/**
+ @abstract Informs the delegate that a message send attempt failed
+ @param conversationViewController The conversation view controller in which the selection occurred.
+ @param message The error object describing why send failed
+ */
 - (void)conversationViewController:(LYRUIConversationViewController *)viewController didFailSendingMessageWithError:(NSError *)error;
 
 @end
 
 @protocol LYRUIConversationViewControllerDataSource <NSObject>
 
+@required
 /**
  @abstract Asks the data source for an object conforming to the `LYRUIParticipant` protocol for a given identifier
  @param conversationListViewController The conversation view controller requesting the object
@@ -49,7 +56,7 @@
  @retrun a string representing the given date
  @discussion The date string will be displayed above message cells in section headers. The date represents the `sentAt` date of a message object
  */
-- (NSString *)conversationViewController:(LYRUIConversationViewController *)conversationViewController attributedStringForDisplayOfDate:(NSDate *)date;
+- (NSAttributedString *)conversationViewController:(LYRUIConversationViewController *)conversationViewController attributedStringForDisplayOfDate:(NSDate *)date;
 
 /**
  @abstract Asks the data source for a string representation of a given `LYRRecipientStatus`
@@ -58,8 +65,17 @@
  @return a string representing the recipient status
  @discussion The date string will be displayed above message cells in section headers. The date represents the `sentAt` date of a message object
  */
-- (NSString *)conversationViewController:(LYRUIConversationViewController *)conversationViewController attributedStringForDisplayOfRecipientStatus:(NSDictionary *)recipientStatus;
+- (NSAttributedString *)conversationViewController:(LYRUIConversationViewController *)conversationViewController attributedStringForDisplayOfRecipientStatus:(NSDictionary *)recipientStatus;
 
+/**
+ @abstract Asks the data source for a to be sent as the push notification alert via Layer
+ @param conversationListViewController The conversation view controller requesting the string
+ @param message The message object to be sent by the Layer SDK
+ @return a string representing the push notification text
+ */
+- (NSString *)conversationViewController:(LYRUIConversationViewController *)conversationViewController pushNotificationTextForMessage:(LYRMessage *)message;
+
+@optional
 /**
  @abstract Asks the data source if the LRYRecipientStatus should be updated
  @param conversationListViewController The conversation view controller requesting the string
@@ -67,7 +83,7 @@
  @return a boolean value indicating if the recipient status should be updated
  @discussion As LayerKit only allows for setting messages as read, if the method returns true, the controller will mark the message as read
  */
-- (BOOL)converationViewController:(LYRUIConversationViewController *)conversationViewController shouldUpdateRecipientStatusForMessage:(LYRMessage *)message;
+- (BOOL)conversationViewController:(LYRUIConversationViewController *)conversationViewController shouldUpdateRecipientStatusForMessage:(LYRMessage *)message;
 
 @end
 
@@ -79,6 +95,7 @@
 ///---------------------------------------
 /// @name Initializing a Conversation View
 ///---------------------------------------
+
 /**
  @abstract Creates and returns a new conversation view controller initialized with the given conversation and Layer client.
  @param conversation The conversation object whose messages are to be displayed in the conversation view controller
@@ -98,6 +115,10 @@
  */
 @property (nonatomic, weak) id<LYRUIConversationViewControllerDataSource> dataSource;
 
+///---------------------------------------
+/// @name Customizing a Conversation View
+///---------------------------------------
+
 /**
  @abstract The time interval at which message dates should be displayed in seconds. Default is 60 minutes meaning that
  dates will appear centered above a message only if the previous message was sent over 60 minutes ago.
@@ -109,8 +130,14 @@
  */
 @property (nonatomic, assign) BOOL allowsEditing;
 
+/**
+ @abstract The given `LYRClient` object
+ */
 @property (nonatomic) LYRClient *layerClient;
 
+/**
+ @abstract The given `LYRConversation` object
+ */
 @property (nonatomic) LYRConversation *conversation;
 
 @end

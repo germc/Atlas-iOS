@@ -42,6 +42,7 @@ static CGFloat const LSButtonHeight = 28;
         self.inputToolBarDelegate = viewController;
         
         self.autoresizingMask = UIViewAutoresizingFlexibleHeight;
+        
         // Setup
         self.backgroundColor =  LSLighGrayColor();
         self.messageParts = [[NSMutableArray alloc] init];
@@ -63,6 +64,7 @@ static CGFloat const LSButtonHeight = 28;
         self.textInputView.layer.borderWidth = 1;
         self.textInputView.layer.cornerRadius = 4.0f;
         self.textInputView.accessibilityLabel = @"Text Input View";
+        self.textInputView.text = LYRUIPlaceHolderText;
         [self addSubview:self.textInputView];
         
         // Initialize the Send Button
@@ -74,9 +76,11 @@ static CGFloat const LSButtonHeight = 28;
         [self.rightAccessoryButton setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
         [self.rightAccessoryButton setTitleColor:LSBlueColor() forState:UIControlStateHighlighted];
         [self.rightAccessoryButton addTarget:self action:@selector(rightAccessoryButtonTapped) forControlEvents:UIControlEventTouchUpInside];
+        [self.rightAccessoryButton setHighlighted:FALSE];
         [self addSubview:self.rightAccessoryButton];
-        NSLog(@"Right accessory button state %lu", self.rightAccessoryButton.state);
         [self setupLayoutConstraints];
+        
+        [self adjustFrame];
     }
     
     return self;
@@ -137,6 +141,7 @@ static CGFloat const LSButtonHeight = 28;
 
 - (void)rightAccessoryButtonTapped
 {
+    if ([self.textInputView.text isEqualToString:LYRUIPlaceHolderText]) return;
     [self filterMessageParts];
     if (self.textInputView.text.length > 0 || self.messageParts) {
         [self.inputToolBarDelegate messageInputToolbar:self didTapRightAccessoryButton:self.rightAccessoryButton];
@@ -181,6 +186,7 @@ static CGFloat const LSButtonHeight = 28;
 
 - (BOOL)textViewShouldBeginEditing:(UITextView *)textView
 {
+    [self.rightAccessoryButton setHighlighted:TRUE];
     return YES;
 }
 

@@ -9,6 +9,8 @@
 #import <UIKit/UIKit.h>
 #import <MapKit/MapKit.h>
 
+extern NSString *const LYRUIPlaceHolderText;
+
 /**
  @abstract The LYRUIMessageComposeTextView handles displaying content in an 
  `LYRUIMessageInputToolbar`. The class provides support for displaying text, 

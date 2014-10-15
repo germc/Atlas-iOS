@@ -36,6 +36,7 @@
         self.bubbleTextView.numberOfLines = 0;
         self.bubbleTextView.userInteractionEnabled = NO;
         self.bubbleTextView.translatesAutoresizingMaskIntoConstraints = NO;
+//        self.bubbleTextView.layoutMargins = UIEdgeInsetsMake(0, 6, 0, 6);
         [self addSubview:self.bubbleTextView];
         [self updateConstraintsForTextView];
         
@@ -66,7 +67,7 @@
 
 - (void)updateWithLocation:(CLLocationCoordinate2D)location
 {
-    //[self removeSubviews];
+    //
 }
 
 - (void)updateConstraintsForTextView
@@ -75,6 +76,7 @@
     [self addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleTextView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeHeight multiplier:1.0 constant:0]];
     [self addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleTextView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1.0 constant:12]];
     [self addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleTextView attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeRight multiplier:1.0 constant:-12]];
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleTextView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1.0 constant:0]];
     [self updateConstraints];
 }
 
