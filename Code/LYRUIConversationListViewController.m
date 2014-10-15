@@ -82,7 +82,6 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
     self.conversationListDataSource = [[LYRUIConversationDataSource alloc] initWithLayerClient:self.layerClient];
     self.conversationListDataSource.delegate = self;
     
-    // UIAppearace Protocol Config
     [self configureTableViewCellAppearance];
 }
 
@@ -100,7 +99,7 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
     if (self.allowsEditing) {
         [self addEditButton];
     }
-    
+
     if (self.selectedIndexPath) {
         [self.tableView reloadRowsAtIndexPaths:@[self.selectedIndexPath]
                               withRowAnimation:UITableViewRowAnimationAutomatic];
