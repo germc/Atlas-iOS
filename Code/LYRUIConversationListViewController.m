@@ -251,7 +251,7 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
     }
     
     // Update Cell with unread message count
-    [conversationCell updateWithUnreadMessageCount:[self unreadMessageCountForConversation:conversation]];
+    //[conversationCell updateWithUnreadMessageCount:[self unreadMessageCountForConversation:conversation]];
     
     // Update Cell with Label
     if ([self.dataSource respondsToSelector:@selector(conversationLabelForParticipants:inConversationListViewController:)]) {
