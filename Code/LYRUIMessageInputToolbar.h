@@ -44,15 +44,6 @@
 
 @interface LYRUIMessageInputToolbar : UIToolbar
 
-//-----------------------------
-// Designated Initializer
-//-----------------------------
-
-/**
- @abstract Designated initialzer.
- */
-+ (instancetype)inputToolBarWithViewController:(UIViewController<LYRUIMessageInputToolbarDelegate> *)collectionViewController;
-
 //------------------------------
 // Content Display Methods
 //------------------------------

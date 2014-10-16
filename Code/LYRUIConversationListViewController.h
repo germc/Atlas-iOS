@@ -32,7 +32,7 @@
  @param conversationListViewController The conversation list in which the participant appears.
  @return The conversation label to be displayed for a given conversation in the conversation list.
  */
-- (NSString *)conversationLabelForParticipants:(NSSet *)participants inConversationListViewController:(LYRUIConversationListViewController *)conversationListViewController;
+- (NSString *)conversationListViewController:(LYRUIConversationListViewController *)conversationListViewController conversationLabelForParticipants:(NSSet *)participants ;
 
 @optional
 /**
@@ -41,7 +41,7 @@
  @param conversationListViewController The conversation list in which the image appears.
  @return The conversation image to be displayed for a given conversation in the conversation list.
  */
-- (UIImage *)conversationImageForParticipants:(NSSet *)participants inConversationListViewController:(LYRUIConversationListViewController *)conversationListViewController;
+- (UIImage *)conversationListViewController:(LYRUIConversationListViewController *)conversationListViewController conversationImageForParticipants:(NSSet *)participants;
 
 /**
  @abstract Informs the data source that a search has been made with the following search string. After the completion block is called, the `comversationListViewController:presenterForConversationAtIndex:` method will be called for each search result.  

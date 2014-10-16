@@ -242,8 +242,8 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
     
     // Update cell with image if needed
     if (self.displaysConversationImage) {
-        if ([self.dataSource respondsToSelector:@selector(conversationImageForParticipants:inConversationListViewController:)]) {
-            UIImage *conversationImage = [self.dataSource conversationImageForParticipants:conversation.participants inConversationListViewController:self];
+        if ([self.dataSource respondsToSelector:@selector(conversationListViewController:conversationImageForParticipants:)]) {
+            UIImage *conversationImage = [self.dataSource conversationListViewController:self conversationImageForParticipants:conversation.participants];
             [conversationCell updateWithConversationImage:conversationImage];
         } else {
            @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Conversation View Delegate must return a conversation image" userInfo:nil]; 
@@ -254,8 +254,8 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
     //[conversationCell updateWithUnreadMessageCount:[self unreadMessageCountForConversation:conversation]];
     
     // Update Cell with Label
-    if ([self.dataSource respondsToSelector:@selector(conversationLabelForParticipants:inConversationListViewController:)]) {
-        NSString *conversationLabel = [self.dataSource conversationLabelForParticipants:conversation.participants inConversationListViewController:self];
+    if ([self.dataSource respondsToSelector:@selector(conversationListViewController:conversationLabelForParticipants:)]) {
+        NSString *conversationLabel = [self.dataSource conversationListViewController:self conversationLabelForParticipants:conversation.participants];
         [conversationCell updateWithConversationLabel:conversationLabel];
     } else {
         @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Conversation View Delegate must return a conversation label" userInfo:nil];

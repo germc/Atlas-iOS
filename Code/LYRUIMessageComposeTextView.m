@@ -29,6 +29,7 @@ NSString *const LYRUIPlaceHolderText = @"Enter Message";
         self.font = [UIFont systemFontOfSize:14];
         self.textColor = [UIColor lightGrayColor];
         [self layoutSubviews];
+        
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(textViewBeganEditing)
                                                      name:UITextViewTextDidBeginEditingNotification
@@ -140,4 +141,9 @@ NSString *const LYRUIPlaceHolderText = @"Enter Message";
     [self layoutIfNeeded];
 }
 
+- (CGSize)contentSize
+{
+    CGSize size = [super contentSize];
+    return size;
+}
 @end

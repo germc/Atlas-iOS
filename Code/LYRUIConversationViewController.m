@@ -95,7 +95,9 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
     [self.collectionView registerClass:[LYRUIConversationCollectionViewFooter class] forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:LYRUIMessageCellFooterIdentifier];
     
     // Set the accessoryView to be a Message Input Toolbar
-    self.inputAccessoryView = [LYRUIMessageInputToolbar inputToolBarWithViewController:self];
+    LYRUIMessageInputToolbar *messageInputToolbar =  [LYRUIMessageInputToolbar new];
+    messageInputToolbar.inputToolBarDelegate = self;
+    self.inputAccessoryView = messageInputToolbar;
     
     // Configure defualt cell appearance
     [self configureMessageBubbleAppearance];
@@ -112,7 +114,6 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    // Setting the title
     
     // Setup Layer Change notification observer
     self.conversationDataSource = [[LYRUIMessageDataSource alloc] initWithClient:self.layerClient conversation:self.conversation];
@@ -598,7 +599,8 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
     CGFloat collectionViewFrameHeight = self.collectionView.frame.size.height;
     CGFloat collectionViewBottomInset = self.collectionView.contentInset.bottom;
     CGFloat collectionViewTopInset = self.collectionView.contentInset.top;
-    return CGPointMake(0, MAX(-collectionViewTopInset, contentSizeHeight - (collectionViewFrameHeight - collectionViewBottomInset)));
+    CGPoint offset = CGPointMake(0, MAX(-collectionViewTopInset, contentSizeHeight - (collectionViewFrameHeight - collectionViewBottomInset)));
+    return offset;
 }
 
 #pragma mark Handle Device Rotation
@@ -616,7 +618,7 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
 
 #pragma mark Notification Observer Delegate Methods
 
-- (void)observer:(LYRUIMessageDataSource *)observer updateWithChanges:(NSArray *)changes
+- (void)observer:(LYRUIMessageDataSource *)observer updateWithChanges:(NSArray *)changes 
 {
 //    NSLog(@"Update happening with changes:%@", changes);
 //    [self.collectionView performBatchUpdates:^{
@@ -660,7 +662,9 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
 - (void)scrollToBottomOfCollectionViewAnimated:(BOOL)animated
 {
     if (self.conversationDataSource.messages.count > 1) {
-        [self.collectionView setContentOffset:[self bottomOffset] animated:animated];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.collectionView setContentOffset:[self bottomOffset] animated:animated];
+        });
     }
 }
 

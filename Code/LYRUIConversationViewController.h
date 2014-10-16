@@ -36,7 +36,6 @@
 
 @protocol LYRUIConversationViewControllerDataSource <NSObject>
 
-@required
 /**
  @abstract Asks the data source for an object conforming to the `LYRUIParticipant` protocol for a given identifier
  @param conversationListViewController The conversation view controller requesting the object
@@ -63,7 +62,7 @@
  @param conversationListViewController The conversation view controller requesting the string
  @param conversation The `LYRRecipientStatus` object to be displayed as a string
  @return a string representing the recipient status
- @discussion The date string will be displayed above message cells in section headers. The date represents the `sentAt` date of a message object
+ @discussion The date string will be displayed below message cells. The date represents the `sentAt` date of a message object
  */
 - (NSAttributedString *)conversationViewController:(LYRUIConversationViewController *)conversationViewController attributedStringForDisplayOfRecipientStatus:(NSDictionary *)recipientStatus;
 

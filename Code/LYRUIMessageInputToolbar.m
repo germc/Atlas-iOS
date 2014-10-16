@@ -30,16 +30,10 @@ static CGFloat const LSLeftAccessoryButtonWidth = 40;
 static CGFloat const LSRightAccessoryButtonWidth = 46;
 static CGFloat const LSButtonHeight = 28;
 
-+ (instancetype)inputToolBarWithViewController:(UIViewController<LYRUIMessageInputToolbarDelegate> *)viewController
-{
-    return [[self alloc] initWithViewController:viewController];
-}
-
-- (id)initWithViewController:(UIViewController<LYRUIMessageInputToolbarDelegate>*)viewController
+- (id)init
 {
     self = [super init];
     if (self) {
-        self.inputToolBarDelegate = viewController;
         self.accessibilityLabel = @"Message Input Toolbar";
         self.autoresizingMask = UIViewAutoresizingFlexibleHeight;
         
