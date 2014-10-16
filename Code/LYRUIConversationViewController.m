@@ -25,7 +25,6 @@
 @property (nonatomic) NSOrderedSet *messages;
 @property (nonatomic) UICollectionView *collectionView;
 @property (nonatomic) LYRUIMessageDataSource *conversationDataSource;
-@property (nonatomic) dispatch_queue_t layerOperationQueue;
 @property (nonatomic) BOOL keyboardIsOnScreen;
 @property (nonatomic) CGFloat keyboardHeight;
 @property (nonatomic) UIView *inputAccessoryView;
@@ -63,9 +62,6 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
         
         // Set default configuration for public properties
         _dateDisplayTimeInterval = 60*60;
-        
-        // Message send queue
-        _layerOperationQueue = dispatch_queue_create("com.layer.messageSend", NULL);
         
         _shouldScrollToBottom = FALSE;
     }
@@ -265,7 +261,12 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
         // Should we display a date label
         if ([self shouldDisplayDateLabelForSection:indexPath.section]) {
             if ([self.dataSource respondsToSelector:@selector(conversationViewController:attributedStringForDisplayOfDate:)]) {
-                NSAttributedString *dateString = [self.dataSource conversationViewController:self attributedStringForDisplayOfDate:message.sentAt];
+                NSAttributedString *dateString = [NSAttributedString new];
+                if (message.sentAt) {
+                    dateString = [self.dataSource conversationViewController:self attributedStringForDisplayOfDate:message.sentAt];
+                } else {
+                    dateString = [self.dataSource conversationViewController:self attributedStringForDisplayOfDate:[NSDate date]];
+                }
                 NSAssert([dateString isKindOfClass:[NSAttributedString class]], @"`Date String must be an attributed string");
                 [header updateWithAttributedStringForDate:dateString];
             } else {
@@ -323,15 +324,13 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
 {
     NSNumber *recipientStatus = [message.recipientStatusByUserID objectForKey:self.layerClient.authenticatedUserID];
     if (![recipientStatus isEqualToNumber:[NSNumber numberWithInteger:LYRRecipientStatusRead]] ) {
-        dispatch_async(self.layerOperationQueue, ^{
-            NSError *error;
-            BOOL success = [self.layerClient markMessageAsRead:message error:&error];
-            if (success) {
-                NSLog(@"Message successfully marked as read");
-            } else {
-                NSLog(@"Failed to mark message as read with error %@", error);
-            }
-        });
+        NSError *error;
+        BOOL success = [self.layerClient markMessageAsRead:message error:&error];
+        if (success) {
+            NSLog(@"Message successfully marked as read");
+        } else {
+            NSLog(@"Failed to mark message as read with error %@", error);
+        }
     }
 }
 
@@ -518,28 +517,21 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
 - (void)sendMessage:(LYRMessage *)message pushText:(NSString *)pushText
 {
     self.shouldScrollToBottom = TRUE;
-    //[self.conversationDataSource sendMessages:message];
-    dispatch_async(self.layerOperationQueue,^{
-        id<LYRUIParticipant>sender = [self participantForIdentifier:self.layerClient.authenticatedUserID];
-        NSString *text = [NSString stringWithFormat:@"%@: %@", [sender fullName], pushText];
-        [self.layerClient setMetadata:@{LYRMessagePushNotificationAlertMessageKey: text,
-                                        LYRMessagePushNotificationSoundNameKey : @"default"} onObject:message];
-        NSError *error;
-        BOOL success = [self.layerClient sendMessage:message error:&error];
-        if (success) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                if ([self.delegate respondsToSelector:@selector(conversationViewController:didSendMessage:)]) {
-                    [self.delegate conversationViewController:self didSendMessage:message];
-                }
-            });
-        } else {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                if ([self.delegate respondsToSelector:@selector(conversationViewController:didFailSendingMessageWithError:)]) {
-                    [self.delegate conversationViewController:self didFailSendingMessageWithError:error];
-                }
-            });
+    id<LYRUIParticipant>sender = [self participantForIdentifier:self.layerClient.authenticatedUserID];
+    NSString *text = [NSString stringWithFormat:@"%@: %@", [sender fullName], pushText];
+    [self.layerClient setMetadata:@{LYRMessagePushNotificationAlertMessageKey: text,
+                                    LYRMessagePushNotificationSoundNameKey : @"default"} onObject:message];
+    NSError *error;
+    BOOL success = [self.layerClient sendMessage:message error:&error];
+    if (success) {
+        if ([self.delegate respondsToSelector:@selector(conversationViewController:didSendMessage:)]) {
+            [self.delegate conversationViewController:self didSendMessage:message];
         }
-    });
+    } else {
+        if ([self.delegate respondsToSelector:@selector(conversationViewController:didFailSendingMessageWithError:)]) {
+            [self.delegate conversationViewController:self didFailSendingMessageWithError:error];
+        }
+    }
 }
 
 #pragma mark UIActionSheetDelegate Methods
@@ -668,9 +660,7 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
 - (void)scrollToBottomOfCollectionViewAnimated:(BOOL)animated
 {
     if (self.conversationDataSource.messages.count > 1) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.collectionView setContentOffset:[self bottomOffset] animated:animated];
-        });
+        [self.collectionView setContentOffset:[self bottomOffset] animated:animated];
     }
 }
 

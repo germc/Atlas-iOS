@@ -40,7 +40,7 @@ static CGFloat const LSButtonHeight = 28;
     self = [super init];
     if (self) {
         self.inputToolBarDelegate = viewController;
-        
+        self.accessibilityLabel = @"Message Input Toolbar";
         self.autoresizingMask = UIViewAutoresizingFlexibleHeight;
         
         // Setup
