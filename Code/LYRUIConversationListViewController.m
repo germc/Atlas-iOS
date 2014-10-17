@@ -100,10 +100,10 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
         [self addEditButton];
     }
 
-    if (self.selectedIndexPath) {
-        [self.tableView reloadRowsAtIndexPaths:@[self.selectedIndexPath]
-                              withRowAnimation:UITableViewRowAnimationAutomatic];
-    }
+//    if (self.selectedIndexPath) {
+//        [self.tableView reloadRowsAtIndexPaths:@[self.selectedIndexPath]
+//                              withRowAnimation:UITableViewRowAnimationAutomatic];
+//    }
     self.isOnScreen = TRUE;
     
 }

@@ -439,7 +439,7 @@ static CGFloat const LSUnreadMessageCountLabelSize = 24.0f;
     } else {
         seperatorInset = self.cellHorizontalMargin * 2;
     }
-    NSLog(@"Conversation Label Font %@", self.conversationLabel.font);
+    //NSLog(@"Conversation Label Font %@", self.conversationLabel.font);
     self.separatorInset = UIEdgeInsetsMake(0, seperatorInset, 0, 0);
     self.conversationImageView.layer.cornerRadius = self.frame.size.height * self.imageSizeRatio / 2;
 }
