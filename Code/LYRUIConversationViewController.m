@@ -76,7 +76,6 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
     self.collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero
                                              collectionViewLayout:[[LYRUIConversationCollectionViewFlowLayout alloc] init]];
     self.collectionView.translatesAutoresizingMaskIntoConstraints = NO;
-    self.collectionView.contentInset = UIEdgeInsetsMake(0, 0, LYRUIMessageInputToolbarHeight, 0);
     self.collectionView.scrollIndicatorInsets = self.collectionView.contentInset;
     self.collectionView.delegate = self;
     self.collectionView.dataSource = self;
@@ -114,6 +113,9 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    
+    // Set content inset
+    self.collectionView.contentInset = UIEdgeInsetsMake(0, 0, LYRUIMessageInputToolbarHeight, 0);
     
     // Setup Layer Change notification observer
     self.conversationDataSource = [[LYRUIMessageDataSource alloc] initWithClient:self.layerClient conversation:self.conversation];

@@ -97,7 +97,7 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
     [self.searchController.searchResultsTableView registerClass:self.cellClass forCellReuseIdentifier:LYRUIConversationCellReuseIdentifier];
     
     if (self.allowsEditing) {
-        [self addEditButton];
+        //[self addEditButton];
     }
 
 //    if (self.selectedIndexPath) {
@@ -270,7 +270,7 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (editingStyle == UITableViewCellEditingStyleDelete) {
-        [self.layerClient deleteConversation:[[self currentDataSet] objectAtIndex:indexPath.row] error:nil];
+        [self.layerClient deleteConversation:[[self currentDataSet] objectAtIndex:indexPath.row] mode:LYRDeletionModeLocal error:nil];
     }
 }
 
