@@ -105,7 +105,7 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
     [panGestureRecognizer setMinimumNumberOfTouches:1];
     [panGestureRecognizer setMaximumNumberOfTouches:1];
     panGestureRecognizer.delegate = self;
-    //[self.collectionView  addGestureRecognizer:panGestureRecognizer];
+    [self.collectionView  addGestureRecognizer:panGestureRecognizer];
     
     self.accessibilityLabel = @"Conversation";
 }

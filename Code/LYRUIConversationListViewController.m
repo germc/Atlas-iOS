@@ -251,7 +251,7 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
     }
     
     // Update Cell with unread message count
-    //[conversationCell updateWithUnreadMessageCount:[self unreadMessageCountForConversation:conversation]];
+    [conversationCell updateWithUnreadMessageCount:[self unreadMessageCountForConversation:conversation]];
     
     // Update Cell with Label
     if ([self.dataSource respondsToSelector:@selector(conversationListViewController:conversationLabelForParticipants:)]) {
@@ -270,7 +270,7 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (editingStyle == UITableViewCellEditingStyleDelete) {
-        [self.layerClient deleteConversation:[[self currentDataSet] objectAtIndex:indexPath.row] mode:LYRDeletionModeLocal error:nil];
+        [self.layerClient deleteConversation:[[self currentDataSet] objectAtIndex:indexPath.row] error:nil];
     }
 }
 
