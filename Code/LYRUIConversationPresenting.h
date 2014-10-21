@@ -42,6 +42,6 @@ NSString *LYRUIMIMETypeLocation;  /// location
  @abstract Gives the receiver a number to display representing the number of unread messages in a conversation
  @param conversation The conversation image to display
  */
-- (void)updateWithUnreadMessageCount:(NSUInteger)unreadMessageCount;
+- (void)updateWithLastMessageRecipientStatus:(LYRRecipientStatus)recipientStatus;
 
 @end

@@ -27,9 +27,7 @@
 @property (nonatomic) UIFont *dateLabelFont UI_APPEARANCE_SELECTOR;
 @property (nonatomic) UIColor *dateLabelColor UI_APPEARANCE_SELECTOR;
 
-@property (nonatomic) UIColor *unreadMessageCountBackgroundColor; UI_APPEARANCE_SELECTOR;
-@property (nonatomic) UIFont *unreadMessageCountFont; UI_APPEARANCE_SELECTOR;
-@property (nonatomic) UIColor *unreadMessageCountTextColor; UI_APPEARANCE_SELECTOR;
+@property (nonatomic) UIColor *unreadMessageIndicatorBackgroundColor UI_APPEARANCE_SELECTOR;
 
 @property (nonatomic) UIColor *backgroundColor UI_APPEARANCE_SELECTOR;
 

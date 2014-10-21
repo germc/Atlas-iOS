@@ -31,12 +31,11 @@
         self.layer.cornerRadius = 12;
         self.clipsToBounds = TRUE;
         
-        self.bubbleTextView = [[UILabel alloc] init];
+        self.bubbleTextView = [[LYRUILabel alloc] init];
         self.bubbleTextView.backgroundColor = [UIColor clearColor];
         self.bubbleTextView.numberOfLines = 0;
         self.bubbleTextView.userInteractionEnabled = NO;
         self.bubbleTextView.translatesAutoresizingMaskIntoConstraints = NO;
-//        self.bubbleTextView.layoutMargins = UIEdgeInsetsMake(0, 6, 0, 6);
         [self addSubview:self.bubbleTextView];
         [self updateConstraintsForTextView];
         
@@ -45,8 +44,8 @@
         self.bubbleImageView.contentMode = UIViewContentModeScaleAspectFill;
         self.bubbleImageView.layer.cornerRadius = 12;
         self.bubbleImageView.clipsToBounds = TRUE;
-        [self addSubview:self.bubbleImageView];
-        [self updateConstraintsForImageView];
+        //[self addSubview:self.bubbleImageView];
+        //[self updateConstraintsForImageView];
     }
     return self;
 }

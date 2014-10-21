@@ -251,7 +251,8 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
     }
     
     // Update Cell with unread message count
-    [conversationCell updateWithUnreadMessageCount:[self unreadMessageCountForConversation:conversation]];
+    LYRRecipientStatus status = [[conversation.lastMessage.recipientStatusByUserID objectForKey:self.layerClient.authenticatedUserID] integerValue];
+    [conversationCell updateWithLastMessageRecipientStatus:status];
     
     // Update Cell with Label
     if ([self.dataSource respondsToSelector:@selector(conversationListViewController:conversationLabelForParticipants:)]) {
@@ -270,7 +271,9 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (editingStyle == UITableViewCellEditingStyleDelete) {
-        [self.layerClient deleteConversation:[[self currentDataSet] objectAtIndex:indexPath.row] error:nil];
+        NSURL *conversationIdentifier = [[self currentDataSet] objectAtIndex:indexPath.row];
+        LYRConversation *conversation = [self.layerClient conversationForIdentifier:conversationIdentifier];
+        [self.layerClient deleteConversation:conversation mode:LYRDeletionModeLocal error:nil];
     }
 }
 
@@ -314,6 +317,13 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 // Set table view into editing mode and change left bar buttong to a done button
 - (void)editButtonTapped
 {
+    [UIView animateWithDuration:0.5 delay:0.0 usingSpringWithDamping:0.5 initialSpringVelocity:0.5 options:UIViewAnimationOptionCurveEaseOut animations:^{
+        
+    } completion:^(BOOL finished) {
+        //
+    }];
+    
+    
     [self.tableView setEditing:TRUE animated:TRUE];
     UIBarButtonItem *doneButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Done"
                                                                        style:UIBarButtonItemStylePlain
@@ -377,9 +387,7 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
     [[LYRUIConversationTableViewCell appearance] setDateLabelFont:[UIFont systemFontOfSize:12]];
     [[LYRUIConversationTableViewCell appearance] setDateLabelColor:[UIColor darkGrayColor]];
     
-    [[LYRUIConversationTableViewCell appearance] setUnreadMessageCountBackgroundColor:LSBlueColor()];
-    [[LYRUIConversationTableViewCell appearance] setUnreadMessageCountFont:[UIFont systemFontOfSize:14]];
-    [[LYRUIConversationTableViewCell appearance] setUnreadMessageCountTextColor:[UIColor whiteColor]];
+    [[LYRUIConversationTableViewCell appearance] setUnreadMessageIndicatorBackgroundColor:LSBlueColor()];
     
     [[LYRUIConversationTableViewCell appearance] setBackgroundColor:[UIColor whiteColor]];
 }

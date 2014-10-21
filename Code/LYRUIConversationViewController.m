@@ -85,7 +85,6 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
     self.collectionView.keyboardDismissMode = UIScrollViewKeyboardDismissModeInteractive;
     self.collectionView.accessibilityLabel = @"Conversation Collection View";
     [self.view addSubview:self.collectionView];
-    [self updateCollectionViewConstraints];
     
     // Register reusable collection view cells, header and footer
     [self.collectionView registerClass:[LYRUIIncomingMessageCollectionViewCell class] forCellWithReuseIdentifier:LYRUIIncomingMessageCellIdentifier];
@@ -105,7 +104,7 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
     [panGestureRecognizer setMinimumNumberOfTouches:1];
     [panGestureRecognizer setMaximumNumberOfTouches:1];
     panGestureRecognizer.delegate = self;
-    [self.collectionView  addGestureRecognizer:panGestureRecognizer];
+    //[self.collectionView  addGestureRecognizer:panGestureRecognizer];
     
     self.accessibilityLabel = @"Conversation";
 }
@@ -114,8 +113,8 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
 {
     [super viewWillAppear:animated];
     
-    // Set content inset
-    self.collectionView.contentInset = UIEdgeInsetsMake(0, 0, LYRUIMessageInputToolbarHeight, 0);
+    // Collection View AutoLayout Config
+    [self updateCollectionViewConstraints];
     
     // Setup Layer Change notification observer
     self.conversationDataSource = [[LYRUIMessageDataSource alloc] initWithClient:self.layerClient conversation:self.conversation];
@@ -702,7 +701,7 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
                                                              toItem:self.view
                                                           attribute:NSLayoutAttributeBottom
                                                          multiplier:1.0
-                                                           constant:0]];
+                                                           constant:-self.inputAccessoryView.frame.size.height]];
 }
 
 - (void)handlePanGesture:(UIPanGestureRecognizer *)sender
