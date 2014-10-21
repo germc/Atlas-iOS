@@ -41,6 +41,7 @@
         self.bubbleViewLabel.enabledTextCheckingTypes = NSTextCheckingTypeLink;
         self.bubbleViewLabel.delegate = self;
         self.bubbleViewLabel.userInteractionEnabled = YES;
+//        self.bubbleViewLabel.backgroundColor = [UIColor redColor];
         self.bubbleViewLabel.translatesAutoresizingMaskIntoConstraints = NO;
         [self addSubview:self.bubbleViewLabel];
         [self updateConstraintsForTextView];

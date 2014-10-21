@@ -56,9 +56,16 @@
         [self.dateLabel sizeToFit];
         [self.contentView addSubview:self.dateLabel];
         
+        
         if ([self isKindOfClass:[LYRUIIncomingMessageCollectionViewCell class]]) {
             self.imageViewDiameter = 24;
+            self.bubbleView.backgroundColor = LSGrayColor();
+            self.bubbleView.bubbleViewLabel.textColor = [UIColor blackColor];
+            self.bubbleView.bubbleViewLabel.font = [UIFont systemFontOfSize:14];
         } else {
+            self.bubbleView.backgroundColor = LSBlueColor();
+            self.bubbleView.bubbleViewLabel.textColor = [UIColor whiteColor];
+            self.bubbleView.bubbleViewLabel.font = [UIFont systemFontOfSize:14];
             self.imageViewDiameter = 0;
         }
     }
@@ -177,20 +184,20 @@
     [self.contentView addConstraint:self.dateLabelLeftConstraint];
     [self.contentView addConstraint:self.dateLabelCenterYConstraint];
 }
-
-- (void)setMessageTextFont:(UIFont *)messageTextFont
-{
-    self.bubbleView.bubbleViewLabel.font = messageTextFont;
-}
-
-- (void)setMessageTextColor:(UIColor *)messageTextColor
-{
-    self.bubbleView.bubbleViewLabel.textColor = messageTextColor;
-}
-
-- (void)setBubbleViewColor:(UIColor *)bubbleViewColor
-{
-    self.bubbleView.backgroundColor = bubbleViewColor;
-}
+//
+//- (void)setMessageTextFont:(UIFont *)messageTextFont
+//{
+//    self.bubbleView.bubbleViewLabel.font = messageTextFont;
+//}
+//
+//- (void)setMessageTextColor:(UIColor *)messageTextColor
+//{
+//    self.bubbleView.bubbleViewLabel.textColor = messageTextColor;
+//}
+//
+//- (void)setBubbleViewColor:(UIColor *)bubbleViewColor
+//{
+//    self.bubbleView.backgroundColor = bubbleViewColor;
+//}
 
 @end
