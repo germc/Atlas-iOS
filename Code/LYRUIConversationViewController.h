@@ -139,4 +139,7 @@
  */
 @property (nonatomic) LYRConversation *conversation;
 
+@property (nonatomic) BOOL debugModeEnabled;
+
+
 @end

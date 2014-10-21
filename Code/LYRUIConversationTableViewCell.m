@@ -111,6 +111,7 @@ static CGFloat const LSUnreadMessageCountLabelSize = 14.0f;
         self.unreadMessageIndicator.translatesAutoresizingMaskIntoConstraints = NO;
         [self.contentView addSubview:self.unreadMessageIndicator];
         
+        self.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         self.cellHorizontalMargin = 15.0f;
         self.imageSizeRatio = 0.0f;
         self.displaysImage = FALSE;
@@ -314,7 +315,7 @@ static CGFloat const LSUnreadMessageCountLabelSize = 14.0f;
                                                                     toItem:self.contentView
                                                                  attribute:NSLayoutAttributeRight
                                                                 multiplier:1.0
-                                                                  constant:-self.cellHorizontalMargin];
+                                                                  constant:0];
 
     // Top Margin
     self.dateLabelTopConstraint = [NSLayoutConstraint constraintWithItem:self.dateLabel

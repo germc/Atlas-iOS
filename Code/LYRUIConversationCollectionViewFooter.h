@@ -20,4 +20,8 @@
  */
 - (void)updateWithAttributedStringForRecipientStatus:(NSAttributedString *)recipientStatus;
 
+- (void)updateWithAttributedStringForSentAtDate:(NSAttributedString *)sentAtDate;
+
+- (void)updateWithAttributedStringForReceivedAtDate:(NSAttributedString *)receivedAtDate;
+
 @end

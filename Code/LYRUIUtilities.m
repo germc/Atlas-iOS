@@ -19,6 +19,11 @@ CGFloat LYRUIMaxCellWidth()
     return 220;
 }
 
+CGFloat LYRUIMaxCellHeight()
+{
+    return 300;
+}
+
 CGSize LYRUITextPlainSize(NSString *text, UIFont *font)
 {
     NSAttributedString *attributedText = [[NSAttributedString alloc] initWithString:text
@@ -35,7 +40,8 @@ CGSize LYRUIImageSize(UIImage *image)
     
     UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
     if (imageView.frame.size.height > imageView.frame.size.width) {
-        itemSize = CGSizeMake(LYRUIMaxCellWidth(), 300);
+        CGFloat ratio = (LYRUIMaxCellHeight() / imageView.frame.size.height);
+        itemSize = CGSizeMake(imageView.frame.size.width * ratio, LYRUIMaxCellHeight());
     } else {
         CGFloat ratio = (LYRUIMaxCellWidth() / imageView.frame.size.width);
         itemSize = CGSizeMake(LYRUIMaxCellWidth(), imageView.frame.size.height * ratio);

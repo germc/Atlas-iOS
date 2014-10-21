@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <MapKit/MapKit.h>
 #import "LYRUILabel.h"
+#import "TTTAttributedLabel.h"
 
 /**
  @abstract The `LYRUIMessageBubbleView` class provides a lightweight, customizable view that 
@@ -36,7 +37,7 @@
 /**
  @abstract The textView object that handles displaying text
  */
-@property (nonatomic) LYRUILabel *bubbleTextView;
+@property (nonatomic) TTTAttributedLabel *bubbleViewLabel;
 
 /**
  @abstract imageView object that handles displaying images

@@ -38,7 +38,6 @@ static NSString *const LYRUIIncomingMessageCellIdentifier = @"incomingMessageCel
 static NSString *const LYRUIOutgoingMessageCellIdentifier = @"outgoingMessageCellIdentifier";
 static NSString *const LYRUIMessageCellHeaderIdentifier = @"messageCellHeaderIdentifier";
 static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIdentifier";
-static CGFloat const LYRUIMessageInputToolbarHeight = 40;
 
 - (id)init
 {
@@ -112,6 +111,9 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    
+    self.collectionView.contentInset = UIEdgeInsetsMake(0, 0, self.inputAccessoryView.frame.size.height, 0);
+    self.collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(0, 0, self.inputAccessoryView.frame.size.height, 0);
     
     // Collection View AutoLayout Config
     [self updateCollectionViewConstraints];
@@ -279,6 +281,23 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
     } else {
         LYRUIConversationCollectionViewFooter *footer = [self.collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:LYRUIMessageCellFooterIdentifier forIndexPath:indexPath];
         // Should we display a read receipt
+        if (self.debugModeEnabled) {
+            if ([self.dataSource respondsToSelector:@selector(conversationViewController:attributedStringForDisplayOfRecipientStatus:)]) {
+                // Recipient Status
+                NSAttributedString *recipientStatusString = [self.dataSource conversationViewController:self attributedStringForDisplayOfRecipientStatus:message.recipientStatusByUserID];
+                [footer updateWithAttributedStringForRecipientStatus:recipientStatusString];
+                
+                // Sent At Date
+                NSAttributedString *sentAtDate = [self.dataSource conversationViewController:self attributedStringForDisplayOfDate:message.sentAt];
+                [footer updateWithAttributedStringForSentAtDate:sentAtDate];
+                
+                // Received At Date
+                NSAttributedString *receivedAtDate = [self.dataSource conversationViewController:self attributedStringForDisplayOfDate:message.receivedAt];
+                [footer updateWithAttributedStringForReceivedAtDate:receivedAtDate];
+            } else {
+                @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"LYRUIConversationViewControllerDataSource must return an attributed string for recipient status" userInfo:nil];
+            }
+        }
         if ([self shouldDisplayReadReceiptForSection:indexPath.section]) {
             if ([self.dataSource respondsToSelector:@selector(conversationViewController:attributedStringForDisplayOfRecipientStatus:)]) {
                 NSAttributedString *recipientStatusString = [self.dataSource conversationViewController:self attributedStringForDisplayOfRecipientStatus:message.recipientStatusByUserID];
@@ -314,7 +333,9 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout referenceSizeForFooterInSection:(NSInteger)section
 {
     CGRect rect = [[UIScreen mainScreen] bounds];
-    if ([self shouldDisplayReadReceiptForSection:section]) {
+    if (self.debugModeEnabled) {
+        return CGSizeMake(rect.size.width, 60);
+    } else if ([self shouldDisplayReadReceiptForSection:section]) {
         return CGSizeMake(rect.size.width, 28);
     }
     return CGSizeMake(rect.size.width, 6);
@@ -376,6 +397,7 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
 
 - (BOOL)shouldDisplayReadReceiptForSection:(NSUInteger)section
 {
+    if (self.debugModeEnabled) return YES;
     LYRMessage *message = [self.conversationDataSource.messages objectAtIndex:section];
     if ((section == self.conversationDataSource.messages.count - 1) && [message.sentByUserID isEqualToString:self.layerClient.authenticatedUserID]) {
         return YES;
@@ -465,44 +487,43 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
 
 - (void)messageInputToolbar:(LYRUIMessageInputToolbar *)messageInputToolbar didTapRightAccessoryButton:(UIButton *)rightAccessoryButton
 {
-    for (id part in messageInputToolbar.messageParts){
-        if ([part isKindOfClass:[NSString class]]) {
-            [self sendMessageWithText:part];
+    if (messageInputToolbar.messageParts.count > 0) {
+        NSMutableArray *messagePartsToSend = [NSMutableArray new];
+        for (id part in messageInputToolbar.messageParts){
+            if ([part isKindOfClass:[NSString class]]) {
+                [messagePartsToSend addObject:[self messagePartWithText:part]];
+            }
+            if ([part isKindOfClass:[UIImage class]]) {
+                [messagePartsToSend addObject:[self messagePartWithImage:part]];
+            }
+            if ([part isKindOfClass:[CLLocation class]]) {
+                [messagePartsToSend addObject:[self messagePartWithLocation:part]];
+            }
         }
-        if ([part isKindOfClass:[UIImage class]]) {
-            [self sendMessageWithImage:part];
-        }
-        if ([part isKindOfClass:[CLLocation class]]) {
-            [self sendMessageWithLocation:part];
-        }
+        LYRMessage *message = [LYRMessage messageWithConversation:self.conversation parts:messagePartsToSend];
+        [self sendMessage:message pushText:[self pushNotificationStringForMessage:message]];
     }
 }
 
 #pragma mark Message Sent Methods
 
-- (void)sendMessageWithText:(NSString *)text
+- (LYRMessagePart *)messagePartWithText:(NSString *)text
 {
-    LYRMessagePart *part = [LYRMessagePart messagePartWithMIMEType:@"text/plain" data:[text dataUsingEncoding:NSUTF8StringEncoding]];
-    LYRMessage *message = [LYRMessage messageWithConversation:self.conversation parts:@[ part ]];
-    [self sendMessage:message pushText:[self pushNotificationStringForMessage:message]];
+    return [LYRMessagePart messagePartWithMIMEType:@"text/plain" data:[text dataUsingEncoding:NSUTF8StringEncoding]];
 }
 
-- (void)sendMessageWithImage:(UIImage *)image
+- (LYRMessagePart *)messagePartWithImage:(UIImage *)image
 {
     UIImage *adjustedImage = LYRUIAdjustOrientationForImage(image);
     NSData *compressedImageData =  LYRUIJPEGDataForImageWithConstraint(adjustedImage, 300);
-    LYRMessagePart *part = [LYRMessagePart messagePartWithMIMEType:LYRUIMIMETypeImageJPEG data:compressedImageData];
-    LYRMessage *message = [LYRMessage messageWithConversation:self.conversation parts:@[ part ]];
-    [self sendMessage:message pushText:[self pushNotificationStringForMessage:message]];
+    return [LYRMessagePart messagePartWithMIMEType:LYRUIMIMETypeImageJPEG data:compressedImageData];
 }
 
-- (void)sendMessageWithLocation:(CLLocation *)location
+- (LYRMessagePart *)messagePartWithLocation:(CLLocation *)location
 {
     NSNumber *lat = [NSNumber numberWithDouble:location.coordinate.latitude];
     NSNumber *lon = [NSNumber numberWithDouble:location.coordinate.longitude];
-    LYRMessagePart *part = [LYRMessagePart messagePartWithMIMEType:LYRUIMIMETypeLocation data:[NSJSONSerialization dataWithJSONObject: @{@"lat" : lat, @"lon" : lon} options:0 error:nil]];
-    LYRMessage *message = [LYRMessage messageWithConversation:self.conversation parts:@[ part ]];
-    [self sendMessage:message pushText:[self pushNotificationStringForMessage:message]];
+    return [LYRMessagePart messagePartWithMIMEType:LYRUIMIMETypeLocation data:[NSJSONSerialization dataWithJSONObject: @{@"lat" : lat, @"lon" : lon} options:0 error:nil]];
 }
 
 - (NSString *)pushNotificationStringForMessage:(LYRMessage *)message
@@ -701,7 +722,7 @@ static CGFloat const LYRUIMessageInputToolbarHeight = 40;
                                                              toItem:self.view
                                                           attribute:NSLayoutAttributeBottom
                                                          multiplier:1.0
-                                                           constant:-self.inputAccessoryView.frame.size.height]];
+                                                           constant:0]];
 }
 
 - (void)handlePanGesture:(UIPanGestureRecognizer *)sender

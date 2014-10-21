@@ -66,21 +66,6 @@
     return self;
 }
 
-- (void)setMessageTextColor:(UIColor *)messageTextColor
-{
-    self.bubbleView.bubbleTextView.textColor = messageTextColor;
-}
-
-- (void)setMessageTextFont:(UIFont *)messageTextFont
-{
-    self.bubbleView.bubbleTextView.font = messageTextFont;
-}
-
-- (void)setBubbleViewColor:(UIColor *)bubbleViewColor
-{
-    self.bubbleView.backgroundColor = bubbleViewColor;
-}
-
 - (void)presentMessagePart:(LYRMessagePart *)messagePart
 {
     if ([messagePart.MIMEType isEqualToString:LYRUIMIMETypeTextPlain]) {
@@ -191,6 +176,21 @@
     // Add date label constraints
     [self.contentView addConstraint:self.dateLabelLeftConstraint];
     [self.contentView addConstraint:self.dateLabelCenterYConstraint];
+}
+
+- (void)setMessageTextFont:(UIFont *)messageTextFont
+{
+    self.bubbleView.bubbleViewLabel.font = messageTextFont;
+}
+
+- (void)setMessageTextColor:(UIColor *)messageTextColor
+{
+    self.bubbleView.bubbleViewLabel.textColor = messageTextColor;
+}
+
+- (void)setBubbleViewColor:(UIColor *)bubbleViewColor
+{
+    self.bubbleView.backgroundColor = bubbleViewColor;
 }
 
 @end

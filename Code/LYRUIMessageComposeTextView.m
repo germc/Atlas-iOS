@@ -28,6 +28,7 @@ NSString *const LYRUIPlaceHolderText = @"Enter Message";
         self.textContainerInset = UIEdgeInsetsMake(6, 0, 6, 0);
         self.font = [UIFont systemFontOfSize:14];
         self.textColor = [UIColor lightGrayColor];
+        
         [self layoutSubviews];
         
         [[NSNotificationCenter defaultCenter] addObserver:self
@@ -75,7 +76,6 @@ NSString *const LYRUIPlaceHolderText = @"Enter Message";
         [mutableAttributedString replaceCharactersInRange:NSMakeRange(mutableAttributedString.length, 0)
                                      withAttributedString:attachmentString];
     }
-//    [self insertLineBreak:mutableAttributedString];
     self.attributedText = mutableAttributedString;
     
     [self layoutIfNeeded];

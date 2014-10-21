@@ -381,7 +381,7 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
     [[LYRUIConversationTableViewCell appearance] setConversationLabelFont:[UIFont boldSystemFontOfSize:14]];
     [[LYRUIConversationTableViewCell appearance] setConversationLableColor:[UIColor blackColor]];
     
-    [[LYRUIConversationTableViewCell appearance] setLastMessageTextFont:[UIFont systemFontOfSize:12]];
+    [[LYRUIConversationTableViewCell appearance] setLastMessageTextFont:[UIFont systemFontOfSize:14]];
     [[LYRUIConversationTableViewCell appearance] setLastMessageTextColor:[UIColor grayColor]];
     
     [[LYRUIConversationTableViewCell appearance] setDateLabelFont:[UIFont systemFontOfSize:12]];
