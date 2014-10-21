@@ -273,7 +273,7 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
     if (editingStyle == UITableViewCellEditingStyleDelete) {
         NSURL *conversationIdentifier = [[self currentDataSet] objectAtIndex:indexPath.row];
         LYRConversation *conversation = [self.layerClient conversationForIdentifier:conversationIdentifier];
-        [self.layerClient deleteConversation:conversation mode:LYRDeletionModeLocal error:nil];
+        [self.layerClient deleteConversation:conversation error:nil];
     }
 }
 
