@@ -73,7 +73,7 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
     
     // Setup Collection View
     self.collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero
-                                             collectionViewLayout:[[LYRUIConversationCollectionViewFlowLayout alloc] init]];
+                                             collectionViewLayout:[[UICollectionViewFlowLayout alloc] init]];
     self.collectionView.translatesAutoresizingMaskIntoConstraints = NO;
     self.collectionView.scrollIndicatorInsets = self.collectionView.contentInset;
     self.collectionView.delegate = self;
@@ -280,24 +280,6 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
         return header;
     } else {
         LYRUIConversationCollectionViewFooter *footer = [self.collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:LYRUIMessageCellFooterIdentifier forIndexPath:indexPath];
-        // Should we display a read receipt
-        if (self.debugModeEnabled) {
-            if ([self.dataSource respondsToSelector:@selector(conversationViewController:attributedStringForDisplayOfRecipientStatus:)]) {
-                // Recipient Status
-                NSAttributedString *recipientStatusString = [self.dataSource conversationViewController:self attributedStringForDisplayOfRecipientStatus:message.recipientStatusByUserID];
-                [footer updateWithAttributedStringForRecipientStatus:recipientStatusString];
-                
-                // Sent At Date
-                NSAttributedString *sentAtDate = [self.dataSource conversationViewController:self attributedStringForDisplayOfDate:message.sentAt];
-                [footer updateWithAttributedStringForSentAtDate:sentAtDate];
-                
-                // Received At Date
-                NSAttributedString *receivedAtDate = [self.dataSource conversationViewController:self attributedStringForDisplayOfDate:message.receivedAt];
-                [footer updateWithAttributedStringForReceivedAtDate:receivedAtDate];
-            } else {
-                @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"LYRUIConversationViewControllerDataSource must return an attributed string for recipient status" userInfo:nil];
-            }
-        }
         if ([self shouldDisplayReadReceiptForSection:indexPath.section]) {
             if ([self.dataSource respondsToSelector:@selector(conversationViewController:attributedStringForDisplayOfRecipientStatus:)]) {
                 NSAttributedString *recipientStatusString = [self.dataSource conversationViewController:self attributedStringForDisplayOfRecipientStatus:message.recipientStatusByUserID];
