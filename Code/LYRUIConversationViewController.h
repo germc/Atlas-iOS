@@ -15,91 +15,100 @@
 
 @class LYRUIConversationViewController;
 
+///---------------------------------------
+/// @name Delegate
+///---------------------------------------
+
 @protocol LYRUIConversationViewControllerDelegate <NSObject>
 
 @optional
 /**
- @abstract Informs the delegate that a user sent the given message
- @param conversationViewController The conversation view controller in which the selection occurred.
- @param message The message object that was sent via Layer.
+ @abstract Informs the delegate that a user succesfully sent an `LYRMessage` object.
+ @param conversationViewController The `LYRUIConversationViewController` in which the message was sent.
+ @param message The `LYRMessage` object that was sent via Layer.
  */
 - (void)conversationViewController:(LYRUIConversationViewController *)viewController didSendMessage:(LYRMessage *)message;
 
 /**
- @abstract Informs the delegate that a message send attempt failed
- @param conversationViewController The conversation view controller in which the selection occurred.
- @param message The error object describing why send failed
+ @abstract Informs the delegate that an `LYRMessage` object send attempt failed.
+ @param conversationViewController The `LYRUIConversationViewController` in which the message failed to send.
+ @param message The `LYRMessage` object which was attempted to be sent via Layer.
+ @param error The `NSError` object describing why send failed.
  */
-- (void)conversationViewController:(LYRUIConversationViewController *)viewController didFailSendingMessageWithError:(NSError *)error;
+- (void)conversationViewController:(LYRUIConversationViewController *)viewController didFailSendingMessage:(LYRMessage *)message error:(NSError *)error;
 
 @end
+
+///---------------------------------------
+/// @name Data Source
+///---------------------------------------
 
 @protocol LYRUIConversationViewControllerDataSource <NSObject>
 
 /**
- @abstract Asks the data source for an object conforming to the `LYRUIParticipant` protocol for a given identifier
- @param conversationListViewController The conversation view controller requesting the object
- @param conversation The participant identifier
- @return an object conforming to the LYRUIParticpant protocol
- @discussion the returned object will be used to display names in the controller. If there is only one other participant aside from the 
- currently authenticated user, the controller will display the objects `firstName` as the controller title. If there is more that one 
- other participant aside from the currenlty authenticated user, names will be displayed above groups of incoming message cells coming from the 
- same particpant
+ @abstract Asks the data source for an object conforming to the `LYRUIParticipant` protocol for a given identifier.
+ @param conversationViewController The `LYRUIConversationViewController` requesting the object.
+ @param participantIdentifer The participant identifier.
+ @return an object conforming to the `LYRUIParticpant` protocol.
  */
 - (id<LYRUIParticipant>)conversationViewController:(LYRUIConversationViewController *)conversationViewController participantForIdentifier:(NSString *)participantIdentifier;
 
 /**
- @abstract Asks the data source for a string representation of a given date
- @param conversationListViewController The conversation view controller requesting the string
- @param conversation The `NSDate` object to be displayed as a string
- @retrun a string representing the given date
- @discussion The date string will be displayed above message cells in section headers. The date represents the `sentAt` date of a message object
+ @abstract Asks the data source for an `NSAttributedString` representation of a given date.
+ @param conversationViewController The `LYRUIConversationViewController` requesting the string.
+ @param date The `NSDate` object to be displayed as a string.
+ @retrun an `NSAttributedString` representing the given date.
+ @discussion The date string will be displayed above message cells in section headers. The date represents the `sentAt` date of a message object. 
+ The string can be customized to appear in whichever fromat your application requires.
  */
 - (NSAttributedString *)conversationViewController:(LYRUIConversationViewController *)conversationViewController attributedStringForDisplayOfDate:(NSDate *)date;
 
 /**
- @abstract Asks the data source for a string representation of a given `LYRRecipientStatus`
- @param conversationListViewController The conversation view controller requesting the string
- @param conversation The `LYRRecipientStatus` object to be displayed as a string
- @return a string representing the recipient status
- @discussion The date string will be displayed below message cells. The date represents the `sentAt` date of a message object
+ @abstract Asks the data source for an `NSAttributedString` representation of a given `LYRRecipientStatus`.
+ @param conversationViewController The `LYRUIConversationViewController` requesting the string.
+ @param recipientStatus The `LYRRecipientStatus` object to be displayed as aquestion
+ string.
+ @return an `NSAttributedString` representing the give recipient status
+ @discussion The recipient status string will be displayed below message the most recent message sent by the authenticated user. 
  */
 - (NSAttributedString *)conversationViewController:(LYRUIConversationViewController *)conversationViewController attributedStringForDisplayOfRecipientStatus:(NSDictionary *)recipientStatus;
 
+@optional
 /**
- @abstract Asks the data source for a to be sent as the push notification alert via Layer
- @param conversationListViewController The conversation view controller requesting the string
- @param message The message object to be sent by the Layer SDK
- @return a string representing the push notification text
+ @abstract Asks the data source for an `NSString` object to be sent as the push notification alert text via Layer.
+ @param conversationViewController The `LYRUIConversationViewController` requesting the string.
+ @param message The `LYRMessage` object to be sent via Layer.
+ @return a string representing the push notification text.
+ @discussion If this method is not implemented, or it returns nil, Layer will deliver silent push notifications.
  */
 - (NSString *)conversationViewController:(LYRUIConversationViewController *)conversationViewController pushNotificationTextForMessage:(LYRMessage *)message;
 
-@optional
 /**
- @abstract Asks the data source if the LRYRecipientStatus should be updated
- @param conversationListViewController The conversation view controller requesting the string
- @param conversation the LYRMessage object that requires evaluation
+ @abstract Asks the data source if the `LRYRecipientStatus` should be updated.
+ @param conversationViewController The `LYRConversationViewController` requesting the string.
+ @param message the `LYRMessage` object that requires evaluation
  @return a boolean value indicating if the recipient status should be updated
- @discussion As LayerKit only allows for setting messages as read, if the method returns true, the controller will mark the message as read
+ @discussion If the method returns true, the controller will mark the message as read
  */
 - (BOOL)conversationViewController:(LYRUIConversationViewController *)conversationViewController shouldUpdateRecipientStatusForMessage:(LYRMessage *)message;
 
 @end
 
 /**
-@abstract The `LYRUIConversationViewController` class displays a Layer conversation and provides ability to send messages.
+ @abstract The `LYRUIConversationViewController` class presents an interface that provides for displaying 
+ a Layer conversation and the ability to send messages.
 */
 @interface LYRUIConversationViewController : UIViewController
 
 ///---------------------------------------
-/// @name Initializing a Conversation View
+/// @name Designated Initializer
 ///---------------------------------------
 
 /**
- @abstract Creates and returns a new conversation view controller initialized with the given conversation and Layer client.
- @param conversation The conversation object whose messages are to be displayed in the conversation view controller
- @param layerClient The Layer client from which to retrieve the conversations for display.
- @return A new conversation view controller.
+ @abstract Creates and returns a new `LYRUIConversationViewController` initialized with a `LYRConversation` and `LYRClient` object.
+ @param conversation The `LYRConversation` object whose messages are to be displayed in the controller.
+ @param layerClient The `LYRClient` object from which to retrieve the messages for display.
+ @return An `LYRConversationViewController` object.
  */
 + (instancetype)conversationViewControllerWithConversation:(LYRConversation *)conversation layerClient:(LYRClient *)layerClient;
 
@@ -115,31 +124,27 @@
 @property (nonatomic, weak) id<LYRUIConversationViewControllerDataSource> dataSource;
 
 ///---------------------------------------
-/// @name Customizing a Conversation View
+/// @name Configuration
 ///---------------------------------------
 
 /**
- @abstract The time interval at which message dates should be displayed in seconds. Default is 60 minutes meaning that
- dates will appear centered above a message only if the previous message was sent over 60 minutes ago.
+ @abstract The time interval at which message dates should be displayed in seconds. Default is 15 minutes meaning that
+ dates will appear centered above a message only if the previous message was sent over 15 minutes ago.
  */
 @property (nonatomic) NSTimeInterval dateDisplayTimeInterval;
 
-/**
- @abstract Boolean value to determine whether or not the conversation view controller permits editing
- */
-@property (nonatomic, assign) BOOL allowsEditing;
+///---------------------------------------
+/// @name Public Accessors
+///---------------------------------------
 
 /**
- @abstract The given `LYRClient` object
+ @abstract The `LYRClient` object used to initailize the controller
  */
 @property (nonatomic) LYRClient *layerClient;
 
 /**
- @abstract The given `LYRConversation` object
+ @abstract The `LYRConversation` object used to initailize the controller
  */
 @property (nonatomic) LYRConversation *conversation;
-
-@property (nonatomic) BOOL debugModeEnabled;
-
 
 @end

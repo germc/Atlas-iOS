@@ -21,13 +21,18 @@ UIColor *LSLighGrayColor()
     return [UIColor colorWithRed:240.0f/255.0f green:240.0f/255.0f blue:240.0f/255.0f alpha:1.0];
 }
 
+UIFont *LSLightFont(CGFloat size)
+{
+    return [UIFont fontWithName:@"HelveticaNeue-Light" size:size];
+}
+
 UIFont *LSMediumFont(CGFloat size)
 {
-    return [UIFont systemFontOfSize:size];
+    return [UIFont fontWithName:@"HelveticaNeue" size:size];
 }
 
 UIFont *LSBoldFont(CGFloat size)
 {
-    return [UIFont boldSystemFontOfSize:size];
+    return [UIFont fontWithName:@"HelveticaNeue-Medium" size:size];
 }
 

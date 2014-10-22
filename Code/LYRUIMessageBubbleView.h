@@ -8,7 +8,6 @@
 
 #import <UIKit/UIKit.h>
 #import <MapKit/MapKit.h>
-#import "LYRUILabel.h"
 #import "TTTAttributedLabel.h"
 
 /**
@@ -37,11 +36,17 @@
 /**
  @abstract The textView object that handles displaying text
  */
-@property (nonatomic) TTTAttributedLabel *bubbleViewLabel;
+@property (nonatomic) UILabel *bubbleViewLabel;
 
 /**
  @abstract imageView object that handles displaying images
  */
 @property (nonatomic) UIImageView *bubbleImageView;
+
+- (void)setFont:(UIFont *)font;
+
+- (void)setTextColor:(UIColor *)textColor;
+
+- (void)setBubbleBackgroundColor:(UIColor *)backgroundColor;
 
 @end

@@ -7,27 +7,22 @@
 //
 
 #import "LYRUIConversationViewController.h"
-#import "LYRUIConversationCollectionViewFlowLayout.h"
 #import "LYRUIOutgoingMessageCollectionViewCell.h"
 #import "LYRUIIncomingMessageCollectionViewCell.h"
 #import "LYRUIConversationCollectionViewHeader.h"
 #import "LYRUIConversationCollectionViewFooter.h"
 #import "LYRUIConstants.h"
 #import "LYRUIUtilities.h"
-#import "LYRUIMessageBubbleView.h"
 #import "LYRUIMessageInputToolbar.h"
-#import "LYRUIDataSourceChange.h"
 #import "LYRUIMessageDataSource.h"
-#import "LYRUIParticipantTableViewController.h"
 
 @interface LYRUIConversationViewController () <UICollectionViewDataSource, UICollectionViewDelegate, LYRUIMessageInputToolbarDelegate, UIActionSheetDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, LYRUIMessageDataSourceDelegate, UIGestureRecognizerDelegate>
 
-@property (nonatomic) NSOrderedSet *messages;
+@property (nonatomic) LYRUIMessageDataSource *messageDataSource;
 @property (nonatomic) UICollectionView *collectionView;
-@property (nonatomic) LYRUIMessageDataSource *conversationDataSource;
+@property (nonatomic) UIView *inputAccessoryView;
 @property (nonatomic) BOOL keyboardIsOnScreen;
 @property (nonatomic) CGFloat keyboardHeight;
-@property (nonatomic) UIView *inputAccessoryView;
 @property (nonatomic) BOOL shouldScrollToBottom;
 
 @end
@@ -38,11 +33,6 @@ static NSString *const LYRUIIncomingMessageCellIdentifier = @"incomingMessageCel
 static NSString *const LYRUIOutgoingMessageCellIdentifier = @"outgoingMessageCellIdentifier";
 static NSString *const LYRUIMessageCellHeaderIdentifier = @"messageCellHeaderIdentifier";
 static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIdentifier";
-
-- (id)init
-{
-    @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Failed to call designated initializer." userInfo:nil];
-}
 
 + (instancetype)conversationViewControllerWithConversation:(LYRConversation *)conversation layerClient:(LYRClient *)layerClient;
 {
@@ -59,19 +49,28 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
         _conversation = conversation;
         _layerClient = layerClient;
         
-        // Set default configuration for public properties
-        _dateDisplayTimeInterval = 60*60;
+        // Set default configuration for public configuration properties
+        _dateDisplayTimeInterval = 60*15;
         
-        _shouldScrollToBottom = FALSE;
+        // Configure default UIAppearance Proxy
+        [self configureMessageBubbleAppearance];
     }
     return self;
+}
+
+- (id)init
+{
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Failed to call designated initializer." userInfo:nil];
+    return nil;
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     
-    // Setup Collection View
+    self.accessibilityLabel = @"Conversation";
+    
+    // Collection View Setup
     self.collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero
                                              collectionViewLayout:[[UICollectionViewFlowLayout alloc] init]];
     self.collectionView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -85,19 +84,10 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
     self.collectionView.accessibilityLabel = @"Conversation Collection View";
     [self.view addSubview:self.collectionView];
     
-    // Register reusable collection view cells, header and footer
-    [self.collectionView registerClass:[LYRUIIncomingMessageCollectionViewCell class] forCellWithReuseIdentifier:LYRUIIncomingMessageCellIdentifier];
-    [self.collectionView registerClass:[LYRUIOutgoingMessageCollectionViewCell class] forCellWithReuseIdentifier:LYRUIOutgoingMessageCellIdentifier];
-    [self.collectionView registerClass:[LYRUIConversationCollectionViewHeader class] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:LYRUIMessageCellHeaderIdentifier];
-    [self.collectionView registerClass:[LYRUIConversationCollectionViewFooter class] forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:LYRUIMessageCellFooterIdentifier];
-    
     // Set the accessoryView to be a Message Input Toolbar
     LYRUIMessageInputToolbar *messageInputToolbar =  [LYRUIMessageInputToolbar new];
     messageInputToolbar.inputToolBarDelegate = self;
     self.inputAccessoryView = messageInputToolbar;
-    
-    // Configure defualt cell appearance
-    [self configureMessageBubbleAppearance];
     
     UIPanGestureRecognizer *panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanGesture:)];
     [panGestureRecognizer setMinimumNumberOfTouches:1];
@@ -105,23 +95,26 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
     panGestureRecognizer.delegate = self;
     //[self.collectionView  addGestureRecognizer:panGestureRecognizer];
     
-    self.accessibilityLabel = @"Conversation";
+    // Setup Layer Change notification observer
+    self.messageDataSource = [[LYRUIMessageDataSource alloc] initWithClient:self.layerClient conversation:self.conversation];
+    self.messageDataSource.delegate = self;
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
     
+    // Register reusable collection view cells, header and footer
+    [self.collectionView registerClass:[LYRUIIncomingMessageCollectionViewCell class] forCellWithReuseIdentifier:LYRUIIncomingMessageCellIdentifier];
+    [self.collectionView registerClass:[LYRUIOutgoingMessageCollectionViewCell class] forCellWithReuseIdentifier:LYRUIOutgoingMessageCellIdentifier];
+    [self.collectionView registerClass:[LYRUIConversationCollectionViewHeader class] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:LYRUIMessageCellHeaderIdentifier];
+    [self.collectionView registerClass:[LYRUIConversationCollectionViewFooter class] forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:LYRUIMessageCellFooterIdentifier];
+    
     self.collectionView.contentInset = UIEdgeInsetsMake(0, 0, self.inputAccessoryView.frame.size.height, 0);
     self.collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(0, 0, self.inputAccessoryView.frame.size.height, 0);
     
     // Collection View AutoLayout Config
     [self updateCollectionViewConstraints];
-    
-    // Setup Layer Change notification observer
-    self.conversationDataSource = [[LYRUIMessageDataSource alloc] initWithClient:self.layerClient conversation:self.conversation];
-    self.conversationDataSource.delegate = self;
-    
     [self setConversationViewTitle];
     [self scrollToBottomOfCollectionViewAnimated:NO];
 }
@@ -129,10 +122,6 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    
-    // Setup Layer Change notification observer
-    self.conversationDataSource = [[LYRUIMessageDataSource alloc] initWithClient:self.layerClient conversation:self.conversation];
-    self.conversationDataSource.delegate = self;
     
     // Register for keyboard notifications
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -142,7 +131,6 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(keyboardWillBeHidden:)
                                                  name:UIKeyboardWillHideNotification object:nil];
-    
     self.keyboardIsOnScreen = NO;
 }
 
@@ -150,8 +138,8 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
 {
     [super viewWillDisappear:animated];
     
-    self.conversationDataSource.delegate = nil;
-    self.conversationDataSource = nil;
+    self.messageDataSource.delegate = nil;
+    self.messageDataSource = nil;
     
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:UIKeyboardWillShowNotification
@@ -192,19 +180,19 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
     // MessageParts correspond to rows in a section
-    LYRMessage *message = [self.conversationDataSource.messages objectAtIndex:section];
+    LYRMessage *message = [self.messageDataSource.messages objectAtIndex:section];
     return message.parts.count;
 }
 
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
 {
     // Messages correspond to sections
-    return self.conversationDataSource.messages.count;
+    return self.messageDataSource.messages.count;
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    LYRMessage *message = [self.conversationDataSource.messages objectAtIndex:indexPath.section];
+    LYRMessage *message = [self.messageDataSource.messages objectAtIndex:indexPath.section];
     LYRUIMessageCollectionViewCell <LYRUIMessagePresenting> *cell;
     if ([self.layerClient.authenticatedUserID isEqualToString:message.sentByUserID]) {
         // If the message was sent by the currently authenticated user, it is outgoing
@@ -213,13 +201,12 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
         // If the message was sent by someone other than the currently authenticated user, it is incoming
         cell = [self.collectionView dequeueReusableCellWithReuseIdentifier:LYRUIIncomingMessageCellIdentifier forIndexPath:indexPath];
     }
-    [self configureCell:cell atIndexPath:indexPath];
+    [self configureCell:cell forMessage:message indexPath:indexPath];
     return cell;
 }
 
-- (void)configureCell:(LYRUIMessageCollectionViewCell <LYRUIMessagePresenting> *)cell atIndexPath:(NSIndexPath *)indexPath
+- (void)configureCell:(LYRUIMessageCollectionViewCell <LYRUIMessagePresenting> *)cell forMessage:(LYRMessage *)message indexPath:(NSIndexPath *)indexPath
 {
-    LYRMessage *message = [self.conversationDataSource.messages objectAtIndex:indexPath.section];
     LYRMessagePart *messagePart = [message.parts objectAtIndex:indexPath.row];
     [cell presentMessagePart:messagePart];
     [cell updateWithBubbleViewWidth:[self sizeForItemAtIndexPath:indexPath].width];
@@ -229,14 +216,6 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
             [self updateRecipientStatusForMessage:message];
         }
     }
-}
-
-#pragma mark
-#pragma mark Collection View Delegate
-
-- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
-{
-    //Nothing to do for now
 }
 
 #pragma mark – UICollectionViewDelegateFlowLayout Methods
@@ -250,10 +229,10 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
 
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
 {
-    LYRMessage *message = [self.conversationDataSource.messages objectAtIndex:indexPath.section];
+    LYRMessage *message = [self.messageDataSource.messages objectAtIndex:indexPath.section];
     if (kind == UICollectionElementKindSectionHeader ) {
         LYRUIConversationCollectionViewHeader *header = [self.collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:LYRUIMessageCellHeaderIdentifier forIndexPath:indexPath];
-        // Should we display a sender label
+        // Should we display a sender label?
         if ([self shouldDisplaySenderLabelForSection:indexPath.section]) {
             id<LYRUIParticipant>participant = [self participantForIdentifier:message.sentByUserID];
             if(participant) {
@@ -262,7 +241,7 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
                 [header updateWithAttributedStringForParticipantName:[[NSAttributedString alloc] initWithString:@"No Matching Participant"]];
             }
         }
-        // Should we display a date label
+        // Should we display a date label?
         if ([self shouldDisplayDateLabelForSection:indexPath.section]) {
             if ([self.dataSource respondsToSelector:@selector(conversationViewController:attributedStringForDisplayOfDate:)]) {
                 NSAttributedString *dateString = [NSAttributedString new];
@@ -274,7 +253,7 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
                 NSAssert([dateString isKindOfClass:[NSAttributedString class]], @"`Date String must be an attributed string");
                 [header updateWithAttributedStringForDate:dateString];
             } else {
-                @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"LYRUIConversationViewControllerDataSource must return an attributed string for Data" userInfo:nil];
+                @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"LYRUIConversationViewControllerDataSource must return an attributed string for Date" userInfo:nil];
             }
         }
         return header;
@@ -296,16 +275,19 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section
 {
     CGFloat height = 0;
-    LYRMessage *message = [self.conversationDataSource.messages objectAtIndex:section];
+    LYRMessage *message = [self.messageDataSource.messages objectAtIndex:section];
     if (section > 0) {
-        LYRMessage *previousMessage = [self.conversationDataSource.messages objectAtIndex:section - 1];
+        // 1. If previous message was sent by a different user, add 10px
+        LYRMessage *previousMessage = [self.messageDataSource.messages objectAtIndex:section - 1];
         if (![message.sentByUserID isEqualToString:previousMessage.sentByUserID]) {
             height += 10;
         }
     }
+    // 2. If date label is shown, add 30px
     if ([self shouldDisplayDateLabelForSection:section]) {
         height += 30;
     }
+    // 3. If sender label is shown, add 30px
     if ([self shouldDisplaySenderLabelForSection:section]) {
         height += 30;
     }
@@ -314,13 +296,11 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout referenceSizeForFooterInSection:(NSInteger)section
 {
-    CGRect rect = [[UIScreen mainScreen] bounds];
-    if (self.debugModeEnabled) {
-        return CGSizeMake(rect.size.width, 60);
-    } else if ([self shouldDisplayReadReceiptForSection:section]) {
-        return CGSizeMake(rect.size.width, 28);
+    // If we display a read receipt...
+    if ([self shouldDisplayReadReceiptForSection:section]) {
+        return CGSizeMake([[UIScreen mainScreen] bounds].size.width, 28);
     }
-    return CGSizeMake(rect.size.width, 6);
+    return CGSizeMake([[UIScreen mainScreen] bounds].size.width, 6);
 }
 
 #pragma mark - Recipient Status Methods
@@ -343,17 +323,16 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
 
 - (BOOL)shouldDisplayDateLabelForSection:(NSUInteger)section
 {
-    // If it is the first section, show date label
+    // Always show date label for the first section
     if (section == 0) return YES;
-    LYRMessage *previousMessage;
-    LYRMessage *message = [self.conversationDataSource.messages objectAtIndex:section];
+    LYRMessage *message = [self.messageDataSource.messages objectAtIndex:section];
     if (section > 0) {
-        previousMessage = [self.conversationDataSource.messages objectAtIndex:section - 1];
-    }
-    NSTimeInterval interval = [message.receivedAt timeIntervalSinceDate:previousMessage.receivedAt];
-    // If it has been 60min since last message, show date label
-    if (interval > self.dateDisplayTimeInterval) {
-        return YES;
+        LYRMessage *previousMessage = [self.messageDataSource.messages objectAtIndex:section - 1];
+        NSTimeInterval interval = [message.receivedAt timeIntervalSinceDate:previousMessage.receivedAt];
+        // If it has been 60min since last message, show date label
+        if (interval > self.dateDisplayTimeInterval) {
+            return YES;
+        }
     }
     // Otherwise, don't show date label
     return NO;
@@ -361,15 +340,20 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
 
 - (BOOL)shouldDisplaySenderLabelForSection:(NSUInteger)section
 {
-    LYRMessage *message = [self.conversationDataSource.messages objectAtIndex:section];
-    if ([message.sentByUserID isEqualToString:self.layerClient.authenticatedUserID]) {
-        return NO;
-    }
+    // 1. If conversation only has 2 participnat, don't show sender label
     if (!self.conversation.participants.count > 2) {
         return NO;
     }
+    
+    // 2. If the message if from current user, don't show sender label
+    LYRMessage *message = [self.messageDataSource.messages objectAtIndex:section];
+    if ([message.sentByUserID isEqualToString:self.layerClient.authenticatedUserID]) {
+        return NO;
+    }
+
+    // 3. If the previous message was send by the same user, don't show label
     if (section > 0) {
-        LYRMessage *previousMessage = [self.conversationDataSource.messages objectAtIndex:section - 1];
+        LYRMessage *previousMessage = [self.messageDataSource.messages objectAtIndex:section - 1];
         if ([previousMessage.sentByUserID isEqualToString:message.sentByUserID]) {
             return NO;
         }
@@ -379,9 +363,9 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
 
 - (BOOL)shouldDisplayReadReceiptForSection:(NSUInteger)section
 {
-    if (self.debugModeEnabled) return YES;
-    LYRMessage *message = [self.conversationDataSource.messages objectAtIndex:section];
-    if ((section == self.conversationDataSource.messages.count - 1) && [message.sentByUserID isEqualToString:self.layerClient.authenticatedUserID]) {
+    // Only show read receipt if last message was send by currently authenticated user
+    LYRMessage *message = [self.messageDataSource.messages objectAtIndex:section];
+    if ((section == self.messageDataSource.messages.count - 1) && [message.sentByUserID isEqualToString:self.layerClient.authenticatedUserID]) {
         return YES;
     }
     return NO;
@@ -389,17 +373,15 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
 
 - (BOOL)shouldDisplayAvatarImageForIndexPath:(NSIndexPath *)indexPath
 {
-    if (indexPath.section == self.collectionView.numberOfSections - 1) {
-        return TRUE;
+    LYRMessage *message = [self.messageDataSource.messages objectAtIndex:indexPath.section];
+    if ([message.sentByUserID isEqualToString:self.layerClient.authenticatedUserID]) {
+        return NO;
     }
-    LYRMessage *message = [self.conversationDataSource.messages objectAtIndex:indexPath.section];
     if (indexPath.section < self.collectionView.numberOfSections - 1) {
-        LYRMessage *nextMessage = [self.conversationDataSource.messages objectAtIndex:indexPath.section + 1];
+        LYRMessage *nextMessage = [self.messageDataSource.messages objectAtIndex:indexPath.section + 1];
         // If the next message is sent by the same user, no
         if ([nextMessage.sentByUserID isEqualToString:message.sentByUserID]) {
             return FALSE;
-        } else {
-            return TRUE;
         }
     }
     return TRUE;
@@ -407,7 +389,7 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
 
 - (CGSize)sizeForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    LYRMessage *message = [self.conversationDataSource.messages objectAtIndex:indexPath.section];
+    LYRMessage *message = [self.messageDataSource.messages objectAtIndex:indexPath.section];
     LYRMessagePart *part = [message.parts objectAtIndex:indexPath.row];
     
     CGSize size;
@@ -430,8 +412,7 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
 - (void)keyboardWasShown:(NSNotification*)notification
 {
     self.keyboardIsOnScreen = TRUE;
-    NSDictionary* info = [notification userInfo];
-    self.keyboardHeight = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue].size.height;
+    self.keyboardHeight = [[[notification userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue].size.height;
     [UIView beginAnimations:nil context:NULL];
     [UIView setAnimationDuration:[notification.userInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue]];
     [UIView setAnimationCurve:[notification.userInfo[UIKeyboardAnimationCurveUserInfoKey] integerValue]];
@@ -439,7 +420,6 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
     [self updateCollectionViewInsets];
     [UIView commitAnimations];
     [self scrollToBottomOfCollectionViewAnimated:TRUE];
-    self.keyboardIsOnScreen = TRUE;
 }
 
 - (void)keyboardWillBeHidden:(NSNotification*)notification
@@ -498,14 +478,16 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
 {
     UIImage *adjustedImage = LYRUIAdjustOrientationForImage(image);
     NSData *compressedImageData =  LYRUIJPEGDataForImageWithConstraint(adjustedImage, 300);
-    return [LYRMessagePart messagePartWithMIMEType:LYRUIMIMETypeImageJPEG data:compressedImageData];
+    return [LYRMessagePart messagePartWithMIMEType:LYRUIMIMETypeImageJPEG
+                                              data:compressedImageData];
 }
 
 - (LYRMessagePart *)messagePartWithLocation:(CLLocation *)location
 {
     NSNumber *lat = [NSNumber numberWithDouble:location.coordinate.latitude];
     NSNumber *lon = [NSNumber numberWithDouble:location.coordinate.longitude];
-    return [LYRMessagePart messagePartWithMIMEType:LYRUIMIMETypeLocation data:[NSJSONSerialization dataWithJSONObject: @{@"lat" : lat, @"lon" : lon} options:0 error:nil]];
+    return [LYRMessagePart messagePartWithMIMEType:LYRUIMIMETypeLocation
+                                              data:[NSJSONSerialization dataWithJSONObject: @{@"lat" : lat, @"lon" : lon} options:0 error:nil]];
 }
 
 - (NSString *)pushNotificationStringForMessage:(LYRMessage *)message
@@ -513,9 +495,7 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
     NSString *pushText;
     if ( [self.dataSource respondsToSelector:@selector(conversationViewController:pushNotificationTextForMessage:)]) {
         pushText = [self.dataSource conversationViewController:self pushNotificationTextForMessage:message];
-    } else {
-        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"LYRUIConversationViewControllerDataSource must return a Push Notification string" userInfo:nil];
-    }
+    } 
     return pushText;
 }
 
@@ -523,9 +503,11 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
 {
     self.shouldScrollToBottom = TRUE;
     id<LYRUIParticipant>sender = [self participantForIdentifier:self.layerClient.authenticatedUserID];
-    NSString *text = [NSString stringWithFormat:@"%@: %@", [sender fullName], pushText];
-    [self.layerClient setMetadata:@{LYRMessagePushNotificationAlertMessageKey: text,
-                                    LYRMessagePushNotificationSoundNameKey : @"default"} onObject:message];
+    if (pushText) {
+        NSString *text = [NSString stringWithFormat:@"%@: %@", [sender fullName], pushText];
+        [self.layerClient setMetadata:@{LYRMessagePushNotificationAlertMessageKey: text,
+                                        LYRMessagePushNotificationSoundNameKey : @"default"} onObject:message];
+    }
     NSError *error;
     BOOL success = [self.layerClient sendMessage:message error:&error];
     if (success) {
@@ -533,8 +515,8 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
             [self.delegate conversationViewController:self didSendMessage:message];
         }
     } else {
-        if ([self.delegate respondsToSelector:@selector(conversationViewController:didFailSendingMessageWithError:)]) {
-            [self.delegate conversationViewController:self didFailSendingMessageWithError:error];
+        if ([self.delegate respondsToSelector:@selector(conversationViewController:didFailSendingMessage:error:)]) {
+            [self.delegate conversationViewController:self didFailSendingMessage:message error:error];
         }
     }
 }
@@ -568,7 +550,6 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
         picker.delegate = self;
         picker.sourceType = sourceType;
         [self.navigationController presentViewController:picker animated:YES completion:nil];
-        NSLog(@"Camera is available");
     }
 }
 
@@ -665,7 +646,7 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
 
 - (void)scrollToBottomOfCollectionViewAnimated:(BOOL)animated
 {
-    if (self.conversationDataSource.messages.count > 1) {
+    if (self.messageDataSource.messages.count > 1) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.collectionView setContentOffset:[self bottomOffset] animated:animated];
         });
@@ -710,7 +691,7 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
 - (void)handlePanGesture:(UIPanGestureRecognizer *)sender
 {
     CGFloat inset = [sender translationInView:self.collectionView].x * 0.5;
-    LYRUIConversationCollectionViewFlowLayout *layout = (LYRUIConversationCollectionViewFlowLayout *)self.collectionView.collectionViewLayout;
+    UICollectionViewFlowLayout *layout = (UICollectionViewFlowLayout *)self.collectionView.collectionViewLayout;
     if(sender.state == UIGestureRecognizerStateEnded || sender.state == UIGestureRecognizerStateCancelled) {
         [self.collectionView performBatchUpdates:^{
             layout.sectionInset = UIEdgeInsetsMake(0, 0, 0, 0);
@@ -744,11 +725,11 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
 - (void)configureMessageBubbleAppearance
 {
     [[LYRUIOutgoingMessageCollectionViewCell appearance] setMessageTextColor:[UIColor whiteColor]];
-    [[LYRUIOutgoingMessageCollectionViewCell appearance] setMessageTextFont:[UIFont systemFontOfSize:14]];
+    [[LYRUIOutgoingMessageCollectionViewCell appearance] setMessageTextFont:LSMediumFont(14)];
     [[LYRUIOutgoingMessageCollectionViewCell appearance] setBubbleViewColor:LSBlueColor()];
     
     [[LYRUIIncomingMessageCollectionViewCell appearance] setMessageTextColor:[UIColor blackColor]];
-    [[LYRUIIncomingMessageCollectionViewCell appearance] setMessageTextFont:[UIFont systemFontOfSize:14]];
+    [[LYRUIIncomingMessageCollectionViewCell appearance] setMessageTextFont:LSMediumFont(14)];
     [[LYRUIIncomingMessageCollectionViewCell appearance] setBubbleViewColor:LSLighGrayColor()];
 }
 

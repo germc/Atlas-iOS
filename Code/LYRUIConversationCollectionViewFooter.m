@@ -43,12 +43,14 @@
 {
     self.recipientStatusLabel.attributedText = recipientStatus;
     [self.recipientStatusLabel sizeToFit];
+    // Remove constraints if they exist
     if ([self.constraints containsObject:self.recipientStatusLabelWidthConstraint]) {
         [self removeConstraint:self.recipientStatusLabelWidthConstraint];
     }
     if ([self.constraints containsObject:self.recipientStatusLabelHeightConstraint]) {
         [self removeConstraint:self.recipientStatusLabelHeightConstraint];
     }
+    // Add constraints
     self.recipientStatusLabelWidthConstraint = [NSLayoutConstraint constraintWithItem:self.recipientStatusLabel attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:self.recipientStatusLabel.frame.size.width];
     self.recipientStatusLabelHeightConstraint = [NSLayoutConstraint constraintWithItem:self.recipientStatusLabel attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:self.recipientStatusLabel.frame.size.height];
     [self addConstraint:self.recipientStatusLabelWidthConstraint];

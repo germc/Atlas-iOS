@@ -14,6 +14,8 @@ UIColor *LSGrayColor();
 
 UIColor *LSLighGrayColor();
 
+UIFont *LSLightFont(CGFloat size);
+
 UIFont *LSMediumFont(CGFloat size);
 
 UIFont *LSBoldFont(CGFloat size);

@@ -36,7 +36,6 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-        self.backgroundColor = [UIColor whiteColor];
         
         self.bubbleView = [[LYRUIMessageBubbleView alloc] init];
         self.bubbleView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -56,16 +55,9 @@
         [self.dateLabel sizeToFit];
         [self.contentView addSubview:self.dateLabel];
         
-        
         if ([self isKindOfClass:[LYRUIIncomingMessageCollectionViewCell class]]) {
             self.imageViewDiameter = 24;
-            self.bubbleView.backgroundColor = LSGrayColor();
-            self.bubbleView.bubbleViewLabel.textColor = [UIColor blackColor];
-            self.bubbleView.bubbleViewLabel.font = [UIFont systemFontOfSize:14];
         } else {
-            self.bubbleView.backgroundColor = LSBlueColor();
-            self.bubbleView.bubbleViewLabel.textColor = [UIColor whiteColor];
-            self.bubbleView.bubbleViewLabel.font = [UIFont systemFontOfSize:14];
             self.imageViewDiameter = 0;
         }
     }
@@ -93,7 +85,7 @@
     if ([[self.contentView constraints] containsObject:self.bubbleViewWidthConstraint]) {
         [self.contentView removeConstraint:self.bubbleViewWidthConstraint];
     }
-    self.bubbleViewWidth = bubbleViewWidth + 25; //Adding 24px for bubble view horizontal padding + 1px for extra coverage
+    self.bubbleViewWidth = bubbleViewWidth + 26; //Adding 24px for bubble view horizontal padding + 2px for extra coverage
     self.bubbleViewWidthConstraint = [NSLayoutConstraint constraintWithItem:self.bubbleView
                                                                   attribute:NSLayoutAttributeWidth
                                                                   relatedBy:NSLayoutRelationEqual
@@ -184,20 +176,34 @@
     [self.contentView addConstraint:self.dateLabelLeftConstraint];
     [self.contentView addConstraint:self.dateLabelCenterYConstraint];
 }
-//
-//- (void)setMessageTextFont:(UIFont *)messageTextFont
-//{
-//    self.bubbleView.bubbleViewLabel.font = messageTextFont;
-//}
-//
-//- (void)setMessageTextColor:(UIColor *)messageTextColor
-//{
-//    self.bubbleView.bubbleViewLabel.textColor = messageTextColor;
-//}
-//
-//- (void)setBubbleViewColor:(UIColor *)bubbleViewColor
-//{
-//    self.bubbleView.backgroundColor = bubbleViewColor;
-//}
 
+- (void)setMessageTextFont:(UIFont *)messageTextFont
+{
+    self.bubbleView.bubbleViewLabel.font = messageTextFont;
+}
+
+- (void)setMessageTextColor:(UIColor *)messageTextColor
+{
+    self.bubbleView.bubbleViewLabel.textColor = messageTextColor;
+}
+
+- (void)setBubbleViewColor:(UIColor *)bubbleViewColor
+{
+    self.bubbleView.backgroundColor = bubbleViewColor;
+}
+
+- (UIFont *)messageTextFont
+{
+    return self.bubbleView.bubbleViewLabel.font;
+}
+
+- (UIColor *)messageTextColor
+{
+    return self.bubbleView.bubbleViewLabel.textColor;
+}
+
+- (UIColor *)bubbleViewColor
+{
+    return self.bubbleView.backgroundColor;
+}
 @end

@@ -15,7 +15,7 @@
 @interface LYRUIConversationCollectionViewFooter : UICollectionReusableView
 
 /**
- @abstract Displays a string of text representing the read status of the message
+ @abstract Displays a string of text representing the read status of a message
  @param recipientStatus the string representing the status
  */
 - (void)updateWithAttributedStringForRecipientStatus:(NSAttributedString *)recipientStatus;

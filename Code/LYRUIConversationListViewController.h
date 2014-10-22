@@ -12,112 +12,127 @@
 
 @class LYRUIConversationListViewController;
 
+///---------------------------------------
+/// @name Delegate
+///---------------------------------------
+
 @protocol LYRUIConversationListViewControllerDelegate <NSObject>
 
 /**
- @abstract Tells the delegate that a conversation was selected from a conversation list.
- @param conversationListViewController The conversation list in which the selection occurred.
- @param conversation The conversation that was selected.
+ @abstract Informs the delegate that an `LYRConversation` was selected from the conversation list.
+ @param conversationListViewController The `LYRConversationListViewController` in which the selection occurred.
+ @param conversation The `LYRConversation` object that was selected.
  */
 - (void)conversationListViewController:(LYRUIConversationListViewController *)conversationListViewController didSelectConversation:(LYRConversation *)conversation;
 
 @end
 
+///---------------------------------------
+/// @name Data Source
+///---------------------------------------
+
 @protocol LYRUIConversationListViewControllerDataSource <NSObject>
 
-@required
 /**
- @abstract Asks the delegate for the Conversation Label for a given set of participants in a conversation.
- @param participants The identifiers for participants in a conversation within the conversation list.
- @param conversationListViewController The conversation list in which the participant appears.
- @return The conversation label to be displayed for a given conversation in the conversation list.
+ @abstract Asks the Data Source for a label to display for a given set of participants in a conversation.
+ @param conversationListViewController The `LYRConversationListViewController` in which the label will appear.
+ @param participants An NSSet of participant identifiers representing participants in a conversation.
+ @return The label to be displayed for a given conversation in the conversation list.
  */
-- (NSString *)conversationListViewController:(LYRUIConversationListViewController *)conversationListViewController conversationLabelForParticipants:(NSSet *)participants ;
+- (NSString *)conversationListViewController:(LYRUIConversationListViewController *)conversationListViewController conversationLabelForParticipants:(NSSet *)participants;
 
 @optional
 /**
- @abstract Asks the delegate for the Conversation Image for a given set of participants in a conversation.
- @param participants The identifiers for participants in a conversation within the conversation list.
- @param conversationListViewController The conversation list in which the image appears.
- @return The conversation image to be displayed for a given conversation in the conversation list.
+ @abstract Asks the delegate for an image to display for a given set of participants in a conversation.
+ @param conversationListViewController The `LYRConversationListViewController` in which the image will appear.
+ @param participants An NSSet of participant identifiers representing participants in a conversation.
+ @return The conversation image to be displayed for a given conversation in the conversation list
  */
 - (UIImage *)conversationListViewController:(LYRUIConversationListViewController *)conversationListViewController conversationImageForParticipants:(NSSet *)participants;
 
 /**
- @abstract Informs the data source that a search has been made with the following search string. After the completion block is called, the `comversationListViewController:presenterForConversationAtIndex:` method will be called for each search result.  
- @param conversationListViewController An object representing the conversation list view controller.
+ @abstract Informs the data source that a search has requested with the given search string.
+ @param conversationListViewController The `LYRConversationListViewController` in which the search did occur.
  @param searchString The search string that was just used for search.
  @param completion The completion block that should be called when the results are fetched from the search.
+ @discussion After the completion block is called, the tableView will reload with the given set of `LYRConversation` objects.
  */
-- (void)conversationListViewController:(LYRUIConversationListViewController *)conversationListViewController didSearchWithString:(NSString *)searchString completion:(void (^)())completion;
+- (void)conversationListViewController:(LYRUIConversationListViewController *)conversationListViewController didSearchWithString:(NSString *)searchString completion:(void (^)(NSSet *conversations))completion;
 
 @end
 
 /**
- @abstract The `LYRUIConversationListViewController` class presents an interface allowing
- for the display, selection, and searching of Layer conversations.
+ @abstract The `LYRUIConversationListViewController` class presents an interface which provides
+ for the display, selection, and search of Layer conversations.
  */
 @interface LYRUIConversationListViewController : UITableViewController
 
 ///---------------------------------------
-/// @name Initializing a Conversation List
+/// @name Designated Initializer
 ///---------------------------------------
 
 /**
- @abstract Creates and returns a new conversation list initialized with the given Layer client.
- @param layerClient The Layer client from which to retrieve the conversations for display.
- @return A new conversation list controller.
+ @abstract Creates and returns a new conversation list initialized with a given `LYRClient` object.
+ @param layerClient The `LYRClient` object from which conversations will be fetched for display.
+ @return An `LYRConversationListViewController` object.
  */
 + (instancetype)conversationListViewControllerWithLayerClient:(LYRClient *)layerClient;
 
 /**
- @abstract The `LYRUIConversationViewControllerDelegate` class informs the reciever to specific events that occured within the controller.
+ @abstract The `LYRUIConversationViewControllerDelegate` class informs the receiver to specific events that occur
+ within the `LYRConversationListViewController`.
  */
 @property (nonatomic, weak) id<LYRUIConversationListViewControllerDelegate> delegate;
 
 /**
- @abstract The `LYRUIConversationListViewControllerDataSource` class presents an interface allowing
- for the display of information pertaining to specific converations in the view controller
+ @abstract The `LYRUIConversationListViewControllerDataSource` class requests information to be displayed 
+ in the `LYRConversationListViewController`.
  */
 @property (nonatomic, weak) id<LYRUIConversationListViewControllerDataSource> dataSource;
 
 ///----------------------------------------
-/// @name Customizing the Conversation List
+/// @name Configuration
 ///----------------------------------------
 
 /**
- @abstract A Boolean value that determines if editing is enabled.
- @discussion When `YES`, an Edit button item will be displayed on the left hand side of the
- receiver's navigation item that toggles the editing state of the receiver.
- @default `YES`
- @raises NSInternalInconsistencyException Raised if the value is mutated after the receiver has been presented.
- */
-@property (nonatomic, assign) BOOL allowsEditing;
-
-/**
- @abstract The table view cell class for customizing the display of the conversations.
- @default `[LYRUIConversationTableViewCell class]`
+ @abstract The `UITableViewCell` subclass for customizing the display of the conversations.
+ @disucssion If you wish to provide you own custom class, your class must conform to the `LYRUIConversationPresenting` protocol.
+ @default `LYRUIConversationTableViewCell`.
  @raises NSInternalInconsistencyException Raised if the value is mutated after the receiver has been presented.
  */
 @property (nonatomic) Class<LYRUIConversationPresenting> cellClass;
 
 /**
- @abstract Sets the height for cells within the receiver.
- @default `80.0`
- @raises NSInternalInconsistencyException Raised if the value is mutated after the receiver has been presented.
- */
-@property (nonatomic, assign) CGFloat rowHeight;
-
-/**
- @abstract Tells the receiver if is should display an image representing a conversation
- @discussion Typically, this image will be an avatar image representing the user;
- @default TRUE
+ @abstract Informs the receiver if is should display an image representing a conversation.
+ @discussion When `YES`, an image will be displayed on the left side of every conversation cell.
+ Typically this image will be an avatar image representing the user or group of users.
+ @default `YES`.
  @raises NSInternalInconsistencyException Raised if the value is mutated after the receiver has been presented.
  */
 @property (nonatomic, assign) BOOL displaysConversationImage;
 
 /**
- @abstract The given `LYRConversation` object
+ @abstract A Boolean value that determines if editing is enabled.
+ @discussion When `YES`, an Edit button item will be displayed on the left hand side of the receiver's navigation 
+ item which toggles the editing state of the receiver.
+ @default `YES`.
+ @raises NSInternalInconsistencyException Raised if the value is mutated after the receiver has been presented.
+ */
+@property (nonatomic, assign) BOOL allowsEditing;
+
+/**
+ @abstract Sets the height for cells within the receiver.
+ @default `72.0`
+ @raises NSInternalInconsistencyException Raised if the value is mutated after the receiver has been presented.
+ */
+@property (nonatomic, assign) CGFloat rowHeight;
+
+///---------------------------------------
+/// @name Public Accessor
+///---------------------------------------
+
+/**
+ @abstract The `LYRClient` object used to initailize the controller
  */
 @property (nonatomic) LYRClient *layerClient;
 

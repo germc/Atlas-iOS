@@ -98,7 +98,7 @@ static CGFloat const LSUnreadMessageCountLabelSize = 14.0f;
         self.lastMessageTextView.contentInset = UIEdgeInsetsMake(-10,-4,0,0);
         self.lastMessageTextView.userInteractionEnabled = NO;
         [self.contentView addSubview:self.lastMessageTextView];
-
+        
         // Initialize Date Label
         self.dateLabel = [[UILabel alloc] init];
         self.dateLabel.translatesAutoresizingMaskIntoConstraints = NO;
@@ -223,7 +223,6 @@ static CGFloat const LSUnreadMessageCountLabelSize = 14.0f;
     self.conversationLabelLeftConstraint.constant = self.cellHorizontalMargin;
     self.conversationLabelHeightConstraint.constant = self.conversationLabelHeight;
     
-    self.dateLabelRightConstraint.constant = -self.cellHorizontalMargin;
     self.dateLabelWidthConstraint.constant = self.dateLabelWidth;
     
     self.lastMessageTextLeftConstraint.constant = self.cellHorizontalMargin;
@@ -443,6 +442,13 @@ static CGFloat const LSUnreadMessageCountLabelSize = 14.0f;
     //NSLog(@"Conversation Label Font %@", self.conversationLabel.font);
     self.separatorInset = UIEdgeInsetsMake(0, seperatorInset, 0, 0);
     self.conversationImageView.layer.cornerRadius = self.frame.size.height * self.imageSizeRatio / 2;
+}
+
+- (void)setSelected:(BOOL)selected animated:(BOOL)animated
+{
+    if (selected) {
+        self.unreadMessageIndicator.alpha = 0.0f;
+    }
 }
 
 @end

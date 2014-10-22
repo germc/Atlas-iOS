@@ -14,13 +14,11 @@
 
 @interface LYRUIConversationListViewController () <UISearchBarDelegate, UISearchDisplayDelegate, LYRUIConversationDataSourceDelegate>
 
+@property (nonatomic) LYRUIConversationDataSource *conversationListDataSource;
 @property (nonatomic) UISearchBar *searchBar;
 @property (nonatomic) UISearchDisplayController *searchController;
-@property (nonatomic) NSArray *conversations;
 @property (nonatomic) NSMutableArray *filteredConversations;
 @property (nonatomic) NSPredicate *searchPredicate;
-@property (nonatomic) LYRUIConversationDataSource *conversationListDataSource;
-@property (nonatomic) NSIndexPath *selectedIndexPath;
 @property (nonatomic) BOOL isOnScreen;
 
 @end
@@ -39,14 +37,17 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 {
     self = [super initWithStyle:UITableViewStylePlain];
     if (self)  {
-        // Set properties from designated initializer
+        // Set property from designated initializer
         _layerClient = layerClient;
         
-        // Set default configuration for public properties
+        // Set default configuration for public configuration properties
         _cellClass = [LYRUIConversationTableViewCell class];
-        _rowHeight = 72;
-        _allowsEditing = TRUE;
-        _displaysConversationImage = TRUE;
+        _displaysConversationImage = YES;
+        _allowsEditing = YES;
+        _rowHeight = 72.0f;
+        
+        // Configure default UIAppearance Proxy
+        [self configureTableViewCellAppearance];
     }
     return self;
 }
@@ -64,48 +65,42 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
     // Accessibility
     self.title = @"Messages";
     self.accessibilityLabel = @"Messages";
+    self.tableView.accessibilityLabel = @"Conversation List";
     
-    // Searchbar Setup
-    self.searchBar = [[UISearchBar alloc] initWithFrame:CGRectZero];
-    self.searchBar.accessibilityLabel = @"Search Bar";
-    self.searchBar.delegate = self;
-    self.searchController = [[UISearchDisplayController alloc] initWithSearchBar:self.searchBar contentsController:self];
-    self.searchController.delegate = self;
-    self.searchController.searchResultsDelegate = self;
-    self.searchController.searchResultsDataSource = self;
+    // Search Bar Setup
+//    self.searchBar = [[UISearchBar alloc] initWithFrame:CGRectZero];
+//    self.searchBar.accessibilityLabel = @"Search Bar";
+//    self.searchBar.delegate = self;
+//    self.searchController = [[UISearchDisplayController alloc] initWithSearchBar:self.searchBar contentsController:self];
+//    self.searchController.delegate = self;
+//    self.searchController.searchResultsDelegate = self;
+//    self.searchController.searchResultsDataSource = self;
+   
     
+    // Set Search Bar as Table View Header
     //self.tableView.tableHeaderView = self.searchBar;
     //[self.tableView setContentOffset:CGPointMake(0, 44)];
-    self.tableView.accessibilityLabel = @"Conversation List";
     
     // DataSoure
     self.conversationListDataSource = [[LYRUIConversationDataSource alloc] initWithLayerClient:self.layerClient];
     self.conversationListDataSource.delegate = self;
-    
-    [self configureTableViewCellAppearance];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    self.isOnScreen = TRUE;
     
     // Set public configuration properties once view has loaded
-    self.tableView.rowHeight = self.rowHeight;
     [self.tableView registerClass:self.cellClass forCellReuseIdentifier:LYRUIConversationCellReuseIdentifier];
-    
-    self.searchController.searchResultsTableView.rowHeight = self.rowHeight;
     [self.searchController.searchResultsTableView registerClass:self.cellClass forCellReuseIdentifier:LYRUIConversationCellReuseIdentifier];
+    
+    self.tableView.rowHeight = self.rowHeight;
+    self.searchController.searchResultsTableView.rowHeight = self.rowHeight;
     
     if (self.allowsEditing) {
         //[self addEditButton];
     }
-
-//    if (self.selectedIndexPath) {
-//        [self.tableView reloadRowsAtIndexPaths:@[self.selectedIndexPath]
-//                              withRowAnimation:UITableViewRowAnimationAutomatic];
-//    }
-    self.isOnScreen = TRUE;
-    
 }
 
 - (void)viewDidDisappear:(BOOL)animated
@@ -117,6 +112,7 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 - (void)dealloc
 {
     self.conversationListDataSource = nil;
+    self.conversationListDataSource.delegate = nil;
 }
 
 #pragma mark - Public setters
@@ -212,7 +208,7 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
     if ([self.dataSource respondsToSelector:@selector(conversationListViewController:didSearchWithString:completion:)]) {
-        [self.dataSource conversationListViewController:self didSearchWithString:searchText completion:^{
+        [self.dataSource conversationListViewController:self didSearchWithString:searchText completion:^(NSSet *conversations) {
             [self.tableView reloadData];
         }];
     }
@@ -286,7 +282,6 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
     if ([self.delegate respondsToSelector:@selector(conversationListViewController:didSelectConversation:)]){
         [self.delegate conversationListViewController:self didSelectConversation:conversation];
     }
-    self.selectedIndexPath = indexPath;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -378,14 +373,14 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 
 - (void)configureTableViewCellAppearance
 {
-    [[LYRUIConversationTableViewCell appearance] setConversationLabelFont:[UIFont boldSystemFontOfSize:14]];
+    [[LYRUIConversationTableViewCell appearance] setConversationLabelFont:LSBoldFont(14)];
     [[LYRUIConversationTableViewCell appearance] setConversationLableColor:[UIColor blackColor]];
     
-    [[LYRUIConversationTableViewCell appearance] setLastMessageTextFont:[UIFont systemFontOfSize:14]];
+    [[LYRUIConversationTableViewCell appearance] setLastMessageTextFont:LSLightFont(14)];
     [[LYRUIConversationTableViewCell appearance] setLastMessageTextColor:[UIColor grayColor]];
     
-    [[LYRUIConversationTableViewCell appearance] setDateLabelFont:[UIFont systemFontOfSize:12]];
-    [[LYRUIConversationTableViewCell appearance] setDateLabelColor:[UIColor darkGrayColor]];
+    [[LYRUIConversationTableViewCell appearance] setDateLabelFont:LSMediumFont(14)];
+    [[LYRUIConversationTableViewCell appearance] setDateLabelColor:[UIColor grayColor]];
     
     [[LYRUIConversationTableViewCell appearance] setUnreadMessageIndicatorBackgroundColor:LSBlueColor()];
     

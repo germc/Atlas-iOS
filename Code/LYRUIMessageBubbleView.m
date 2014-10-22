@@ -34,14 +34,12 @@
         self.layer.cornerRadius = 12;
         self.clipsToBounds = TRUE;
         
-        self.bubbleViewLabel = [[TTTAttributedLabel alloc] init];
+        self.bubbleViewLabel = [[UILabel alloc] init];
         self.bubbleViewLabel.backgroundColor = [UIColor clearColor];
         self.bubbleViewLabel.lineBreakMode = NSLineBreakByWordWrapping;
         self.bubbleViewLabel.numberOfLines = 0;
-        self.bubbleViewLabel.enabledTextCheckingTypes = NSTextCheckingTypeLink;
-        self.bubbleViewLabel.delegate = self;
+        self.bubbleViewLabel.textColor = [UIColor greenColor];
         self.bubbleViewLabel.userInteractionEnabled = YES;
-//        self.bubbleViewLabel.backgroundColor = [UIColor redColor];
         self.bubbleViewLabel.translatesAutoresizingMaskIntoConstraints = NO;
         [self addSubview:self.bubbleViewLabel];
         [self updateConstraintsForTextView];
@@ -67,7 +65,7 @@
 
 - (void)updateWithImage:(UIImage *)image
 {
-    self.bubbleViewLabel.alpha = 0.0;
+    //self.bubbleViewLabel.alpha = 0.0;
     self.bubbleImageView.alpha = 1.0;
     self.bubbleImageView.image = image;
 }
@@ -96,9 +94,5 @@
     [self updateConstraints];
 }
 
-- (void)attributedLabel:(TTTAttributedLabel *)label didSelectLinkWithURL:(NSURL *)url
-{
-    
-}
 
 @end
