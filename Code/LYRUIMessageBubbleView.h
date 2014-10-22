@@ -49,4 +49,6 @@
 
 - (void)setBubbleBackgroundColor:(UIColor *)backgroundColor;
 
+- (void)resetGestureState;
+
 @end

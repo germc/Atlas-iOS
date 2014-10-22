@@ -19,6 +19,7 @@
 
 @property (nonatomic) UIFont *font;
 @property (nonatomic) UIColor *color;
+@property (nonatomic) UIView *longPressMask;
 
 @end
 
@@ -51,6 +52,9 @@
         self.bubbleImageView.clipsToBounds = TRUE;
         [self addSubview:self.bubbleImageView];
         [self updateConstraintsForImageView];
+        
+        UILongPressGestureRecognizer *gestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
+        [self addGestureRecognizer:gestureRecognizer];
     }
     _isInitializing = NO;
     return self;
@@ -65,7 +69,7 @@
 
 - (void)updateWithImage:(UIImage *)image
 {
-    //self.bubbleViewLabel.alpha = 0.0;
+    self.bubbleViewLabel.alpha = 0.0;
     self.bubbleImageView.alpha = 1.0;
     self.bubbleImageView.image = image;
 }
@@ -93,6 +97,58 @@
     [self addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleImageView attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0]];
     [self updateConstraints];
 }
+
+- (void)handleLongPress:(UILongPressGestureRecognizer *)recognizer
+{
+    if ([recognizer state] == UIGestureRecognizerStateBegan) {
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(menuControllerDisappeared)
+                                                     name:UIMenuControllerDidHideMenuNotification
+                                                   object:nil];
+        
+        [self becomeFirstResponder];
+        
+        self.longPressMask = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
+        self.longPressMask.backgroundColor = [UIColor blackColor];
+        self.longPressMask.alpha = 0.1;
+        [self addSubview:self.longPressMask];
+        
+        UIMenuController *menuController = [UIMenuController sharedMenuController];
+        UIMenuItem *resetMenuItem = [[UIMenuItem alloc] initWithTitle:@"Copy" action:@selector(copyItem)];
+        [menuController setMenuItems:[NSArray arrayWithObject:resetMenuItem]];
+        [menuController setTargetRect:CGRectMake(self.frame.size.width / 2, 0.0f, 0.0f, 0.0f) inView:[recognizer view]];
+        [menuController setMenuVisible:YES animated:YES];
+    }
+}
+
+- (void)copyItem
+{
+    UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+    if (self.bubbleViewLabel.alpha == 1.0f) {
+        pasteboard.string = self.bubbleViewLabel.text;
+    } else {
+        pasteboard.image = self.bubbleImageView.image;
+    }
+}
+
+- (void)menuControllerDisappeared
+{
+    [self.longPressMask removeFromSuperview];
+    self.longPressMask = nil;
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (BOOL)canBecomeFirstResponder
+{
+    return YES;
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 
 
 @end

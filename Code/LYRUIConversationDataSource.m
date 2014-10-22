@@ -47,6 +47,7 @@
 
 - (void)didReceiveLayerObjectsDidChangeNotification:(NSNotification *)notification;
 {
+    self.identifiers = [self refreshConversations];
     dispatch_async(self.conversationOperationQueue, ^{
         NSArray *conversationDelta = [self refreshConversations];
         NSMutableArray *conversationChanges = [self processLayerChangeNotification:notification];
@@ -107,7 +108,6 @@
                 break;
         }
     }
-    self.identifiers = conversationDelta;
     return changeObjects;
 }
 

@@ -101,6 +101,7 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
     if (self.allowsEditing) {
         //[self addEditButton];
     }
+    [self.tableView reloadData];
 }
 
 - (void)viewDidDisappear:(BOOL)animated

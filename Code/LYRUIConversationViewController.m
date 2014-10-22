@@ -68,6 +68,8 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
 {
     [super viewDidLoad];
     
+    self.view.backgroundColor = [UIColor whiteColor];
+    
     self.accessibilityLabel = @"Conversation";
     
     // Collection View Setup
@@ -82,6 +84,7 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
     self.collectionView.bounces = TRUE;
     self.collectionView.keyboardDismissMode = UIScrollViewKeyboardDismissModeInteractive;
     self.collectionView.accessibilityLabel = @"Conversation Collection View";
+    self.collectionView.alpha = 0.0f;
     [self.view addSubview:self.collectionView];
     
     // Set the accessoryView to be a Message Input Toolbar
@@ -94,15 +97,18 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
     [panGestureRecognizer setMaximumNumberOfTouches:1];
     panGestureRecognizer.delegate = self;
     //[self.collectionView  addGestureRecognizer:panGestureRecognizer];
-    
-    // Setup Layer Change notification observer
-    self.messageDataSource = [[LYRUIMessageDataSource alloc] initWithClient:self.layerClient conversation:self.conversation];
-    self.messageDataSource.delegate = self;
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    
+    [self setupConversationDataSource:^{
+        [self.collectionView reloadData];
+        [UIView animateWithDuration:0.5 animations:^{
+            self.collectionView.alpha = 1.0f;
+        }];
+    }];
     
     // Register reusable collection view cells, header and footer
     [self.collectionView registerClass:[LYRUIIncomingMessageCollectionViewCell class] forCellWithReuseIdentifier:LYRUIIncomingMessageCellIdentifier];
@@ -157,6 +163,14 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
 - (BOOL)canBecomeFirstResponder
 {
     return YES;
+}
+
+- (void)setupConversationDataSource:(void(^)(void))completion
+{
+    // Setup Layer Change notification observer
+    self.messageDataSource = [[LYRUIMessageDataSource alloc] initWithClient:self.layerClient conversation:self.conversation];
+    self.messageDataSource.delegate = self;
+    completion();
 }
 
 - (void) setConversationViewTitle

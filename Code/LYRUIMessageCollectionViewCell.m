@@ -206,4 +206,5 @@
 {
     return self.bubbleView.backgroundColor;
 }
+
 @end
