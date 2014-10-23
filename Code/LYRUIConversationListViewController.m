@@ -265,13 +265,29 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
     return self.allowsEditing;
 }
 
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
+- (NSArray *)tableView:(UITableView *)tableView editActionsForRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    UITableViewRowAction *localDeleteAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDefault title:@"Local" handler:^(UITableViewRowAction *action, NSIndexPath *indexPath) {
         NSURL *conversationIdentifier = [[self currentDataSet] objectAtIndex:indexPath.row];
         LYRConversation *conversation = [self.layerClient conversationForIdentifier:conversationIdentifier];
         [self.layerClient deleteConversation:conversation mode:LYRDeletionModeLocal error:nil];
-    }
+    }];
+    localDeleteAction.backgroundColor = [UIColor grayColor];
+
+    UITableViewRowAction *globalDeleteAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDefault title:@"Global" handler:^(UITableViewRowAction *action, NSIndexPath *indexPath) {
+        NSURL *conversationIdentifier = [[self currentDataSet] objectAtIndex:indexPath.row];
+        LYRConversation *conversation = [self.layerClient conversationForIdentifier:conversationIdentifier];
+        [self.layerClient deleteConversation:conversation mode:LYRDeletionModeAllParticipants error:nil];
+    }];
+    
+    globalDeleteAction.backgroundColor = [UIColor redColor];
+    
+    return @[globalDeleteAction, localDeleteAction];
+}
+
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    // Not implemented
 }
 
 #pragma mark - Table view delegate methods

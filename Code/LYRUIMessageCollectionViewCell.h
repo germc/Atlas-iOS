@@ -24,6 +24,7 @@
 @property (nonatomic) UIFont *messageTextFont UI_APPEARANCE_SELECTOR;
 @property (nonatomic) UIColor *messageTextColor UI_APPEARANCE_SELECTOR;
 @property (nonatomic) UIColor *bubbleViewColor UI_APPEARANCE_SELECTOR;
+@property (nonatomic) UIColor *pendingBubbleViewColor UI_APPEARANCE_SELECTOR;
 
 /**
  @abstract The cell `Bubble View` which handles displaying the cell content

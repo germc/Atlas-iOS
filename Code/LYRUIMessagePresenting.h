@@ -22,6 +22,11 @@
 - (void)presentMessagePart:(LYRMessagePart *)messagePart;
 
 /**
+ @abstract Asks the reciever to display a message part
+ */
+- (void)updateWithMessageSentState:(BOOL)messageSentState;
+
+/**
  @abstract Tells the reciever how wide it's bubble view should be
  */
 - (void)updateWithBubbleViewWidth:(CGFloat)bubbleViewWidth;
@@ -29,7 +34,7 @@
 /**
  @abstract Tells the reciever if it should display an avatarImage
  */
-- (void)shouldDisplayAvatarImage:(BOOL)shouldDisplayAvatarImage;
+- (void)shouldDisplayAvatarImage:(BOOL)shouldDisplayAvatarImage forParticipant:(id<LYRUIParticipant>)participant;
 
 /**
  @abstract Tells the reciever if the cell is in a group conversation

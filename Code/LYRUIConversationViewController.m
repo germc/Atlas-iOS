@@ -223,8 +223,13 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
 {
     LYRMessagePart *messagePart = [message.parts objectAtIndex:indexPath.row];
     [cell presentMessagePart:messagePart];
+    [cell updateWithMessageSentState:message.isSent];
     [cell updateWithBubbleViewWidth:[self sizeForItemAtIndexPath:indexPath].width];
-    [cell shouldDisplayAvatarImage:[self shouldDisplayAvatarImageForIndexPath:indexPath]];
+    if ([self shouldDisplayAvatarImageForIndexPath:indexPath]) {
+        [cell shouldDisplayAvatarImage:YES forParticipant:[self participantForIdentifier:message.sentByUserID]];
+    } else {
+        [cell shouldDisplayAvatarImage:NO forParticipant:[self participantForIdentifier:nil]];
+    }
     if ([self.dataSource respondsToSelector:@selector(conversationViewController:shouldUpdateRecipientStatusForMessage:)]) {
         if ([self.dataSource conversationViewController:self shouldUpdateRecipientStatusForMessage:message]) {
             [self updateRecipientStatusForMessage:message];
@@ -741,6 +746,7 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
     [[LYRUIOutgoingMessageCollectionViewCell appearance] setMessageTextColor:[UIColor whiteColor]];
     [[LYRUIOutgoingMessageCollectionViewCell appearance] setMessageTextFont:LSMediumFont(14)];
     [[LYRUIOutgoingMessageCollectionViewCell appearance] setBubbleViewColor:LSBlueColor()];
+    [[LYRUIOutgoingMessageCollectionViewCell appearance] setPendingBubbleViewColor:[UIColor greenColor]];
     
     [[LYRUIIncomingMessageCollectionViewCell appearance] setMessageTextColor:[UIColor blackColor]];
     [[LYRUIIncomingMessageCollectionViewCell appearance] setMessageTextFont:LSMediumFont(14)];

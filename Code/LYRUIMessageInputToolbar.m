@@ -141,7 +141,7 @@ static CGFloat const LSButtonHeight = 28;
         [self.inputToolBarDelegate messageInputToolbar:self didTapRightAccessoryButton:self.rightAccessoryButton];
         [self.rightAccessoryButton setHighlighted:FALSE];
         [self.textInputView removeAttachements];
-        [self.textInputView setText:@""];
+        self.textInputView.text = nil;
         [self.textInputView layoutSubviews];
         [self.messageParts removeAllObjects];
     }

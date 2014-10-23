@@ -64,8 +64,8 @@
 
 - (void)didReceiveLayerObjectsDidChangeNotification:(NSNotification *)notification;
 {
+    NSArray *messageDelta = [self fetchMessages];
     dispatch_async(self.messageOperationQueue, ^{
-        NSArray *messageDelta = [self fetchMessages];
         NSMutableArray *messageChanges = [self processLayerChangeNotification:notification];
         if (messageChanges.count > 0) {
             [self dispatchChanges:[self processMessageChanges:messageChanges withDelta:messageDelta]];
@@ -90,7 +90,7 @@
 
 - (NSMutableArray *)processMessageChanges:(NSMutableArray *)messageChanges withDelta:(NSArray *)messageDelta
 {
-//    NSLog(@"%@", messageChanges);
+    NSLog(@"%@", messageChanges);
     NSMutableArray *updateIndexes = [[NSMutableArray alloc] init];
     NSMutableArray *changeObjects = [[NSMutableArray alloc] init];
     for (NSDictionary *messageChange in messageChanges) {

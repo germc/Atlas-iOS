@@ -10,12 +10,14 @@
 #import "LYRUIUtilities.h"
 #import "LYRUIIncomingMessageCollectionViewCell.h"
 #import "LYRUIOutgoingMessageCollectionViewCell.h"
+#import "BMInitialsPlaceholderView.h"
 
 @interface LYRUIMessageCollectionViewCell ()
 
 @property (nonatomic) UILabel *dateLabel;
 @property (nonatomic) CGFloat bubbleViewWidth;
 @property (nonatomic) CGFloat imageViewDiameter;
+@property (nonatomic) BOOL messageSentState;
 
 @property (nonatomic) NSLayoutConstraint *avatarImageWidthConstraint;
 @property (nonatomic) NSLayoutConstraint *avatarImageHeightConstraint;
@@ -32,6 +34,8 @@
 
 @implementation LYRUIMessageCollectionViewCell
 
+static CGFloat const LYRAvatarImageDiameter = 24.0f;
+
 - (id)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
@@ -43,7 +47,7 @@
         
         self.avatarImage = [[UIImageView alloc] init];
         self.avatarImage.backgroundColor = LSGrayColor();
-        self.avatarImage.layer.cornerRadius = 10;
+        self.avatarImage.layer.cornerRadius = (LYRAvatarImageDiameter / 2);
         self.avatarImage.translatesAutoresizingMaskIntoConstraints = NO;
         [self.contentView addSubview:self.avatarImage];
        
@@ -56,7 +60,7 @@
         [self.contentView addSubview:self.dateLabel];
         
         if ([self isKindOfClass:[LYRUIIncomingMessageCollectionViewCell class]]) {
-            self.imageViewDiameter = 24;
+            self.imageViewDiameter = LYRAvatarImageDiameter;
         } else {
             self.imageViewDiameter = 0;
         }
@@ -80,6 +84,11 @@
     }
 }
 
+- (void)updateWithMessageSentState:(BOOL)messageSentState
+{
+    self.messageSentState = messageSentState;
+}
+
 - (void)updateWithBubbleViewWidth:(CGFloat)bubbleViewWidth
 {
     if ([[self.contentView constraints] containsObject:self.bubbleViewWidthConstraint]) {
@@ -96,7 +105,7 @@
      [self.contentView addConstraint:self.bubbleViewWidthConstraint];
 }
 
-- (void)shouldDisplayAvatarImage:(BOOL)shouldDisplayAvatarImage
+- (void)shouldDisplayAvatarImage:(BOOL)shouldDisplayAvatarImage forParticipant:(id<LYRUIParticipant>)participant
 {
     if (shouldDisplayAvatarImage) {
         self.avatarImage.alpha = 1.0;
@@ -189,7 +198,19 @@
 
 - (void)setBubbleViewColor:(UIColor *)bubbleViewColor
 {
-    self.bubbleView.backgroundColor = bubbleViewColor;
+    if ([self isKindOfClass:[LYRUIOutgoingMessageCollectionViewCell class]] && self.messageSentState) {
+        self.bubbleView.backgroundColor = bubbleViewColor;
+    }
+    if ([self isKindOfClass:[LYRUIIncomingMessageCollectionViewCell class]]) {
+        self.bubbleView.backgroundColor = bubbleViewColor;
+    }
+}
+
+- (void)setPendingBubbleViewColor:(UIColor *)pendingBubbleViewColor
+{
+    if ([self isKindOfClass:[LYRUIOutgoingMessageCollectionViewCell class]] && !self.messageSentState) {
+        self.bubbleView.backgroundColor = pendingBubbleViewColor;
+    }
 }
 
 - (UIFont *)messageTextFont
