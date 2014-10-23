@@ -24,6 +24,7 @@
 @property (nonatomic) BOOL keyboardIsOnScreen;
 @property (nonatomic) CGFloat keyboardHeight;
 @property (nonatomic) BOOL shouldScrollToBottom;
+@property (nonatomic) BOOL shouldDisplayAvatarImage;
 
 @end
 
@@ -176,6 +177,7 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
 - (void) setConversationViewTitle
 {
     if (self.conversation.participants.count == 2) {
+        self.shouldDisplayAvatarImage = NO;
         NSMutableSet *participants = [self.conversation.participants mutableCopy];
         [participants removeObject:self.layerClient.authenticatedUserID];
         id<LYRUIParticipant> participant = [self participantForIdentifier:[[participants allObjects] lastObject]];
@@ -185,6 +187,7 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
             self.title = @"Unknown";
         }
     } else {
+        self.shouldDisplayAvatarImage = YES;
         self.title = @"Group";
     }
 }
@@ -225,10 +228,12 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
     [cell presentMessagePart:messagePart];
     [cell updateWithMessageSentState:message.isSent];
     [cell updateWithBubbleViewWidth:[self sizeForItemAtIndexPath:indexPath].width];
-    if ([self shouldDisplayAvatarImageForIndexPath:indexPath]) {
-        [cell shouldDisplayAvatarImage:YES forParticipant:[self participantForIdentifier:message.sentByUserID]];
+    [cell shouldDisplayAvatarImage:self.shouldDisplayAvatarImage];
+
+    if ([self shouldDisplayParticipantInfo:indexPath]) {
+        [cell updateWithParticipant:[self participantForIdentifier:message.sentByUserID]];
     } else {
-        [cell shouldDisplayAvatarImage:NO forParticipant:[self participantForIdentifier:nil]];
+        [cell updateWithParticipant:nil];
     }
     if ([self.dataSource respondsToSelector:@selector(conversationViewController:shouldUpdateRecipientStatusForMessage:)]) {
         if ([self.dataSource conversationViewController:self shouldUpdateRecipientStatusForMessage:message]) {
@@ -360,7 +365,7 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
 - (BOOL)shouldDisplaySenderLabelForSection:(NSUInteger)section
 {
     // 1. If conversation only has 2 participnat, don't show sender label
-    if (!self.conversation.participants.count > 2) {
+    if (!(self.conversation.participants.count > 2)) {
         return NO;
     }
     
@@ -390,8 +395,9 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
     return NO;
 }
 
-- (BOOL)shouldDisplayAvatarImageForIndexPath:(NSIndexPath *)indexPath
+- (BOOL)shouldDisplayParticipantInfo:(NSIndexPath *)indexPath
 {
+    if (!self.shouldDisplayAvatarImage) return NO;
     LYRMessage *message = [self.messageDataSource.messages objectAtIndex:indexPath.section];
     if ([message.sentByUserID isEqualToString:self.layerClient.authenticatedUserID]) {
         return NO;
@@ -712,10 +718,9 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
     CGFloat inset = [sender translationInView:self.collectionView].x * 0.5;
     UICollectionViewFlowLayout *layout = (UICollectionViewFlowLayout *)self.collectionView.collectionViewLayout;
     if(sender.state == UIGestureRecognizerStateEnded || sender.state == UIGestureRecognizerStateCancelled) {
-        [self.collectionView performBatchUpdates:^{
+        [UIView animateWithDuration:0.2 animations:^{
             layout.sectionInset = UIEdgeInsetsMake(0, 0, 0, 0);
-            [layout invalidateLayout];
-        } completion:nil];
+        }];
     } else {
         if (inset > -60 && inset < 0) {
             layout.sectionInset = UIEdgeInsetsMake(0, inset, 0, -inset);
@@ -746,11 +751,16 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
     [[LYRUIOutgoingMessageCollectionViewCell appearance] setMessageTextColor:[UIColor whiteColor]];
     [[LYRUIOutgoingMessageCollectionViewCell appearance] setMessageTextFont:LSMediumFont(14)];
     [[LYRUIOutgoingMessageCollectionViewCell appearance] setBubbleViewColor:LSBlueColor()];
-    [[LYRUIOutgoingMessageCollectionViewCell appearance] setPendingBubbleViewColor:[UIColor greenColor]];
+    [[LYRUIOutgoingMessageCollectionViewCell appearance] setPendingBubbleViewColor:LSBlueColor()];
     
     [[LYRUIIncomingMessageCollectionViewCell appearance] setMessageTextColor:[UIColor blackColor]];
     [[LYRUIIncomingMessageCollectionViewCell appearance] setMessageTextFont:LSMediumFont(14)];
     [[LYRUIIncomingMessageCollectionViewCell appearance] setBubbleViewColor:LSLighGrayColor()];
+    
+    [[LYRUIAvatarImageView appearance] setInitialViewBackgroundColor:LSGrayColor()];
+    [[LYRUIAvatarImageView appearance] setInitialColor:[UIColor blackColor]];
+    [[LYRUIAvatarImageView appearance] setInitialFont:LSLightFont(14)];
+    
 }
 
 @end

@@ -26,6 +26,16 @@
     return self;
 }
 
+- (void)shouldDisplayAvatarImage:(BOOL)shouldDisplayAvatarImage
+{
+    //
+}
+
+- (void)updateWithParticipant:(id<LYRUIParticipant>)participant
+{
+    //
+}
+
 - (void)updateConstraints
 {
     [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleView

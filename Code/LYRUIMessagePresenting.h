@@ -32,9 +32,14 @@
 - (void)updateWithBubbleViewWidth:(CGFloat)bubbleViewWidth;
 
 /**
+ @abstract Informs the reciever of its participant
+ */
+- (void)updateWithParticipant:(id<LYRUIParticipant>)participant;
+
+/**
  @abstract Tells the reciever if it should display an avatarImage
  */
-- (void)shouldDisplayAvatarImage:(BOOL)shouldDisplayAvatarImage forParticipant:(id<LYRUIParticipant>)participant;
+- (void)shouldDisplayAvatarImage:(BOOL)shouldDisplayAvatarImage;
 
 /**
  @abstract Tells the reciever if the cell is in a group conversation

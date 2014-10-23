@@ -213,6 +213,11 @@ static CGFloat const LSButtonHeight = 28;
     return YES;
 }
 
+- (void)paste:(id)sender
+{
+    
+}
+
 - (void)adjustFrame
 {
     [self invalidateIntrinsicContentSize];

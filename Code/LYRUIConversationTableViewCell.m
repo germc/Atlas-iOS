@@ -24,10 +24,21 @@ static NSDateFormatter *LYRUIDayDateFormatter()
     static NSDateFormatter *dayDateFormatter;
     if (!dayDateFormatter) {
         dayDateFormatter = [[NSDateFormatter alloc] init];
+        dayDateFormatter.dateFormat = @"EEEE";
+    }
+    return dayDateFormatter;
+}
+
+static NSDateFormatter *LYRUIMonthDateFormatter()
+{
+    static NSDateFormatter *dayDateFormatter;
+    if (!dayDateFormatter) {
+        dayDateFormatter = [[NSDateFormatter alloc] init];
         dayDateFormatter.dateFormat = @"MMM dd";
     }
     return dayDateFormatter;
 }
+
 
 @interface LYRUIConversationTableViewCell ()
 
@@ -185,8 +196,10 @@ static CGFloat const LSUnreadMessageCountLabelSize = 14.0f;
         dateLabel = [LYRUIHourDateFormatter() stringFromDate:lastMessage.sentAt];
     } else if (60*60*24*2 > seconds) {
         dateLabel = @"Yesterday";
-    } else {
+    } else if (60*60*24*7 > seconds && seconds > 60*60*24*2) {
         dateLabel = [LYRUIDayDateFormatter() stringFromDate:lastMessage.sentAt];
+    } else {
+        dateLabel = [LYRUIMonthDateFormatter() stringFromDate:lastMessage.sentAt];
     }
     return dateLabel;
 }

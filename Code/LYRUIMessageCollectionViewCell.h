@@ -10,6 +10,7 @@
 #import "LYRUIMessagePresenting.h"
 #import "LYRUIMessageBubbleView.h"
 #import "LYRUIConstants.h"
+#import "LYRUIAvatarImageView.h"
 
 /**
  @abstract The `LYRUIMessageCollectionViewCell` class provides a lightweight, customizable collection
@@ -34,6 +35,6 @@
 /**
  @abstract The optional avatar image view representing a user
  */
-@property (nonatomic) UIImageView *avatarImage;
+@property (nonatomic) LYRUIAvatarImageView *avatarImage;
 
 @end

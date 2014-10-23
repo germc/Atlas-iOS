@@ -10,18 +10,12 @@
 #import "LYRUIUtilities.h"
 #import "LYRUIIncomingMessageCollectionViewCell.h"
 #import "LYRUIOutgoingMessageCollectionViewCell.h"
-#import "BMInitialsPlaceholderView.h"
 
 @interface LYRUIMessageCollectionViewCell ()
 
 @property (nonatomic) UILabel *dateLabel;
 @property (nonatomic) CGFloat bubbleViewWidth;
-@property (nonatomic) CGFloat imageViewDiameter;
 @property (nonatomic) BOOL messageSentState;
-
-@property (nonatomic) NSLayoutConstraint *avatarImageWidthConstraint;
-@property (nonatomic) NSLayoutConstraint *avatarImageHeightConstraint;
-@property (nonatomic) NSLayoutConstraint *avatarImageBottomConstraint;
 
 @property (nonatomic) NSLayoutConstraint *bubbleViewHeightConstraint;
 @property (nonatomic) NSLayoutConstraint *bubbleViewTopConstraint;
@@ -34,8 +28,6 @@
 
 @implementation LYRUIMessageCollectionViewCell
 
-static CGFloat const LYRAvatarImageDiameter = 24.0f;
-
 - (id)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
@@ -45,9 +37,8 @@ static CGFloat const LYRAvatarImageDiameter = 24.0f;
         self.bubbleView.translatesAutoresizingMaskIntoConstraints = NO;
         [self.contentView addSubview:self.bubbleView];
         
-        self.avatarImage = [[UIImageView alloc] init];
+        self.avatarImage = [[LYRUIAvatarImageView alloc] init];
         self.avatarImage.backgroundColor = LSGrayColor();
-        self.avatarImage.layer.cornerRadius = (LYRAvatarImageDiameter / 2);
         self.avatarImage.translatesAutoresizingMaskIntoConstraints = NO;
         [self.contentView addSubview:self.avatarImage];
        
@@ -58,12 +49,6 @@ static CGFloat const LYRAvatarImageDiameter = 24.0f;
         self.dateLabel.translatesAutoresizingMaskIntoConstraints = NO;
         [self.dateLabel sizeToFit];
         [self.contentView addSubview:self.dateLabel];
-        
-        if ([self isKindOfClass:[LYRUIIncomingMessageCollectionViewCell class]]) {
-            self.imageViewDiameter = LYRAvatarImageDiameter;
-        } else {
-            self.imageViewDiameter = 0;
-        }
     }
     [self updateMessageCellConstraints];
     return self;
@@ -105,41 +90,9 @@ static CGFloat const LYRAvatarImageDiameter = 24.0f;
      [self.contentView addConstraint:self.bubbleViewWidthConstraint];
 }
 
-- (void)shouldDisplayAvatarImage:(BOOL)shouldDisplayAvatarImage forParticipant:(id<LYRUIParticipant>)participant
-{
-    if (shouldDisplayAvatarImage) {
-        self.avatarImage.alpha = 1.0;
-    } else {
-        self.avatarImage.alpha = 0.0;
-    }
-}
 
 - (void)updateMessageCellConstraints
 {
-    //***************Avatar Image Constraints***************//
-    self.avatarImageBottomConstraint = [NSLayoutConstraint constraintWithItem:self.avatarImage
-                                                                    attribute:NSLayoutAttributeWidth
-                                                                    relatedBy:NSLayoutRelationEqual
-                                                                       toItem:nil
-                                                                    attribute:NSLayoutAttributeNotAnAttribute
-                                                                   multiplier:1.0
-                                                                     constant:self.imageViewDiameter];
-    
-    self.avatarImageHeightConstraint = [NSLayoutConstraint constraintWithItem:self.avatarImage
-                                                                    attribute:NSLayoutAttributeHeight
-                                                                    relatedBy:NSLayoutRelationEqual
-                                                                       toItem:nil
-                                                                    attribute:NSLayoutAttributeNotAnAttribute
-                                                                   multiplier:1.0
-                                                                     constant:self.imageViewDiameter];
-    
-    self.avatarImageWidthConstraint = [NSLayoutConstraint constraintWithItem:self.avatarImage
-                                                                   attribute:NSLayoutAttributeBottom
-                                                                   relatedBy:NSLayoutRelationEqual
-                                                                      toItem:self.contentView
-                                                                   attribute:NSLayoutAttributeBottom
-                                                                  multiplier:1.0
-                                                                    constant:0];
     //***************Bubble View Constraints***************//
     self.bubbleViewHeightConstraint = [NSLayoutConstraint constraintWithItem:self.bubbleView
                                                                     attribute:NSLayoutAttributeHeight
@@ -172,10 +125,6 @@ static CGFloat const LYRAvatarImageDiameter = 24.0f;
                                                                    attribute:NSLayoutAttributeCenterY
                                                                   multiplier:1.0
                                                                     constant:0];
-    // Add avatar constraints
-    [self.contentView addConstraint:self.avatarImageHeightConstraint];
-    [self.contentView addConstraint:self.avatarImageBottomConstraint];
-    [self.contentView addConstraint:self.avatarImageWidthConstraint];
     
     // Add bubbleView constraints
     [self.contentView addConstraint:self.bubbleViewHeightConstraint];

@@ -28,6 +28,8 @@ NSString *const LYRUIPlaceHolderText = @"Enter Message";
         self.textContainerInset = UIEdgeInsetsMake(6, 0, 6, 0);
         self.font = [UIFont systemFontOfSize:14];
         self.textColor = [UIColor lightGrayColor];
+        self.allowsEditingTextAttributes = YES;
+        self.dataDetectorTypes = UIDataDetectorTypeLink;
         
         [self layoutSubviews];
         
@@ -145,5 +147,16 @@ NSString *const LYRUIPlaceHolderText = @"Enter Message";
 {
     CGSize size = [super contentSize];
     return size;
+}
+
+- (void)paste:(id)sender
+{
+    UIImage *image = [[UIPasteboard generalPasteboard] image];
+    if (image) {
+        [self insertImage:image];
+        [self.delegate textViewDidChange:self];
+    } else {
+        [super paste:sender];
+    }
 }
 @end
