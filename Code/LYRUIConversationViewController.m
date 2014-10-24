@@ -15,6 +15,7 @@
 #import "LYRUIUtilities.h"
 #import "LYRUIMessageInputToolbar.h"
 #import "LYRUIMessageDataSource.h"
+#import <AssetsLibrary/AssetsLibrary.h>
 
 @interface LYRUIConversationViewController () <UICollectionViewDataSource, UICollectionViewDelegate, LYRUIMessageInputToolbarDelegate, UIActionSheetDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, LYRUIMessageDataSourceDelegate, UIGestureRecognizerDelegate>
 
@@ -468,7 +469,7 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
                                   delegate:self
                                   cancelButtonTitle:@"Cancel"
                                   destructiveButtonTitle:nil
-                                  otherButtonTitles:@"Select Photo", @"Take Photo", nil];
+                                  otherButtonTitles:@"Select Photo", @"Open Camera Roll", @"Last Photo Taken", nil];
     [actionSheet showInView:self.view];
 }
 
@@ -558,7 +559,10 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
         case 1:
             [self displayImagePickerWithSourceType:UIImagePickerControllerSourceTypeCamera];
             break;
-            
+          
+        case 2:
+            [self captureLastPhotoTaken];
+            break;
         default:
             break;
     }
@@ -576,6 +580,37 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
         picker.sourceType = sourceType;
         [self.navigationController presentViewController:picker animated:YES completion:nil];
     }
+}
+
+- (void)captureLastPhotoTaken
+{
+    // Credit goes to @iBrad Apps on Stack Overflow
+    // http://stackoverflow.com/questions/8867496/get-last-image-from-photos-app
+    
+    ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
+    
+    // Enumerate just the photos and videos group by using ALAssetsGroupSavedPhotos.
+    [library enumerateGroupsWithTypes:ALAssetsGroupSavedPhotos usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
+        
+        // Within the group enumeration block, filter to enumerate just photos.
+        [group setAssetsFilter:[ALAssetsFilter allPhotos]];
+        
+        // Chooses the photo at the last index
+        [group enumerateAssetsWithOptions:NSEnumerationReverse usingBlock:^(ALAsset *alAsset, NSUInteger index, BOOL *innerStop) {
+            
+            // The end of the enumeration is signaled by asset == nil.
+            if (alAsset) {
+                ALAssetRepresentation *representation = [alAsset defaultRepresentation];
+                UIImage *latestPhoto = [UIImage imageWithCGImage:[representation fullScreenImage]];
+                
+                // Stop the enumerations
+                *stop = YES; *innerStop = YES;
+                
+                // Do something interesting with the AV asset.
+                [(LYRUIMessageInputToolbar *)self.inputAccessoryView insertImage:latestPhoto];
+            }
+        }];
+    } failureBlock:nil];
 }
 
 #pragma mark UIImagePickerController Delegate
