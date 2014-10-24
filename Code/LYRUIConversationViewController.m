@@ -177,7 +177,7 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
 
 - (void) setConversationViewTitle
 {
-    if (self.conversation.participants.count == 2) {
+    if (2 >= self.conversation.participants.count) {
         self.shouldDisplayAvatarImage = NO;
         NSMutableSet *participants = [self.conversation.participants mutableCopy];
         [participants removeObject:self.layerClient.authenticatedUserID];

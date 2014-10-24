@@ -13,7 +13,7 @@ UIColor *LSBlueColor()
 
 UIColor *LSGrayColor()
 {
-    return [UIColor colorWithRed:216.0/255.0 green:223.0/255.0 blue:229.0/255.0 alpha:1.0];
+    return [UIColor colorWithRed:200.0/255.0 green:200.0/255.0 blue:200.0/255.0 alpha:1.0];
 }
 
 UIColor *LSLighGrayColor()
