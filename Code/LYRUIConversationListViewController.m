@@ -99,7 +99,7 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
     self.searchController.searchResultsTableView.rowHeight = self.rowHeight;
     
     if (self.allowsEditing) {
-        //[self addEditButton];
+        [self addEditButton];
     }
     [self.tableView reloadData];
 }
