@@ -23,4 +23,6 @@
 
 - (void)shouldDisplaySelectionIndicator:(BOOL)shouldDisplaySelectionIndicator;
 
+- (void)shouldShowAvatarImage:(BOOL)shouldShowAvatarImage;
+
 @end

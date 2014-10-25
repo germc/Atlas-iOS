@@ -343,23 +343,4 @@ static CGFloat const LSButtonHeight = 28;
                                                       constant:-LSComposeviewVerticalMargin]];
 }
 
-- (void)fireUpLoacation
-{
-    if ([CLLocationManager locationServicesEnabled]) {
-        self.locationManager = [[CLLocationManager alloc] init];
-        self.locationManager.delegate = self;
-        self.locationManager.distanceFilter = kCLDistanceFilterNone;
-        self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
-        [self.locationManager requestWhenInUseAuthorization];
-        [self.locationManager startUpdatingLocation];
-    }
-}
-
-- (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations
-{
-    [self.locationManager stopUpdatingLocation];
-    CLLocation *loaction = [locations lastObject];
-    [self insertLocation:loaction];
-}
-
 @end

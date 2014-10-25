@@ -13,7 +13,6 @@
 #import "LYRUIConversationCollectionViewFooter.h"
 #import "LYRUIConstants.h"
 #import "LYRUIUtilities.h"
-#import "LYRUIMessageInputToolbar.h"
 #import "LYRUIMessageDataSource.h"
 #import <AssetsLibrary/AssetsLibrary.h>
 
@@ -90,9 +89,9 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
     [self.view addSubview:self.collectionView];
     
     // Set the accessoryView to be a Message Input Toolbar
-    LYRUIMessageInputToolbar *messageInputToolbar =  [LYRUIMessageInputToolbar new];
-    messageInputToolbar.inputToolBarDelegate = self;
-    self.inputAccessoryView = messageInputToolbar;
+    self.messageInputToolbar =  [LYRUIMessageInputToolbar new];
+    self.messageInputToolbar.inputToolBarDelegate = self;
+    self.inputAccessoryView = self.messageInputToolbar;
     
     UIPanGestureRecognizer *panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanGesture:)];
     [panGestureRecognizer setMinimumNumberOfTouches:1];

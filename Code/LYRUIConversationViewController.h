@@ -12,7 +12,6 @@
 #import "LYRUIParticipant.h"
 #import "LYRUIMessageInputToolbar.h"
 
-
 @class LYRUIConversationViewController;
 
 ///---------------------------------------
@@ -146,5 +145,7 @@
  @abstract The `LYRConversation` object used to initailize the controller
  */
 @property (nonatomic) LYRConversation *conversation;
+
+@property (nonatomic) LYRUIMessageInputToolbar *messageInputToolbar;
 
 @end
