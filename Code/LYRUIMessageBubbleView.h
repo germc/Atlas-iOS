@@ -43,12 +43,4 @@
  */
 @property (nonatomic) UIImageView *bubbleImageView;
 
-- (void)setFont:(UIFont *)font;
-
-- (void)setTextColor:(UIColor *)textColor;
-
-- (void)setBubbleBackgroundColor:(UIColor *)backgroundColor;
-
-- (void)resetGestureState;
-
 @end

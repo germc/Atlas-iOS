@@ -23,13 +23,10 @@
 
 @end
 
-@implementation LYRUIMessageBubbleView {
-    BOOL _isInitializing;
-}
+@implementation LYRUIMessageBubbleView 
 
 - (id)initWithFrame:(CGRect)frame
 {
-    _isInitializing = YES;
     self = [super initWithFrame:frame];
     if (self) {
         self.layer.cornerRadius = 12;
@@ -56,7 +53,6 @@
         UILongPressGestureRecognizer *gestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
         [self addGestureRecognizer:gestureRecognizer];
     }
-    _isInitializing = NO;
     return self;
 }
 
