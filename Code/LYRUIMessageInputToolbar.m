@@ -75,6 +75,9 @@ static CGFloat const LSButtonHeight = 28;
         [self setupLayoutConstraints];
         
         [self adjustFrame];
+        
+        // Default Max Num Lines is 8
+        self.maxNumberOfLines = 8;
     }
     
     return self;
@@ -82,7 +85,13 @@ static CGFloat const LSButtonHeight = 28;
 
 - (CGSize)intrinsicContentSize
 {
-    return CGSizeMake(0, self.textInputView.intrinsicContentSize.height + LSComposeviewVerticalMargin * 2);
+    return CGSizeMake(0, (self.textInputView.intrinsicContentSize.height + LSComposeviewVerticalMargin * 2));
+}
+
+- (void)setMaxNumberOfLines:(NSUInteger)maxNumberOfLines
+{
+    _maxNumberOfLines = maxNumberOfLines;
+    self.textInputView.maxHeight = self.maxNumberOfLines * self.textInputView.font.lineHeight;
 }
 
 #pragma mark Public Content Insertion Methods
@@ -221,8 +230,9 @@ static CGFloat const LSButtonHeight = 28;
 - (void)adjustFrame
 {
     [self invalidateIntrinsicContentSize];
-    CGSize size = [self systemLayoutSizeFittingSize:UILayoutFittingExpandedSize];
-    self.frame = CGRectMake(0, 0, size.width, size.height);
+    CGFloat contentHeight = self.textInputView.contentSize.height;
+    CGFloat height = self.textInputView.frame.size.height;
+    [self.textInputView setContentOffset:CGPointMake(0, contentHeight - height)];
 }
 
 - (void)setupLayoutConstraints
@@ -288,6 +298,14 @@ static CGFloat const LSButtonHeight = 28;
                                                           attribute:NSLayoutAttributeBottom
                                                          multiplier:1.0
                                                            constant:-LSComposeviewVerticalMargin]];
+    
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:self.textInputView
+                                                     attribute:NSLayoutAttributeTop
+                                                     relatedBy:NSLayoutRelationEqual
+                                                        toItem:self
+                                                     attribute:NSLayoutAttributeTop
+                                                    multiplier:1.0
+                                                      constant:LSComposeviewVerticalMargin]];
     
     //**********Send Button Constraints**********//
     // Width

@@ -37,19 +37,21 @@ NSString *const LYRUIPlaceHolderText = @"Enter Message";
                                                  selector:@selector(textViewBeganEditing)
                                                      name:UITextViewTextDidBeginEditingNotification
                                                    object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(textViewDidChange)
-                                                     name:UITextViewTextDidChangeNotification
-                                                   object:nil];
     }
     return self;
 }
 
 - (CGSize)intrinsicContentSize
 {
-    CGFloat width = self.contentSize.width;
-    CGFloat height = self.contentSize.height;
-    return CGSizeMake(width, height);
+    CGFloat currentWidth = self.contentSize.width;
+    CGFloat currentHeight = self.contentSize.height;
+    CGSize contentSize;
+    if (self.maxHeight + 12 > currentHeight) {
+        contentSize = CGSizeMake(currentWidth, currentHeight);
+    } else {
+        contentSize = CGSizeMake(currentWidth, self.maxHeight + 12);
+    }
+    return contentSize;
 }
 
 - (void)scrollRectToVisible:(CGRect)rect animated:(BOOL)animated
@@ -102,13 +104,13 @@ NSString *const LYRUIPlaceHolderText = @"Enter Message";
 
 - (void)insertLineBreak:(NSMutableAttributedString *)mutableAttributedString
 {
-    [mutableAttributedString insertAttributedString:[[NSMutableAttributedString alloc] initWithString:@" \n"] atIndex:mutableAttributedString.length];
+    [mutableAttributedString insertAttributedString:[[NSMutableAttributedString alloc] initWithString:@"\n "] atIndex:mutableAttributedString.length];
     [mutableAttributedString addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:14] range:NSMakeRange(0, mutableAttributedString.length)];
 }
 
 - (BOOL)previousIndexIsAttachement
 {
-    if (!self.attributedText.length > 0) return FALSE;
+    if (!(self.attributedText.length > 0)) return FALSE;
     NSDictionary *theAttributes = [self.attributedText attributesAtIndex:self.attributedText.length - 1
                                                    longestEffectiveRange:nil
                                                                  inRange:NSMakeRange(0, self.attributedText.length)];
@@ -134,19 +136,14 @@ NSString *const LYRUIPlaceHolderText = @"Enter Message";
 - (void)textViewBeganEditing
 {
     [self displayPlaceHolderText:NO];
+    if ([self previousIndexIsAttachement]) {
+        NSMutableAttributedString *mutableAttributedString = [self.attributedText mutableCopy];
+        [self insertLineBreak:mutableAttributedString];
+        self.attributedText = mutableAttributedString;
+        [self.delegate textViewDidChange:self];
+    }
     self.textColor = [UIColor blackColor];
     [self layoutIfNeeded];
-}
-
-- (void)textViewDidChange
-{
-    [self layoutIfNeeded];
-}
-
-- (CGSize)contentSize
-{
-    CGSize size = [super contentSize];
-    return size;
 }
 
 - (void)paste:(id)sender

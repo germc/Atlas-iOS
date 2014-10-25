@@ -23,6 +23,7 @@ extern NSString *const LYRUIPlaceHolderText;
  */
 @property (nonatomic) NSString *placeHolderText;
 
+@property (nonatomic) CGFloat maxHeight;
 /**
  @abstract Displays the provided image in the textView
  */
@@ -34,5 +35,6 @@ extern NSString *const LYRUIPlaceHolderText;
  be cleared from the textView
  */
 - (void)removeAttachements;
+
 
 @end

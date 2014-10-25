@@ -110,6 +110,14 @@
 @property (nonatomic, weak) id<LYRUIMessageInputToolbarDelegate>inputToolBarDelegate;
 
 /**
+ @abstract The maximum number of lines of next to be displayd
+ @default 6
+ @discussion The text view will stop growing once 6 lines are displayed. It
+ will scroll its text view to keep the latest content visible
+ */
+@property (nonatomic) NSUInteger maxNumberOfLines;
+
+/**
  @abstract An array of all content parts displayed in the view. 
  @discussion Any existing objects will be removed when the right accessory button is tapped
  */
