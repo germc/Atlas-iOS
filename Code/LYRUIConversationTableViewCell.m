@@ -126,8 +126,7 @@ static CGFloat const LSUnreadMessageCountLabelSize = 14.0f;
         self.cellHorizontalMargin = 15.0f;
         self.imageSizeRatio = 0.0f;
         self.displaysImage = FALSE;
-        
-        [self updateConstraints];
+
     }
     return self;
 }
@@ -241,7 +240,7 @@ static CGFloat const LSUnreadMessageCountLabelSize = 14.0f;
     self.lastMessageTextLeftConstraint.constant = self.cellHorizontalMargin;
     self.lastMessageTextHeightConstraint.constant = self.lastMessageTextView.font.lineHeight * 2;
     
-    [self.contentView layoutIfNeeded];
+    [self updateConstraints];
 }
 
 - (void)updateConstraints
