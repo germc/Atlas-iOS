@@ -8,7 +8,6 @@
 
 #import <UIKit/UIKit.h>
 #import <MapKit/MapKit.h>
-#import "TTTAttributedLabel.h"
 
 /**
  @abstract The `LYRUIMessageBubbleView` class provides a lightweight, customizable view that 

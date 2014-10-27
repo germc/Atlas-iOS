@@ -10,7 +10,6 @@
 
 #import "LYRUIConversationListViewController.h"
 #import "LYRUIConversationViewController.h"
-#import "LYRUIContactPickerController.h"
 #import "LYRUIMessageInputToolbar"
 
 

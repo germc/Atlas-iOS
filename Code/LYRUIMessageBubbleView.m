@@ -10,7 +10,7 @@
 #import "LYRUIIncomingMessageCollectionViewCell.h"
 #import "LYRUIOutgoingMessageCollectionViewCell.h"
 
-@interface LYRUIMessageBubbleView () <TTTAttributedLabelDelegate>
+@interface LYRUIMessageBubbleView ()
 
 @property (nonatomic) NSLayoutConstraint *contentWidthConstraint;
 @property (nonatomic) NSLayoutConstraint *contentHeightConstraint;
