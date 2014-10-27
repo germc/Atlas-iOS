@@ -146,6 +146,9 @@
  */
 @property (nonatomic) LYRConversation *conversation;
 
+/**
+ @abstract The `LYRUIMessageInputToolbar` displayed for user input
+ */
 @property (nonatomic) LYRUIMessageInputToolbar *messageInputToolbar;
 
 @end

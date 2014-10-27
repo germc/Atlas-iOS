@@ -38,7 +38,7 @@
         [self.contentView addSubview:self.bubbleView];
         
         self.avatarImage = [[LYRUIAvatarImageView alloc] init];
-        self.avatarImage.backgroundColor = LSGrayColor();
+        [self.avatarImage setInitialViewBackgroundColor:LSLighGrayColor()];
         self.avatarImage.translatesAutoresizingMaskIntoConstraints = NO;
         [self.contentView addSubview:self.avatarImage];
        

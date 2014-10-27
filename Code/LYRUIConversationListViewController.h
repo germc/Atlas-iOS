@@ -36,19 +36,19 @@
 /**
  @abstract Asks the Data Source for a label to display for a given set of participants in a conversation.
  @param conversationListViewController The `LYRConversationListViewController` in which the label will appear.
- @param participants An NSSet of participant identifiers representing participants in a conversation.
+ @param conversation The `LYRConversation` object
  @return The label to be displayed for a given conversation in the conversation list.
  */
-- (NSString *)conversationListViewController:(LYRUIConversationListViewController *)conversationListViewController conversationLabelForParticipants:(NSSet *)participants;
+- (NSString *)conversationListViewController:(LYRUIConversationListViewController *)conversationListViewController labelForConversation:(LYRConversation *)conversation;
 
 @optional
 /**
  @abstract Asks the delegate for an image to display for a given set of participants in a conversation.
  @param conversationListViewController The `LYRConversationListViewController` in which the image will appear.
- @param participants An NSSet of participant identifiers representing participants in a conversation.
+ @param conversation The `LYRConversation` object
  @return The conversation image to be displayed for a given conversation in the conversation list
  */
-- (UIImage *)conversationListViewController:(LYRUIConversationListViewController *)conversationListViewController conversationImageForParticipants:(NSSet *)participants;
+- (UIImage *)conversationListViewController:(LYRUIConversationListViewController *)conversationListViewController imageForConversation:(LYRConversation *)conversation;
 
 /**
  @abstract Informs the data source that a search has requested with the given search string.
@@ -128,7 +128,7 @@
 @property (nonatomic, assign) CGFloat rowHeight;
 
 ///---------------------------------------
-/// @name Public Accessor
+/// @name Public Accessors
 ///---------------------------------------
 
 /**

@@ -239,8 +239,8 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
     
     // Update cell with image if needed
     if (self.displaysConversationImage) {
-        if ([self.dataSource respondsToSelector:@selector(conversationListViewController:conversationImageForParticipants:)]) {
-            UIImage *conversationImage = [self.dataSource conversationListViewController:self conversationImageForParticipants:conversation.participants];
+        if ([self.dataSource respondsToSelector:@selector(conversationListViewController:imageForConversation:)]) {
+            UIImage *conversationImage = [self.dataSource conversationListViewController:self imageForConversation:conversation];
             [conversationCell updateWithConversationImage:conversationImage];
         } else {
            @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Conversation View Delegate must return a conversation image" userInfo:nil]; 
@@ -252,8 +252,8 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
     [conversationCell updateWithLastMessageRecipientStatus:status];
     
     // Update Cell with Label
-    if ([self.dataSource respondsToSelector:@selector(conversationListViewController:conversationLabelForParticipants:)]) {
-        NSString *conversationLabel = [self.dataSource conversationListViewController:self conversationLabelForParticipants:conversation.participants];
+    if ([self.dataSource respondsToSelector:@selector(conversationListViewController:labelForConversation:)]) {
+        NSString *conversationLabel = [self.dataSource conversationListViewController:self labelForConversation:conversation];
         [conversationCell updateWithConversationLabel:conversationLabel];
     } else {
         @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Conversation View Delegate must return a conversation label" userInfo:nil];
