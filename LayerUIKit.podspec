@@ -17,4 +17,7 @@ Pod::Spec.new do |s|
   s.platform         = :ios, '7.0'
   s.requires_arc     = true
   s.source_files     = 'Code'
+
+  s.ios.frameworks = 'UIKit'
+  s.ios.deployment_target = '7.0'
 end
