@@ -270,7 +270,7 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
         // Should we display a date label?
         if ([self shouldDisplayDateLabelForSection:indexPath.section]) {
             if ([self.dataSource respondsToSelector:@selector(conversationViewController:attributedStringForDisplayOfDate:)]) {
-                NSAttributedString *dateString = [NSAttributedString new];
+                NSAttributedString *dateString;
                 if (message.sentAt) {
                     dateString = [self.dataSource conversationViewController:self attributedStringForDisplayOfDate:message.sentAt];
                 } else {

@@ -40,11 +40,5 @@
  */
 @property (nonatomic, readonly) NSString *participantIdentifier;
 
-/**
- @abstract Returns the text to be used for sectioning.
- @discussion Typically the first name, last name, or company name is used for sectioning.
- */
-@property (nonatomic, readonly) NSString *sectionText;
-
 @end
 

@@ -240,11 +240,16 @@ static CGFloat const LSUnreadMessageCountLabelSize = 14.0f;
     self.lastMessageTextLeftConstraint.constant = self.cellHorizontalMargin;
     self.lastMessageTextHeightConstraint.constant = self.lastMessageTextView.font.lineHeight * 2;
     
-    [self updateConstraints];
+    if (self.dateLabelWidthConstraint) {
+        [self.contentView removeConstraint:self.dateLabelWidthConstraint];
+    }
+    
+    [self setNeedsUpdateConstraints];
 }
 
 - (void)updateConstraints
 {
+    
     //**********Avatar Constraints**********//
     // Width
     self.imageViewWidthConstraint = [NSLayoutConstraint constraintWithItem:self.conversationImageView
