@@ -7,7 +7,7 @@
 //
 
 #import "LYRUIMessageCollectionViewCell.h"
-#import "LYRUIUtilities.h"
+#import "LYRUIMessagingUtilities.h"
 #import "LYRUIIncomingMessageCollectionViewCell.h"
 #import "LYRUIOutgoingMessageCollectionViewCell.h"
 
@@ -65,7 +65,12 @@
         [self.bubbleView updateWithImage:image];
         self.accessibilityLabel = [NSString stringWithFormat:@"Message: Photo"];
     } else if ([messagePart.MIMEType isEqualToString:LYRUIMIMETypeLocation]) {
-        //
+        NSDictionary *dictionary = [NSJSONSerialization JSONObjectWithData:messagePart.data
+                                                                   options:NSJSONReadingAllowFragments
+                                                                     error:nil];
+        double lat = [[dictionary valueForKey:@"lat"] doubleValue];
+        double lon = [[dictionary valueForKey:@"lon"] doubleValue];
+        [self.bubbleView updateWithLocation:CLLocationCoordinate2DMake(lat, lon)];
     }
 }
 

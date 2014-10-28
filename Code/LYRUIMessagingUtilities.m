@@ -1,12 +1,12 @@
 //
-//  LYRUIUtilities.m
+//  LYRUIMessagingUtilities.m
 //  Pods
 //
-//  Created by Kevin Coleman on 9/8/14.
+//  Created by Kevin Coleman on 10/27/14.
 //
 //
 
-#import "LYRUIUtilities.h"
+#import "LYRUIMessagingUtilities.h"
 
 NSString * const LYRUIMIMETypeTextPlain = @"text/plain";
 NSString * const LYRUIMIMETypeTextHTML = @"text/HTML";
@@ -29,8 +29,8 @@ CGSize LYRUITextPlainSize(NSString *text, UIFont *font)
     NSAttributedString *attributedText = [[NSAttributedString alloc] initWithString:text
                                                                          attributes:@{NSFontAttributeName: font}];
     CGRect rect = [attributedText boundingRectWithSize:(CGSize){LYRUIMaxCellWidth(), CGFLOAT_MAX}
-                                       options:NSStringDrawingUsesLineFragmentOrigin
-                                       context:nil];
+                                               options:NSStringDrawingUsesLineFragmentOrigin
+                                               context:nil];
     return rect.size;
 }
 
@@ -52,7 +52,7 @@ CGSize LYRUIImageSize(UIImage *image)
 CGRect LYRUIImageRectConstrainedToSize(CGSize imageSize, CGSize maxSize)
 {
     CGRect thumbRect;
-
+    
     if (imageSize.width > imageSize.height) {
         double ratio = maxSize.width/imageSize.width;
         double height = imageSize.height * ratio;
@@ -106,6 +106,32 @@ NSData *LYRUIJPEGDataForImageWithConstraint(UIImage *image, CGFloat constraint)
     UIImage *imageToCompress = UIGraphicsGetImageFromCurrentImageContext();
     
     return UIImageJPEGRepresentation(imageToCompress, 0.25f);
+}
+
+LYRMessagePart *LYRUIMessagePartWithText(NSString *text)
+{
+    return [LYRMessagePart messagePartWithMIMEType:@"text/plain" data:[text dataUsingEncoding:NSUTF8StringEncoding]];
+}
+
+LYRMessagePart *LYRUIMessagePartWithLocation(CLLocation *location)
+{
+    NSNumber *lat = [NSNumber numberWithDouble:location.coordinate.latitude];
+    NSNumber *lon = [NSNumber numberWithDouble:location.coordinate.longitude];
+    return [LYRMessagePart messagePartWithMIMEType:LYRUIMIMETypeLocation
+                                              data:[NSJSONSerialization dataWithJSONObject: @{@"lat" : lat, @"lon" : lon} options:0 error:nil]];
+}
+
+LYRMessagePart *LYRUIMessagePartWithJPEGImage(UIImage *image)
+{
+    UIImage *adjustedImage = LYRUIAdjustOrientationForImage(image);
+    NSData *compressedImageData =  LYRUIJPEGDataForImageWithConstraint(adjustedImage, 300);
+    return [LYRMessagePart messagePartWithMIMEType:LYRUIMIMETypeImageJPEG
+                                              data:compressedImageData];
+}
+
+LYRMessagePart *LYRUIMessagePartWithPNGImage(UIImage *image)
+{
+    ///
 }
 
 

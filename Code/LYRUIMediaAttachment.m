@@ -7,7 +7,7 @@
 //
 
 #import "LYRUIMediaAttachment.h"
-#import "LYRUIUtilities.h"
+#import "LYRUIMessagingUtilities.h"
 
 @implementation LYRUIMediaAttachment
 

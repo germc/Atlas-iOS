@@ -6,15 +6,15 @@
 //  Copyright (c) 2014 Layer, Inc. All rights reserved.
 //
 
+#import <AssetsLibrary/AssetsLibrary.h>
 #import "LYRUIConversationViewController.h"
 #import "LYRUIOutgoingMessageCollectionViewCell.h"
 #import "LYRUIIncomingMessageCollectionViewCell.h"
 #import "LYRUIConversationCollectionViewHeader.h"
 #import "LYRUIConversationCollectionViewFooter.h"
 #import "LYRUIConstants.h"
-#import "LYRUIUtilities.h"
 #import "LYRUIMessageDataSource.h"
-#import <AssetsLibrary/AssetsLibrary.h>
+#import "LYRUIMessagingUtilities.h"
 
 @interface LYRUIConversationViewController () <UICollectionViewDataSource, UICollectionViewDelegate, LYRUIMessageInputToolbarDelegate, UIActionSheetDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, LYRUIMessageDataSourceDelegate, UIGestureRecognizerDelegate>
 
@@ -427,6 +427,8 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
     } else if ([part.MIMEType isEqualToString:LYRUIMIMETypeImageJPEG] || [part.MIMEType isEqualToString:LYRUIMIMETypeImagePNG]) {
         UIImage *image = [UIImage imageWithData:part.data];
         size = LYRUIImageSize(image);
+    } else if ([part.MIMEType isEqualToString:LYRUIMIMETypeLocation]) {
+        size = CGSizeMake(200, 200);
     } else {
         size = CGSizeMake(320, 10);
     }
@@ -480,13 +482,13 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
         NSMutableArray *messagePartsToSend = [NSMutableArray new];
         for (id part in messageInputToolbar.messageParts){
             if ([part isKindOfClass:[NSString class]]) {
-                [messagePartsToSend addObject:[self messagePartWithText:part]];
+                [messagePartsToSend addObject:LYRUIMessagePartWithText(part)];
             }
             if ([part isKindOfClass:[UIImage class]]) {
-                [messagePartsToSend addObject:[self messagePartWithImage:part]];
+                [messagePartsToSend addObject:LYRUIMessagePartWithJPEGImage(part)];
             }
             if ([part isKindOfClass:[CLLocation class]]) {
-                [messagePartsToSend addObject:[self messagePartWithLocation:part]];
+                [messagePartsToSend addObject:LYRUIMessagePartWithLocation(part)];
             }
         }
         LYRMessage *message = [LYRMessage messageWithConversation:self.conversation parts:messagePartsToSend];
@@ -494,28 +496,7 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
     }
 }
 
-#pragma mark Message Sent Methods
-
-- (LYRMessagePart *)messagePartWithText:(NSString *)text
-{
-    return [LYRMessagePart messagePartWithMIMEType:@"text/plain" data:[text dataUsingEncoding:NSUTF8StringEncoding]];
-}
-
-- (LYRMessagePart *)messagePartWithImage:(UIImage *)image
-{
-    UIImage *adjustedImage = LYRUIAdjustOrientationForImage(image);
-    NSData *compressedImageData =  LYRUIJPEGDataForImageWithConstraint(adjustedImage, 300);
-    return [LYRMessagePart messagePartWithMIMEType:LYRUIMIMETypeImageJPEG
-                                              data:compressedImageData];
-}
-
-- (LYRMessagePart *)messagePartWithLocation:(CLLocation *)location
-{
-    NSNumber *lat = [NSNumber numberWithDouble:location.coordinate.latitude];
-    NSNumber *lon = [NSNumber numberWithDouble:location.coordinate.longitude];
-    return [LYRMessagePart messagePartWithMIMEType:LYRUIMIMETypeLocation
-                                              data:[NSJSONSerialization dataWithJSONObject: @{@"lat" : lat, @"lon" : lon} options:0 error:nil]];
-}
+#pragma mark Message Send Methods
 
 - (NSString *)pushNotificationStringForMessage:(LYRMessage *)message
 {

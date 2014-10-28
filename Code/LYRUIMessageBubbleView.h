@@ -42,9 +42,4 @@
  */
 @property (nonatomic) UIImageView *bubbleImageView;
 
-/**
- @abstract imageView object that handles displaying images
- */
-@property (nonatomic) MKMapView *bubbleWebView;
-
 @end

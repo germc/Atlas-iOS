@@ -9,7 +9,7 @@
 #import "LYRUIMessageInputToolbar.h"
 #import "LYRUIConstants.h"
 #import "LYRUIMediaAttachment.h"
-#import "LYRUIUtilities.h"
+#import "LYRUIMessagingUtilities.h"
 #import <CoreLocation/CoreLocation.h>
 
 @interface LYRUIMessageInputToolbar () <UITextViewDelegate, CLLocationManagerDelegate>
@@ -46,7 +46,7 @@ static CGFloat const LSButtonHeight = 28;
         self.leftAccessoryButton.translatesAutoresizingMaskIntoConstraints = NO;
         self.leftAccessoryButton.accessibilityLabel = @"Camera Button";
         self.leftAccessoryButton.layer.cornerRadius = 2;
-        [self.leftAccessoryButton setImage:[UIImage imageNamed:@"camera"] forState:UIControlStateNormal];
+        [self.leftAccessoryButton setImage:[UIImage imageNamed:@"LayerUIKitResource.bundle/camera"] forState:UIControlStateNormal];
         [self.leftAccessoryButton addTarget:self action:@selector(leftAccessoryButtonTapped) forControlEvents:UIControlEventTouchUpInside];
         [self addSubview:self.leftAccessoryButton];
         

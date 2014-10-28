@@ -48,7 +48,7 @@
         self.bubbleImageView.layer.cornerRadius = 12;
         self.bubbleImageView.clipsToBounds = TRUE;
         [self addSubview:self.bubbleImageView];
-        [self updateConstraintsForImageView];
+        [self updateConstraintsForView:self.bubbleImageView];
         
         UILongPressGestureRecognizer *gestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
         [self addGestureRecognizer:gestureRecognizer];
@@ -72,7 +72,30 @@
 
 - (void)updateWithLocation:(CLLocationCoordinate2D)location
 {
-    //
+    self.bubbleViewLabel.alpha = 0.0;
+    self.bubbleImageView.alpha = 0.0;
+    
+    MKMapSnapshotOptions *options = [[MKMapSnapshotOptions alloc] init];
+    MKCoordinateSpan span = MKCoordinateSpanMake(0.005, 0.005);
+    options.region = MKCoordinateRegionMake(location, span);
+    options.scale = [UIScreen mainScreen].scale;
+    options.size = CGSizeMake(200, 200);
+    MKMapSnapshotter *snapshotter = [[MKMapSnapshotter alloc] initWithOptions:options];
+    [snapshotter startWithCompletionHandler:^(MKMapSnapshot *snapshot, NSError *error) {
+        UIImage *image = snapshot.image;
+        MKAnnotationView *pin = [[MKPinAnnotationView alloc] initWithAnnotation:nil reuseIdentifier:@""];
+        UIImage *pinImage = pin.image;
+        CGPoint pinPoint = CGPointMake(image.size.width/2, image.size.height/2);
+        UIGraphicsBeginImageContextWithOptions(image.size, YES, image.scale);
+        [image drawAtPoint:CGPointMake(0, 0)];
+        [pinImage drawAtPoint:pinPoint];
+        UIImage *finalImage = UIGraphicsGetImageFromCurrentImageContext();
+        UIGraphicsEndImageContext();
+        self.bubbleImageView.image = finalImage;
+        [UIView animateWithDuration:0.2 animations:^{
+            self.bubbleImageView.alpha = 1.0;
+        }];
+    }];
 }
 
 - (void)updateConstraintsForTextView
@@ -85,12 +108,12 @@
     [self updateConstraints];
 }
 
-- (void)updateConstraintsForImageView
+- (void)updateConstraintsForView:(UIView *)view
 {
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleImageView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0]];
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleImageView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeHeight multiplier:1.0 constant:0]];
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleImageView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0]];
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleImageView attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0]];
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0]];
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeHeight multiplier:1.0 constant:0]];
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0]];
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0]];
     [self updateConstraints];
 }
 
