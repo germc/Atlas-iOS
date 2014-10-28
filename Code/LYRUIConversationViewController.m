@@ -14,6 +14,7 @@
 #import "LYRUIConversationCollectionViewFooter.h"
 #import "LYRUIConstants.h"
 #import "LYRUIMessageDataSource.h"
+#import "LYRUIDataSourceChange.h"
 #import "LYRUIMessagingUtilities.h"
 
 @interface LYRUIConversationViewController () <UICollectionViewDataSource, UICollectionViewDelegate, LYRUIMessageInputToolbarDelegate, UIActionSheetDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, LYRUIMessageDataSourceDelegate, UIGestureRecognizerDelegate>
@@ -98,6 +99,11 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
     [panGestureRecognizer setMaximumNumberOfTouches:1];
     panGestureRecognizer.delegate = self;
     //[self.collectionView  addGestureRecognizer:panGestureRecognizer];
+    
+    [self updateCollectionViewConstraints];
+    self.collectionView.contentInset = UIEdgeInsetsMake(0, 0, self.inputAccessoryView.intrinsicContentSize.height, 0);
+    self.collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(0, 0, self.inputAccessoryView.intrinsicContentSize.height, 0);
+    
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -111,9 +117,6 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
         }];
     }];
     
-    self.collectionView.contentInset = UIEdgeInsetsMake(0, 0, self.inputAccessoryView.intrinsicContentSize.height, 0);
-    self.collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(0, 0, self.inputAccessoryView.intrinsicContentSize.height, 0);
-    
     // Register reusable collection view cells, header and footer
     [self.collectionView registerClass:[LYRUIIncomingMessageCollectionViewCell class] forCellWithReuseIdentifier:LYRUIIncomingMessageCellIdentifier];
     [self.collectionView registerClass:[LYRUIOutgoingMessageCollectionViewCell class] forCellWithReuseIdentifier:LYRUIOutgoingMessageCellIdentifier];
@@ -121,7 +124,6 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
     [self.collectionView registerClass:[LYRUIConversationCollectionViewFooter class] forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:LYRUIMessageCellFooterIdentifier];
     
     // Collection View AutoLayout Config
-    [self updateCollectionViewConstraints];
     [self setConversationViewTitle];
     [self scrollToBottomOfCollectionViewAnimated:NO];
 }
@@ -134,10 +136,6 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(keyboardWasShown:)
                                                  name:UIKeyboardWillShowNotification object:nil];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(keyboardWillBeHidden:)
-                                                 name:UIKeyboardWillHideNotification object:nil];
     self.keyboardIsOnScreen = NO;
 }
 
@@ -416,6 +414,7 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
 
 - (CGSize)sizeForItemAtIndexPath:(NSIndexPath *)indexPath
 {
+    NSLog(@"Called %ld", (long)indexPath.section);
     LYRMessage *message = [self.messageDataSource.messages objectAtIndex:indexPath.section];
     LYRMessagePart *part = [message.parts objectAtIndex:indexPath.row];
     
@@ -440,7 +439,12 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
 
 - (void)keyboardWasShown:(NSNotification*)notification
 {
-    self.keyboardIsOnScreen = TRUE;
+    if (self.keyboardIsOnScreen) {
+        self.keyboardIsOnScreen = NO;
+    } else {
+        self.keyboardIsOnScreen = YES;
+    }
+    
     self.keyboardHeight = [[[notification userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue].size.height;
     [UIView beginAnimations:nil context:NULL];
     [UIView setAnimationDuration:[notification.userInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue]];
@@ -448,19 +452,9 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
     [UIView setAnimationBeginsFromCurrentState:YES];
     [self updateCollectionViewInsets];
     [UIView commitAnimations];
-    [self scrollToBottomOfCollectionViewAnimated:TRUE];
-}
-
-- (void)keyboardWillBeHidden:(NSNotification*)notification
-{
-    self.keyboardHeight = 0;
-    [UIView beginAnimations:nil context:NULL];
-    [UIView setAnimationDuration:[notification.userInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue]];
-    [UIView setAnimationCurve:[notification.userInfo[UIKeyboardAnimationCurveUserInfoKey] integerValue]];
-    [UIView setAnimationBeginsFromCurrentState:YES];
-    //[self updateCollectionViewInsets];
-    [UIView commitAnimations];
-    self.keyboardIsOnScreen = FALSE;
+    if (self.keyboardIsOnScreen) {
+        [self scrollToBottomOfCollectionViewAnimated:TRUE];
+    }
 }
 
 #pragma mark LYRUIMessageInputToolbar Delegate Methods
@@ -472,7 +466,7 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
                                   delegate:self
                                   cancelButtonTitle:@"Cancel"
                                   destructiveButtonTitle:nil
-                                  otherButtonTitles:@"Select Photo", @"Open Camera Roll", @"Last Photo Taken", nil];
+                                  otherButtonTitles:@"Photo Library", @"Take Photo", @"Last Photo Taken", nil];
     [actionSheet showInView:self.view];
 }
 
@@ -491,8 +485,11 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
                 [messagePartsToSend addObject:LYRUIMessagePartWithLocation(part)];
             }
         }
-        LYRMessage *message = [LYRMessage messageWithConversation:self.conversation parts:messagePartsToSend];
-        [self sendMessage:message pushText:[self pushNotificationStringForMessage:message]];
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+            LYRMessage *message = [LYRMessage messageWithConversation:self.conversation parts:messagePartsToSend];
+            [self sendMessage:message pushText:[self pushNotificationStringForMessage:message]];
+            [self.messageDataSource sendMessages:message];
+        });
     }
 }
 

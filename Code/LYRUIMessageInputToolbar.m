@@ -145,19 +145,20 @@ static CGFloat const LSButtonHeight = 28;
 - (void)rightAccessoryButtonTapped
 {
     if ([self.textInputView.text isEqualToString:LYRUIPlaceHolderText]) return;
-    [self filterMessageParts];
+    [self filterAttributedString:self.textInputView.attributedText];
+    self.textInputView.text = nil;
     if (self.textInputView.text.length > 0 || self.messageParts) {
         [self.inputToolBarDelegate messageInputToolbar:self didTapRightAccessoryButton:self.rightAccessoryButton];
+        [self.messageParts removeAllObjects];
         [self.rightAccessoryButton setHighlighted:FALSE];
         [self.textInputView removeAttachements];
         self.textInputView.text = nil;
         [self.textInputView layoutSubviews];
-        [self.messageParts removeAllObjects];
     }
     [self adjustFrame];
 }
 
-- (NSArray *)filterMessageParts
+- (NSArray *)filterAttributedString:(NSAttributedString *)attributedString
 {
     NSMutableArray *attachments = [[NSMutableArray alloc] init];
     [self.textInputView.attributedText enumerateAttribute:NSAttachmentAttributeName

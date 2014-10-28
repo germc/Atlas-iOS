@@ -49,6 +49,7 @@
         self.dateLabel.translatesAutoresizingMaskIntoConstraints = NO;
         [self.dateLabel sizeToFit];
         [self.contentView addSubview:self.dateLabel];
+
     }
     [self updateMessageCellConstraints];
     return self;
@@ -182,4 +183,11 @@
     return self.bubbleView.backgroundColor;
 }
 
+- (void)layoutSubviews
+{
+    [super layoutSubviews];
+    if ([self isKindOfClass:[LYRUIIncomingMessageCollectionViewCell class]]) {
+        //UIBezierPath
+    }
+}
 @end

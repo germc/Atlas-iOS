@@ -82,16 +82,26 @@
     options.size = CGSizeMake(200, 200);
     MKMapSnapshotter *snapshotter = [[MKMapSnapshotter alloc] initWithOptions:options];
     [snapshotter startWithCompletionHandler:^(MKMapSnapshot *snapshot, NSError *error) {
-        UIImage *image = snapshot.image;
+        
+        // Create a Pin Image
         MKAnnotationView *pin = [[MKPinAnnotationView alloc] initWithAnnotation:nil reuseIdentifier:@""];
         UIImage *pinImage = pin.image;
-        CGPoint pinPoint = CGPointMake(image.size.width/2, image.size.height/2);
+        
+        //Draw The Image
+        UIImage *image = snapshot.image;
         UIGraphicsBeginImageContextWithOptions(image.size, YES, image.scale);
         [image drawAtPoint:CGPointMake(0, 0)];
-        [pinImage drawAtPoint:pinPoint];
+        
+        // Draw the Pin
+        CGPoint point = [snapshot pointForCoordinate:location];
+        [pinImage drawAtPoint:CGPointMake(point.x, point.y - pinImage.size.height)];
         UIImage *finalImage = UIGraphicsGetImageFromCurrentImageContext();
         UIGraphicsEndImageContext();
+        
+        // Set image
         self.bubbleImageView.image = finalImage;
+        
+        // Animate into view
         [UIView animateWithDuration:0.2 animations:^{
             self.bubbleImageView.alpha = 1.0;
         }];

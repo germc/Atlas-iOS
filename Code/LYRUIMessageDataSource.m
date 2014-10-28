@@ -42,18 +42,16 @@
 
 - (void)sendMessages:(LYRMessage *)message
 {
-    dispatch_async(self.messageOperationQueue, ^{
-        self.newMessageSend = TRUE;
-        NSUInteger insertIndex = self.messages.count;
-        [self.messages addObject:message];
-       
-        NSMutableArray *changeObjects = [[NSMutableArray alloc] init];
-        [changeObjects addObject:[LYRUIDataSourceChange changeObjectWithType:LYRUIDataSourceChangeTypeInsert newIndex:insertIndex oldIndex:0]];
-        if (insertIndex > 0) {
-           [changeObjects addObject:[LYRUIDataSourceChange changeObjectWithType:LYRUIDataSourceChangeTypeUpdate newIndex:insertIndex - 1 oldIndex:0]];
-        }
-        [self dispatchChanges:changeObjects];
-    });
+    self.newMessageSend = TRUE;
+    NSUInteger insertIndex = self.messages.count;
+    [self.messages addObject:message];
+   
+    NSMutableArray *changeObjects = [[NSMutableArray alloc] init];
+    [changeObjects addObject:[LYRUIDataSourceChange changeObjectWithType:LYRUIDataSourceChangeTypeInsert newIndex:insertIndex oldIndex:0]];
+    if (insertIndex > 0) {
+       [changeObjects addObject:[LYRUIDataSourceChange changeObjectWithType:LYRUIDataSourceChangeTypeUpdate newIndex:insertIndex - 1 oldIndex:0]];
+    }
+    [self dispatchChanges:changeObjects];
 }
 
 - (NSMutableArray *)fetchMessages
@@ -64,11 +62,11 @@
 
 - (void)didReceiveLayerObjectsDidChangeNotification:(NSNotification *)notification;
 {
-    NSArray *messageDelta = [self fetchMessages];
+    self.messages = [self fetchMessages];
     dispatch_async(self.messageOperationQueue, ^{
         NSMutableArray *messageChanges = [self processLayerChangeNotification:notification];
         if (messageChanges.count > 0) {
-            [self dispatchChanges:[self processMessageChanges:messageChanges withDelta:messageDelta]];
+            [self dispatchChanges:[self processMessageChanges:messageChanges]];
         }
     });
 }
@@ -88,9 +86,8 @@
     return messageArray;
 }
 
-- (NSMutableArray *)processMessageChanges:(NSMutableArray *)messageChanges withDelta:(NSArray *)messageDelta
+- (NSMutableArray *)processMessageChanges:(NSMutableArray *)messageChanges
 {
-    NSLog(@"%@", messageChanges);
     NSMutableArray *updateIndexes = [[NSMutableArray alloc] init];
     NSMutableArray *changeObjects = [[NSMutableArray alloc] init];
     for (NSDictionary *messageChange in messageChanges) {
@@ -99,13 +96,14 @@
             LYRObjectChangeType updateKey = (LYRObjectChangeType)[[messageChange objectForKey:LYRObjectChangeTypeKey] integerValue];
             switch (updateKey) {
                 case LYRObjectChangeTypeCreate:
-                    [changeObjects addObject:[LYRUIDataSourceChange changeObjectWithType:LYRUIDataSourceChangeTypeInsert newIndex:message.index oldIndex:0]];
+                    if (!self.newMessageSend) {
+                        [changeObjects addObject:[LYRUIDataSourceChange changeObjectWithType:LYRUIDataSourceChangeTypeInsert newIndex:message.index oldIndex:0]];
+                        self.newMessageSend = NO;
+                    }
                     break;
                     
                 case LYRObjectChangeTypeUpdate: {
-                    if ([[messageChange objectForKey:LYRObjectChangePropertyKey] isEqualToString:@"recipientStatusByUserID"]) {
-                        break;
-                    }
+                    if ([[messageChange objectForKey:LYRObjectChangePropertyKey] isEqualToString:@"recipientStatusByUserID"]) continue;
                     if ([[messageChange objectForKey:LYRObjectChangePropertyKey] isEqualToString:@"index"]) {
                         NSUInteger newIndex = [[messageChange objectForKey:LYRObjectChangeNewValueKey] integerValue];
                         NSUInteger oldIndex = [[messageChange objectForKey:LYRObjectChangeOldValueKey] integerValue];
@@ -128,7 +126,6 @@
             }
         }
     }
-    self.messages = [messageDelta mutableCopy];
     return changeObjects;
 }
 
