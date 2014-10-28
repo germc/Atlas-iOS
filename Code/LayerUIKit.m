@@ -6,4 +6,6 @@
 //
 //
 
+#import "LayerUIKit.h"
+
 NSString *const LYRUIKitVersionString = @"0.2.0";

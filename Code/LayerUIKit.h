@@ -15,6 +15,6 @@
 #import "LYRUIParticipantPickerController.h"
 
 /**
- @abstract Returns the version of the Layer SDK as a string.
+ @abstract Returns the version of the Layer UIKit as a string.
  */
 extern NSString *const LYRUIKitVersionString;
