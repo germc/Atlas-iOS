@@ -458,7 +458,7 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
     [UIView setAnimationDuration:[notification.userInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue]];
     [UIView setAnimationCurve:[notification.userInfo[UIKeyboardAnimationCurveUserInfoKey] integerValue]];
     [UIView setAnimationBeginsFromCurrentState:YES];
-    [self updateCollectionViewInsets];
+    //[self updateCollectionViewInsets];
     [UIView commitAnimations];
     self.keyboardIsOnScreen = FALSE;
 }

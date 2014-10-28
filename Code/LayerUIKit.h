@@ -11,7 +11,7 @@
 
 #import "LYRUIConversationListViewController.h"
 #import "LYRUIConversationViewController.h"
-#import "LYRUIMessageInputToolbar"
+#import "LYRUIMessageInputToolbar.h"
 #import "LYRUIParticipantPickerController.h"
 
 /**
