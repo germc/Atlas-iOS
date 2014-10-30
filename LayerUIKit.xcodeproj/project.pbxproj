@@ -7,309 +7,216 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0A82596119DF4FA200ACCC8E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A82596019DF4FA200ACCC8E /* main.m */; };
-		0A82596419DF4FA200ACCC8E /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A82596319DF4FA200ACCC8E /* AppDelegate.m */; };
-		0A82597B19DF4FA200ACCC8E /* LayerUIKitTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A82597A19DF4FA200ACCC8E /* LayerUIKitTests.m */; };
-		0A8259BD19DF501A00ACCC8E /* LYRUIAvatarImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A82598619DF501A00ACCC8E /* LYRUIAvatarImageView.m */; };
-		0A8259BE19DF501A00ACCC8E /* LYRUIChangeNotificationObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A82598819DF501A00ACCC8E /* LYRUIChangeNotificationObserver.m */; };
-		0A8259BF19DF501A00ACCC8E /* LYRUIConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A82598A19DF501A00ACCC8E /* LYRUIConstants.m */; };
-		0A8259C019DF501A00ACCC8E /* LYRUIConversationCollectionViewFlowLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A82598C19DF501A00ACCC8E /* LYRUIConversationCollectionViewFlowLayout.m */; };
-		0A8259C119DF501A00ACCC8E /* LYRUIConversationCollectionViewFooter.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A82598E19DF501A00ACCC8E /* LYRUIConversationCollectionViewFooter.m */; };
-		0A8259C219DF501A00ACCC8E /* LYRUIConversationCollectionViewHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A82599019DF501A00ACCC8E /* LYRUIConversationCollectionViewHeader.m */; };
-		0A8259C319DF501A00ACCC8E /* LYRUIConversationListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A82599219DF501A00ACCC8E /* LYRUIConversationListViewController.m */; };
-		0A8259C419DF501A00ACCC8E /* LYRUIConversationNotificationObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A82599419DF501A00ACCC8E /* LYRUIConversationNotificationObserver.m */; };
-		0A8259C519DF501A00ACCC8E /* LYRUIConversationTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A82599719DF501A00ACCC8E /* LYRUIConversationTableViewCell.m */; };
-		0A8259C619DF501A00ACCC8E /* LYRUIConversationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A82599919DF501A00ACCC8E /* LYRUIConversationViewController.m */; };
-		0A8259C719DF501A00ACCC8E /* LYRUIDataSourceChange.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A82599B19DF501A00ACCC8E /* LYRUIDataSourceChange.m */; };
-		0A8259C819DF501A00ACCC8E /* LYRUIErrors.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A82599D19DF501A00ACCC8E /* LYRUIErrors.m */; };
-		0A8259C919DF501A00ACCC8E /* LYRUIIncomingMessageCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A82599F19DF501A00ACCC8E /* LYRUIIncomingMessageCollectionViewCell.m */; };
-		0A8259CA19DF501A00ACCC8E /* LYRUIMediaAttachment.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A8259A119DF501A00ACCC8E /* LYRUIMediaAttachment.m */; };
-		0A8259CB19DF501A00ACCC8E /* LYRUIMessageBubbleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A8259A319DF501A00ACCC8E /* LYRUIMessageBubbleView.m */; };
-		0A8259CC19DF501A00ACCC8E /* LYRUIMessageCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A8259A519DF501A00ACCC8E /* LYRUIMessageCollectionViewCell.m */; };
-		0A8259CD19DF501A00ACCC8E /* LYRUIMessageComposeTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A8259A719DF501A00ACCC8E /* LYRUIMessageComposeTextView.m */; };
-		0A8259CE19DF501A00ACCC8E /* LYRUIMessageInputToolbar.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A8259A919DF501A00ACCC8E /* LYRUIMessageInputToolbar.m */; };
-		0A8259CF19DF501A00ACCC8E /* LYRUIMessageNotificationObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A8259AB19DF501A00ACCC8E /* LYRUIMessageNotificationObserver.m */; };
-		0A8259D019DF501A00ACCC8E /* LYRUIOutgoingMessageCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A8259AE19DF501A00ACCC8E /* LYRUIOutgoingMessageCollectionViewCell.m */; };
-		0A8259D119DF501A00ACCC8E /* LYRUIParticipantPickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A8259B119DF501A00ACCC8E /* LYRUIParticipantPickerController.m */; };
-		0A8259D219DF501A00ACCC8E /* LYRUIParticipantTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A8259B419DF501A00ACCC8E /* LYRUIParticipantTableViewCell.m */; };
-		0A8259D319DF501A00ACCC8E /* LYRUIParticipantTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A8259B619DF501A00ACCC8E /* LYRUIParticipantTableViewController.m */; };
-		0A8259D419DF501A00ACCC8E /* LYRUIPaticipantSectionHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A8259B819DF501A00ACCC8E /* LYRUIPaticipantSectionHeaderView.m */; };
-		0A8259D519DF501A00ACCC8E /* LYRUISelectionIndicator.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A8259BA19DF501A00ACCC8E /* LYRUISelectionIndicator.m */; };
-		0A8259D619DF501A00ACCC8E /* LYRUIUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A8259BC19DF501A00ACCC8E /* LYRUIUtilities.m */; };
+		B61FF6C34BCF75E10AFDD8D5 /* libPods-Unit Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 358D1AE37F6A67F9CE5ADC47 /* libPods-Unit Tests.a */; };
+		D0D778C71A02EAEE000A5F51 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D0D778BF1A02EAEE000A5F51 /* Images.xcassets */; };
+		D0D778CA1A02EAEE000A5F51 /* LYRUISampleConversationRootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D0D778C41A02EAEE000A5F51 /* LYRUISampleConversationRootViewController.m */; };
+		D0D778CB1A02EAEE000A5F51 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = D0D778C51A02EAEE000A5F51 /* main.m */; };
+		D0D778DF1A02EBDE000A5F51 /* LYRUIConversationDataSourceTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D0D778DE1A02EBDE000A5F51 /* LYRUIConversationDataSourceTests.m */; };
+		D0E7294C1A02F1C700B76672 /* LYRUIAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = D0E7294B1A02F1C700B76672 /* LYRUIAppDelegate.m */; };
+		F309E194D1651CC5D4FEA717 /* libPods-Conversation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D9A79E80B908428B22486437 /* libPods-Conversation.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		0A82597519DF4FA200ACCC8E /* PBXContainerItemProxy */ = {
+		D0D778D91A02EB83000A5F51 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 0A82595319DF4FA200ACCC8E /* Project object */;
+			containerPortal = D0D778891A02E2B2000A5F51 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 0A82595A19DF4FA200ACCC8E;
-			remoteInfo = LayerUIKit;
+			remoteGlobalIDString = D0D778921A02EAA9000A5F51;
+			remoteInfo = Conversation;
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		0A82595B19DF4FA200ACCC8E /* LayerUIKit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LayerUIKit.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		0A82595F19DF4FA200ACCC8E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		0A82596019DF4FA200ACCC8E /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		0A82596219DF4FA200ACCC8E /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
-		0A82596319DF4FA200ACCC8E /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		0A82597419DF4FA200ACCC8E /* LayerUIKitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LayerUIKitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		0A82597919DF4FA200ACCC8E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		0A82597A19DF4FA200ACCC8E /* LayerUIKitTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LayerUIKitTests.m; sourceTree = "<group>"; };
-		0A82598519DF501A00ACCC8E /* LYRUIAvatarImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUIAvatarImageView.h; sourceTree = "<group>"; };
-		0A82598619DF501A00ACCC8E /* LYRUIAvatarImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIAvatarImageView.m; sourceTree = "<group>"; };
-		0A82598719DF501A00ACCC8E /* LYRUIChangeNotificationObserver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUIChangeNotificationObserver.h; sourceTree = "<group>"; };
-		0A82598819DF501A00ACCC8E /* LYRUIChangeNotificationObserver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIChangeNotificationObserver.m; sourceTree = "<group>"; };
-		0A82598919DF501A00ACCC8E /* LYRUIConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUIConstants.h; sourceTree = "<group>"; };
-		0A82598A19DF501A00ACCC8E /* LYRUIConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIConstants.m; sourceTree = "<group>"; };
-		0A82598B19DF501A00ACCC8E /* LYRUIConversationCollectionViewFlowLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUIConversationCollectionViewFlowLayout.h; sourceTree = "<group>"; };
-		0A82598C19DF501A00ACCC8E /* LYRUIConversationCollectionViewFlowLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIConversationCollectionViewFlowLayout.m; sourceTree = "<group>"; };
-		0A82598D19DF501A00ACCC8E /* LYRUIConversationCollectionViewFooter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUIConversationCollectionViewFooter.h; sourceTree = "<group>"; };
-		0A82598E19DF501A00ACCC8E /* LYRUIConversationCollectionViewFooter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIConversationCollectionViewFooter.m; sourceTree = "<group>"; };
-		0A82598F19DF501A00ACCC8E /* LYRUIConversationCollectionViewHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUIConversationCollectionViewHeader.h; sourceTree = "<group>"; };
-		0A82599019DF501A00ACCC8E /* LYRUIConversationCollectionViewHeader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIConversationCollectionViewHeader.m; sourceTree = "<group>"; };
-		0A82599119DF501A00ACCC8E /* LYRUIConversationListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUIConversationListViewController.h; sourceTree = "<group>"; };
-		0A82599219DF501A00ACCC8E /* LYRUIConversationListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIConversationListViewController.m; sourceTree = "<group>"; };
-		0A82599319DF501A00ACCC8E /* LYRUIConversationNotificationObserver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUIConversationNotificationObserver.h; sourceTree = "<group>"; };
-		0A82599419DF501A00ACCC8E /* LYRUIConversationNotificationObserver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIConversationNotificationObserver.m; sourceTree = "<group>"; };
-		0A82599519DF501A00ACCC8E /* LYRUIConversationPresenting.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUIConversationPresenting.h; sourceTree = "<group>"; };
-		0A82599619DF501A00ACCC8E /* LYRUIConversationTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUIConversationTableViewCell.h; sourceTree = "<group>"; };
-		0A82599719DF501A00ACCC8E /* LYRUIConversationTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIConversationTableViewCell.m; sourceTree = "<group>"; };
-		0A82599819DF501A00ACCC8E /* LYRUIConversationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUIConversationViewController.h; sourceTree = "<group>"; };
-		0A82599919DF501A00ACCC8E /* LYRUIConversationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIConversationViewController.m; sourceTree = "<group>"; };
-		0A82599A19DF501A00ACCC8E /* LYRUIDataSourceChange.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUIDataSourceChange.h; sourceTree = "<group>"; };
-		0A82599B19DF501A00ACCC8E /* LYRUIDataSourceChange.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIDataSourceChange.m; sourceTree = "<group>"; };
-		0A82599C19DF501A00ACCC8E /* LYRUIErrors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUIErrors.h; sourceTree = "<group>"; };
-		0A82599D19DF501A00ACCC8E /* LYRUIErrors.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIErrors.m; sourceTree = "<group>"; };
-		0A82599E19DF501A00ACCC8E /* LYRUIIncomingMessageCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUIIncomingMessageCollectionViewCell.h; sourceTree = "<group>"; };
-		0A82599F19DF501A00ACCC8E /* LYRUIIncomingMessageCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIIncomingMessageCollectionViewCell.m; sourceTree = "<group>"; };
-		0A8259A019DF501A00ACCC8E /* LYRUIMediaAttachment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUIMediaAttachment.h; sourceTree = "<group>"; };
-		0A8259A119DF501A00ACCC8E /* LYRUIMediaAttachment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIMediaAttachment.m; sourceTree = "<group>"; };
-		0A8259A219DF501A00ACCC8E /* LYRUIMessageBubbleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUIMessageBubbleView.h; sourceTree = "<group>"; };
-		0A8259A319DF501A00ACCC8E /* LYRUIMessageBubbleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIMessageBubbleView.m; sourceTree = "<group>"; };
-		0A8259A419DF501A00ACCC8E /* LYRUIMessageCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUIMessageCollectionViewCell.h; sourceTree = "<group>"; };
-		0A8259A519DF501A00ACCC8E /* LYRUIMessageCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIMessageCollectionViewCell.m; sourceTree = "<group>"; };
-		0A8259A619DF501A00ACCC8E /* LYRUIMessageComposeTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUIMessageComposeTextView.h; sourceTree = "<group>"; };
-		0A8259A719DF501A00ACCC8E /* LYRUIMessageComposeTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIMessageComposeTextView.m; sourceTree = "<group>"; };
-		0A8259A819DF501A00ACCC8E /* LYRUIMessageInputToolbar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUIMessageInputToolbar.h; sourceTree = "<group>"; };
-		0A8259A919DF501A00ACCC8E /* LYRUIMessageInputToolbar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIMessageInputToolbar.m; sourceTree = "<group>"; };
-		0A8259AA19DF501A00ACCC8E /* LYRUIMessageNotificationObserver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUIMessageNotificationObserver.h; sourceTree = "<group>"; };
-		0A8259AB19DF501A00ACCC8E /* LYRUIMessageNotificationObserver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIMessageNotificationObserver.m; sourceTree = "<group>"; };
-		0A8259AC19DF501A00ACCC8E /* LYRUIMessagePresenting.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUIMessagePresenting.h; sourceTree = "<group>"; };
-		0A8259AD19DF501A00ACCC8E /* LYRUIOutgoingMessageCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUIOutgoingMessageCollectionViewCell.h; sourceTree = "<group>"; };
-		0A8259AE19DF501A00ACCC8E /* LYRUIOutgoingMessageCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIOutgoingMessageCollectionViewCell.m; sourceTree = "<group>"; };
-		0A8259AF19DF501A00ACCC8E /* LYRUIParticipant.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUIParticipant.h; sourceTree = "<group>"; };
-		0A8259B019DF501A00ACCC8E /* LYRUIParticipantPickerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUIParticipantPickerController.h; sourceTree = "<group>"; };
-		0A8259B119DF501A00ACCC8E /* LYRUIParticipantPickerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIParticipantPickerController.m; sourceTree = "<group>"; };
-		0A8259B219DF501A00ACCC8E /* LYRUIParticipantPresenting.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUIParticipantPresenting.h; sourceTree = "<group>"; };
-		0A8259B319DF501A00ACCC8E /* LYRUIParticipantTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUIParticipantTableViewCell.h; sourceTree = "<group>"; };
-		0A8259B419DF501A00ACCC8E /* LYRUIParticipantTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIParticipantTableViewCell.m; sourceTree = "<group>"; };
-		0A8259B519DF501A00ACCC8E /* LYRUIParticipantTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUIParticipantTableViewController.h; sourceTree = "<group>"; };
-		0A8259B619DF501A00ACCC8E /* LYRUIParticipantTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIParticipantTableViewController.m; sourceTree = "<group>"; };
-		0A8259B719DF501A00ACCC8E /* LYRUIPaticipantSectionHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUIPaticipantSectionHeaderView.h; sourceTree = "<group>"; };
-		0A8259B819DF501A00ACCC8E /* LYRUIPaticipantSectionHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIPaticipantSectionHeaderView.m; sourceTree = "<group>"; };
-		0A8259B919DF501A00ACCC8E /* LYRUISelectionIndicator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUISelectionIndicator.h; sourceTree = "<group>"; };
-		0A8259BA19DF501A00ACCC8E /* LYRUISelectionIndicator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUISelectionIndicator.m; sourceTree = "<group>"; };
-		0A8259BB19DF501A00ACCC8E /* LYRUIUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUIUtilities.h; sourceTree = "<group>"; };
-		0A8259BC19DF501A00ACCC8E /* LYRUIUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIUtilities.m; sourceTree = "<group>"; };
+		1F88B2BB7AACF5DFC943592C /* Pods-Unit Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Unit Tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Unit Tests/Pods-Unit Tests.debug.xcconfig"; sourceTree = "<group>"; };
+		358D1AE37F6A67F9CE5ADC47 /* libPods-Unit Tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Unit Tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		4A1A0BE9E193CC265341461A /* Pods-Unit Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Unit Tests.release.xcconfig"; path = "Pods/Target Support Files/Pods-Unit Tests/Pods-Unit Tests.release.xcconfig"; sourceTree = "<group>"; };
+		5C9A8B1181386C002F1F0585 /* Pods-Conversation.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Conversation.release.xcconfig"; path = "Pods/Target Support Files/Pods-Conversation/Pods-Conversation.release.xcconfig"; sourceTree = "<group>"; };
+		9337BCDD41DBBADF3D4BBD19 /* Pods-Conversation.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Conversation.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Conversation/Pods-Conversation.debug.xcconfig"; sourceTree = "<group>"; };
+		D0D778931A02EAA9000A5F51 /* Conversation.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Conversation.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D0D778BE1A02EAEE000A5F51 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
+		D0D778BF1A02EAEE000A5F51 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		D0D778C01A02EAEE000A5F51 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		D0D778C31A02EAEE000A5F51 /* LYRUISampleConversationRootViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUISampleConversationRootViewController.h; sourceTree = "<group>"; };
+		D0D778C41A02EAEE000A5F51 /* LYRUISampleConversationRootViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUISampleConversationRootViewController.m; sourceTree = "<group>"; };
+		D0D778C51A02EAEE000A5F51 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		D0D778D31A02EB83000A5F51 /* Unit Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Unit Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		D0D778D61A02EB83000A5F51 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		D0D778DE1A02EBDE000A5F51 /* LYRUIConversationDataSourceTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIConversationDataSourceTests.m; sourceTree = "<group>"; };
+		D0E7294A1A02F1C700B76672 /* LYRUIAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUIAppDelegate.h; sourceTree = "<group>"; };
+		D0E7294B1A02F1C700B76672 /* LYRUIAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIAppDelegate.m; sourceTree = "<group>"; };
+		D9A79E80B908428B22486437 /* libPods-Conversation.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Conversation.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		0A82595819DF4FA200ACCC8E /* Frameworks */ = {
+		D0D778901A02EAA9000A5F51 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F309E194D1651CC5D4FEA717 /* libPods-Conversation.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		0A82597119DF4FA200ACCC8E /* Frameworks */ = {
+		D0D778D01A02EB83000A5F51 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B61FF6C34BCF75E10AFDD8D5 /* libPods-Unit Tests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		0A82595219DF4FA200ACCC8E = {
+		412524007C3A7505AC34F33C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				0A82595E19DF4FA200ACCC8E /* Supporting Files */,
-				0A82598419DF501100ACCC8E /* Code */,
-				0A82597719DF4FA200ACCC8E /* LayerUIKitTests */,
-				0A82595C19DF4FA200ACCC8E /* Products */,
+				D9A79E80B908428B22486437 /* libPods-Conversation.a */,
+				358D1AE37F6A67F9CE5ADC47 /* libPods-Unit Tests.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		62DAD57DC0987BFBA6E8516D /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				9337BCDD41DBBADF3D4BBD19 /* Pods-Conversation.debug.xcconfig */,
+				5C9A8B1181386C002F1F0585 /* Pods-Conversation.release.xcconfig */,
+				1F88B2BB7AACF5DFC943592C /* Pods-Unit Tests.debug.xcconfig */,
+				4A1A0BE9E193CC265341461A /* Pods-Unit Tests.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
+		D0D778881A02E2B2000A5F51 = {
+			isa = PBXGroup;
+			children = (
+				D0D778BA1A02EAD8000A5F51 /* Samples */,
+				D0D778D41A02EB83000A5F51 /* Tests */,
+				D0D778941A02EAA9000A5F51 /* Products */,
+				62DAD57DC0987BFBA6E8516D /* Pods */,
+				412524007C3A7505AC34F33C /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
-		0A82595C19DF4FA200ACCC8E /* Products */ = {
+		D0D778941A02EAA9000A5F51 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				0A82595B19DF4FA200ACCC8E /* LayerUIKit.app */,
-				0A82597419DF4FA200ACCC8E /* LayerUIKitTests.xctest */,
+				D0D778931A02EAA9000A5F51 /* Conversation.app */,
+				D0D778D31A02EB83000A5F51 /* Unit Tests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		0A82595E19DF4FA200ACCC8E /* Supporting Files */ = {
+		D0D778BA1A02EAD8000A5F51 /* Samples */ = {
 			isa = PBXGroup;
 			children = (
-				0A82595F19DF4FA200ACCC8E /* Info.plist */,
-				0A82596019DF4FA200ACCC8E /* main.m */,
+				D0D778BC1A02EAEE000A5F51 /* Conversation */,
+				D0E729491A02F1C700B76672 /* Shared */,
+			);
+			name = Samples;
+			sourceTree = "<group>";
+		};
+		D0D778BC1A02EAEE000A5F51 /* Conversation */ = {
+			isa = PBXGroup;
+			children = (
+				D0D778BD1A02EAEE000A5F51 /* LaunchScreen.xib */,
+				D0D778BF1A02EAEE000A5F51 /* Images.xcassets */,
+				D0D778C01A02EAEE000A5F51 /* Info.plist */,
+				D0D778C31A02EAEE000A5F51 /* LYRUISampleConversationRootViewController.h */,
+				D0D778C41A02EAEE000A5F51 /* LYRUISampleConversationRootViewController.m */,
+			);
+			name = Conversation;
+			path = "Sample Code/Conversation";
+			sourceTree = "<group>";
+		};
+		D0D778D41A02EB83000A5F51 /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				D0D778DE1A02EBDE000A5F51 /* LYRUIConversationDataSourceTests.m */,
+				D0D778D51A02EB83000A5F51 /* Supporting Files */,
+			);
+			path = Tests;
+			sourceTree = "<group>";
+		};
+		D0D778D51A02EB83000A5F51 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				D0D778D61A02EB83000A5F51 /* Info.plist */,
 			);
 			name = "Supporting Files";
-			path = LayerUIKit;
 			sourceTree = "<group>";
 		};
-		0A82597719DF4FA200ACCC8E /* LayerUIKitTests */ = {
+		D0E729491A02F1C700B76672 /* Shared */ = {
 			isa = PBXGroup;
 			children = (
-				0A82597A19DF4FA200ACCC8E /* LayerUIKitTests.m */,
-				0A82597819DF4FA200ACCC8E /* Supporting Files */,
+				D0D778C51A02EAEE000A5F51 /* main.m */,
+				D0E7294A1A02F1C700B76672 /* LYRUIAppDelegate.h */,
+				D0E7294B1A02F1C700B76672 /* LYRUIAppDelegate.m */,
 			);
-			path = LayerUIKitTests;
-			sourceTree = "<group>";
-		};
-		0A82597819DF4FA200ACCC8E /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-				0A82597919DF4FA200ACCC8E /* Info.plist */,
-			);
-			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
-		0A82598419DF501100ACCC8E /* Code */ = {
-			isa = PBXGroup;
-			children = (
-				0A8259D719DF50AB00ACCC8E /* LayerUIKit */,
-				0A82596219DF4FA200ACCC8E /* AppDelegate.h */,
-				0A82596319DF4FA200ACCC8E /* AppDelegate.m */,
-			);
-			name = Code;
-			path = LayerUIKit;
-			sourceTree = "<group>";
-		};
-		0A8259D719DF50AB00ACCC8E /* LayerUIKit */ = {
-			isa = PBXGroup;
-			children = (
-				0A82598519DF501A00ACCC8E /* LYRUIAvatarImageView.h */,
-				0A82598619DF501A00ACCC8E /* LYRUIAvatarImageView.m */,
-				0A82598719DF501A00ACCC8E /* LYRUIChangeNotificationObserver.h */,
-				0A82598819DF501A00ACCC8E /* LYRUIChangeNotificationObserver.m */,
-				0A82598919DF501A00ACCC8E /* LYRUIConstants.h */,
-				0A82598A19DF501A00ACCC8E /* LYRUIConstants.m */,
-				0A82598B19DF501A00ACCC8E /* LYRUIConversationCollectionViewFlowLayout.h */,
-				0A82598C19DF501A00ACCC8E /* LYRUIConversationCollectionViewFlowLayout.m */,
-				0A82598D19DF501A00ACCC8E /* LYRUIConversationCollectionViewFooter.h */,
-				0A82598E19DF501A00ACCC8E /* LYRUIConversationCollectionViewFooter.m */,
-				0A82598F19DF501A00ACCC8E /* LYRUIConversationCollectionViewHeader.h */,
-				0A82599019DF501A00ACCC8E /* LYRUIConversationCollectionViewHeader.m */,
-				0A82599119DF501A00ACCC8E /* LYRUIConversationListViewController.h */,
-				0A82599219DF501A00ACCC8E /* LYRUIConversationListViewController.m */,
-				0A82599319DF501A00ACCC8E /* LYRUIConversationNotificationObserver.h */,
-				0A82599419DF501A00ACCC8E /* LYRUIConversationNotificationObserver.m */,
-				0A82599519DF501A00ACCC8E /* LYRUIConversationPresenting.h */,
-				0A82599619DF501A00ACCC8E /* LYRUIConversationTableViewCell.h */,
-				0A82599719DF501A00ACCC8E /* LYRUIConversationTableViewCell.m */,
-				0A82599819DF501A00ACCC8E /* LYRUIConversationViewController.h */,
-				0A82599919DF501A00ACCC8E /* LYRUIConversationViewController.m */,
-				0A82599A19DF501A00ACCC8E /* LYRUIDataSourceChange.h */,
-				0A82599B19DF501A00ACCC8E /* LYRUIDataSourceChange.m */,
-				0A82599C19DF501A00ACCC8E /* LYRUIErrors.h */,
-				0A82599D19DF501A00ACCC8E /* LYRUIErrors.m */,
-				0A82599E19DF501A00ACCC8E /* LYRUIIncomingMessageCollectionViewCell.h */,
-				0A82599F19DF501A00ACCC8E /* LYRUIIncomingMessageCollectionViewCell.m */,
-				0A8259A019DF501A00ACCC8E /* LYRUIMediaAttachment.h */,
-				0A8259A119DF501A00ACCC8E /* LYRUIMediaAttachment.m */,
-				0A8259A219DF501A00ACCC8E /* LYRUIMessageBubbleView.h */,
-				0A8259A319DF501A00ACCC8E /* LYRUIMessageBubbleView.m */,
-				0A8259A419DF501A00ACCC8E /* LYRUIMessageCollectionViewCell.h */,
-				0A8259A519DF501A00ACCC8E /* LYRUIMessageCollectionViewCell.m */,
-				0A8259A619DF501A00ACCC8E /* LYRUIMessageComposeTextView.h */,
-				0A8259A719DF501A00ACCC8E /* LYRUIMessageComposeTextView.m */,
-				0A8259A819DF501A00ACCC8E /* LYRUIMessageInputToolbar.h */,
-				0A8259A919DF501A00ACCC8E /* LYRUIMessageInputToolbar.m */,
-				0A8259AA19DF501A00ACCC8E /* LYRUIMessageNotificationObserver.h */,
-				0A8259AB19DF501A00ACCC8E /* LYRUIMessageNotificationObserver.m */,
-				0A8259AC19DF501A00ACCC8E /* LYRUIMessagePresenting.h */,
-				0A8259AD19DF501A00ACCC8E /* LYRUIOutgoingMessageCollectionViewCell.h */,
-				0A8259AE19DF501A00ACCC8E /* LYRUIOutgoingMessageCollectionViewCell.m */,
-				0A8259AF19DF501A00ACCC8E /* LYRUIParticipant.h */,
-				0A8259B019DF501A00ACCC8E /* LYRUIParticipantPickerController.h */,
-				0A8259B119DF501A00ACCC8E /* LYRUIParticipantPickerController.m */,
-				0A8259B219DF501A00ACCC8E /* LYRUIParticipantPresenting.h */,
-				0A8259B319DF501A00ACCC8E /* LYRUIParticipantTableViewCell.h */,
-				0A8259B419DF501A00ACCC8E /* LYRUIParticipantTableViewCell.m */,
-				0A8259B519DF501A00ACCC8E /* LYRUIParticipantTableViewController.h */,
-				0A8259B619DF501A00ACCC8E /* LYRUIParticipantTableViewController.m */,
-				0A8259B719DF501A00ACCC8E /* LYRUIPaticipantSectionHeaderView.h */,
-				0A8259B819DF501A00ACCC8E /* LYRUIPaticipantSectionHeaderView.m */,
-				0A8259B919DF501A00ACCC8E /* LYRUISelectionIndicator.h */,
-				0A8259BA19DF501A00ACCC8E /* LYRUISelectionIndicator.m */,
-				0A8259BB19DF501A00ACCC8E /* LYRUIUtilities.h */,
-				0A8259BC19DF501A00ACCC8E /* LYRUIUtilities.m */,
-			);
-			name = LayerUIKit;
+			name = Shared;
+			path = "Sample Code/Shared";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		0A82595A19DF4FA200ACCC8E /* LayerUIKit */ = {
+		D0D778921A02EAA9000A5F51 /* Conversation */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 0A82597E19DF4FA200ACCC8E /* Build configuration list for PBXNativeTarget "LayerUIKit" */;
+			buildConfigurationList = D0D778B81A02EAA9000A5F51 /* Build configuration list for PBXNativeTarget "Conversation" */;
 			buildPhases = (
-				0A82595719DF4FA200ACCC8E /* Sources */,
-				0A82595819DF4FA200ACCC8E /* Frameworks */,
-				0A82595919DF4FA200ACCC8E /* Resources */,
+				BB6C9FD5FC6F98608BEE1449 /* Check Pods Manifest.lock */,
+				D0D7788F1A02EAA9000A5F51 /* Sources */,
+				D0D778901A02EAA9000A5F51 /* Frameworks */,
+				D0D778911A02EAA9000A5F51 /* Resources */,
+				E0581C72EECAFE3A38DBF653 /* Copy Pods Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
-			name = LayerUIKit;
-			productName = LayerUIKit;
-			productReference = 0A82595B19DF4FA200ACCC8E /* LayerUIKit.app */;
+			name = Conversation;
+			productName = Conversation;
+			productReference = D0D778931A02EAA9000A5F51 /* Conversation.app */;
 			productType = "com.apple.product-type.application";
 		};
-		0A82597319DF4FA200ACCC8E /* LayerUIKitTests */ = {
+		D0D778D21A02EB83000A5F51 /* Unit Tests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 0A82598119DF4FA200ACCC8E /* Build configuration list for PBXNativeTarget "LayerUIKitTests" */;
+			buildConfigurationList = D0D778DB1A02EB83000A5F51 /* Build configuration list for PBXNativeTarget "Unit Tests" */;
 			buildPhases = (
-				0A82597019DF4FA200ACCC8E /* Sources */,
-				0A82597119DF4FA200ACCC8E /* Frameworks */,
-				0A82597219DF4FA200ACCC8E /* Resources */,
+				043A690407249644D4B1AB38 /* Check Pods Manifest.lock */,
+				D0D778CF1A02EB83000A5F51 /* Sources */,
+				D0D778D01A02EB83000A5F51 /* Frameworks */,
+				D0D778D11A02EB83000A5F51 /* Resources */,
+				4F263349FF6ED352CB0DF1C5 /* Copy Pods Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				0A82597619DF4FA200ACCC8E /* PBXTargetDependency */,
+				D0D778DA1A02EB83000A5F51 /* PBXTargetDependency */,
 			);
-			name = LayerUIKitTests;
-			productName = LayerUIKitTests;
-			productReference = 0A82597419DF4FA200ACCC8E /* LayerUIKitTests.xctest */;
+			name = "Unit Tests";
+			productName = "Unit Tests";
+			productReference = D0D778D31A02EB83000A5F51 /* Unit Tests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		0A82595319DF4FA200ACCC8E /* Project object */ = {
+		D0D778891A02E2B2000A5F51 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0600;
-				ORGANIZATIONNAME = "Layer, Inc.";
+				LastUpgradeCheck = 0610;
 				TargetAttributes = {
-					0A82595A19DF4FA200ACCC8E = {
-						CreatedOnToolsVersion = 6.0.1;
+					D0D778921A02EAA9000A5F51 = {
+						CreatedOnToolsVersion = 6.1;
 					};
-					0A82597319DF4FA200ACCC8E = {
-						CreatedOnToolsVersion = 6.0.1;
-						TestTargetID = 0A82595A19DF4FA200ACCC8E;
+					D0D778D21A02EB83000A5F51 = {
+						CreatedOnToolsVersion = 6.1;
+						TestTargetID = D0D778921A02EAA9000A5F51;
 					};
 				};
 			};
-			buildConfigurationList = 0A82595619DF4FA200ACCC8E /* Build configuration list for PBXProject "LayerUIKit" */;
+			buildConfigurationList = D0D7788C1A02E2B2000A5F51 /* Build configuration list for PBXProject "LayerUIKit" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -317,26 +224,27 @@
 				en,
 				Base,
 			);
-			mainGroup = 0A82595219DF4FA200ACCC8E;
-			productRefGroup = 0A82595C19DF4FA200ACCC8E /* Products */;
+			mainGroup = D0D778881A02E2B2000A5F51;
+			productRefGroup = D0D778941A02EAA9000A5F51 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				0A82595A19DF4FA200ACCC8E /* LayerUIKit */,
-				0A82597319DF4FA200ACCC8E /* LayerUIKitTests */,
+				D0D778921A02EAA9000A5F51 /* Conversation */,
+				D0D778D21A02EB83000A5F51 /* Unit Tests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		0A82595919DF4FA200ACCC8E /* Resources */ = {
+		D0D778911A02EAA9000A5F51 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D0D778C71A02EAEE000A5F51 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		0A82597219DF4FA200ACCC8E /* Resources */ = {
+		D0D778D11A02EB83000A5F51 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -345,65 +253,129 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		043A690407249644D4B1AB38 /* Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		4F263349FF6ED352CB0DF1C5 /* Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Unit Tests/Pods-Unit Tests-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		BB6C9FD5FC6F98608BEE1449 /* Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		E0581C72EECAFE3A38DBF653 /* Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Conversation/Pods-Conversation-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
-		0A82595719DF4FA200ACCC8E /* Sources */ = {
+		D0D7788F1A02EAA9000A5F51 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0A8259CD19DF501A00ACCC8E /* LYRUIMessageComposeTextView.m in Sources */,
-				0A8259C119DF501A00ACCC8E /* LYRUIConversationCollectionViewFooter.m in Sources */,
-				0A8259CE19DF501A00ACCC8E /* LYRUIMessageInputToolbar.m in Sources */,
-				0A8259CC19DF501A00ACCC8E /* LYRUIMessageCollectionViewCell.m in Sources */,
-				0A8259D619DF501A00ACCC8E /* LYRUIUtilities.m in Sources */,
-				0A8259C019DF501A00ACCC8E /* LYRUIConversationCollectionViewFlowLayout.m in Sources */,
-				0A8259C219DF501A00ACCC8E /* LYRUIConversationCollectionViewHeader.m in Sources */,
-				0A8259CF19DF501A00ACCC8E /* LYRUIMessageNotificationObserver.m in Sources */,
-				0A8259BE19DF501A00ACCC8E /* LYRUIChangeNotificationObserver.m in Sources */,
-				0A8259D519DF501A00ACCC8E /* LYRUISelectionIndicator.m in Sources */,
-				0A8259CB19DF501A00ACCC8E /* LYRUIMessageBubbleView.m in Sources */,
-				0A8259C519DF501A00ACCC8E /* LYRUIConversationTableViewCell.m in Sources */,
-				0A8259C419DF501A00ACCC8E /* LYRUIConversationNotificationObserver.m in Sources */,
-				0A8259C319DF501A00ACCC8E /* LYRUIConversationListViewController.m in Sources */,
-				0A8259C919DF501A00ACCC8E /* LYRUIIncomingMessageCollectionViewCell.m in Sources */,
-				0A8259C619DF501A00ACCC8E /* LYRUIConversationViewController.m in Sources */,
-				0A8259C819DF501A00ACCC8E /* LYRUIErrors.m in Sources */,
-				0A8259D419DF501A00ACCC8E /* LYRUIPaticipantSectionHeaderView.m in Sources */,
-				0A82596419DF4FA200ACCC8E /* AppDelegate.m in Sources */,
-				0A82596119DF4FA200ACCC8E /* main.m in Sources */,
-				0A8259CA19DF501A00ACCC8E /* LYRUIMediaAttachment.m in Sources */,
-				0A8259BD19DF501A00ACCC8E /* LYRUIAvatarImageView.m in Sources */,
-				0A8259D219DF501A00ACCC8E /* LYRUIParticipantTableViewCell.m in Sources */,
-				0A8259D319DF501A00ACCC8E /* LYRUIParticipantTableViewController.m in Sources */,
-				0A8259C719DF501A00ACCC8E /* LYRUIDataSourceChange.m in Sources */,
-				0A8259D019DF501A00ACCC8E /* LYRUIOutgoingMessageCollectionViewCell.m in Sources */,
-				0A8259BF19DF501A00ACCC8E /* LYRUIConstants.m in Sources */,
-				0A8259D119DF501A00ACCC8E /* LYRUIParticipantPickerController.m in Sources */,
+				D0D778CB1A02EAEE000A5F51 /* main.m in Sources */,
+				D0E7294C1A02F1C700B76672 /* LYRUIAppDelegate.m in Sources */,
+				D0D778CA1A02EAEE000A5F51 /* LYRUISampleConversationRootViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		0A82597019DF4FA200ACCC8E /* Sources */ = {
+		D0D778CF1A02EB83000A5F51 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0A82597B19DF4FA200ACCC8E /* LayerUIKitTests.m in Sources */,
+				D0D778DF1A02EBDE000A5F51 /* LYRUIConversationDataSourceTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		0A82597619DF4FA200ACCC8E /* PBXTargetDependency */ = {
+		D0D778DA1A02EB83000A5F51 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 0A82595A19DF4FA200ACCC8E /* LayerUIKit */;
-			targetProxy = 0A82597519DF4FA200ACCC8E /* PBXContainerItemProxy */;
+			target = D0D778921A02EAA9000A5F51 /* Conversation */;
+			targetProxy = D0D778D91A02EB83000A5F51 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
+/* Begin PBXVariantGroup section */
+		D0D778BD1A02EAEE000A5F51 /* LaunchScreen.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				D0D778BE1A02EAEE000A5F51 /* Base */,
+			);
+			name = LaunchScreen.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
 /* Begin XCBuildConfiguration section */
-		0A82597C19DF4FA200ACCC8E /* Debug */ = {
+		D0D7788D1A02E2B2000A5F51 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ONLY_ACTIVE_ARCH = YES;
+			};
+			name = Debug;
+		};
+		D0D7788E1A02E2B2000A5F51 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+			};
+			name = Release;
+		};
+		D0D778B41A02EAA9000A5F51 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 9337BCDD41DBBADF3D4BBD19 /* Pods-Conversation.debug.xcconfig */;
+			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -419,6 +391,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
+				ENABLE_NS_ASSERTIONS = "$(inherited)";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -434,17 +407,23 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				INFOPLIST_FILE = "$(SRCROOT)/Sample Code/Conversation/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
-		0A82597D19DF4FA200ACCC8E /* Release */ = {
+		D0D778B51A02EAA9000A5F51 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 5C9A8B1181386C002F1F0585 /* Pods-Conversation.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -460,7 +439,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
-				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_NS_ASSERTIONS = "$(inherited)";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -469,98 +448,143 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				INFOPLIST_FILE = "$(SRCROOT)/Sample Code/Conversation/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
-		0A82597F19DF4FA200ACCC8E /* Debug */ = {
+		D0D778DC1A02EB83000A5F51 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1F88B2BB7AACF5DFC943592C /* Pods-Unit Tests.debug.xcconfig */;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				INFOPLIST_FILE = LayerUIKit/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Debug;
-		};
-		0A82598019DF4FA200ACCC8E /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				INFOPLIST_FILE = LayerUIKit/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Release;
-		};
-		0A82598219DF4FA200ACCC8E /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_NS_ASSERTIONS = "$(inherited)";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",
 				);
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				INFOPLIST_FILE = LayerUIKitTests/Info.plist;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = "Unit Tests/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/LayerUIKit.app/LayerUIKit";
+				SDKROOT = iphoneos;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Conversation.app/Conversation";
 			};
 			name = Debug;
 		};
-		0A82598319DF4FA200ACCC8E /* Release */ = {
+		D0D778DD1A02EB83000A5F51 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 4A1A0BE9E193CC265341461A /* Pods-Unit Tests.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = "$(inherited)";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",
 				);
-				INFOPLIST_FILE = LayerUIKitTests/Info.plist;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = "Unit Tests/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/LayerUIKit.app/LayerUIKit";
+				SDKROOT = iphoneos;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Conversation.app/Conversation";
+				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		0A82595619DF4FA200ACCC8E /* Build configuration list for PBXProject "LayerUIKit" */ = {
+		D0D7788C1A02E2B2000A5F51 /* Build configuration list for PBXProject "LayerUIKit" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				0A82597C19DF4FA200ACCC8E /* Debug */,
-				0A82597D19DF4FA200ACCC8E /* Release */,
+				D0D7788D1A02E2B2000A5F51 /* Debug */,
+				D0D7788E1A02E2B2000A5F51 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		0A82597E19DF4FA200ACCC8E /* Build configuration list for PBXNativeTarget "LayerUIKit" */ = {
+		D0D778B81A02EAA9000A5F51 /* Build configuration list for PBXNativeTarget "Conversation" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				0A82597F19DF4FA200ACCC8E /* Debug */,
-				0A82598019DF4FA200ACCC8E /* Release */,
+				D0D778B41A02EAA9000A5F51 /* Debug */,
+				D0D778B51A02EAA9000A5F51 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		0A82598119DF4FA200ACCC8E /* Build configuration list for PBXNativeTarget "LayerUIKitTests" */ = {
+		D0D778DB1A02EB83000A5F51 /* Build configuration list for PBXNativeTarget "Unit Tests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				0A82598219DF4FA200ACCC8E /* Debug */,
-				0A82598319DF4FA200ACCC8E /* Release */,
+				D0D778DC1A02EB83000A5F51 /* Debug */,
+				D0D778DD1A02EB83000A5F51 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = 0A82595319DF4FA200ACCC8E /* Project object */;
+	rootObject = D0D778891A02E2B2000A5F51 /* Project object */;
 }

@@ -1,0 +1,8 @@
+.DS_Store
+xcuserdata
+*.framework
+*.bundle
+Pods
+LayerUIKit.xcworkspace/xcshareddata/xcschemes/*Tests.xcscheme
+LayerUIKit.xcworkspace/xcshareddata/LayerUIKit.xccheckout
+Releases
