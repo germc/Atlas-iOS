@@ -11,6 +11,7 @@
 #import <MapKit/MapKit.h>
 #import "LYRUIParticipant.h"
 #import "LYRUIMessageInputToolbar.h"
+#import "LYRUIAddressBarViewController.h"
 
 @class LYRUIConversationViewController;
 
@@ -97,7 +98,7 @@
  @abstract The `LYRUIConversationViewController` class presents an interface that provides for displaying 
  a Layer conversation and the ability to send messages.
 */
-@interface LYRUIConversationViewController : UIViewController
+@interface LYRUIConversationViewController : UIViewController <LYRUIAddressBarControllerDelegate>
 
 ///---------------------------------------
 /// @name Designated Initializer
@@ -147,8 +148,19 @@
 @property (nonatomic) LYRConversation *conversation;
 
 /**
+ @abstract The `LYRUIAddressBarViewController` displayed for addressing new conversations
+ */
+@property (nonatomic) LYRUIAddressBarViewController *addressBarController;
+
+/**
  @abstract The `LYRUIMessageInputToolbar` displayed for user input
  */
 @property (nonatomic) LYRUIMessageInputToolbar *messageInputToolbar;
+
+/**
+ @abstract Informs the receiver if it should display a `LYRUIAddressBar`. If yes, your application must implement 
+ `LYRUIAddressBarControllerDelegate` and `LYRUIAddressBarControllerDataSource`;
+ */
+@property (nonatomic) BOOL showsAddressBar;
 
 @end

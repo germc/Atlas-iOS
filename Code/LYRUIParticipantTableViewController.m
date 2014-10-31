@@ -219,7 +219,6 @@ static NSString *const LYRParticipantCellIdentifier = @"participantCellIdentifie
 
 - (void)cancelButtonTapped
 {
-    [self.tableView reloadData];
     [self.delegate participantTableViewControllerDidSelectCancelButton];
 }
 

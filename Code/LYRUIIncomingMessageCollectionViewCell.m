@@ -48,9 +48,7 @@ static CGFloat const LYRAvatarImageDiameter = 30.0f;
         self.imageViewDiameter = LYRAvatarImageDiameter;
         self.imageViewLeft = 10;
     }
-    if (!self.avatarConstraintsAreSet) {
-        [self updateAvatarImageConstraints];
-    }
+    [self updateAvatarImageConstraints];
 }
 
 - (void)updateWithParticipant:(id<LYRUIParticipant>)participant
@@ -69,6 +67,10 @@ static CGFloat const LYRAvatarImageDiameter = 30.0f;
 
 - (void)updateAvatarImageConstraints
 {
+    [self.contentView removeConstraint:self.avatarImageWidthConstraint];
+    [self.contentView removeConstraint:self.avatarImageHeightConstraint];
+    [self.contentView removeConstraint:self.avatarImageBottomConstraint];
+    [self.contentView removeConstraint:self.avatarImageLeftConstraint];
     //***************Avatar Image Constraints***************//
     self.avatarImageWidthConstraint = [NSLayoutConstraint constraintWithItem:self.avatarImage
                                                                    attribute:NSLayoutAttributeWidth
@@ -105,7 +107,6 @@ static CGFloat const LYRAvatarImageDiameter = 30.0f;
     [self.contentView addConstraint:self.avatarImageHeightConstraint];
     [self.contentView addConstraint:self.avatarImageBottomConstraint];
     [self.contentView addConstraint:self.avatarImageLeftConstraint];
-    self.avatarConstraintsAreSet = YES;
 }
 
 - (void)updateConstraints
