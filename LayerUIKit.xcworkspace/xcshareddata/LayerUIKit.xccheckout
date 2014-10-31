@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>9DDDEF2C-B120-4BF9-9180-ABCFD35B80A8</string>
+	<key>IDESourceControlProjectName</key>
+	<string>LayerUIKit</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>555B8AD8B8A34913DE837AE8E32AA22302CA6BED</key>
+		<string>github.com:layerhq/layer-sample-ios.git</string>
+		<key>FAC91FF60B60E6856BFECF250238B5EE8E4E482B</key>
+		<string>github.com:layerhq/LayerUIKit.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>LayerUIKit.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>555B8AD8B8A34913DE837AE8E32AA22302CA6BED</key>
+		<string>../..</string>
+		<key>FAC91FF60B60E6856BFECF250238B5EE8E4E482B</key>
+		<string>..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>github.com:layerhq/LayerUIKit.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>FAC91FF60B60E6856BFECF250238B5EE8E4E482B</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>555B8AD8B8A34913DE837AE8E32AA22302CA6BED</string>
+			<key>IDESourceControlWCCName</key>
+			<string></string>
+		</dict>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>FAC91FF60B60E6856BFECF250238B5EE8E4E482B</string>
+			<key>IDESourceControlWCCName</key>
+			<string>LayerUIKit</string>
+		</dict>
+	</array>
+</dict>
+</plist>

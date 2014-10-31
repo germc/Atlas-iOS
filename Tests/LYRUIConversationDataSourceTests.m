@@ -1,19 +1,19 @@
 //
-//  LayerUIKitTests.m
-//  LayerUIKitTests
+//  LYRUIConversationDataSourceTests.m
+//  LYRUIKit
 //
-//  Created by Kevin Coleman on 10/3/14.
-//  Copyright (c) 2014 Layer, Inc. All rights reserved.
+//  Created by Klemen Verdnik on 10/30/14.
+//
 //
 
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
 
-@interface LayerUIKitTests : XCTestCase
+@interface LYRUIConversationDataSourceTests : XCTestCase
 
 @end
 
-@implementation LayerUIKitTests
+@implementation LYRUIConversationDataSourceTests
 
 - (void)setUp {
     [super setUp];
