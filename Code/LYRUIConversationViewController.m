@@ -99,18 +99,19 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
     
     if (!self.conversation) {
         self.addressBarController = [[LYRUIAddressBarViewController alloc] init];
-        self.addressBarRect = CGRectMake(0, 64, self.view.frame.size.width, 38);;
-        self.addressBarController.view.frame = self.addressBarRect;
         self.addressBarController.delegate = self;
+        [self addChildViewController:self.addressBarController];
         [self.view addSubview:self.addressBarController.view];
         [self.addressBarController didMoveToParentViewController:self];
+        
     }
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-
+    [self.addressBarController updateControllerOffset:CGPointMake(0, 64)];
+    
     if (self.conversation) {
         [self setupConversationDataSource:^{
             [self.collectionView reloadData];
@@ -480,6 +481,15 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
         NSMutableArray *messagePartsToSend = [NSMutableArray new];
         for (id part in messageInputToolbar.messageParts){
             if ([part isKindOfClass:[NSString class]]) {
+                if ([[part substringToIndex:5] isEqualToString:@"[send"]) {
+                    NSString *number = [[[part substringFromIndex:5] stringByReplacingOccurrencesOfString:@"]" withString:@""] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+                    NSUInteger numberToSend = [number integerValue];
+                    for (int i = 0; i < numberToSend; i++) {
+                        [messagePartsToSend addObject:LYRUIMessagePartWithText([NSString stringWithFormat:@"Sending Test %d", i])];
+                        LYRMessage *message = [LYRMessage messageWithConversation:self.conversation parts:messagePartsToSend];
+                        [self sendMessage:message pushText:[self pushNotificationStringForMessage:message]];
+                    }
+                }
                 [messagePartsToSend addObject:LYRUIMessagePartWithText(part)];
             }
             if ([part isKindOfClass:[UIImage class]]) {
@@ -709,29 +719,34 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
 
 - (void)addressBarViewControllerDidBeginSearching:(LYRUIAddressBarViewController *)addressBarViewController
 {
-    self.addressBarController.view.frame = CGRectMake(0, 64, self.view.frame.size.width, self.view.frame.size.height - 64);
     self.inputAccessoryView.alpha = 0.0f;
 }
 
 - (void)addressBarViewControllerDidEndSearching:(LYRUIAddressBarViewController *)addressBarViewController
 {
-    self.addressBarController.view.frame = CGRectMake(0, 64, self.view.frame.size.width, 38);
     self.inputAccessoryView.alpha = 1.0f;
 }
 
-- (void)addressBarViewController:(LYRUIAddressBarViewController *)addressBarViewController didSelectParticipants:(NSSet *)participants
+- (void)addressBarViewController:(LYRUIAddressBarViewController *)addressBarViewController didSelectParticipant:(id<LYRUIParticipant>)participant
 {
-    if (!participants) {
-        self.conversation = nil;
+    [self configureConversationWithAddressBar:addressBarViewController];
+}
+
+- (void)addressBarViewController:(LYRUIAddressBarViewController *)addressBarViewController didRemoveParticipant:(id<LYRUIParticipant>)participant
+{
+    [self configureConversationWithAddressBar:addressBarViewController];
+}
+
+- (void)configureConversationWithAddressBar:(LYRUIAddressBarViewController *)addressBarViewController
+{
+    NSSet *participants = [addressBarViewController.selectedParticipants valueForKey:@"participantIdentifier"];
+    LYRConversation *conversation = [[[self.layerClient conversationsForParticipants:participants] allObjects] lastObject];
+    if (conversation) {
+        self.conversation = conversation;
     } else {
-        LYRConversation *conversation = [[[self.layerClient conversationsForParticipants:participants] allObjects] lastObject];
-        if (conversation) {
-            self.conversation = conversation;
-        } else {
-            self.conversation = [LYRConversation conversationWithParticipants:participants];
-        }
-        if (self.conversation.participants.count > 2) self.shouldDisplayAvatarImage = YES;
+        self.conversation = [LYRConversation conversationWithParticipants:participants];
     }
+    if (self.conversation.participants.count > 2) self.shouldDisplayAvatarImage = YES;
     [self setConversationViewTitle];
     [self setupConversationDataSource:^{
         [self.collectionView.collectionViewLayout invalidateLayout];
@@ -741,6 +756,7 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
             self.collectionView.alpha = 1.0f;
         }];
     }];
+
 }
 
 #pragma mark - Auto Layout Configuration

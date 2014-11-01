@@ -96,7 +96,8 @@
 
 /**
  @abstract The `LYRUIConversationViewController` class presents an interface that provides for displaying 
- a Layer conversation and the ability to send messages.
+ a Layer conversation and the ability to send messages. The controller's design and functionality closely correlates with
+ the conversation view controller in iMessage.
 */
 @interface LYRUIConversationViewController : UIViewController <LYRUIAddressBarControllerDelegate>
 
