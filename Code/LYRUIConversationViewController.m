@@ -53,6 +53,7 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
         
         // Set default configuration for public configuration properties
         _dateDisplayTimeInterval = 60*15;
+        _showsAddressBar = NO;
         
         // Configure default UIAppearance Proxy
         [self configureMessageBubbleAppearance];
@@ -96,21 +97,20 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
     [self updateCollectionViewConstraints];
     self.collectionView.contentInset = UIEdgeInsetsMake(0, 0, self.inputAccessoryView.intrinsicContentSize.height, 0);
     self.collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(0, 0, self.inputAccessoryView.intrinsicContentSize.height, 0);
-    
-    if (!self.conversation) {
-        self.addressBarController = [[LYRUIAddressBarViewController alloc] init];
-        self.addressBarController.delegate = self;
-        [self addChildViewController:self.addressBarController];
-        [self.view addSubview:self.addressBarController.view];
-        [self.addressBarController didMoveToParentViewController:self];
-        
-    }
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [self.addressBarController updateControllerOffset:CGPointMake(0, 64)];
+    
+    if (!self.conversation && self.showsAddressBar) {
+        self.addressBarController = [[LYRUIAddressBarViewController alloc] init];
+        self.addressBarController.delegate = self;
+        [self addChildViewController:self.addressBarController];
+        [self.view addSubview:self.addressBarController.view];
+        [self.addressBarController didMoveToParentViewController:self];
+        [self.addressBarController updateControllerOffset:CGPointMake(0, 64)];
+    }
     
     if (self.conversation) {
         [self setupConversationDataSource:^{

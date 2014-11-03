@@ -24,6 +24,7 @@
 
 @property (nonatomic) NSUInteger addressBarViewDefaultHeight;
 @property (nonatomic) NSUInteger addressBarViewOffset;
+@property (nonatomic) NSUInteger controllerYOffset;
 
 @end
 
@@ -57,7 +58,7 @@ static NSString *const LSParticpantCellIdentifier = @"participantCellIdentifier"
     UITapGestureRecognizer *gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(addressBarTextViewTapped:)];
     [self.addressBarView.addressBarTextView addGestureRecognizer:gestureRecognizer];
     
-    self.addressBarViewDefaultHeight = 40;
+    self.addressBarViewDefaultHeight = 38;
 
 }
 
@@ -69,10 +70,13 @@ static NSString *const LSParticpantCellIdentifier = @"participantCellIdentifier"
 
 - (void)updateControllerOffset:(CGPoint)offset
 {
+    self.controllerYOffset = offset.y;
+    self.tableView.contentInset = UIEdgeInsetsMake(0, 0, -self.controllerYOffset, 0);
+
     UIView *presentingView = [[self parentViewController] view];
     self.addressBarViewWidthConstraint = [NSLayoutConstraint constraintWithItem:self.view attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:presentingView attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0.0];
     self.addressBarViewHeightConstraint = [NSLayoutConstraint constraintWithItem:self.view attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:self.addressBarViewDefaultHeight];
-    self.addressBarViewTopConstraint = [NSLayoutConstraint constraintWithItem:self.view attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:presentingView attribute:NSLayoutAttributeTop multiplier:1.0 constant:offset.y];
+    self.addressBarViewTopConstraint = [NSLayoutConstraint constraintWithItem:self.view attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:presentingView attribute:NSLayoutAttributeTop multiplier:1.0 constant:self.controllerYOffset];
     
     [presentingView addConstraint:self.addressBarViewWidthConstraint];
     [presentingView addConstraint:self.addressBarViewHeightConstraint];
@@ -84,7 +88,7 @@ static NSString *const LSParticpantCellIdentifier = @"participantCellIdentifier"
 - (void)updateControllerHeight
 {
     UIView *presentingView = [[self parentViewController] view];
-    self.addressBarViewHeightConstraint.constant = presentingView.frame.size.height - 64;
+    self.addressBarViewHeightConstraint.constant = presentingView.frame.size.height - self.controllerYOffset;
     [presentingView setNeedsUpdateConstraints];
 }
 
@@ -99,10 +103,10 @@ static NSString *const LSParticpantCellIdentifier = @"participantCellIdentifier"
 {
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.addressBarView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0]];
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.addressBarView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeTop multiplier:1.0 constant:0]];
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.addressBarView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:self.addressBarViewDefaultHeight]];
+   // [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.addressBarView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:self.addressBarViewDefaultHeight]];
     
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.tableView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0]];
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.tableView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeHeight multiplier:1.0 constant:-64]];
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.tableView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeHeight multiplier:1.0 constant:0]];
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.tableView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.addressBarView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0]];
     
     [super updateViewConstraints];
@@ -188,6 +192,8 @@ static NSString *const LSParticpantCellIdentifier = @"participantCellIdentifier"
     [self mapAddressTokenIndex];
     
     self.selectedParticipants = [NSSet setWithArray:[self.addressTokens valueForKey:@"participant"]];
+    
+    [self sizeAddressBarView];
 }
 
 - (void)removeToken:(LYRUIAddressToken *)token
@@ -203,6 +209,8 @@ static NSString *const LSParticpantCellIdentifier = @"participantCellIdentifier"
     [self mapTokenRanges];
     
     self.selectedParticipants = [NSSet setWithArray:[self.addressTokens valueForKey:@"participant"]];
+    
+    [self sizeAddressBarView];
 }
 
 - (void)setAddressBarText;
@@ -289,6 +297,7 @@ static NSString *const LSParticpantCellIdentifier = @"participantCellIdentifier"
 
 - (void)sizeAddressBarView
 {
+     [self.addressBarView invalidateIntrinsicContentSize];
     NSLog(@"Content View %f", self.addressBarView.addressBarTextView.contentSize.height);
 }
 

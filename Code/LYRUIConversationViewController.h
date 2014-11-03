@@ -159,8 +159,8 @@
 @property (nonatomic) LYRUIMessageInputToolbar *messageInputToolbar;
 
 /**
- @abstract Informs the receiver if it should display a `LYRUIAddressBar`. If yes, your application must implement 
- `LYRUIAddressBarControllerDelegate` and `LYRUIAddressBarControllerDataSource`;
+ @abstract Informs the receiver if it should display a `LYRUIAddressBarController`. If yes, your application must implement
+ `LYRUIAddressBarControllerDelegate` and `LYRUIAddressBarControllerDataSource`. Default is no.
  */
 @property (nonatomic) BOOL showsAddressBar;
 
