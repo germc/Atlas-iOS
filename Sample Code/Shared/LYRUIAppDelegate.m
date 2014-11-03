@@ -18,13 +18,23 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    // Get app info from Info.plist
     NSBundle *mainBundle = [NSBundle mainBundle];
     NSString *viewControllerClassName = [mainBundle objectForInfoDictionaryKey:@"LYRUILaunchViewControllerClass"];
+    
+    // Setup the initial view controller
     UIViewController *firstViewController = [[NSClassFromString(viewControllerClassName) alloc] init];
+    firstViewController.title = [(NSString *)[mainBundle objectForInfoDictionaryKey:@"CFBundleName"] stringByAppendingString:@" sample"];
+    
+    // Setup a navigation controller to be the root view controller
+    // and have the initial view be the fisrt on the navigation stack.
     UINavigationController *rootViewController = [[UINavigationController alloc] initWithRootViewController:firstViewController];
+    
+    // Add the navigation controller to the main window and make it visible
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     self.window.rootViewController = rootViewController;
     [self.window makeKeyAndVisible];
+    
     return YES;
 }
 

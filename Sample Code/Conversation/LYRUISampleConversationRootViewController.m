@@ -7,8 +7,17 @@
 //
 
 #import "LYRUISampleConversationRootViewController.h"
+#import <LayerUIKit/LYRUIConversationDataSource.h>
+#import <LayerUIKit/LYRUIConversationViewController.h>
+#import "LYRClientMock.h"
+#import "LYRClientMockFactory.h"
+#import "LYRUIParticipant.h"
 
-@interface LYRUISampleConversationRootViewController ()
+@interface LYRUISampleConversationRootViewController () <LYRUIConversationViewControllerDataSource>
+
+@property (nonatomic) LYRUIConversationViewController *conversationViewController;
+@property (nonatomic) LYRClientMockFactory *clientMockFactory;
+@property (nonatomic) NSDateFormatter *dateFormatter;
 
 @end
 
@@ -16,22 +25,54 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
+    
+    // Setup the title for this view controller
+    self.title = @"Conversation view sample";
+    
+    // Use factory to create a client with some messages.
+    self.clientMockFactory = [LYRClientMockFactory clientForAliceWithConversation];
+    LYRConversationMock *conversation = [[self.clientMockFactory.layerClient conversationsForIdentifiers:nil] anyObject];
+
+    // Instantiate and configure LYRUIConversationViewController
+    self.conversationViewController = [LYRUIConversationViewController conversationViewControllerWithConversation:(id)conversation layerClient:(id)self.clientMockFactory.layerClient];
+    self.conversationViewController.dataSource = self;
+    
+    // Setup the dateformatter used by the dataSource
+    self.dateFormatter = [[NSDateFormatter alloc] init];
+    self.dateFormatter.dateStyle = NSDateFormatterShortStyle;
+    self.dateFormatter.timeStyle = NSDateFormatterShortStyle;
+    
+    // Put the LYRUIConversationViewController on view stack and display it
+    [self addChildViewController:self.conversationViewController];
+    [self.view addSubview:self.conversationViewController.view];
+    [self.conversationViewController didMoveToParentViewController:self];
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+- (UIView *)inputAccessoryView
+{
+    return self.conversationViewController.inputAccessoryView;
 }
 
-/*
-#pragma mark - Navigation
+#pragma mark - LYRUIConversationViewControllerDataSource methods
 
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
+- (id<LYRUIParticipant>)conversationViewController:(LYRUIConversationViewController *)conversationViewController participantForIdentifier:(NSString *)participantIdentifier
+{
+    return [LYRClientMockFactory userForParticipantIdentifier:participantIdentifier];
 }
-*/
+
+- (NSAttributedString *)conversationViewController:(LYRUIConversationViewController *)conversationViewController attributedStringForDisplayOfDate:(NSDate *)date
+{
+    return [[NSAttributedString alloc] initWithString:[self.dateFormatter stringFromDate:date]];
+}
+
+- (NSAttributedString *)conversationViewController:(LYRUIConversationViewController *)conversationViewController attributedStringForDisplayOfRecipientStatus:(NSDictionary *)recipientStatus
+{
+    if (recipientStatus.count == 0) return nil;
+    NSMutableString *statuses = [NSMutableString stringWithString:@"read "];
+    [[recipientStatus allKeys] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        [statuses appendString:@"✔︎"];
+    }];
+    return [[NSAttributedString alloc] initWithString:statuses];
+}
 
 @end
