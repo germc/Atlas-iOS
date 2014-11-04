@@ -8,7 +8,6 @@
 
 #import "LYRUIParticipantTableViewCell.h"
 #import "LYRUIConstants.h"
-#import "LYRUISelectionIndicator.h"
 #import "LYRUIAvatarImageView.h"
 
 @interface LYRUIParticipantTableViewCell ()
@@ -144,6 +143,7 @@ static CGFloat const LSSelectionIndicatorSize = 30;
             break;
     }
     self.textLabel.textColor = self.titleColor;
+    [self.textLabel sizeToFit];
 }
 
 @end

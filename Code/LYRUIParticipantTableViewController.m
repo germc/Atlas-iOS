@@ -8,7 +8,6 @@
 
 #import "LYRUIParticipantTableViewController.h"
 #import "LYRUIPaticipantSectionHeaderView.h"
-#import "LYRUISelectionIndicator.h"
 #import "LYRUIConstants.h"
 #import "LYRUIParticipantPickerController.h"
 
@@ -170,7 +169,6 @@ static NSString *const LYRParticipantCellIdentifier = @"participantCellIdentifie
 {
     NSString *key = [[self sortedContactKeys] objectAtIndex:indexPath.section];
     id<LYRUIParticipant> participant = [[[self currentDataArray] objectForKey:key] objectAtIndex:indexPath.row];
-    NSLog(@"FullName: %@", participant.fullName);
     [cell presentParticipant:participant];
     [cell updateWithSortType:self.sortType];
     [cell shouldShowAvatarImage:NO];

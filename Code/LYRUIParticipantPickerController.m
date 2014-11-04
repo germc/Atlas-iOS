@@ -7,7 +7,6 @@
 //
 
 #import "LYRUIParticipantPickerController.h"
-#import "LYRUISelectionIndicator.h"
 
 @interface LYRUIParticipantPickerController () <LYRUIParticipantTableViewControllerDelegate>
 
@@ -71,7 +70,6 @@
     self.participantTableViewController.participantCellClass = self.cellClass;
     self.participantTableViewController.rowHeight = self.rowHeight;
     self.participantTableViewController.sortType = self.sortType;
-    self.participantTableViewController.selectionIndicator = [LYRUISelectionIndicator initWithDiameter:30];
     self.isOnScreen = TRUE;
 }
 
