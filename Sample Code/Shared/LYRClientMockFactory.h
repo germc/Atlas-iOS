@@ -29,4 +29,8 @@
 #pragma mark - Producing conversations
 - (void)addConversationBetweenAliceAndBob;
 
+#pragma mark - Producing timed incoming messages
+- (void)startTimedIncomingMessages;
+- (void)stopTimedIncomingMessages;
+
 @end

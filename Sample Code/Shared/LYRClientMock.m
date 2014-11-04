@@ -27,6 +27,8 @@
 @property (nonatomic, readwrite) BOOL isDeleted;
 @property (nonatomic, readwrite) NSMutableDictionary *mutableMetadata;
 
++ (instancetype)conversationWithLYRConversation:(LYRConversation *)conversation;
+
 @end
 
 @interface LYRMessageMock ()
@@ -42,6 +44,8 @@
 @property (nonatomic, readwrite) NSString *sentByUserID;
 @property (nonatomic, readwrite) NSMutableDictionary *mutableRecipientStatuses;
 @property (nonatomic, readwrite) NSMutableDictionary *mutableMetadata;
+
++ (instancetype)messageWithLYRMessage:(LYRMessage *)message userID:(NSString *)userID;
 
 @end
 
@@ -121,31 +125,49 @@
 
 - (BOOL)sendMessage:(LYRMessageMock *)message error:(NSError **)error
 {
+    if ([message isKindOfClass:LYRMessage.class]) {
+        message = [LYRMessageMock messageWithLYRMessage:(LYRMessage *)message userID:self.authenticatedUserID];
+    }
+    message.sentByUserID = self.authenticatedUserID;
+    
     NSMutableArray *changes = [NSMutableArray array];
-    [changes addObject:[self addMessage:message]];
+    [changes addObjectsFromArray:[self addMessage:message]];
     [self postChanges:changes];
 
     // Simulate the message being sent.
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        NSMutableArray *changes = [NSMutableArray array];
+        NSDictionary *recipientStatusesBeforeMutation = message.recipientStatusByUserID.copy;
         for (NSString *participant in message.conversation.participants) {
-            if ([participant isEqualToString:self.authenticatedUserID]) {
-                continue;
-            }
-            [changes addObject:[self setMessage:message recipientStatus:LYRRecipientStatusSent forParticipant:participant]];
+            [self setMessage:message recipientStatus:LYRRecipientStatusSent forParticipant:participant];
         }
-        [changes addObject:[self setMessage:message recipientStatus:LYRRecipientStatusRead forParticipant:self.authenticatedUserID]];
-        [changes addObject:[self changesForMessageSent:message]];
+        [self setMessage:message recipientStatus:LYRRecipientStatusRead forParticipant:self.authenticatedUserID];
+        [changes addObjectsFromArray:[self changesForMessageRecipientStatus:message recipientStatusBefore:recipientStatusesBeforeMutation]];
+        [changes addObjectsFromArray:[self changesForMessageSent:message]];
         [self postChanges:changes];
     });
     
     // Simulate the message being delivered.
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        NSMutableArray *changes = [NSMutableArray array];
+        NSDictionary *recipientStatusesBeforeMutation = message.recipientStatusByUserID.copy;
         for (NSString *participant in message.conversation.participants) {
-            if ([participant isEqualToString:self.authenticatedUserID]) {
-                continue;
-            }
-            [changes addObject:[self setMessage:message recipientStatus:LYRRecipientStatusDelivered forParticipant:participant]];
+            [self setMessage:message recipientStatus:LYRRecipientStatusDelivered forParticipant:participant];
         }
+        [self setMessage:message recipientStatus:LYRRecipientStatusRead forParticipant:self.authenticatedUserID];
+        [changes addObjectsFromArray:[self changesForMessageRecipientStatus:message recipientStatusBefore:recipientStatusesBeforeMutation]];
+        [self postChanges:changes];
+    });
+    
+    // Simulate the message being read.
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        NSMutableArray *changes = [NSMutableArray array];
+        NSDictionary *recipientStatusesBeforeMutation = message.recipientStatusByUserID.copy;
+        for (NSString *participant in message.conversation.participants) {
+            [self setMessage:message recipientStatus:LYRRecipientStatusRead forParticipant:participant];
+        }
+        [self setMessage:message recipientStatus:LYRRecipientStatusRead forParticipant:self.authenticatedUserID];
+        [changes addObjectsFromArray:[self changesForMessageRecipientStatus:message recipientStatusBefore:recipientStatusesBeforeMutation]];
         [self postChanges:changes];
     });
     return YES;
@@ -171,7 +193,7 @@
                 [message.mutableMetadata setObject:object forKey:key];
             }
         }
-        [changes addObject:[self changesForMessageMetadata:message metadataBefore:metadataBefore]];
+        [changes addObjectsFromArray:[self changesForMessageMetadata:message metadataBefore:metadataBefore]];
     } else {
         LYRConversationMock *conversation = object;
         NSDictionary *metadataBefore = conversation.metadata;
@@ -183,7 +205,7 @@
                 [conversation.mutableMetadata setObject:object forKey:key];
             }
         }
-        [changes addObject:[self changesForConversationMetadata:conversation metadataBefore:metadataBefore]];
+        [changes addObjectsFromArray:[self changesForConversationMetadata:conversation metadataBefore:metadataBefore]];
     }
     [self postChanges:changes];
     return YES;
@@ -225,7 +247,7 @@
     NSMutableArray *changes = [NSMutableArray array];
     for (LYRMessageMock *message in receivedMessages) {
         message.mutableRecipientStatuses[self.authenticatedUserID] = @(LYRRecipientStatusDelivered);
-        [changes addObject:[self addMessage:message]];
+        [changes addObjectsFromArray:[self addMessage:message]];
     }
     [self postChanges:changes];
 }
@@ -272,7 +294,7 @@
     [self.conversations addObjectsFromArray:conversations];
     NSMutableArray *changes = [NSMutableArray array];
     for (LYRConversationMock *conversation in conversations) {
-        [changes addObject:[self changesForConversationCreated:conversation]];
+        [changes addObjectsFromArray:[self changesForConversationCreated:conversation]];
     }
     return changes;
 }
@@ -288,7 +310,7 @@
     NSSet *participantsBefore = conversation.participants.copy;
     NSSet *participants = [conversation.participants setByAddingObjectsFromSet:members];
     conversation.participants = participants;
-    [changes addObject:[self changesForConversation:conversation participantsBefore:participantsBefore]];
+    [changes addObjectsFromArray:[self changesForConversation:conversation participantsBefore:participantsBefore]];
     return changes;
 }
 
@@ -299,7 +321,7 @@
     NSMutableSet *participants = conversation.participants.mutableCopy;
     [participants minusSet:members];
     conversation.participants = participants;
-    [changes addObject:[self changesForConversation:conversation participantsBefore:participantsBefore]];
+    [changes addObjectsFromArray:[self changesForConversation:conversation participantsBefore:participantsBefore]];
     return changes;
 }
 
@@ -311,7 +333,7 @@
         NSSet *messages = [self.messages filteredSetUsingPredicate:predicate];
         [self removeMessagesFromArray:messages.allObjects];
         [self.conversations removeObject:conversation];
-        [changes addObject:[self changesForConversationDeleted:conversation]];
+        [changes addObjectsFromArray:[self changesForConversationDeleted:conversation]];
     }
     return changes;
 }
@@ -325,7 +347,7 @@
 {
     NSMutableArray *changes = [NSMutableArray array];
     for (LYRConversationMock *conversation in self.conversations) {
-        [changes addObject:[self changesForConversationDeleted:conversation]];
+        [changes addObjectsFromArray:[self changesForConversationDeleted:conversation]];
     }
     [self.conversations removeAllObjects];
     [self.messages removeAllObjects];
@@ -343,20 +365,20 @@
     }
     for (LYRMessageMock *message in messages) {
         if (![self.conversations containsObject:message.conversation]) {
-            [changes addObject:[self addConversation:message.conversation]];
+            [changes addObjectsFromArray:[self addConversation:message.conversation]];
         } else {
             NSPredicate *predicate = [NSPredicate predicateWithFormat:@"SELF.object == %@ AND SELF.type == %d AND SELF.property == %@", message.conversation, LYRObjectChangeTypeUpdate, @"lastMessage"];
             NSArray *changeLastMessageForConversation = [changes filteredArrayUsingPredicate:predicate];
             if (changeLastMessageForConversation.count) {
                 [changes removeObjectsInArray:changeLastMessageForConversation];
-                [changes addObject:[self changesForConversation:message.conversation lastMessageChangeBefore:message.conversation.lastMessage]];
+                [changes addObjectsFromArray:[self changesForConversation:message.conversation lastMessageChangeBefore:message.conversation.lastMessage]];
             }
         }
         message.index = [countForConversationIdentifierDictionary[message.conversation.identifier] integerValue] + 1;
         countForConversationIdentifierDictionary[message.conversation.identifier] = [NSNumber numberWithUnsignedInteger:message.index];
         message.conversation.lastMessage = message;
         if (![self.messages containsObject:messages]) {
-            [changes addObject:[self changesForMessageCreated:message]];
+            [changes addObjectsFromArray:[self changesForMessageCreated:message]];
         }
     }
     [self.messages addObjectsFromArray:messages];
@@ -373,11 +395,11 @@
     NSMutableArray *changes = [NSMutableArray array];
     for (LYRMessageMock *message in messages) {
         [self.messages removeObject:message];
-        [changes addObject:[self changesForMessageDeleted:message]];
+        [changes addObjectsFromArray:[self changesForMessageDeleted:message]];
     }
     NSSet *affectedConversations = [messages valueForKeyPath:@"conversation"];
     for (LYRConversationMock *conversation in affectedConversations) {
-        [changes addObject:[self reindexMessageOrderForConversation:conversation]];
+        [changes addObjectsFromArray:[self reindexMessageOrderForConversation:conversation]];
     }
     return changes;
 }
@@ -390,7 +412,7 @@
 - (NSArray *)setMessage:(LYRMessageMock *)message recipientStatus:(LYRRecipientStatus)recipientStatus forParticipant:(NSString *)participant
 {
     NSMutableArray *changes = [NSMutableArray array];
-    [changes addObject:[self changesForMessageRecipientStatus:message recipientStatusBefore:message.recipientStatusByUserID.copy]];
+    [changes addObjectsFromArray:[self changesForMessageRecipientStatus:message recipientStatusBefore:message.recipientStatusByUserID.copy]];
     [message setRecipientStatus:recipientStatus forUserID:participant];
     return changes;
 }
@@ -404,13 +426,13 @@
     LYRMessageMock *previousLastMessage = conversation.lastMessage;
     for (LYRMessageMock *message in [self messagesForConversation:conversation]) {
         if (message.index != index) {
-            [changes addObject:[self changesForMessageIndexChange:message indexBefore:message.index indexAfter:index]];
+            [changes addObjectsFromArray:[self changesForMessageIndexChange:message indexBefore:message.index indexAfter:index]];
         }
         message.index = index++;
         message.conversation.lastMessage = message;
     }
     if (![previousLastMessage isEqual:conversation.lastMessage]) {
-        [changes addObject:[self changesForConversation:conversation lastMessageChangeBefore:previousLastMessage]];
+        [changes addObjectsFromArray:[self changesForConversation:conversation lastMessageChangeBefore:previousLastMessage]];
     }
     return changes;
 }
@@ -559,6 +581,14 @@
     return conversation;
 }
 
++ (instancetype)conversationWithLYRConversation:(LYRConversation *)conversation
+{
+    LYRConversationMock *conversationMock = [[LYRConversationMock alloc] init];
+    conversationMock.identifier = conversation.identifier;
+    conversationMock.participants = conversation.participants;
+    return conversationMock;
+}
+
 - (NSDictionary *)metadata
 {
     return [self mutableMetadata];
@@ -610,7 +640,25 @@
     for (NSString *participant in conversation.participants) {
         [message setRecipientStatus:LYRRecipientStatusInvalid forUserID:participant];
     }
+    if (userID != nil) {
+        [message setRecipientStatus:LYRRecipientStatusRead forUserID:userID];
+    }
     return message;
+}
+
++ (instancetype)messageWithLYRMessage:(LYRMessage *)message userID:(NSString *)userID
+{
+    LYRMessageMock *mockMessage = [[LYRMessageMock alloc] init];
+    mockMessage.conversation = [LYRConversationMock conversationWithLYRConversation:message.conversation];
+    mockMessage.parts = message.parts;
+    mockMessage.sentByUserID = userID;
+    for (NSString *participant in mockMessage.conversation.participants) {
+        [mockMessage setRecipientStatus:LYRRecipientStatusInvalid forUserID:participant];
+    }
+    if (userID != nil) {
+        [mockMessage setRecipientStatus:LYRRecipientStatusRead forUserID:userID];
+    }
+    return mockMessage;
 }
 
 + (instancetype)messageWithConversation:(LYRConversationMock *)conversation parts:(NSArray *)messageParts
@@ -649,6 +697,11 @@
 - (NSUInteger)hash
 {
     return self.identifier.hash;
+}
+
+- (Class)class
+{
+    return [LYRMessage class];
 }
 
 - (NSString *)description

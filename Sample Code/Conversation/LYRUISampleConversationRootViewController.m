@@ -7,17 +7,14 @@
 //
 
 #import "LYRUISampleConversationRootViewController.h"
-#import <LayerUIKit/LYRUIConversationDataSource.h>
-#import <LayerUIKit/LYRUIConversationViewController.h>
+#import "LYRUISampleConversationsViewController.h"
 #import "LYRClientMock.h"
 #import "LYRClientMockFactory.h"
 #import "LYRUIParticipant.h"
 
-@interface LYRUISampleConversationRootViewController () <LYRUIConversationViewControllerDataSource>
+@interface LYRUISampleConversationRootViewController () <UITableViewDataSource>
 
-@property (nonatomic) LYRUIConversationViewController *conversationViewController;
-@property (nonatomic) LYRClientMockFactory *clientMockFactory;
-@property (nonatomic) NSDateFormatter *dateFormatter;
+@property (nonatomic) NSArray *items;
 
 @end
 
@@ -27,52 +24,71 @@
     [super viewDidLoad];
     
     // Setup the title for this view controller
-    self.title = @"Conversation view sample";
+    self.title = @"Conversation view controller sample";
     
+    self.items = @[@{ @"title": @"Conversation with Bob",
+                      @"selector": NSStringFromSelector(@selector(presentStaticConversationViewController))},
+                   @{ @"title": @"Receiving incoming messages",
+                      @"selector": NSStringFromSelector(@selector(presentConversationViewControllerWithTimedIncomingMessages))},];
+    
+    [self.tableView registerClass:UITableViewCell.class forCellReuseIdentifier:@"cell"];
+}
+
+#pragma mark - UITableViewDataSource delegate methods
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return self.items.count;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    static NSString *cellIdentifier = @"cell";
+    UITableViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+    cell.textLabel.text = self.items[indexPath.row][@"title"];
+    return cell;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    NSString *selectorString = self.items[indexPath.row][@"selector"];
+    [self performSelector:NSSelectorFromString(selectorString) withObject:nil afterDelay:0];
+}
+
+#pragma mark - LYRUIConversationViewController configuration methods
+
+- (void)presentStaticConversationViewController
+{
     // Use factory to create a client with some messages.
-    self.clientMockFactory = [LYRClientMockFactory clientForAliceWithConversation];
-    LYRConversationMock *conversation = [[self.clientMockFactory.layerClient conversationsForIdentifiers:nil] anyObject];
-
-    // Instantiate and configure LYRUIConversationViewController
-    self.conversationViewController = [LYRUIConversationViewController conversationViewControllerWithConversation:(id)conversation layerClient:(id)self.clientMockFactory.layerClient];
-    self.conversationViewController.dataSource = self;
+    LYRClientMockFactory *clientMockFactory = [LYRClientMockFactory clientForAliceWithConversation];
+    LYRConversationMock *conversation = [[clientMockFactory.layerClient conversationsForIdentifiers:nil] anyObject];
     
-    // Setup the dateformatter used by the dataSource
-    self.dateFormatter = [[NSDateFormatter alloc] init];
-    self.dateFormatter.dateStyle = NSDateFormatterShortStyle;
-    self.dateFormatter.timeStyle = NSDateFormatterShortStyle;
+    // Instantiate and configure LYRUISampleConversationsViewController (which
+    // inherits the LYRUIConversationViewController)
+    LYRUISampleConversationsViewController *viewController = [LYRUISampleConversationsViewController conversationViewControllerWithConversation:(id)conversation layerClient:(id)clientMockFactory.layerClient];
     
-    // Put the LYRUIConversationViewController on view stack and display it
-    [self addChildViewController:self.conversationViewController];
-    [self.view addSubview:self.conversationViewController.view];
-    [self.conversationViewController didMoveToParentViewController:self];
+    // Present the viewcontroller
+    [self.navigationController pushViewController:viewController animated:YES];
 }
 
-- (UIView *)inputAccessoryView
+- (void)presentConversationViewControllerWithTimedIncomingMessages
 {
-    return self.conversationViewController.inputAccessoryView;
-}
-
-#pragma mark - LYRUIConversationViewControllerDataSource methods
-
-- (id<LYRUIParticipant>)conversationViewController:(LYRUIConversationViewController *)conversationViewController participantForIdentifier:(NSString *)participantIdentifier
-{
-    return [LYRClientMockFactory userForParticipantIdentifier:participantIdentifier];
-}
-
-- (NSAttributedString *)conversationViewController:(LYRUIConversationViewController *)conversationViewController attributedStringForDisplayOfDate:(NSDate *)date
-{
-    return [[NSAttributedString alloc] initWithString:[self.dateFormatter stringFromDate:date]];
-}
-
-- (NSAttributedString *)conversationViewController:(LYRUIConversationViewController *)conversationViewController attributedStringForDisplayOfRecipientStatus:(NSDictionary *)recipientStatus
-{
-    if (recipientStatus.count == 0) return nil;
-    NSMutableString *statuses = [NSMutableString stringWithString:@"read "];
-    [[recipientStatus allKeys] enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-        [statuses appendString:@"✔︎"];
-    }];
-    return [[NSAttributedString alloc] initWithString:statuses];
+    // Use factory to create a client with some messages.
+    LYRClientMockFactory *clientMockFactory = [LYRClientMockFactory emptyClientForAlice];
+    LYRConversationMock *conversation = [LYRConversationMock conversationWithParticipants:[NSSet setWithArray:@[@"Alice", @"Bob", @"Carol", @"Dee"]]];
+    LYRMessageMock *message = [LYRMessageMock messageWithConversation:conversation parts:@[[LYRMessagePart messagePartWithText:@"First!!1!"]]];
+    [clientMockFactory.layerClient sendMessage:message error:nil];
+    
+    // Instantiate and configure LYRUISampleConversationsViewController (which
+    // inherits the LYRUIConversationViewController)
+    LYRUISampleConversationsViewController *viewController = [LYRUISampleConversationsViewController conversationViewControllerWithConversation:(id)conversation layerClient:(id)clientMockFactory.layerClient];
+    
+    // Present the viewcontroller
+    [self.navigationController pushViewController:viewController animated:YES];
+    
+    // Start timer
+    [clientMockFactory startTimedIncomingMessages];
 }
 
 @end

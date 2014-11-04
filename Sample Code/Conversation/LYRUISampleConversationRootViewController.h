@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface LYRUISampleConversationRootViewController : UIViewController
+@interface LYRUISampleConversationRootViewController : UITableViewController
 
 @end

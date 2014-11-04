@@ -16,6 +16,12 @@ NSString *const LYRClientMockFactoryNameCarol       = @"Carol";
 @interface LYRClientMockFactory ()
 
 @property (nonatomic, readwrite) LYRClientMock *layerClient;
+@property (nonatomic) dispatch_queue_t dispatchQueue;
+@property (nonatomic) NSDateFormatter *dateFormatter;
+@property (nonatomic) dispatch_source_t dispatchSource;
+@property (nonatomic, getter=isTimerRunning) BOOL timerRunning;
+@property (nonatomic) NSUInteger minimumTimeInterval;
+@property (nonatomic) NSUInteger maximumTimeInterval;
 
 @end
 
@@ -36,6 +42,13 @@ NSString *const LYRClientMockFactoryNameCarol       = @"Carol";
     self = [super init];
     if (self) {
         _layerClient = [LYRClientMock layerClientMockWithAuthenticatedUserID:authenticatedUserID];
+        _dispatchQueue = dispatch_queue_create("com.layer.LayerUIKit.TimedIncomingMessages", NULL);
+        _timerRunning = NO;
+        _dateFormatter = [[NSDateFormatter alloc] init];
+        _dateFormatter.dateStyle = NSDateFormatterNoStyle;
+        _dateFormatter.timeStyle = NSDateFormatterMediumStyle;
+        _minimumTimeInterval = 2;
+        _maximumTimeInterval = 7;
     }
     return self;
 }
@@ -53,6 +66,11 @@ NSString *const LYRClientMockFactoryNameCarol       = @"Carol";
 - (NSString *)authenticatedUserID
 {
     return self.layerClient.authenticatedUserID;
+}
+
+- (void)dealloc
+{
+    [self stopTimedIncomingMessages];
 }
 
 #pragma mark - Factory methods
@@ -93,6 +111,49 @@ NSString *const LYRClientMockFactoryNameCarol       = @"Carol";
     return [LYRUserMock userWithFirstName:@"John" lastName:@"Doe" participantIdentifier:participantIdentifier];
 }
 
+#pragma mark - Timed incoming messages
+
+- (void)startTimedIncomingMessages
+{
+    if (self.timerRunning) [self stopTimedIncomingMessages];
+    self.timerRunning = YES;
+    double randomInterval = ((double)arc4random_uniform((uint32_t)(self.maximumTimeInterval * 10)) + (uint32_t)(self.minimumTimeInterval *10))/10;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(randomInterval * NSEC_PER_SEC)), self.dispatchQueue, ^{
+        [self receiveIncomingMessageFromRandomParticipant];
+        if (self.timerRunning) [self startTimedIncomingMessages];
+    });
+//    _dispatchSource = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, _dispatchQueue);
+//    uint64_t interval = (uint64_t)(((double)arc4random_uniform(30)/10) * NSEC_PER_SEC);
+//    dispatch_time_t startTime = dispatch_time(DISPATCH_TIME_NOW, interval);
+//    dispatch_source_set_timer(_dispatchSource, startTime, interval, 1.0);
+//    dispatch_source_set_event_handler(_dispatchSource, ^{
+//        [self receiveIncomingMessageFromRandomParticipant];
+//        if (self.timerRunning) [self startTimedIncomingMessages];
+//    });
+//    dispatch_resume(self.dispatchSource);
+}
+
+- (void)stopTimedIncomingMessages
+{
+    self.timerRunning = NO;
+//    if (!_dispatchSource) return;
+//    dispatch_source_cancel(_dispatchSource);
+//    _dispatchSource = NULL;
+}
+
+- (void)receiveIncomingMessageFromRandomParticipant
+{
+    LYRConversationMock *conversation = [[self.layerClient conversationsForIdentifiers:nil] anyObject];
+    if (!conversation) {
+        conversation = [LYRClientMockFactory conversationBetweenAliceAndBob];
+    }
+    NSMutableSet *participantsWithoutAuthenticatedUser = conversation.participants.mutableCopy;
+    [participantsWithoutAuthenticatedUser removeObject:self.layerClient.authenticatedUserID];
+    NSString *participant = [[participantsWithoutAuthenticatedUser allObjects] objectAtIndex:arc4random_uniform((uint32_t)participantsWithoutAuthenticatedUser.count)];
+    LYRMessageMock *message = [LYRClientMockFactory messageForConversation:conversation sentByUserID:participant text:[NSString stringWithFormat:@"Hi from '%@' sent at: %@", participant, [self.dateFormatter stringFromDate:[NSDate date]]]];
+    [self.layerClient receiveMessage:message];
+}
+
 #pragma mark - Conversation department
 
 - (void)addConversationBetweenAliceAndBob
@@ -111,13 +172,10 @@ NSString *const LYRClientMockFactoryNameCarol       = @"Carol";
 
 + (LYRMessageMock *)messageForConversation:(LYRConversationMock *)conversation sentByUserID:(NSString *)sentByUserID text:(NSString *)text
 {
-    LYRMessageMock *message = [LYRMessageMock messageWithConversation:conversation parts:@[[LYRMessagePart messagePartWithText:text]]];
+    LYRMessageMock *message = [LYRMessageMock messageWithConversation:conversation parts:@[[LYRMessagePart messagePartWithText:text]] userID:sentByUserID];
     message.sentByUserID = sentByUserID;
     message.sentAt = [NSDate date];
     message.receivedAt = [NSDate date];
-    [conversation.participants enumerateObjectsUsingBlock:^(NSString *recipientUserID, BOOL *stop) {
-        [message setRecipientStatus:LYRRecipientStatusRead forUserID:recipientUserID];
-    }];
     return message;
 }
 
