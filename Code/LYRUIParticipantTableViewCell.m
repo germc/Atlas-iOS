@@ -16,6 +16,7 @@
 @property (nonatomic) UILabel *nameLabel;
 @property (nonatomic) UIControl *selectionIndicator;
 @property (nonatomic) LYRUIAvatarImageView *avatarImageView;
+@property (nonatomic) LYRUIParticipantPickerSortType sortType;
 @property (nonatomic) BOOL isSelected;
 
 @end
@@ -47,6 +48,7 @@ static CGFloat const LSSelectionIndicatorSize = 30;
 {
     [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.avatarImageView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self.imageView attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0]];
     [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.avatarImageView attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self.imageView attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0]];
+    [super updateConstraints];
 }
 
 - (void)presentParticipant:(id<LYRUIParticipant>)participant
@@ -54,6 +56,11 @@ static CGFloat const LSSelectionIndicatorSize = 30;
     self.accessibilityLabel = [participant fullName];
     self.textLabel.text = participant.fullName;
     [self.avatarImageView setInitialsForName:participant.fullName];
+}
+
+- (void)updateWithSortType:(LYRUIParticipantPickerSortType)sortType
+{
+    _sortType = sortType;
 }
 
 - (void)shouldShowAvatarImage:(BOOL)shouldShowAvatarImage
@@ -77,28 +84,19 @@ static CGFloat const LSSelectionIndicatorSize = 30;
     }
 }
 
-- (void)layoutSubviews
-{
-    [super layoutSubviews];
-    // Configure UI Appearance Proxy
-    if (self.nameLabel.font != self.titleFont) {
-        self.nameLabel.font = self.titleFont;
-    }
-    if (self.nameLabel.textColor != self.titleColor) {
-        self.nameLabel.textColor = self.titleColor;
-    }
-}
-
 - (void)setTitleFont:(UIFont *)titleFont
 {
     _titleFont = titleFont;
-    self.textLabel.font = titleFont;
+}
+
+- (void)setBoldTitleFont:(UIFont *)boldTitleFont
+{
+    _boldTitleFont = boldTitleFont;
 }
 
 - (void)setTitleColor:(UIColor *)titleColor
 {
     _titleColor = titleColor;
-    self.textLabel.textColor = titleColor;
 }
 
 - (UIImage *)imageWithColor:(UIColor *)color {
@@ -109,6 +107,43 @@ static CGFloat const LSSelectionIndicatorSize = 30;
     UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     return image;
+}
+
+- (void)layoutSubviews
+{
+    [super layoutSubviews];
+    
+    if (!self.titleFont) {
+        return;
+    }
+    
+    switch (self.sortType) {
+            
+        case LYRUIParticipantPickerControllerSortTypeFirst: {
+            NSMutableAttributedString *attributedString = [self.textLabel.attributedText mutableCopy];
+            NSRange rangeOfString = [self.textLabel.text rangeOfString:@" "];
+            NSString *regularString = [self.textLabel.text substringFromIndex:rangeOfString.location];
+            NSRange rangeToBold = NSMakeRange(0, rangeOfString.location);
+            [attributedString addAttributes:@{NSFontAttributeName: self.boldTitleFont} range:rangeToBold];
+            [attributedString addAttributes:@{NSFontAttributeName: self.titleFont} range:NSMakeRange(rangeOfString.location, regularString.length)];
+            self.textLabel.attributedText = attributedString;
+        }
+            break;
+            
+        case LYRUIParticipantPickerControllerSortTypeLast: {
+            NSMutableAttributedString *attributedString = [self.textLabel.attributedText mutableCopy];
+            NSRange rangeOfString = [self.textLabel.text rangeOfString:@" "];
+            NSString *stringToBold = [self.textLabel.text substringFromIndex:rangeOfString.location];
+            NSRange rangeToBold = NSMakeRange(rangeOfString.location, stringToBold.length);
+            [attributedString addAttributes:@{NSFontAttributeName: self.titleFont} range:NSMakeRange(0, rangeOfString.location)];
+            [attributedString addAttributes:@{NSFontAttributeName: self.boldTitleFont} range:rangeToBold];
+            self.textLabel.attributedText = attributedString;
+        }
+            break;
+        default:
+            break;
+    }
+    self.textLabel.textColor = self.titleColor;
 }
 
 @end

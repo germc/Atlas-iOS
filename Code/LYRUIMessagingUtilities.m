@@ -144,11 +144,6 @@ LYRMessagePart *LYRUIMessagePartWithJPEGImage(UIImage *image)
                                               data:compressedImageData];
 }
 
-LYRMessagePart *LYRUIMessagePartWithPNGImage(UIImage *image)
-{
-    ///
-}
-
 LYRMessagePart *LYRUIMessagePartWithDate(NSDate *date)
 {
     NSDictionary *dateCompoents = LYRUIComponetsForDate(date);

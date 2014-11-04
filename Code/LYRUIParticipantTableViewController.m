@@ -47,14 +47,16 @@ static NSString *const LYRParticipantCellIdentifier = @"participantCellIdentifie
     
     // Configure Search Bar
     self.searchBar = [[UISearchBar alloc] initWithFrame:CGRectZero];
+    [self.searchBar sizeToFit];
+    self.searchBar.translucent = NO;
     self.searchBar.accessibilityLabel = @"Search Bar";
     self.searchBar.delegate = self;
+    self.tableView.tableHeaderView = self.searchBar;
+    
     self.searchController = [[UISearchDisplayController alloc] initWithSearchBar:self.searchBar contentsController:self];
-    self.searchController.searchResultsTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.searchController.delegate = self;
     self.searchController.searchResultsDelegate = self;
     self.searchController.searchResultsDataSource = self;
-    self.tableView.tableHeaderView = self.searchBar;
 
     //Configure title
     self.title = @"Participants";
@@ -65,23 +67,16 @@ static NSString *const LYRParticipantCellIdentifier = @"participantCellIdentifie
                                                                         target:self
                                                                         action:@selector(cancelButtonTapped)];
     cancelButtonItem.accessibilityLabel = @"Cancel";
-    self.navigationItem.leftBarButtonItem = cancelButtonItem;
-    
-    // Right bar button item is the text Done
-    UIBarButtonItem *doneButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Done"
-                                                                       style:UIBarButtonItemStyleDone
-                                                                      target:self
-                                                                      action:@selector(doneButtonTapped)];
-    doneButtonItem.accessibilityLabel = @"Done";
-    self.navigationItem.rightBarButtonItem = doneButtonItem;
-    self.filteredParticipants = self.sortedParticipants;
+    self.navigationItem.rightBarButtonItem = cancelButtonItem;
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    
     self.tableView.rowHeight = self.rowHeight;
     [self.tableView registerClass:self.participantCellClass forCellReuseIdentifier:LYRParticipantCellIdentifier];
+    
     self.searchController.searchResultsTableView.rowHeight = self.rowHeight;
     [self.searchController.searchResultsTableView registerClass:self.participantCellClass forCellReuseIdentifier:LYRParticipantCellIdentifier];
 }
@@ -120,12 +115,11 @@ static NSString *const LYRParticipantCellIdentifier = @"participantCellIdentifie
 
 - (void)searchDisplayControllerWillBeginSearch:(UISearchDisplayController *)controller
 {
-    
+    self.filteredParticipants = self.sortedParticipants;
 }
 
 - (void)searchDisplayControllerDidEndSearch:(UISearchDisplayController *)controller
 {
-    self.filteredParticipants = self.sortedParticipants;
     [self.tableView reloadData];
 }
 
@@ -137,7 +131,17 @@ static NSString *const LYRParticipantCellIdentifier = @"participantCellIdentifie
     }];
 }
 
-#pragma mark - Table view data source
+#pragma mark - Table View Data Source
+
+- (NSArray *)sectionIndexTitlesForTableView:(UITableView *)tableView
+{
+    return [self sortedContactKeys];
+}
+
+- (NSInteger)tableView:(UITableView *)tableView sectionForSectionIndexTitle:(NSString *)title atIndex:(NSInteger)index
+{
+    return [[self sortedContactKeys] indexOfObject:title];
+}
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -166,9 +170,13 @@ static NSString *const LYRParticipantCellIdentifier = @"participantCellIdentifie
 {
     NSString *key = [[self sortedContactKeys] objectAtIndex:indexPath.section];
     id<LYRUIParticipant> participant = [[[self currentDataArray] objectForKey:key] objectAtIndex:indexPath.row];
+    NSLog(@"FullName: %@", participant.fullName);
     [cell presentParticipant:participant];
+    [cell updateWithSortType:self.sortType];
     [cell shouldShowAvatarImage:NO];
 }
+
+#pragma mark - Table View Delegate Methods
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -214,21 +222,11 @@ static NSString *const LYRParticipantCellIdentifier = @"participantCellIdentifie
     [self.delegate participantTableViewController:self didSelectParticipant:participant];
 }
 
-#pragma mark UIBarButtonItem implementation methods
+#pragma mark - UIBarButtonItem implementation methods
 
 - (void)cancelButtonTapped
 {
     [self.delegate participantTableViewControllerDidSelectCancelButton];
-}
-
-- (void)doneButtonTapped
-{
-    for (NSIndexPath *indexPath in [self.tableView indexPathsForSelectedRows]) {
-         NSString *key = [[self sortedContactKeys] objectAtIndex:indexPath.section];
-        id<LYRUIParticipant> participant = [[[self currentDataArray] objectForKey:key] objectAtIndex:indexPath.row];
-        [self.selectedParticipants addObject:participant];
-    }
-    [self.delegate participantTableViewControllerDidSelectDoneButtonWithSelectedParticipants:self.selectedParticipants];
 }
 
 - (void)reloadContacts
@@ -302,6 +300,7 @@ static NSString *const LYRParticipantCellIdentifier = @"participantCellIdentifie
 {
     [[LYRUIParticipantTableViewCell appearance] setTitleColor:[UIColor blackColor]];
     [[LYRUIParticipantTableViewCell appearance] setTitleFont:[UIFont systemFontOfSize:14]];
+    [[LYRUIParticipantTableViewCell appearance] setBoldTitleFont:[UIFont boldSystemFontOfSize:14]];
 }
 
 @end

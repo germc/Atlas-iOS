@@ -9,14 +9,6 @@
 #import <UIKit/UIKit.h>
 #import "LYRUIParticipantTableViewCell.h"
 
-/**
- @abstract The `LYRUIParticipantPickerSortType` allows for configuration of sorting order of the participant list
- */
-typedef enum : NSUInteger {
-    LYRUIParticipantPickerControllerSortTypeFirst,
-    LYRUIParticipantPickerControllerSortTypeLast,
-}LYRUIParticipantPickerSortType;
-
 
 @class LYRUIParticipantTableViewController;
 

@@ -56,25 +56,6 @@
  */
 - (void)insertImage:(UIImage *)image;
 
-#warning Method Not Implemented
-/**
- @abstract Displays an image representing a video in the textInputView.
- @discussion The view will automatically resize the image for the video and itself to comfortably fit 
- the image content. The video path will also be cached and is accessible via the messageContentParts
- property.
- */
-- (void)insertVideoAtPath:(NSString *)videoPath;
-
-#warning Method Not Implemented
-/**
- @abstract Displays an image representing audio content in the textInputView.
- @discussion The view will automatically resize the image for the audio and itself to comfortably
- fit the image content. The audio path will also be cached and is accessible via the messageContentParts
- property.
- */
-- (void)insertAudioAtPath:(NSString *)path;
-
-#warning Method Not Implemented
 /**
  @abstract Displays an image representing a location in the textInputView.
  @discussion The view will automatically resize the image representing the location and itself to 
@@ -83,9 +64,9 @@
  */
 - (void)insertLocation:(CLLocation *)location;
 
-//************************************
+//-----------------------------
 // UI Customization
-//************************************
+//-----------------------------
 
 /**
  @abstract The left accessory button for the view. 
