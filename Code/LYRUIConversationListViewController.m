@@ -268,21 +268,33 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 - (NSArray *)tableView:(UITableView *)tableView editActionsForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     UITableViewRowAction *localDeleteAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDefault title:@"Local" handler:^(UITableViewRowAction *action, NSIndexPath *indexPath) {
-        NSURL *conversationIdentifier = [[self currentDataSet] objectAtIndex:indexPath.row];
-        LYRConversation *conversation = [self.layerClient conversationForIdentifier:conversationIdentifier];
-        [self.layerClient deleteConversation:conversation mode:LYRDeletionModeLocal error:nil];
+        [self deleteConversationAtIndexPath:indexPath withDeletionMode:LYRDeletionModeLocal];
     }];
     localDeleteAction.backgroundColor = [UIColor grayColor];
 
     UITableViewRowAction *globalDeleteAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDefault title:@"Global" handler:^(UITableViewRowAction *action, NSIndexPath *indexPath) {
-        NSURL *conversationIdentifier = [[self currentDataSet] objectAtIndex:indexPath.row];
-        LYRConversation *conversation = [self.layerClient conversationForIdentifier:conversationIdentifier];
-        [self.layerClient deleteConversation:conversation mode:LYRDeletionModeAllParticipants error:nil];
+        [self deleteConversationAtIndexPath:indexPath withDeletionMode:LYRDeletionModeAllParticipants];
     }];
     
     globalDeleteAction.backgroundColor = [UIColor redColor];
-    
     return @[globalDeleteAction, localDeleteAction];
+}
+
+- (void)deleteConversationAtIndexPath:(NSIndexPath *)indexPath withDeletionMode:(LYRDeletionMode)deletionMode
+{
+    NSURL *conversationIdentifier = [[self currentDataSet] objectAtIndex:indexPath.row];
+    LYRConversation *conversation = [self.layerClient conversationForIdentifier:conversationIdentifier];
+    NSError *error;
+    [self.layerClient deleteConversation:conversation mode:deletionMode error:&error];
+    if (error) {
+        if ([self.delegate respondsToSelector:@selector(conversationListViewController:didFailDeletingConversation:deletionMode:error:)]) {
+            [self.delegate conversationListViewController:self didFailDeletingConversation:conversation deletionMode:deletionMode error:error];
+        }
+    } else {
+        if ([self.delegate respondsToSelector:@selector(conversationListViewController:didDeleteConversation:deletionMode:)]) {
+            [self.delegate conversationListViewController:self didDeleteConversation:conversation deletionMode:deletionMode];
+        }
+    }
 }
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath

@@ -26,6 +26,8 @@
 @property (nonatomic) CGFloat keyboardHeight;
 @property (nonatomic) BOOL shouldScrollToBottom;
 @property (nonatomic) BOOL shouldDisplayAvatarImage;
+@property (nonatomic) CGRect addressBarRect;
+@property (nonatomic) NSLayoutConstraint *collectionViewTopConstraint;
 
 @end
 
@@ -39,7 +41,6 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
 + (instancetype)conversationViewControllerWithConversation:(LYRConversation *)conversation layerClient:(LYRClient *)layerClient;
 {
     NSAssert(layerClient, @"`Layer Client` cannot be nil");
-    NSAssert(conversation, @"`Conversation` cannont be nil");
     return [[self alloc] initWithConversation:conversation layerClient:layerClient];
 }
 
@@ -53,6 +54,7 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
         
         // Set default configuration for public configuration properties
         _dateDisplayTimeInterval = 60*15;
+        _showsAddressBar = NO;
         
         // Configure default UIAppearance Proxy
         [self configureMessageBubbleAppearance];
@@ -71,7 +73,6 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
     [super viewDidLoad];
     
     self.view.backgroundColor = [UIColor whiteColor];
-    
     self.accessibilityLabel = @"Conversation";
     
     // Collection View Setup
@@ -94,28 +95,33 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
     self.messageInputToolbar.inputToolBarDelegate = self;
     self.inputAccessoryView = self.messageInputToolbar;
     
-    UIPanGestureRecognizer *panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanGesture:)];
-    [panGestureRecognizer setMinimumNumberOfTouches:1];
-    [panGestureRecognizer setMaximumNumberOfTouches:1];
-    panGestureRecognizer.delegate = self;
-    //[self.collectionView  addGestureRecognizer:panGestureRecognizer];
-    
     [self updateCollectionViewConstraints];
     self.collectionView.contentInset = UIEdgeInsetsMake(0, 0, self.inputAccessoryView.intrinsicContentSize.height, 0);
     self.collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(0, 0, self.inputAccessoryView.intrinsicContentSize.height, 0);
-    
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
     
-    [self setupConversationDataSource:^{
-        [self.collectionView reloadData];
-        [UIView animateWithDuration:0.5 animations:^{
-            self.collectionView.alpha = 1.0f;
+    if (!self.conversation && self.showsAddressBar) {
+        self.addressBarController = [[LYRUIAddressBarViewController alloc] init];
+        self.addressBarController.delegate = self;
+        [self addChildViewController:self.addressBarController];
+        [self.view addSubview:self.addressBarController.view];
+        [self.addressBarController didMoveToParentViewController:self];
+        [self.addressBarController updateControllerOffset:CGPointMake(0, 64)];
+        self.collectionViewTopConstraint.constant = 40;
+    }
+    
+    if (self.conversation) {
+        [self setupConversationDataSource:^{
+            [self.collectionView reloadData];
+            [UIView animateWithDuration:0.5 animations:^{
+                self.collectionView.alpha = 1.0f;
+            }];
         }];
-    }];
+    }
     
     // Register reusable collection view cells, header and footer
     [self.collectionView registerClass:[LYRUIIncomingMessageCollectionViewCell class] forCellWithReuseIdentifier:LYRUIIncomingMessageCellIdentifier];
@@ -149,9 +155,6 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:UIKeyboardWillShowNotification
                                                   object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                    name:UIKeyboardWillHideNotification
-                                                object:nil];
 }
 
 - (void)dealloc
@@ -167,8 +170,14 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
 - (void)setupConversationDataSource:(void(^)(void))completion
 {
     // Setup Layer Change notification observer
-    self.messageDataSource = [[LYRUIMessageDataSource alloc] initWithClient:self.layerClient conversation:self.conversation];
-    self.messageDataSource.delegate = self;
+    if (self.conversation) {
+        if(self.messageDataSource) self.messageDataSource = nil;
+        self.messageDataSource = [[LYRUIMessageDataSource alloc] initWithClient:self.layerClient conversation:self.conversation];
+        self.messageDataSource.delegate = self;
+    } else {
+        self.messageDataSource = nil;
+        self.messageDataSource.delegate = nil;
+    }
     completion();
 }
 
@@ -243,6 +252,12 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
 }
 
 #pragma mark – UICollectionViewDelegateFlowLayout Methods
+
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    LYRMessage *message = [self.messageDataSource.messages objectAtIndex:indexPath.section];
+    [self.delegate conversationViewController:self didSelectMessage:message];
+}
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -331,6 +346,7 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
 
 - (void)updateRecipientStatusForMessage:(LYRMessage *)message
 {
+    if (!message) return;
     NSNumber *recipientStatus = [message.recipientStatusByUserID objectForKey:self.layerClient.authenticatedUserID];
     if (![recipientStatus isEqualToNumber:[NSNumber numberWithInteger:LYRRecipientStatusRead]] ) {
         NSError *error;
@@ -414,7 +430,6 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
 
 - (CGSize)sizeForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSLog(@"Called %ld", (long)indexPath.section);
     LYRMessage *message = [self.messageDataSource.messages objectAtIndex:indexPath.section];
     LYRMessagePart *part = [message.parts objectAtIndex:indexPath.row];
     
@@ -434,8 +449,7 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
     return size;
 }
 
-#pragma mark
-#pragma mark Keyboard Nofifications
+#pragma mark - Keyboard Nofifications
 
 - (void)keyboardWasShown:(NSNotification*)notification
 {
@@ -457,7 +471,7 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
     }
 }
 
-#pragma mark LYRUIMessageInputToolbar Delegate Methods
+#pragma mark - LYRUIMessageInputToolbar Delegate Methods
 
 - (void)messageInputToolbar:(LYRUIMessageInputToolbar *)messageInputToolbar didTapLeftAccessoryButton:(UIButton *)leftAccessoryButton
 {
@@ -485,15 +499,15 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
                 [messagePartsToSend addObject:LYRUIMessagePartWithLocation(part)];
             }
         }
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
-            LYRMessage *message = [LYRMessage messageWithConversation:self.conversation parts:messagePartsToSend];
-            [self sendMessage:message pushText:[self pushNotificationStringForMessage:message]];
-            [self.messageDataSource sendMessages:message];
-        });
+        LYRMessage *message = [LYRMessage messageWithConversation:self.conversation parts:messagePartsToSend];
+        [self sendMessage:message pushText:[self pushNotificationStringForMessage:message]];
+        [self.messageDataSource sendMessages:message];
+        
+        if (self.addressBarController) [self.addressBarController setPermanent];
     }
 }
 
-#pragma mark Message Send Methods
+#pragma mark - Message Send Methods
 
 - (NSString *)pushNotificationStringForMessage:(LYRMessage *)message
 {
@@ -677,20 +691,74 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
 //        }
 //    }];
     [self.collectionView reloadData];
-    if (self.shouldScrollToBottom) {
-        [self scrollToBottomOfCollectionViewAnimated:TRUE];
-        self.shouldScrollToBottom = FALSE;
-    }
+    [self scrollToBottomOfCollectionViewAnimated:TRUE];
 }
 
 - (void)scrollToBottomOfCollectionViewAnimated:(BOOL)animated
 {
-    if (self.messageDataSource.messages.count > 1) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.collectionView setContentOffset:[self bottomOffset] animated:animated];
-        });
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.collectionView setContentOffset:[self bottomOffset] animated:animated];
+    });
+}
+
+- (id<LYRUIParticipant>)participantForIdentifier:(NSString *)identifier
+{
+    if ([self.dataSource respondsToSelector:@selector(conversationViewController:participantForIdentifier:)]) {
+        return [self.dataSource conversationViewController:self participantForIdentifier:identifier];
+    } else {
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"LYRUIConversationViewControllerDelegate must return a particpant for an identifier" userInfo:nil];
     }
 }
+
+#pragma mark - Address Bar View Controller Delegate Methods
+
+- (void)addressBarViewControllerDidBeginSearching:(LYRUIAddressBarViewController *)addressBarViewController
+{
+    self.inputAccessoryView.alpha = 0.0f;
+}
+
+- (void)addressBarViewControllerDidEndSearching:(LYRUIAddressBarViewController *)addressBarViewController
+{
+    self.inputAccessoryView.alpha = 1.0f;
+}
+
+- (void)addressBarViewController:(LYRUIAddressBarViewController *)addressBarViewController didSelectParticipant:(id<LYRUIParticipant>)participant
+{
+    [self configureConversationWithAddressBar:addressBarViewController];
+}
+
+- (void)addressBarViewController:(LYRUIAddressBarViewController *)addressBarViewController didRemoveParticipant:(id<LYRUIParticipant>)participant
+{
+    [self configureConversationWithAddressBar:addressBarViewController];
+}
+
+- (void)configureConversationWithAddressBar:(LYRUIAddressBarViewController *)addressBarViewController
+{
+    NSSet *participants = [addressBarViewController.selectedParticipants valueForKey:@"participantIdentifier"];
+    if (!participants.count) {
+        self.conversation = nil;
+    } else {
+        LYRConversation *conversation = [[[self.layerClient conversationsForParticipants:participants] allObjects] lastObject];
+        if (conversation) {
+            self.conversation = conversation;
+        } else {
+            self.conversation = [LYRConversation conversationWithParticipants:participants];
+        }
+        if (self.conversation.participants.count > 2) self.shouldDisplayAvatarImage = YES;
+    }
+    [self setConversationViewTitle];
+    [self setupConversationDataSource:^{
+        [self.collectionView.collectionViewLayout invalidateLayout];
+        [self.collectionView reloadData];
+        [self scrollToBottomOfCollectionViewAnimated:NO];
+        [UIView animateWithDuration:0.5 animations:^{
+            self.collectionView.alpha = 1.0f;
+        }];
+    }];
+
+}
+
+#pragma mark - Auto Layout Configuration
 
 - (void)updateCollectionViewConstraints
 {
@@ -710,13 +778,14 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
                                                          multiplier:1.0
                                                            constant:0]];
     
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.collectionView
-                                                          attribute:NSLayoutAttributeTop
-                                                          relatedBy:NSLayoutRelationEqual
-                                                             toItem:self.view
-                                                          attribute:NSLayoutAttributeTop
-                                                         multiplier:1.0
-                                                           constant:0]];
+    self.collectionViewTopConstraint = [NSLayoutConstraint constraintWithItem:self.collectionView
+                                                                    attribute:NSLayoutAttributeTop
+                                                                    relatedBy:NSLayoutRelationEqual
+                                                                       toItem:self.view
+                                                                    attribute:NSLayoutAttributeTop
+                                                                   multiplier:1.0
+                                                                     constant:0];
+    [self.view addConstraint:self.collectionViewTopConstraint];
     
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.collectionView
                                                           attribute:NSLayoutAttributeBottom
@@ -725,37 +794,6 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
                                                           attribute:NSLayoutAttributeBottom
                                                          multiplier:1.0
                                                            constant:0]];
-}
-
-- (void)handlePanGesture:(UIPanGestureRecognizer *)sender
-{
-    CGFloat inset = [sender translationInView:self.collectionView].x * 0.5;
-    UICollectionViewFlowLayout *layout = (UICollectionViewFlowLayout *)self.collectionView.collectionViewLayout;
-    if(sender.state == UIGestureRecognizerStateEnded || sender.state == UIGestureRecognizerStateCancelled) {
-        [UIView animateWithDuration:0.2 animations:^{
-            layout.sectionInset = UIEdgeInsetsMake(0, 0, 0, 0);
-        }];
-    } else {
-        if (inset > -60 && inset < 0) {
-            layout.sectionInset = UIEdgeInsetsMake(0, inset, 0, -inset);
-            [layout invalidateLayout];
-        }
-    }
-}
-
-- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
-{
-    return YES;
-}
-
-- (id<LYRUIParticipant>)participantForIdentifier:(NSString *)identifier
-{
-    if ([self.dataSource respondsToSelector:@selector(conversationViewController:participantForIdentifier:)]) {
-        return [self.dataSource conversationViewController:self participantForIdentifier:identifier];
-    } else {
-        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"LYRUIConversationViewControllerDelegate must return a particpant for an identifier" userInfo:nil];
-    }
-    
 }
 
 #pragma mark Default Message Cell Appearance

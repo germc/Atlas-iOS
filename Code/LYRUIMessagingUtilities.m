@@ -13,6 +13,7 @@ NSString * const LYRUIMIMETypeTextHTML = @"text/HTML";
 NSString * const LYRUIMIMETypeImagePNG = @"image/png";
 NSString * const LYRUIMIMETypeImageJPEG = @"image/jpeg";
 NSString * const LYRUIMIMETypeLocation = @"location/coordinate";
+NSString * const LYRUIMIMETypeDate = @"text/date";
 
 CGFloat LYRUIMaxCellWidth()
 {
@@ -108,6 +109,20 @@ NSData *LYRUIJPEGDataForImageWithConstraint(UIImage *image, CGFloat constraint)
     return UIImageJPEGRepresentation(imageToCompress, 0.25f);
 }
 
+NSDictionary *LYRUIComponetsForDate(NSDate *date)
+{
+    NSCalendar *cal = [[NSCalendar alloc] init];
+    NSDateComponents *components = [cal components:0 fromDate:date];
+    
+    NSDictionary *dateComponets = @{@"year" : [NSNumber numberWithInteger:[components year]],
+                                    @"month" : [NSNumber numberWithInteger:[components month]],
+                                    @"day" : [NSNumber numberWithInteger:[components day]],
+                                    @"hour" : [NSNumber numberWithInteger:[components hour]],
+                                    @"minunte" : [NSNumber numberWithInteger:[components minute]],
+                                    @"second" : [NSNumber numberWithInteger:[components second]]};
+    return dateComponets;
+}
+
 LYRMessagePart *LYRUIMessagePartWithText(NSString *text)
 {
     return [LYRMessagePart messagePartWithMIMEType:@"text/plain" data:[text dataUsingEncoding:NSUTF8StringEncoding]];
@@ -133,5 +148,14 @@ LYRMessagePart *LYRUIMessagePartWithPNGImage(UIImage *image)
 {
     ///
 }
+
+LYRMessagePart *LYRUIMessagePartWithDate(NSDate *date)
+{
+    NSDictionary *dateCompoents = LYRUIComponetsForDate(date);
+    NSError *error;
+    NSData* jsonData = [NSJSONSerialization dataWithJSONObject:dateCompoents options:NSJSONWritingPrettyPrinted error:&error];
+    return [LYRMessagePart messagePartWithMIMEType:LYRUIMIMETypeDate data:jsonData];
+}
+
 
 

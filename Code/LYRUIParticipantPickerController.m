@@ -58,7 +58,7 @@
     // Configure default picker configuration
     self.allowsMultipleSelection = YES;
     self.cellClass = [LYRUIParticipantTableViewCell class];
-    self.rowHeight = 48;
+    self.rowHeight = 40;
     self.title = @"Participants";
     self.accessibilityLabel = @"Participants";
 }
