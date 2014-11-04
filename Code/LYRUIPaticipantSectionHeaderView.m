@@ -21,17 +21,26 @@
 {
     self = [super init];
     if (self) {
-        self.backgroundColor = [UIColor whiteColor];
-        self.bottomBar = [[UIView alloc] initWithFrame:CGRectMake(10, 30, 300, 0.5)];
-        self.bottomBar.backgroundColor = LSGrayColor();
-        [self addSubview:self.bottomBar];
-        self.keyLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 10, 50, 20)];
-        self.keyLabel.font = [UIFont systemFontOfSize:12];
+        self.backgroundColor = LSLighGrayColor();
+        
+        self.keyLabel = [[UILabel alloc] init];
+        self.keyLabel.translatesAutoresizingMaskIntoConstraints = NO;
+        self.keyLabel.font = [UIFont boldSystemFontOfSize:14];
         self.keyLabel.text = key;
-        self.keyLabel.textColor = LSGrayColor();
+        self.keyLabel.textColor = [UIColor blackColor];
+        [self.keyLabel sizeToFit];
         [self addSubview:self.keyLabel];
+        
+        [self updateConstraints];
     }
     return self;
+}
+
+- (void)updateConstraints
+{
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:self.keyLabel attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0]];
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:self.keyLabel attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1.0 constant:20]];
+    [super updateConstraints];
 }
 
 @end

@@ -21,8 +21,6 @@
  */
 - (void)presentParticipant:(id<LYRUIParticipant>)participant;
 
-- (void)shouldDisplaySelectionIndicator:(BOOL)shouldDisplaySelectionIndicator;
-
 - (void)shouldShowAvatarImage:(BOOL)shouldShowAvatarImage;
 
 @end

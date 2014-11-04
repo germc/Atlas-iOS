@@ -42,7 +42,6 @@ static NSString *const LYRParticipantCellIdentifier = @"participantCellIdentifie
     [super viewDidLoad];
     // Configure TableView
     self.tableView.allowsMultipleSelection = self.allowsMultipleSelection;
-    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.tableView.sectionFooterHeight = 0.0;
     self.tableView.accessibilityIdentifier = @"Participant TableView Controller";
     
@@ -168,7 +167,7 @@ static NSString *const LYRParticipantCellIdentifier = @"participantCellIdentifie
     NSString *key = [[self sortedContactKeys] objectAtIndex:indexPath.section];
     id<LYRUIParticipant> participant = [[[self currentDataArray] objectForKey:key] objectAtIndex:indexPath.row];
     [cell presentParticipant:participant];
-    [cell shouldDisplaySelectionIndicator:TRUE];
+    [cell shouldShowAvatarImage:NO];
 }
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
@@ -189,7 +188,7 @@ static NSString *const LYRParticipantCellIdentifier = @"participantCellIdentifie
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
-    return 40;
+    return 20;
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath

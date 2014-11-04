@@ -210,6 +210,7 @@ static NSString *const LSParticpantCellIdentifier = @"participantCellIdentifier"
     
     self.selectedParticipants = [NSSet setWithArray:[self.addressTokens valueForKey:@"participant"]];
     
+    [self.delegate addressBarViewController:self didRemoveParticipant:token.participant];
     [self sizeAddressBarView];
 }
 
@@ -246,7 +247,6 @@ static NSString *const LSParticpantCellIdentifier = @"participantCellIdentifier"
 {
     NSMutableArray *tempTokens = [NSMutableArray arrayWithArray:self.addressTokens];
     if (!tempTokens.count) {
-        [self.delegate addressBarViewController:self didSelectParticipant:nil];
         [self searchEnded];
     } else {
         [self.addressTokens removeAllObjects];

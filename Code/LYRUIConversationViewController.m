@@ -27,6 +27,7 @@
 @property (nonatomic) BOOL shouldScrollToBottom;
 @property (nonatomic) BOOL shouldDisplayAvatarImage;
 @property (nonatomic) CGRect addressBarRect;
+@property (nonatomic) NSLayoutConstraint *collectionViewTopConstraint;
 
 @end
 
@@ -110,6 +111,7 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
         [self.view addSubview:self.addressBarController.view];
         [self.addressBarController didMoveToParentViewController:self];
         [self.addressBarController updateControllerOffset:CGPointMake(0, 64)];
+        self.collectionViewTopConstraint.constant = 40;
     }
     
     if (self.conversation) {
@@ -251,6 +253,12 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
 
 #pragma mark – UICollectionViewDelegateFlowLayout Methods
 
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    LYRMessage *message = [self.messageDataSource.messages objectAtIndex:indexPath.section];
+    [self.delegate conversationViewController:self didSelectMessage:message];
+}
+
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     CGFloat width = self.collectionView.bounds.size.width;
@@ -338,6 +346,7 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
 
 - (void)updateRecipientStatusForMessage:(LYRMessage *)message
 {
+    if (!message) return;
     NSNumber *recipientStatus = [message.recipientStatusByUserID objectForKey:self.layerClient.authenticatedUserID];
     if (![recipientStatus isEqualToNumber:[NSNumber numberWithInteger:LYRRecipientStatusRead]] ) {
         NSError *error;
@@ -481,15 +490,6 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
         NSMutableArray *messagePartsToSend = [NSMutableArray new];
         for (id part in messageInputToolbar.messageParts){
             if ([part isKindOfClass:[NSString class]]) {
-                if ([[part substringToIndex:5] isEqualToString:@"[send"]) {
-                    NSString *number = [[[part substringFromIndex:5] stringByReplacingOccurrencesOfString:@"]" withString:@""] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-                    NSUInteger numberToSend = [number integerValue];
-                    for (int i = 0; i < numberToSend; i++) {
-                        [messagePartsToSend addObject:LYRUIMessagePartWithText([NSString stringWithFormat:@"Sending Test %d", i])];
-                        LYRMessage *message = [LYRMessage messageWithConversation:self.conversation parts:messagePartsToSend];
-                        [self sendMessage:message pushText:[self pushNotificationStringForMessage:message]];
-                    }
-                }
                 [messagePartsToSend addObject:LYRUIMessagePartWithText(part)];
             }
             if ([part isKindOfClass:[UIImage class]]) {
@@ -691,19 +691,14 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
 //        }
 //    }];
     [self.collectionView reloadData];
-    if (self.shouldScrollToBottom) {
-        [self scrollToBottomOfCollectionViewAnimated:TRUE];
-        self.shouldScrollToBottom = FALSE;
-    }
+    [self scrollToBottomOfCollectionViewAnimated:TRUE];
 }
 
 - (void)scrollToBottomOfCollectionViewAnimated:(BOOL)animated
 {
-    if (self.messageDataSource.messages.count > 1) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.collectionView setContentOffset:[self bottomOffset] animated:animated];
-        });
-    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.collectionView setContentOffset:[self bottomOffset] animated:animated];
+    });
 }
 
 - (id<LYRUIParticipant>)participantForIdentifier:(NSString *)identifier
@@ -740,13 +735,17 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
 - (void)configureConversationWithAddressBar:(LYRUIAddressBarViewController *)addressBarViewController
 {
     NSSet *participants = [addressBarViewController.selectedParticipants valueForKey:@"participantIdentifier"];
-    LYRConversation *conversation = [[[self.layerClient conversationsForParticipants:participants] allObjects] lastObject];
-    if (conversation) {
-        self.conversation = conversation;
+    if (!participants.count) {
+        self.conversation = nil;
     } else {
-        self.conversation = [LYRConversation conversationWithParticipants:participants];
+        LYRConversation *conversation = [[[self.layerClient conversationsForParticipants:participants] allObjects] lastObject];
+        if (conversation) {
+            self.conversation = conversation;
+        } else {
+            self.conversation = [LYRConversation conversationWithParticipants:participants];
+        }
+        if (self.conversation.participants.count > 2) self.shouldDisplayAvatarImage = YES;
     }
-    if (self.conversation.participants.count > 2) self.shouldDisplayAvatarImage = YES;
     [self setConversationViewTitle];
     [self setupConversationDataSource:^{
         [self.collectionView.collectionViewLayout invalidateLayout];
@@ -779,13 +778,14 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
                                                          multiplier:1.0
                                                            constant:0]];
     
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.collectionView
-                                                          attribute:NSLayoutAttributeTop
-                                                          relatedBy:NSLayoutRelationEqual
-                                                             toItem:self.view
-                                                          attribute:NSLayoutAttributeTop
-                                                         multiplier:1.0
-                                                           constant:0]];
+    self.collectionViewTopConstraint = [NSLayoutConstraint constraintWithItem:self.collectionView
+                                                                    attribute:NSLayoutAttributeTop
+                                                                    relatedBy:NSLayoutRelationEqual
+                                                                       toItem:self.view
+                                                                    attribute:NSLayoutAttributeTop
+                                                                   multiplier:1.0
+                                                                     constant:0];
+    [self.view addConstraint:self.collectionViewTopConstraint];
     
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.collectionView
                                                           attribute:NSLayoutAttributeBottom

@@ -82,11 +82,10 @@ static NSUInteger const LYRUILineSpacingConstant = 6;
 - (void)layoutSubviews
 {
     [super layoutSubviews];
-    
     self.font = [UIFont systemFontOfSize:14];
     [self setUpMaxHeight];
     [self invalidateIntrinsicContentSize];
-    
 
+    [super layoutSubviews];
 }
 @end

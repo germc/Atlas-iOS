@@ -104,7 +104,7 @@ NSString *const LYRUIPlaceHolderText = @"Enter Message";
 
 - (void)insertLineBreak:(NSMutableAttributedString *)mutableAttributedString
 {
-    [mutableAttributedString insertAttributedString:[[NSMutableAttributedString alloc] initWithString:@"\n "] atIndex:mutableAttributedString.length];
+    [mutableAttributedString insertAttributedString:[[NSMutableAttributedString alloc] initWithString:@"\r\n"] atIndex:mutableAttributedString.length];
     [mutableAttributedString addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:14] range:NSMakeRange(0, mutableAttributedString.length)];
 }
 
@@ -140,10 +140,10 @@ NSString *const LYRUIPlaceHolderText = @"Enter Message";
         NSMutableAttributedString *mutableAttributedString = [self.attributedText mutableCopy];
         [self insertLineBreak:mutableAttributedString];
         self.attributedText = mutableAttributedString;
+        [self layoutIfNeeded];
         [self.delegate textViewDidChange:self];
     }
     self.textColor = [UIColor blackColor];
-    [self layoutIfNeeded];
 }
 
 - (void)paste:(id)sender

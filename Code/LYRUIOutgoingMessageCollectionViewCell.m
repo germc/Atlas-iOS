@@ -28,7 +28,7 @@
 
 - (void)shouldDisplayAvatarImage:(BOOL)shouldDisplayAvatarImage
 {
-    //
+    self.avatarImage.alpha = 0.0;
 }
 
 - (void)updateWithParticipant:(id<LYRUIParticipant>)participant

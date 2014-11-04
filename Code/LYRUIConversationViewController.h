@@ -37,6 +37,8 @@
  */
 - (void)conversationViewController:(LYRUIConversationViewController *)viewController didFailSendingMessage:(LYRMessage *)message error:(NSError *)error;
 
+- (void)conversationViewController:(LYRUIConversationViewController *)viewController didSelectMessage:(LYRMessage *)message;
+
 @end
 
 ///---------------------------------------

@@ -52,7 +52,7 @@
 {
     CGFloat currentWidth = self.addressBarTextView.intrinsicContentSize.height;
     CGFloat currentHeight = self.addressBarTextView.intrinsicContentSize.height;
-    return CGSizeMake(currentWidth, currentHeight + 28);
+    return CGSizeMake(currentWidth, currentHeight + 20);
 }
 
 - (void)updateConstraints
