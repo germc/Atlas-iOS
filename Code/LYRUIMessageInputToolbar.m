@@ -169,8 +169,7 @@ static CGFloat const LSButtonHeight = 28;
                                                         [attachments addObject:[(LYRUIMediaAttachment *)value image]];
                                                     }
     }];
-     
-    NSArray *contentParts = [[self.textInputView.attributedText string] componentsSeparatedByString:@"\n"];
+    NSArray *contentParts = [[self.textInputView.attributedText string] componentsSeparatedByString:@"\r\n"];
     for (NSString *part in contentParts) {
          NSString *trimmedString = [part stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
         if ([trimmedString isEqualToString:@"\U0000fffc"]) {
@@ -190,6 +189,7 @@ static CGFloat const LSButtonHeight = 28;
 
 - (BOOL)textViewShouldBeginEditing:(UITextView *)textView
 {
+    [self adjustFrame];
     [self.rightAccessoryButton setHighlighted:TRUE];
     return YES;
 }

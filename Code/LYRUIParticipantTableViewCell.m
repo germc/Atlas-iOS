@@ -23,7 +23,6 @@
 @implementation LYRUIParticipantTableViewCell
 
 static CGFloat const LSSelectionIndicatorSize = 30;
-static CGFloat const LSSelectionIndicatorRightMargin = -20;
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
@@ -32,140 +31,39 @@ static CGFloat const LSSelectionIndicatorRightMargin = -20;
         self.selectionStyle = UITableViewCellSelectionStyleNone;
         self.backgroundColor = [UIColor whiteColor];
         
-        self.nameLabel = [[UILabel alloc] init];
-        self.nameLabel.translatesAutoresizingMaskIntoConstraints = NO;
-        [self.contentView addSubview:self.nameLabel];
-        
-        self.selectionIndicator = [LYRUISelectionIndicator initWithDiameter:LSSelectionIndicatorSize];
-        self.selectionIndicator.translatesAutoresizingMaskIntoConstraints = NO;
-        [self.contentView addSubview:self.selectionIndicator];
-        
         self.avatarImageView = [[LYRUIAvatarImageView alloc] init];
         [self.avatarImageView setInitialViewBackgroundColor:LSLighGrayColor()];
         self.avatarImageView.layer.cornerRadius = LSSelectionIndicatorSize / 2;
         self.avatarImageView.translatesAutoresizingMaskIntoConstraints = NO;
         self.avatarImageView.alpha = 0.0f;
         [self.contentView addSubview:self.avatarImageView];
+        [self updateConstraints];
         
-        [self updateSelectionIndicatorConstraints];
     }
     return self;
+}
+
+- (void)updateConstraints
+{
+    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.avatarImageView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self.imageView attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0]];
+    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.avatarImageView attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self.imageView attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0]];
 }
 
 - (void)presentParticipant:(id<LYRUIParticipant>)participant
 {
     self.accessibilityLabel = [participant fullName];
-    
-    self.nameLabel.text = [participant fullName];
-    [self.nameLabel sizeToFit];
-
+    self.textLabel.text = participant.fullName;
     [self.avatarImageView setInitialsForName:participant.fullName];
-    [self updateConstraints];
-}
-
-- (void)shouldDisplaySelectionIndicator:(BOOL)shouldDisplaySelectionIndicator
-{
-    if (shouldDisplaySelectionIndicator) {
-        self.selectionIndicator.alpha = 1.0;
-    } else {
-        self.selectionIndicator.alpha = 0.0;
-    }
 }
 
 - (void)shouldShowAvatarImage:(BOOL)shouldShowAvatarImage
 {
     if (shouldShowAvatarImage) {
-        [self updateAvatarImageConstraints];
+        self.imageView.backgroundColor = [UIColor redColor];
+        self.imageView.image = [self imageWithColor:[UIColor whiteColor]];
+        [self.imageView addSubview:self.avatarImageView];
         self.avatarImageView.alpha = 1.0f;
     }
-}
-
-- (void)updateSelectionIndicatorConstraints
-{
-    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.nameLabel
-                                                                 attribute:NSLayoutAttributeLeft
-                                                                 relatedBy:NSLayoutRelationEqual
-                                                                    toItem:self.avatarImageView
-                                                                 attribute:NSLayoutAttributeRight
-                                                                multiplier:1.0
-                                                                  constant:16]];
-    
-    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.nameLabel
-                                                                 attribute:NSLayoutAttributeCenterY
-                                                                 relatedBy:NSLayoutRelationEqual
-                                                                    toItem:self.contentView
-                                                                 attribute:NSLayoutAttributeCenterY
-                                                                multiplier:1.0
-                                                                  constant:0.0]];
-    
-    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.selectionIndicator
-                                                                 attribute:NSLayoutAttributeWidth
-                                                                 relatedBy:NSLayoutRelationEqual
-                                                                    toItem:nil
-                                                                 attribute:NSLayoutAttributeNotAnAttribute
-                                                                multiplier:1.0
-                                                                  constant:LSSelectionIndicatorSize]];
-    
-    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.selectionIndicator
-                                                                 attribute:NSLayoutAttributeHeight
-                                                                 relatedBy:NSLayoutRelationEqual
-                                                                    toItem:nil attribute:NSLayoutAttributeNotAnAttribute
-                                                                multiplier:1.0
-                                                                  constant:LSSelectionIndicatorSize]];
-    
-    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.selectionIndicator
-                                                                 attribute:NSLayoutAttributeCenterY
-                                                                 relatedBy:NSLayoutRelationEqual
-                                                                    toItem:self.contentView
-                                                                 attribute:NSLayoutAttributeCenterY
-                                                                multiplier:1.0
-                                                                  constant:0]];
-    
-    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.selectionIndicator
-                                                                 attribute:NSLayoutAttributeRight
-                                                                 relatedBy:NSLayoutRelationEqual
-                                                                    toItem:self.contentView
-                                                                 attribute:NSLayoutAttributeRight
-                                                                multiplier:1.0
-                                                                  constant:LSSelectionIndicatorRightMargin]];
-    
-    [super updateConstraints];
-}
-
-
-- (void)updateAvatarImageConstraints
-{
-    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.avatarImageView
-                                                                 attribute:NSLayoutAttributeWidth
-                                                                 relatedBy:NSLayoutRelationEqual
-                                                                    toItem:nil
-                                                                 attribute:NSLayoutAttributeNotAnAttribute
-                                                                multiplier:1.0
-                                                                  constant:LSSelectionIndicatorSize]];
-    
-    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.avatarImageView
-                                                                 attribute:NSLayoutAttributeHeight
-                                                                 relatedBy:NSLayoutRelationEqual
-                                                                    toItem:nil
-                                                                 attribute:NSLayoutAttributeNotAnAttribute
-                                                                multiplier:1.0
-                                                                  constant:LSSelectionIndicatorSize]];
-    
-    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.avatarImageView
-                                                                 attribute:NSLayoutAttributeLeft
-                                                                 relatedBy:NSLayoutRelationEqual
-                                                                    toItem:self.contentView
-                                                                 attribute:NSLayoutAttributeLeft
-                                                                multiplier:1.0
-                                                                  constant:10]];
-    
-    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.avatarImageView
-                                                                 attribute:NSLayoutAttributeCenterY
-                                                                 relatedBy:NSLayoutRelationEqual
-                                                                    toItem:self.contentView
-                                                                 attribute:NSLayoutAttributeCenterY
-                                                                multiplier:1.0
-                                                                  constant:0.0]];
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated
@@ -189,6 +87,28 @@ static CGFloat const LSSelectionIndicatorRightMargin = -20;
     if (self.nameLabel.textColor != self.titleColor) {
         self.nameLabel.textColor = self.titleColor;
     }
+}
+
+- (void)setTitleFont:(UIFont *)titleFont
+{
+    _titleFont = titleFont;
+    self.textLabel.font = titleFont;
+}
+
+- (void)setTitleColor:(UIColor *)titleColor
+{
+    _titleColor = titleColor;
+    self.textLabel.textColor = titleColor;
+}
+
+- (UIImage *)imageWithColor:(UIColor *)color {
+    CGRect rect = CGRectMake(0, 0, 30, 30);
+    UIGraphicsBeginImageContextWithOptions(rect.size, NO, 0);
+    [color setFill];
+    UIRectFill(rect);   // Fill it with your color
+    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return image;
 }
 
 @end

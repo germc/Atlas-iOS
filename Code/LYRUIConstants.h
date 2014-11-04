@@ -10,9 +10,13 @@
 
 UIColor *LSBlueColor();
 
+UIColor *LSDarkGrayColor();
+
 UIColor *LSGrayColor();
 
 UIColor *LSLighGrayColor();
+
+UIColor *LSAddressBarGray();
 
 UIColor *LSRedColor();
 

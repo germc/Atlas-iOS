@@ -11,6 +11,7 @@
 #import <MapKit/MapKit.h>
 #import "LYRUIParticipant.h"
 #import "LYRUIMessageInputToolbar.h"
+#import "LYRUIAddressBarViewController.h"
 
 @class LYRUIConversationViewController;
 
@@ -35,6 +36,8 @@
  @param error The `NSError` object describing why send failed.
  */
 - (void)conversationViewController:(LYRUIConversationViewController *)viewController didFailSendingMessage:(LYRMessage *)message error:(NSError *)error;
+
+- (void)conversationViewController:(LYRUIConversationViewController *)viewController didSelectMessage:(LYRMessage *)message;
 
 @end
 
@@ -95,9 +98,10 @@
 
 /**
  @abstract The `LYRUIConversationViewController` class presents an interface that provides for displaying 
- a Layer conversation and the ability to send messages.
+ a Layer conversation and the ability to send messages. The controller's design and functionality closely correlates with
+ the conversation view controller in iMessage.
 */
-@interface LYRUIConversationViewController : UIViewController
+@interface LYRUIConversationViewController : UIViewController <LYRUIAddressBarControllerDelegate>
 
 ///---------------------------------------
 /// @name Designated Initializer
@@ -147,8 +151,19 @@
 @property (nonatomic) LYRConversation *conversation;
 
 /**
+ @abstract The `LYRUIAddressBarViewController` displayed for addressing new conversations
+ */
+@property (nonatomic) LYRUIAddressBarViewController *addressBarController;
+
+/**
  @abstract The `LYRUIMessageInputToolbar` displayed for user input
  */
 @property (nonatomic) LYRUIMessageInputToolbar *messageInputToolbar;
+
+/**
+ @abstract Informs the receiver if it should display a `LYRUIAddressBarController`. If yes, your application must implement
+ `LYRUIAddressBarControllerDelegate` and `LYRUIAddressBarControllerDataSource`. Default is no.
+ */
+@property (nonatomic) BOOL showsAddressBar;
 
 @end

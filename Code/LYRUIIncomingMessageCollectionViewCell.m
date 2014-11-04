@@ -35,6 +35,8 @@ static CGFloat const LYRAvatarImageDiameter = 30.0f;
         self.avatarImage.layer.cornerRadius = (LYRAvatarImageDiameter / 2);
         self.avatarConstraintsAreSet = NO;
         
+        [self updateAvatarImageConstraints];
+        
     }
     return self;
 }
@@ -42,15 +44,18 @@ static CGFloat const LYRAvatarImageDiameter = 30.0f;
 - (void)shouldDisplayAvatarImage:(BOOL)shouldDisplayAvatarImage
 {
     if (!shouldDisplayAvatarImage) {
-        self.imageViewLeft = 0;
-        self.imageViewDiameter = 0;
+        self.avatarImage.alpha = 1.0;
+        self.avatarImageLeftConstraint.constant = 0;
+        self.avatarImageWidthConstraint.constant = 0;
+        self.avatarImageHeightConstraint.constant = 0;
+
     } else {
-        self.imageViewDiameter = LYRAvatarImageDiameter;
-        self.imageViewLeft = 10;
+        self.avatarImage.alpha = 0.0;
+        self.avatarImageLeftConstraint.constant = 10;
+        self.avatarImageWidthConstraint.constant = LYRAvatarImageDiameter;
+        self.avatarImageHeightConstraint.constant = LYRAvatarImageDiameter;
     }
-    if (!self.avatarConstraintsAreSet) {
-        [self updateAvatarImageConstraints];
-    }
+    [self.contentView layoutIfNeeded];
 }
 
 - (void)updateWithParticipant:(id<LYRUIParticipant>)participant
@@ -93,6 +98,7 @@ static CGFloat const LYRAvatarImageDiameter = 30.0f;
                                                                     attribute:NSLayoutAttributeBottom
                                                                    multiplier:1.0
                                                                      constant:0];
+    
     self.avatarImageLeftConstraint = [NSLayoutConstraint constraintWithItem:self.avatarImage
                                                                   attribute:NSLayoutAttributeLeft
                                                                   relatedBy:NSLayoutRelationEqual
@@ -105,7 +111,6 @@ static CGFloat const LYRAvatarImageDiameter = 30.0f;
     [self.contentView addConstraint:self.avatarImageHeightConstraint];
     [self.contentView addConstraint:self.avatarImageBottomConstraint];
     [self.contentView addConstraint:self.avatarImageLeftConstraint];
-    self.avatarConstraintsAreSet = YES;
 }
 
 - (void)updateConstraints

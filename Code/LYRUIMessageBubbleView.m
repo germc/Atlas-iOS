@@ -30,7 +30,7 @@
     self = [super initWithFrame:frame];
     if (self) {
         self.layer.cornerRadius = 12;
-        self.clipsToBounds = TRUE;
+       // self.clipsToBounds = TRUE;
         
         self.bubbleViewLabel = [[UILabel alloc] init];
         self.bubbleViewLabel.backgroundColor = [UIColor clearColor];

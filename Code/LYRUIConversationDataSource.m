@@ -71,7 +71,6 @@
 
 - (NSArray *)processConversationChanges:(NSMutableArray *)conversationChanges withDelta:(NSArray *)conversationDelta
 {
-    NSLog(@"ConversationChanges: %@", conversationChanges);
     NSMutableArray *updateIndexes = [[NSMutableArray alloc] init];
     NSMutableArray *changeObjects = [[NSMutableArray alloc] init];
     for (NSDictionary *conversationChange in conversationChanges) {

@@ -23,8 +23,14 @@
         _initialsLabel = [[UILabel alloc] init];
         _initialsLabel.translatesAutoresizingMaskIntoConstraints = NO;
         [self addSubview:_initialsLabel];
+    
     }
     return self;
+}
+
+- (CGSize)intrinsicContentSize
+{
+    return CGSizeMake(30, 30);
 }
 
 - (void)setInitialsForName:(NSString *)name
