@@ -50,24 +50,26 @@
 - (NSAttributedString *)conversationViewController:(LYRUIConversationViewController *)conversationViewController attributedStringForDisplayOfRecipientStatus:(NSDictionary *)recipientStatus
 {
     if (recipientStatus.count == 0) return nil;
-    NSMutableString *statuses = [NSMutableString string];
+    NSMutableAttributedString *mergedStatuses = [[NSMutableAttributedString alloc] init];
+
     [[recipientStatus allKeys] enumerateObjectsUsingBlock:^(NSString *participant, NSUInteger idx, BOOL *stop) {
         LYRRecipientStatus status = [recipientStatus[participant] unsignedIntegerValue];
         if ([participant isEqualToString:self.layerClient.authenticatedUserID]) {
             return;
         }
+        NSString *participantNameWithCheckmark = [NSString stringWithFormat:@"%@✔︎ ", [LYRClientMockFactory userForParticipantIdentifier:participant].firstName];
+        UIColor *textColor = [UIColor lightGrayColor];
         if (status == LYRRecipientStatusSent) {
-            [statuses appendString:@"sent✔︎ "];
+            textColor = [UIColor lightGrayColor];
         } else if (status == LYRRecipientStatusDelivered) {
-            [statuses appendString:@"delivered✔︎ "];
+            textColor = [UIColor orangeColor];
         } else if (status == LYRRecipientStatusRead) {
-            [statuses appendString:@"read✔︎ "];
+            textColor = [UIColor greenColor];
         }
+        NSAttributedString *statusString = [[NSAttributedString alloc] initWithString:participantNameWithCheckmark attributes:@{NSForegroundColorAttributeName: textColor}];
+        [mergedStatuses appendAttributedString:statusString];
     }];
-//    if (statuses.length) {
-//        [statuses insertString:@"read" atIndex:0];
-//    }
-    return [[NSAttributedString alloc] initWithString:statuses];
+    return mergedStatuses;
 }
 
 @end
