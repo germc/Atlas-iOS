@@ -147,29 +147,41 @@
         [self postChanges:changes];
     });
     
+    NSMutableArray *participants = message.conversation.participants.allObjects.mutableCopy;
+    [participants removeObject:self.authenticatedUserID];
+    [participants sortWithOptions:NSSortStable usingComparator:^NSComparisonResult(id obj1, id obj2) {
+        return arc4random_uniform(3)-2;
+    }];
+    
     // Simulate the message being delivered.
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        NSMutableArray *changes = [NSMutableArray array];
-        NSDictionary *recipientStatusesBeforeMutation = message.recipientStatusByUserID.copy;
-        for (NSString *participant in message.conversation.participants) {
+    double humanize = 1 / (double)(participants.count - 1);
+    NSUInteger index = 0;
+    for (NSString *participant in participants) {
+        if ([participant isEqualToString:self.authenticatedUserID]) continue;
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)((2 + humanize * index++) * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            NSMutableArray *changes = [NSMutableArray array];
+            NSDictionary *recipientStatusesBeforeMutation = message.recipientStatusByUserID.copy;
             [self setMessage:message recipientStatus:LYRRecipientStatusDelivered forParticipant:participant];
-        }
-        [self setMessage:message recipientStatus:LYRRecipientStatusRead forParticipant:self.authenticatedUserID];
-        [changes addObjectsFromArray:[self changesForMessageRecipientStatus:message recipientStatusBefore:recipientStatusesBeforeMutation]];
-        [self postChanges:changes];
-    });
+            [changes addObjectsFromArray:[self changesForMessageRecipientStatus:message recipientStatusBefore:recipientStatusesBeforeMutation]];
+            [self postChanges:changes];
+        });
+    }
     
     // Simulate the message being read.
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        NSMutableArray *changes = [NSMutableArray array];
-        NSDictionary *recipientStatusesBeforeMutation = message.recipientStatusByUserID.copy;
-        for (NSString *participant in message.conversation.participants) {
+    [participants sortWithOptions:NSSortStable usingComparator:^NSComparisonResult(id obj1, id obj2) {
+        return arc4random_uniform(3)-2;
+    }];
+    index = 0;
+    for (NSString *participant in participants) {
+        if ([participant isEqualToString:self.authenticatedUserID]) continue;
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)((3 + humanize * index++) * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            NSMutableArray *changes = [NSMutableArray array];
+            NSDictionary *recipientStatusesBeforeMutation = message.recipientStatusByUserID.copy;
             [self setMessage:message recipientStatus:LYRRecipientStatusRead forParticipant:participant];
-        }
-        [self setMessage:message recipientStatus:LYRRecipientStatusRead forParticipant:self.authenticatedUserID];
-        [changes addObjectsFromArray:[self changesForMessageRecipientStatus:message recipientStatusBefore:recipientStatusesBeforeMutation]];
-        [self postChanges:changes];
-    });
+            [changes addObjectsFromArray:[self changesForMessageRecipientStatus:message recipientStatusBefore:recipientStatusesBeforeMutation]];
+            [self postChanges:changes];
+        });
+    }
     return YES;
 }
 
