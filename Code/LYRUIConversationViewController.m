@@ -524,7 +524,7 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
     if (participantsTyping.count) {
         self.typingIndicatorLabel.text = [NSString stringWithFormat:@"%@ %@ typing...", commaSeperatedParticipants, participantsTyping.count > 1 ? @"are" : @"is"];
     }
-    [UIView animateWithDuration:animated ? 0.3 : 0 animations:^{
+    [UIView animateWithDuration:animated ? (visible ? 0.3 : 0.1) : 0 animations:^{
         self.typingIndicatorLabel.frame = CGRectMake(52.0, visible ? -20.0 : 0.0, self.messageInputToolbar.frame.size.width, 16.0);
         self.typingIndicatorLabel.alpha = visible ? 1.0 : 0.0;
         if (visible) [self scrollToBottomOfCollectionViewAnimated:YES];
