@@ -22,12 +22,14 @@
 @property (nonatomic) LYRUIMessageDataSource *messageDataSource;
 @property (nonatomic) UICollectionView *collectionView;
 @property (nonatomic) UIView *inputAccessoryView;
+@property (nonatomic) UILabel *typingIndicatorLabel;
 @property (nonatomic) BOOL keyboardIsOnScreen;
 @property (nonatomic) CGFloat keyboardHeight;
 @property (nonatomic) BOOL shouldScrollToBottom;
 @property (nonatomic) BOOL shouldDisplayAvatarImage;
 @property (nonatomic) CGRect addressBarRect;
 @property (nonatomic) NSLayoutConstraint *collectionViewTopConstraint;
+@property (nonatomic) NSMutableDictionary *typingIndicatorStatusByParticipant;
 
 @end
 
@@ -55,6 +57,7 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
         // Set default configuration for public configuration properties
         _dateDisplayTimeInterval = 60*15;
         _showsAddressBar = NO;
+        _typingIndicatorStatusByParticipant = [NSMutableDictionary dictionaryWithCapacity:conversation.participants.count];
         
         // Configure default UIAppearance Proxy
         [self configureMessageBubbleAppearance];
@@ -98,6 +101,13 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
     [self updateCollectionViewConstraints];
     self.collectionView.contentInset = UIEdgeInsetsMake(0, 0, self.inputAccessoryView.intrinsicContentSize.height, 0);
     self.collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(0, 0, self.inputAccessoryView.intrinsicContentSize.height, 0);
+    
+    // Set the typing indicator label
+    self.typingIndicatorLabel = [[UILabel alloc] initWithFrame:CGRectMake(52.0, 0, self.messageInputToolbar.frame.size.width, 16.0)];
+    self.typingIndicatorLabel.textColor = [UIColor lightGrayColor];
+    self.typingIndicatorLabel.font = LSMediumFont(12);
+    self.typingIndicatorLabel.numberOfLines = 0;
+    [self.inputAccessoryView addSubview:self.typingIndicatorLabel];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -142,7 +152,15 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(keyboardWasShown:)
                                                  name:UIKeyboardWillShowNotification object:nil];
+
+    // Register for typing indicator notifications
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(didReceiveTypingIndicator:)
+                                                 name:LYRConversationDidReceiveTypingIndicatorNotification object:self.conversation];
     self.keyboardIsOnScreen = NO;
+
+    // Send the typing indicator behind the input bar
+    [self.inputAccessoryView sendSubviewToBack:self.typingIndicatorLabel];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -155,6 +173,10 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:UIKeyboardWillShowNotification
                                                   object:nil];
+
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:LYRConversationDidReceiveTypingIndicatorNotification
+                                                  object:self.conversation];
 }
 
 - (void)dealloc
@@ -461,6 +483,7 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
     
     self.keyboardHeight = [[[notification userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue].size.height;
     [UIView beginAnimations:nil context:NULL];
+    [self updateTypingIndicatorOverlay:NO];
     [UIView setAnimationDuration:[notification.userInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue]];
     [UIView setAnimationCurve:[notification.userInfo[UIKeyboardAnimationCurveUserInfoKey] integerValue]];
     [UIView setAnimationBeginsFromCurrentState:YES];
@@ -469,6 +492,44 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
     if (self.keyboardIsOnScreen) {
         [self scrollToBottomOfCollectionViewAnimated:TRUE];
     }
+}
+
+#pragma mark - Typing indicator notifications
+
+- (void)didReceiveTypingIndicator:(NSNotification *)notification
+{
+    NSString *participantID = notification.userInfo[LYRTypingIndicatorParticipantUserInfoKey];
+    self.typingIndicatorStatusByParticipant[participantID] = notification.userInfo[LYRTypingIndicatorValueUserInfoKey];
+    [self updateTypingIndicatorOverlay:YES];
+}
+
+- (void)updateTypingIndicatorOverlay:(BOOL)animated
+{
+    NSMutableArray *participantsTyping = [NSMutableArray array];
+    NSUInteger numberOfParticipants = 0;
+    for (NSString *participantID in self.typingIndicatorStatusByParticipant.keyEnumerator) {
+        if ([self.typingIndicatorStatusByParticipant[participantID] unsignedIntegerValue] == LYRTypingDidBegin) {
+            [participantsTyping addObject:[self participantForIdentifier:participantID].firstName];
+            if (numberOfParticipants++ > 3) break; // stop adding participants to the string if there are more that 3 people typing at once
+        }
+    }
+    if (participantsTyping.count >= 3) [participantsTyping addObject:@"others"];
+    NSString *commaSeperatedParticipants = [participantsTyping componentsJoinedByString:@", "];
+    NSRange lastCommaRange = [commaSeperatedParticipants rangeOfString:@", " options:NSBackwardsSearch];
+    if (lastCommaRange.location != NSNotFound) {
+        commaSeperatedParticipants = [commaSeperatedParticipants stringByReplacingOccurrencesOfString:@", " withString:@" and " options:NSBackwardsSearch range:lastCommaRange];
+    }
+    BOOL isScrolledToBottom = (self.collectionView.contentOffset.y >= (self.collectionView.contentSize.height - self.collectionView.bounds.size.height));
+    BOOL visible = (participantsTyping.count >= 1) && isScrolledToBottom;
+    if (participantsTyping.count) {
+        self.typingIndicatorLabel.text = [NSString stringWithFormat:@"%@ %@ typing...", commaSeperatedParticipants, participantsTyping.count > 1 ? @"are" : @"is"];
+    }
+    [UIView animateWithDuration:animated ? 0.3 : 0 animations:^{
+        self.typingIndicatorLabel.frame = CGRectMake(52.0, visible ? -20.0 : 0.0, self.messageInputToolbar.frame.size.width, 16.0);
+        self.typingIndicatorLabel.alpha = visible ? 1.0 : 0.0;
+        if (visible) [self scrollToBottomOfCollectionViewAnimated:YES];
+    }];
+    [self updateCollectionViewInsets];
 }
 
 #pragma mark - LYRUIMessageInputToolbar Delegate Methods
@@ -628,7 +689,8 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
 - (void)updateCollectionViewInsets
 {
     UIEdgeInsets existing = self.collectionView.contentInset;
-    self.collectionView.contentInset = self.collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(existing.top, 0, self.keyboardHeight, 0);
+    self.collectionView.contentInset = UIEdgeInsetsMake(existing.top, 0, self.keyboardHeight + 20, 0);
+    self.collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(existing.top, 0, self.keyboardHeight, 0);
 }
 
 - (CGPoint)bottomOffset

@@ -40,6 +40,7 @@
 - (BOOL)removeParticipants:(NSSet *)participants fromConversation:(LYRConversationMock *)conversation error:(NSError **)error;
 - (BOOL)deleteMessage:(LYRMessageMock *)message mode:(LYRDeletionMode)deletionMode error:(NSError **)error;
 - (BOOL)deleteConversation:(LYRConversationMock *)conversation mode:(LYRDeletionMode)deletionMode error:(NSError **)error;
+- (void)sendTypingIndicator:(LYRTypingIndicator)typingIndicator toConversation:(LYRConversationMock *)conversation;
 
 ///------------------------------------------
 /// @name LYRClient Mocking incoming changes
@@ -54,6 +55,7 @@
 - (void)receiveConversationParticipantsRemoved:(NSSet *)participantsRemoved fromConversation:(LYRConversationMock *)conversation;
 - (void)receiveConversationMetadataChangeForMessage:(LYRConversationMock *)conversation metadata:(NSDictionary *)metadata;
 - (void)receiveConversationDeletion:(LYRConversationMock *)conversation;
+- (void)receiveTypingIndicator:(LYRTypingIndicator)typingIndicator fromParticipant:(NSString *)userID conversation:(LYRConversationMock *)conversation;
 
 @end
 
