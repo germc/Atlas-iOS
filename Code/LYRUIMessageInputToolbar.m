@@ -218,7 +218,7 @@ static CGFloat const LSButtonHeight = 28;
         if ([self.inputToolBarDelegate respondsToSelector:@selector(messageInputToolbarDidEndTyping:)]) {
             [self.inputToolBarDelegate messageInputToolbarDidEndTyping:self];
         }
-    } else if (textView.text.length == 0 && text.length) {
+    } else if (text.length) {
         if ([self.inputToolBarDelegate respondsToSelector:@selector(messageInputToolbarDidBeginTyping:)]) {
             [self.inputToolBarDelegate messageInputToolbarDidBeginTyping:self];
         }
