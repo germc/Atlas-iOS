@@ -146,6 +146,9 @@ static CGFloat const LSButtonHeight = 28;
 {
     if ([self.textInputView.text isEqualToString:LYRUIPlaceHolderText]) return;
     [self filterAttributedString:self.textInputView.attributedText];
+    if ([self.inputToolBarDelegate respondsToSelector:@selector(messageInputToolbarDidEndTyping:)]) {
+        [self.inputToolBarDelegate messageInputToolbarDidEndTyping:self];
+    }
     self.textInputView.text = nil;
     if (self.textInputView.text.length > 0 || self.messageParts) {
         [self.inputToolBarDelegate messageInputToolbar:self didTapRightAccessoryButton:self.rightAccessoryButton];
@@ -210,6 +213,16 @@ static CGFloat const LSButtonHeight = 28;
 
 - (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
 {
+    if (textView.text.length && (text.length == 0 && range.location == 0 && range.length == textView.text.length)) {
+        // user cleared out the text
+        if ([self.inputToolBarDelegate respondsToSelector:@selector(messageInputToolbarDidEndTyping:)]) {
+            [self.inputToolBarDelegate messageInputToolbarDidEndTyping:self];
+        }
+    } else if (textView.text.length == 0 && text.length) {
+        if ([self.inputToolBarDelegate respondsToSelector:@selector(messageInputToolbarDidBeginTyping:)]) {
+            [self.inputToolBarDelegate messageInputToolbarDidBeginTyping:self];
+        }
+    }
     return YES;
 }
 

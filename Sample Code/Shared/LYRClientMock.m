@@ -249,7 +249,9 @@
 
 - (void)sendTypingIndicator:(LYRTypingIndicator)typingIndicator toConversation:(LYRConversationMock *)conversation
 {
-    // no op
+    // It's an no-op, but you can enable an echo of your own typing indicator
+    // by un-commenting the line below.
+    // [self receiveTypingIndicator:typingIndicatorert fromParticipant:self.authenticatedUserID conversation:conversation];
 }
 
 #pragma mark Receiving changes
