@@ -9,11 +9,20 @@
 #import <Foundation/Foundation.h>
 #import "LYRUIParticipant.h"
 
+/**
+ @abstract The `LYRUIAddressToken` represents an individual participant which is displayed in the 
+ `LYRUIAddressBarController`. 
+ @discussion The class contains an object which conforms to the `LYRUIParticipant`
+ protocol and an `NSRange` object. The `NSRange` object allows for selection of the entire text
+ of a participants name upon reciept of a tap event.
+ */
+
 @interface LYRUIAddressToken : NSObject
 
-@property (nonatomic) id<LYRUIParticipant>participant;
-@property (nonatomic) NSRange range;
-
 + (instancetype)tokenWithParticipant:(id<LYRUIParticipant>)particiapnt range:(NSRange)range;
+
+@property (nonatomic) id<LYRUIParticipant>participant;
+
+@property (nonatomic) NSRange range;
 
 @end

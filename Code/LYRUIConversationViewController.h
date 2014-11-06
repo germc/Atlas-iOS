@@ -76,6 +76,7 @@
 - (NSAttributedString *)conversationViewController:(LYRUIConversationViewController *)conversationViewController attributedStringForDisplayOfRecipientStatus:(NSDictionary *)recipientStatus;
 
 @optional
+
 /**
  @abstract Asks the data source for an `NSString` object to be sent as the push notification alert text via Layer.
  @param conversationViewController The `LYRUIConversationViewController` requesting the string.

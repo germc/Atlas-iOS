@@ -12,4 +12,10 @@ extern NSString *const LYRUIPlaceHolderText;
 
 @interface LYRUIAddressBarTextView : UITextView
 
+@property (nonatomic) UIFont *addressBarFont UI_APPEARANCE_SELECTOR;
+
+@property (nonatomic) UIColor *addressBarTextColor UI_APPEARANCE_SELECTOR;
+
+@property (nonatomic) UIColor *addressBarHightlightColor UI_APPEARANCE_SELECTOR;
+
 @end

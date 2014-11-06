@@ -10,6 +10,7 @@
 #import "LYRUIPaticipantSectionHeaderView.h"
 #import "LYRUIConstants.h"
 #import "LYRUIParticipantPickerController.h"
+#import "LYRUIAvatarImageView.h"
 
 @interface LYRUIParticipantTableViewController () <UISearchBarDelegate, UISearchDisplayDelegate>
 
@@ -171,7 +172,7 @@ static NSString *const LYRParticipantCellIdentifier = @"participantCellIdentifie
     id<LYRUIParticipant> participant = [[[self currentDataArray] objectForKey:key] objectAtIndex:indexPath.row];
     [cell presentParticipant:participant];
     [cell updateWithSortType:self.sortType];
-    [cell shouldShowAvatarImage:NO];
+    [cell shouldShowAvatarImage:YES];
 }
 
 #pragma mark - Table View Delegate Methods
@@ -299,6 +300,10 @@ static NSString *const LYRParticipantCellIdentifier = @"participantCellIdentifie
     [[LYRUIParticipantTableViewCell appearance] setTitleColor:[UIColor blackColor]];
     [[LYRUIParticipantTableViewCell appearance] setTitleFont:[UIFont systemFontOfSize:14]];
     [[LYRUIParticipantTableViewCell appearance] setBoldTitleFont:[UIFont boldSystemFontOfSize:14]];
+    
+    [[LYRUIAvatarImageView appearance] setInitialViewBackgroundColor:LSGrayColor()];
+    [[LYRUIAvatarImageView appearance] setInitialColor:[UIColor blackColor]];
+    [[LYRUIAvatarImageView appearance] setInitialFont:LSLightFont(14)];
 }
 
 @end

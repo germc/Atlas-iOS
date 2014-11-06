@@ -37,6 +37,7 @@ static NSString *const LSParticpantCellIdentifier = @"participantCellIdentifier"
     [super viewDidLoad];
     
     self.view.translatesAutoresizingMaskIntoConstraints = NO;
+    self.view.autoresizingMask = UIViewAutoresizingFlexibleHeight;
     
     self.addressTokenIndex = [[NSMutableArray alloc] init];
     self.addressTokens = [[NSMutableArray alloc] init];
@@ -62,15 +63,9 @@ static NSString *const LSParticpantCellIdentifier = @"participantCellIdentifier"
 
 }
 
-- (void)viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:animated];
-    
-}
-
 - (void)updateControllerOffset:(CGPoint)offset
 {
-    self.controllerYOffset = offset.y;
+    self.controllerYOffset = -offset.y;
     self.tableView.contentInset = UIEdgeInsetsMake(0, 0, -self.controllerYOffset, 0);
 
     UIView *presentingView = [[self parentViewController] view];
@@ -103,7 +98,6 @@ static NSString *const LSParticpantCellIdentifier = @"participantCellIdentifier"
 {
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.addressBarView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0]];
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.addressBarView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeTop multiplier:1.0 constant:0]];
-   // [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.addressBarView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:self.addressBarViewDefaultHeight]];
     
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.tableView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0]];
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.tableView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeHeight multiplier:1.0 constant:0]];
@@ -164,10 +158,6 @@ static NSString *const LSParticpantCellIdentifier = @"participantCellIdentifier"
     // Inform delegate of selection
     [self.delegate addressBarViewController:self didSelectParticipant:participant];
     [self searchEnded];
-    
-    // Ensure Text View is always scrolled to the bottom after selection
-    NSRange range = NSMakeRange(self.addressBarView.addressBarTextView.text.length - 1, 1);
-    [self.addressBarView.addressBarTextView  scrollRangeToVisible:range];
 }
 
 #pragma mark - Token Configuration Methods
@@ -199,7 +189,6 @@ static NSString *const LSParticpantCellIdentifier = @"participantCellIdentifier"
 - (void)removeToken:(LYRUIAddressToken *)token
 {
     // We are going to reset address bar text so clear it
-    self.addressBarView.addressBarTextView.text = @"";
     self.searchFilterIndex = 0;
     
     // Remove token from the token array
@@ -217,6 +206,13 @@ static NSString *const LSParticpantCellIdentifier = @"participantCellIdentifier"
 - (void)setAddressBarText;
 {
     self.addressBarView.addressBarTextView.text = [self addressLabel];
+    self.searchFilterIndex = self.addressBarView.addressBarTextView.text.length;
+
+    NSRange range = NSMakeRange(0, 0);
+    NSDictionary *currentAttributes = [self.addressBarView.addressBarTextView.attributedText attributesAtIndex:0 effectiveRange:&range];
+    NSMutableAttributedString *selectedString = [[NSMutableAttributedString alloc] initWithString:self.addressBarView.addressBarTextView.text attributes:currentAttributes];
+    [selectedString addAttribute:NSForegroundColorAttributeName value:self.addressBarView.addressBarTextView.addressBarHightlightColor range:NSMakeRange(0, selectedString.length - 2)];
+    self.addressBarView.addressBarTextView.attributedText = selectedString;
     self.searchFilterIndex = self.addressBarView.addressBarTextView.text.length;
 }
 
@@ -262,6 +258,7 @@ static NSString *const LSParticpantCellIdentifier = @"participantCellIdentifier"
 
 - (BOOL)textViewShouldBeginEditing:(UITextView *)textView
 {
+    [self sizeAddressBarView];
     self.addressBarView.addContactsButton.alpha = 1.0f;
     return YES;
 }
@@ -297,8 +294,7 @@ static NSString *const LSParticpantCellIdentifier = @"participantCellIdentifier"
 
 - (void)sizeAddressBarView
 {
-     [self.addressBarView invalidateIntrinsicContentSize];
-    NSLog(@"Content View %f", self.addressBarView.addressBarTextView.contentSize.height);
+    [self.addressBarView.addressBarTextView invalidateIntrinsicContentSize];
 }
 
 - (void)textViewDidChange:(UITextView *)textView
@@ -383,5 +379,6 @@ static NSString *const LSParticpantCellIdentifier = @"participantCellIdentifier"
     self.participants = nil;
     self.tableView.alpha = 0.0f;
 }
+
 
 @end

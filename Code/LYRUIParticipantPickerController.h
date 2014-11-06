@@ -30,7 +30,7 @@
  @param participantSelectionViewController The participant selection view in which the selection was made.
  @param participants The set of participants that was selected.
  */
-- (void)participantSelectionViewController:(LYRUIParticipantPickerController *)participantSelectionViewController didSelectParticipants:(NSSet *)participants;
+- (void)participantSelectionViewController:(LYRUIParticipantPickerController *)participantSelectionViewController didSelectParticipant:(id<LYRUIParticipant>)participant;
 
 @end
 
