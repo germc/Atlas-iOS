@@ -247,11 +247,27 @@
     return YES;
 }
 
+- (void)sendTypingIndicator:(LYRTypingIndicator)typingIndicator toConversation:(LYRConversationMock *)conversation
+{
+    // It's an no-op, but you can enable an echo of your own typing indicator
+    // by un-commenting the line below.
+    // [self receiveTypingIndicator:typingIndicatorert fromParticipant:self.authenticatedUserID conversation:conversation];
+}
+
 #pragma mark Receiving changes
 
 - (void)receiveMessage:(LYRMessageMock *)receivedMessage
 {
-    [self receiveMessages:@[receivedMessage]];
+    if (![self.conversations containsObject:receivedMessage.conversation]) {
+        // don't post typing indicator notifications if the client
+        // hasn't received the conversation yet.
+        return;
+    }
+    [self receiveTypingIndicator:LYRTypingDidBegin fromParticipant:receivedMessage.sentByUserID conversation:receivedMessage.conversation];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [self receiveTypingIndicator:LYRTypingDidFinish fromParticipant:receivedMessage.sentByUserID conversation:receivedMessage.conversation];
+        [self receiveMessages:@[receivedMessage]];
+    });
 }
 
 - (void)receiveMessages:(NSArray *)receivedMessages
@@ -297,6 +313,16 @@
 - (void)receiveConversationDeletion:(LYRConversationMock *)conversation
 {
     [self deleteConversation:conversation mode:LYRDeletionModeAllParticipants error:nil];
+}
+
+- (void)receiveTypingIndicator:(LYRTypingIndicator)typingIndicator fromParticipant:(NSString *)participantIdentifier conversation:(LYRConversationMock *)conversation
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [[NSNotificationCenter defaultCenter] postNotificationName:LYRConversationDidReceiveTypingIndicatorNotification
+                                                            object:conversation
+                                                          userInfo:@{ LYRTypingIndicatorParticipantUserInfoKey: participantIdentifier,
+                                                                      LYRTypingIndicatorValueUserInfoKey: @(typingIndicator) }];
+    });
 }
 
 #pragma mark Conversation management
@@ -595,6 +621,7 @@
 
 + (instancetype)conversationWithLYRConversation:(LYRConversation *)conversation
 {
+    if ([conversation isKindOfClass:[LYRConversationMock class]]) return conversation;
     LYRConversationMock *conversationMock = [[LYRConversationMock alloc] init];
     conversationMock.identifier = conversation.identifier;
     conversationMock.participants = conversation.participants;

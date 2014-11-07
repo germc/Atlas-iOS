@@ -40,6 +40,18 @@
  */
 - (void)messageInputToolbar:(LYRUIMessageInputToolbar *)messageInputToolbar didTapLeftAccessoryButton:(UIButton *)leftAccessoryButton;
 
+@optional
+
+/**
+ @abstract Notifies the reciever that typing has begun.
+ */
+- (void)messageInputToolbarDidBeginTyping:(LYRUIMessageInputToolbar *)messageInputToolbar;
+
+/**
+ @abstract Notifies the reciever that typing has ended.
+ */
+- (void)messageInputToolbarDidEndTyping:(LYRUIMessageInputToolbar *)messageInputToolbar;
+
 @end
 
 @interface LYRUIMessageInputToolbar : UIToolbar
