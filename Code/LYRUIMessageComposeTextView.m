@@ -61,7 +61,7 @@ NSString *const LYRUIPlaceHolderText = @"Enter Message";
 
 - (void)scrollRectToVisible:(CGRect)rect animated:(BOOL)animated
 {
-    // Don't do anything here to prevent auto-scrolling.
+    
 }
 
 - (void)insertImage:(UIImage *)image
@@ -165,5 +165,6 @@ NSString *const LYRUIPlaceHolderText = @"Enter Message";
     } else {
         [super paste:sender];
     }
+    [self.delegate textViewDidChange:self];
 }
 @end

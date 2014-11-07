@@ -147,6 +147,7 @@ static NSString *const LSParticpantCellIdentifier = @"participantCellIdentifier"
         self.addressBarView.addressBarTextView.textColor = LSGrayColor();
         self.addressBarView.addressBarTextView.userInteractionEnabled = NO;
     }
+    [self sizeAddressBarView];
 }
 
 - (void)selectParticipant:(id<LYRUIParticipant>)participant

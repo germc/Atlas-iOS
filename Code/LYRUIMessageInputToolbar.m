@@ -139,13 +139,12 @@ static CGFloat const LSButtonHeight = 28;
     if ([self.inputToolBarDelegate respondsToSelector:@selector(messageInputToolbarDidEndTyping:)]) {
         [self.inputToolBarDelegate messageInputToolbarDidEndTyping:self];
     }
-    self.textInputView.text = nil;
-    if (self.textInputView.text.length > 0 || self.messageParts) {
+    if (self.textInputView.text.length > 0) {
         [self.inputToolBarDelegate messageInputToolbar:self didTapRightAccessoryButton:self.rightAccessoryButton];
         [self.messageParts removeAllObjects];
         [self.rightAccessoryButton setHighlighted:FALSE];
         [self.textInputView removeAttachements];
-        self.textInputView.text = nil;
+        self.textInputView.text = @"";
         [self.textInputView layoutSubviews];
     }
     [self adjustFrame];
@@ -188,13 +187,12 @@ static CGFloat const LSButtonHeight = 28;
 - (BOOL)textViewShouldBeginEditing:(UITextView *)textView
 {
     [self adjustFrame];
-    [self.rightAccessoryButton setHighlighted:TRUE];
     return YES;
 }
 
 - (BOOL)textViewShouldEndEditing:(UITextView *)textView
 {
-    [self.rightAccessoryButton setHighlighted:FALSE];
+    [self.rightAccessoryButton setHighlighted:NO];
     return YES;
 }
 
@@ -202,7 +200,9 @@ static CGFloat const LSButtonHeight = 28;
 {
     [self adjustFrame];
     if (textView.text.length > 0) {
-        [self.rightAccessoryButton setHighlighted:TRUE];
+        [self.rightAccessoryButton setHighlighted:YES];
+    } else {
+        [self.rightAccessoryButton setHighlighted:NO];
     }
 }
 
@@ -239,7 +239,7 @@ static CGFloat const LSButtonHeight = 28;
 - (void)adjustFrame
 {
     [self invalidateIntrinsicContentSize];
-   
+    
     // Make sure the text view always scrolls to the bottom
     CGFloat contentHeight = self.textInputView.contentSize.height;
     CGFloat height = self.textInputView.frame.size.height;

@@ -262,7 +262,7 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return self.allowsEditing;
+    return YES;
 }
 
 - (NSArray *)tableView:(UITableView *)tableView editActionsForRowAtIndexPath:(NSIndexPath *)indexPath {
