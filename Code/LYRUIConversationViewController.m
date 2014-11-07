@@ -97,6 +97,7 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
     // Set the accessoryView to be a Message Input Toolbar
     self.messageInputToolbar =  [LYRUIMessageInputToolbar new];
     self.messageInputToolbar.inputToolBarDelegate = self;
+    [self.messageInputToolbar sizeToFit];
     self.inputAccessoryView = self.messageInputToolbar;
     
     [self updateCollectionViewConstraints];
@@ -128,8 +129,9 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
         [self addChildViewController:self.addressBarController];
         [self.view addSubview:self.addressBarController.view];
         [self.addressBarController didMoveToParentViewController:self];
-        [self.addressBarController updateControllerOffset:CGPointMake(0, 64)];
+        [self.addressBarController updateControllerOffset:CGPointMake(0, -64)];
         self.collectionViewTopConstraint.constant = 40;
+        
     }
     
     if (self.conversation) {
@@ -142,10 +144,19 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
     }
     
     // Register reusable collection view cells, header and footer
-    [self.collectionView registerClass:[LYRUIIncomingMessageCollectionViewCell class] forCellWithReuseIdentifier:LYRUIIncomingMessageCellIdentifier];
-    [self.collectionView registerClass:[LYRUIOutgoingMessageCollectionViewCell class] forCellWithReuseIdentifier:LYRUIOutgoingMessageCellIdentifier];
-    [self.collectionView registerClass:[LYRUIConversationCollectionViewHeader class] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:LYRUIMessageCellHeaderIdentifier];
-    [self.collectionView registerClass:[LYRUIConversationCollectionViewFooter class] forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:LYRUIMessageCellFooterIdentifier];
+    [self.collectionView registerClass:[LYRUIIncomingMessageCollectionViewCell class]
+            forCellWithReuseIdentifier:LYRUIIncomingMessageCellIdentifier];
+    
+    [self.collectionView registerClass:[LYRUIOutgoingMessageCollectionViewCell class]
+            forCellWithReuseIdentifier:LYRUIOutgoingMessageCellIdentifier];
+    
+    [self.collectionView registerClass:[LYRUIConversationCollectionViewHeader class]
+            forSupplementaryViewOfKind:UICollectionElementKindSectionHeader
+                   withReuseIdentifier:LYRUIMessageCellHeaderIdentifier];
+    
+    [self.collectionView registerClass:[LYRUIConversationCollectionViewFooter class]
+            forSupplementaryViewOfKind:UICollectionElementKindSectionFooter
+                   withReuseIdentifier:LYRUIMessageCellFooterIdentifier];
     
     // Collection View AutoLayout Config
     [self setConversationViewTitle];
@@ -155,6 +166,7 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
+    [self.addressBarController.addressBarView.addressBarTextView becomeFirstResponder];
     
     // Register for keyboard notifications
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -197,6 +209,17 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
     return YES;
 }
 
+- (void)setConversation:(LYRConversation *)conversation
+{
+    _conversation = conversation;
+    [self setupConversationDataSource:^{
+        [self.collectionView reloadData];
+        [UIView animateWithDuration:0.5 animations:^{
+            self.collectionView.alpha = 1.0f;
+        }];
+    }];
+}
+
 - (void)setupConversationDataSource:(void(^)(void))completion
 {
     // Setup Layer Change notification observer
@@ -213,7 +236,9 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
 
 - (void) setConversationViewTitle
 {
-    if (1 >= self.conversation.participants.count) {
+    if (!self.conversation) {
+        self.title = @"New Message";
+    } else if (1 >= self.conversation.participants.count) {
         self.title = @"Personal";
     } else if (2 >= self.conversation.participants.count) {
         self.shouldDisplayAvatarImage = NO;
@@ -567,12 +592,13 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
                                   delegate:self
                                   cancelButtonTitle:@"Cancel"
                                   destructiveButtonTitle:nil
-                                  otherButtonTitles:@"Photo Library", @"Take Photo", @"Last Photo Taken", nil];
+                                  otherButtonTitles:@"Take Photo", @"Last Photo Taken", @"Photo Library", nil];
     [actionSheet showInView:self.view];
 }
 
 - (void)messageInputToolbar:(LYRUIMessageInputToolbar *)messageInputToolbar didTapRightAccessoryButton:(UIButton *)rightAccessoryButton
 {
+    if (!self.conversation) return;
     if (messageInputToolbar.messageParts.count > 0) {
         NSMutableArray *messagePartsToSend = [NSMutableArray new];
         for (id part in messageInputToolbar.messageParts){
@@ -586,6 +612,7 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
                 [messagePartsToSend addObject:LYRUIMessagePartWithLocation(part)];
             }
         }
+
         LYRMessage *message = [LYRMessage messageWithConversation:self.conversation parts:messagePartsToSend];
         [self sendMessage:message pushText:[self pushNotificationStringForMessage:message]];
         [self.messageDataSource sendMessages:message];
@@ -643,16 +670,17 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
 {
     switch (buttonIndex) {
         case 0:
-            [self displayImagePickerWithSourceType:UIImagePickerControllerSourceTypePhotoLibrary];
+            [self displayImagePickerWithSourceType:UIImagePickerControllerSourceTypeCamera];
             break;
             
         case 1:
-            [self displayImagePickerWithSourceType:UIImagePickerControllerSourceTypeCamera];
+           [self captureLastPhotoTaken];
             break;
           
         case 2:
-            [self captureLastPhotoTaken];
+            [self displayImagePickerWithSourceType:UIImagePickerControllerSourceTypePhotoLibrary];
             break;
+            
         default:
             break;
     }
@@ -745,11 +773,13 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
                                duration:(NSTimeInterval)duration
 {
     [self.collectionView.collectionViewLayout invalidateLayout];
+    
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
-    
+    CGPoint point = self.collectionView.contentOffset;
+    [self.addressBarController updateControllerOffset:point];
 }
 
 #pragma mark Notification Observer Delegate Methods
@@ -911,6 +941,9 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
     [[LYRUIAvatarImageView appearance] setInitialColor:[UIColor blackColor]];
     [[LYRUIAvatarImageView appearance] setInitialFont:LSLightFont(14)];
     
+    [[LYRUIAddressBarTextView appearance] setAddressBarFont:LSMediumFont(14)];
+    [[LYRUIAddressBarTextView appearance] setAddressBarTextColor:[UIColor blackColor]];
+    [[LYRUIAddressBarTextView appearance] setAddressBarHightlightColor:LSBlueColor()];
 }
 
 @end

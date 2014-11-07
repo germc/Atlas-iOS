@@ -126,6 +126,8 @@ static CGFloat const LSUnreadMessageCountLabelSize = 14.0f;
         self.cellHorizontalMargin = 15.0f;
         self.imageSizeRatio = 0.0f;
         self.displaysImage = FALSE;
+        
+        [self setupLayoutConstraints];
 
     }
     return self;
@@ -247,9 +249,8 @@ static CGFloat const LSUnreadMessageCountLabelSize = 14.0f;
     [self setNeedsUpdateConstraints];
 }
 
-- (void)updateConstraints
+- (void)setupLayoutConstraints
 {
-    
     //**********Avatar Constraints**********//
     // Width
     self.imageViewWidthConstraint = [NSLayoutConstraint constraintWithItem:self.conversationImageView
@@ -456,7 +457,7 @@ static CGFloat const LSUnreadMessageCountLabelSize = 14.0f;
     } else {
         seperatorInset = self.cellHorizontalMargin * 2;
     }
-    //NSLog(@"Conversation Label Font %@", self.conversationLabel.font);
+
     self.separatorInset = UIEdgeInsetsMake(0, seperatorInset, 0, 0);
     self.conversationImageView.layer.cornerRadius = self.frame.size.height * self.imageSizeRatio / 2;
 }

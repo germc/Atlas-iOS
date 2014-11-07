@@ -35,6 +35,7 @@ static CGFloat const LSButtonHeight = 28;
     self = [super init];
     if (self) {
         self.accessibilityLabel = @"Message Input Toolbar";
+        self.translatesAutoresizingMaskIntoConstraints = NO;
         self.autoresizingMask = UIViewAutoresizingFlexibleHeight;
         
         // Setup
@@ -52,8 +53,9 @@ static CGFloat const LSButtonHeight = 28;
         
         // Initialize the Text Input View
         self.textInputView = [[LYRUIMessageComposeTextView alloc] init];
-        self.textInputView.delegate = self;
         self.textInputView.translatesAutoresizingMaskIntoConstraints = NO;
+        self.autoresizingMask = UIViewAutoresizingFlexibleHeight;
+        self.textInputView.delegate = self;
         self.textInputView.layer.borderColor = [UIColor lightGrayColor].CGColor;
         self.textInputView.layer.borderWidth = 1;
         self.textInputView.layer.cornerRadius = 4.0f;
@@ -72,14 +74,12 @@ static CGFloat const LSButtonHeight = 28;
         [self.rightAccessoryButton addTarget:self action:@selector(rightAccessoryButtonTapped) forControlEvents:UIControlEventTouchUpInside];
         [self.rightAccessoryButton setHighlighted:FALSE];
         [self addSubview:self.rightAccessoryButton];
+    
         [self setupLayoutConstraints];
-        
-        [self adjustFrame];
-        
+
         // Default Max Num Lines is 8
         self.maxNumberOfLines = 8;
     }
-    
     return self;
 }
 
@@ -101,16 +101,6 @@ static CGFloat const LSButtonHeight = 28;
     [self.rightAccessoryButton setHighlighted:TRUE];
     [self.textInputView insertImage:image];
     [self adjustFrame];
-}
-
-- (void)insertVideoAtPath:(NSString *)videoPath
-{
-     @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Method not implemented." userInfo:nil];
-}
-
-- (void)insertAudioAtPath:(NSString *)path
-{
-     @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Method not implemented." userInfo:nil];
 }
 
 - (void)insertLocation:(CLLocation *)location
@@ -149,13 +139,12 @@ static CGFloat const LSButtonHeight = 28;
     if ([self.inputToolBarDelegate respondsToSelector:@selector(messageInputToolbarDidEndTyping:)]) {
         [self.inputToolBarDelegate messageInputToolbarDidEndTyping:self];
     }
-    self.textInputView.text = nil;
-    if (self.textInputView.text.length > 0 || self.messageParts) {
+    if (self.textInputView.text.length > 0) {
         [self.inputToolBarDelegate messageInputToolbar:self didTapRightAccessoryButton:self.rightAccessoryButton];
         [self.messageParts removeAllObjects];
         [self.rightAccessoryButton setHighlighted:FALSE];
         [self.textInputView removeAttachements];
-        self.textInputView.text = nil;
+        self.textInputView.text = @"";
         [self.textInputView layoutSubviews];
     }
     [self adjustFrame];
@@ -172,15 +161,20 @@ static CGFloat const LSButtonHeight = 28;
                                                         [attachments addObject:[(LYRUIMediaAttachment *)value image]];
                                                     }
     }];
-    NSArray *contentParts = [[self.textInputView.attributedText string] componentsSeparatedByString:@"\r\n"];
-    for (NSString *part in contentParts) {
-         NSString *trimmedString = [part stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-        if ([trimmedString isEqualToString:@"\U0000fffc"]) {
-            [self.messageParts addObject:[attachments firstObject]];
-            [attachments removeObjectAtIndex:0];
-        } else {
-            if (trimmedString.length > 0) {
-                [self.messageParts addObject:trimmedString];
+    if (!attachments.count) {
+        NSString *trimmedString = [[self.textInputView.attributedText string] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+        [self.messageParts addObject:trimmedString];
+    } else {
+        NSArray *contentParts = [[self.textInputView.attributedText string] componentsSeparatedByString:@"\r\n"];
+        for (NSString *part in contentParts) {
+            NSString *trimmedString = [part stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+            if ([trimmedString isEqualToString:@"\U0000fffc"]) {
+                [self.messageParts addObject:[attachments firstObject]];
+                [attachments removeObjectAtIndex:0];
+            } else {
+                if (trimmedString.length > 0) {
+                    [self.messageParts addObject:trimmedString];
+                }
             }
         }
     }
@@ -193,13 +187,12 @@ static CGFloat const LSButtonHeight = 28;
 - (BOOL)textViewShouldBeginEditing:(UITextView *)textView
 {
     [self adjustFrame];
-    [self.rightAccessoryButton setHighlighted:TRUE];
     return YES;
 }
 
 - (BOOL)textViewShouldEndEditing:(UITextView *)textView
 {
-    [self.rightAccessoryButton setHighlighted:FALSE];
+    [self.rightAccessoryButton setHighlighted:NO];
     return YES;
 }
 
@@ -207,7 +200,9 @@ static CGFloat const LSButtonHeight = 28;
 {
     [self adjustFrame];
     if (textView.text.length > 0) {
-        [self.rightAccessoryButton setHighlighted:TRUE];
+        [self.rightAccessoryButton setHighlighted:YES];
+    } else {
+        [self.rightAccessoryButton setHighlighted:NO];
     }
 }
 
@@ -238,12 +233,14 @@ static CGFloat const LSButtonHeight = 28;
 
 - (void)paste:(id)sender
 {
-    
+    //
 }
 
 - (void)adjustFrame
 {
     [self invalidateIntrinsicContentSize];
+    
+    // Make sure the text view always scrolls to the bottom
     CGFloat contentHeight = self.textInputView.contentSize.height;
     CGFloat height = self.textInputView.frame.size.height;
     [self.textInputView setContentOffset:CGPointMake(0, contentHeight - height)];
@@ -355,6 +352,12 @@ static CGFloat const LSButtonHeight = 28;
                                                      attribute:NSLayoutAttributeBottom
                                                     multiplier:1.0
                                                       constant:-LSComposeviewVerticalMargin]];
+}
+
+- (void)layoutSubviews
+{
+    [[self superview] addConstraint:[NSLayoutConstraint constraintWithItem:self attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.superview attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0]];
+    [super layoutSubviews];
 }
 
 @end

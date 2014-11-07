@@ -9,6 +9,7 @@
 #import "LYRUIMessageComposeTextView.h"
 #import "LYRUIMediaAttachment.h"
 #import "LYRUIConstants.h"
+#import "LYRUIMessagingUtilities.h"
 
 @interface LYRUIMessageComposeTextView () <UITextViewDelegate>
 
@@ -25,17 +26,21 @@ NSString *const LYRUIPlaceHolderText = @"Enter Message";
     self = [super init];
     if (self) {
         
-        self.textContainerInset = UIEdgeInsetsMake(6, 0, 6, 0);
+        self.textContainerInset = UIEdgeInsetsMake(6, 0, 8, 0);
         self.font = [UIFont systemFontOfSize:14];
         self.textColor = [UIColor lightGrayColor];
         self.allowsEditingTextAttributes = YES;
         self.dataDetectorTypes = UIDataDetectorTypeLink;
-        
         [self layoutSubviews];
         
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(textViewBeganEditing)
                                                      name:UITextViewTextDidBeginEditingNotification
+                                                   object:nil];
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(textViewDidChange)
+                                                     name:UITextViewTextDidChangeNotification
                                                    object:nil];
     }
     return self;
@@ -56,7 +61,7 @@ NSString *const LYRUIPlaceHolderText = @"Enter Message";
 
 - (void)scrollRectToVisible:(CGRect)rect animated:(BOOL)animated
 {
-    // Don't do anything here to prevent auto-scrolling.
+    
 }
 
 - (void)insertImage:(UIImage *)image
@@ -146,6 +151,11 @@ NSString *const LYRUIPlaceHolderText = @"Enter Message";
     self.textColor = [UIColor blackColor];
 }
 
+- (void)textViewDidChange
+{
+    self.font = [UIFont systemFontOfSize:14];
+}
+
 - (void)paste:(id)sender
 {
     UIImage *image = [[UIPasteboard generalPasteboard] image];
@@ -155,5 +165,6 @@ NSString *const LYRUIPlaceHolderText = @"Enter Message";
     } else {
         [super paste:sender];
     }
+    [self.delegate textViewDidChange:self];
 }
 @end

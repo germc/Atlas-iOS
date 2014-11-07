@@ -99,7 +99,7 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
     self.searchController.searchResultsTableView.rowHeight = self.rowHeight;
     
     if (self.allowsEditing) {
-        //[self addEditButton];
+        [self addEditButton];
     }
     [self.tableView reloadData];
 }
@@ -167,7 +167,7 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
                                                                        style:UIBarButtonItemStylePlain
                                                                       target:self
                                                                       action:@selector(editButtonTapped)];
-    editButtonItem.accessibilityLabel = @"Edit";
+    editButtonItem.accessibilityLabel = @"Edit Button";
     self.navigationItem.leftBarButtonItem = editButtonItem;
 }
 
@@ -262,7 +262,7 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return self.allowsEditing;
+    return YES;
 }
 
 - (NSArray *)tableView:(UITableView *)tableView editActionsForRowAtIndexPath:(NSIndexPath *)indexPath {

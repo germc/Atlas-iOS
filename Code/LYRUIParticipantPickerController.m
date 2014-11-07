@@ -117,9 +117,7 @@
 
 - (void)participantTableViewController:(LYRUIParticipantTableViewController *)participantTableViewController didSelectParticipant:(id<LYRUIParticipant>)participant
 {
-    if (!self.allowsMultipleSelection) {
-        [self.participantPickerDelegate participantSelectionViewController:self didSelectParticipants:[NSSet setWithObject:participant]];
-    }
+    [self.participantPickerDelegate participantSelectionViewController:self didSelectParticipant:participant];
 }
 
 - (void)participantTableViewController:(LYRUIParticipantTableViewController *)participantTableViewController didSearchWithString:(NSString *)searchText completion:(void (^)(NSSet *))completion
@@ -132,11 +130,6 @@
 - (void)participantTableViewControllerDidSelectCancelButton
 {
     [self.participantPickerDelegate participantSelectionViewControllerDidCancel:self];
-}
-
-- (void)participantTableViewControllerDidSelectDoneButtonWithSelectedParticipants:(NSMutableSet *)selectedParticipants
-{
-    [self.participantPickerDelegate participantSelectionViewController:self didSelectParticipants:selectedParticipants];
 }
 
 @end

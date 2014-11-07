@@ -101,30 +101,19 @@
  */
 @property (nonatomic) LYRUIAddressBarView *addressBarView;
 
+/**
+ @abstract The `NSSet` of currently selected participant identifiers.
+ */
 @property (nonatomic) NSSet *selectedParticipants;
 
-///------------------------------------------------
-/// @name Address Bar User Interface Customization
-///------------------------------------------------
-
-@property (nonatomic) UIFont *addressBarFont UI_APPEARANCE_SELECTOR;
-
-@property (nonatomic) UIColor *addressBarColor UI_APPEARANCE_SELECTOR;
-
-@property (nonatomic) UIColor *addressBarBackgroudColor UI_APPEARANCE_SELECTOR;
-
-///---------------------------------------------------
-/// @name Search Results User Interface Customization
-///---------------------------------------------------
-
-@property (nonatomic) UIFont *searchResultsTextFont UI_APPEARANCE_SELECTOR;
-
-@property (nonatomic) UIColor *searchResultsTextColor UI_APPEARANCE_SELECTOR;
-
+/**
+ @abstract Informs the receiver of it's its Y origin offset.
+ bar.
+ */
 - (void)updateControllerOffset:(CGPoint)offset;
 
 /**
- @abstract Informs the receive that a selection occured outside of the controller and a participant should be added to the address 
+ @abstract Informs the receiver that a selection occured outside of the controller and a participant should be added to the address
  bar.
  */
 - (void)selectParticipant:(id<LYRUIParticipant>)participant;

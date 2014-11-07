@@ -28,6 +28,7 @@ static CGFloat const LSSelectionIndicatorSize = 30;
 {
     self = [super initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:reuseIdentifier];
     if (self) {
+        self.textLabel.textAlignment = NSTextAlignmentCenter;
         self.selectionStyle = UITableViewCellSelectionStyleNone;
         self.backgroundColor = [UIColor whiteColor];
         
@@ -69,17 +70,6 @@ static CGFloat const LSSelectionIndicatorSize = 30;
         self.imageView.image = [self imageWithColor:[UIColor whiteColor]];
         [self.imageView addSubview:self.avatarImageView];
         self.avatarImageView.alpha = 1.0f;
-    }
-}
-
-- (void)setSelected:(BOOL)selected animated:(BOOL)animated
-{
-    [super setSelected:selected animated:animated];
-    [self.selectionIndicator setHighlighted:selected];
-    if (self.selectionIndicator.highlighted) {
-        self.selectionIndicator.accessibilityLabel = [NSString stringWithFormat:@"%@ selected", self.accessibilityLabel];
-    } else {
-        self.selectionIndicator.accessibilityLabel = @"";
     }
 }
 

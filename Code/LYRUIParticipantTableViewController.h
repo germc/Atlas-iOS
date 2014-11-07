@@ -37,11 +37,6 @@
  */
 - (void)participantTableViewControllerDidSelectCancelButton;
 
-/**
- @abstract Informst the delegate that the user tapped the `done` button
- */
-- (void)participantTableViewControllerDidSelectDoneButtonWithSelectedParticipants:(NSMutableSet *)selectedParticipants;
-
 @end
 
 /**
