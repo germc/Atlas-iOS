@@ -108,8 +108,9 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
     self.typingIndicatorContentView = [[UIView alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height, self.view.frame.size.width, 20.0)];
     CAGradientLayer *typingIndicatorBackgroundLayer = [CAGradientLayer layer];
     typingIndicatorBackgroundLayer.frame = CGRectMake(0, 0, self.view.frame.size.height, 20.0);
-    typingIndicatorBackgroundLayer.endPoint = CGPointMake(0, 0.5);
-    typingIndicatorBackgroundLayer.colors = @[(id)[[UIColor colorWithWhite:1.0 alpha:0.0] CGColor], (id)[[UIColor colorWithWhite:1.0 alpha:1.0] CGColor]];
+    typingIndicatorBackgroundLayer.startPoint = CGPointZero;
+    typingIndicatorBackgroundLayer.endPoint = CGPointMake(0, 1);
+    typingIndicatorBackgroundLayer.colors = @[(id)[[UIColor colorWithWhite:1.0 alpha:0.0] CGColor], (id)[[UIColor colorWithWhite:1.0 alpha:0.75] CGColor], (id)[[UIColor colorWithWhite:1.0 alpha:1.0] CGColor]];
     [self.typingIndicatorContentView.layer addSublayer:typingIndicatorBackgroundLayer];
     self.typingIndicatorLabel = [[UILabel alloc] initWithFrame:CGRectMake(52.0, 0, self.view.frame.size.width, 20.0)];
     self.typingIndicatorLabel.textColor = [UIColor lightGrayColor];
