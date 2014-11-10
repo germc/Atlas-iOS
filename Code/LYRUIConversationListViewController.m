@@ -12,13 +12,15 @@
 #import "LYRUIConstants.h"
 #import "LYRUIConversationDataSource.h"
 
-@interface LYRUIConversationListViewController () <UISearchBarDelegate, UISearchDisplayDelegate, LYRUIConversationDataSourceDelegate>
+@interface LYRUIConversationListViewController () <UISearchBarDelegate, UISearchDisplayDelegate, LYRUIConversationDataSourceDelegate, LYRQueryControllerDelegate>
 
 @property (nonatomic) LYRUIConversationDataSource *conversationListDataSource;
 @property (nonatomic) UISearchBar *searchBar;
 @property (nonatomic) UISearchDisplayController *searchController;
 @property (nonatomic) NSMutableArray *filteredConversations;
 @property (nonatomic) NSPredicate *searchPredicate;
+@property (nonatomic) LYRQueryController *queryController;
+@property (nonatomic) NSMutableArray *objectChages;
 @property (nonatomic) BOOL isOnScreen;
 
 @end
@@ -68,22 +70,19 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
     self.tableView.accessibilityLabel = @"Conversation List";
     
     // Search Bar Setup
-//    self.searchBar = [[UISearchBar alloc] initWithFrame:CGRectZero];
-//    self.searchBar.accessibilityLabel = @"Search Bar";
-//    self.searchBar.delegate = self;
-//    self.searchController = [[UISearchDisplayController alloc] initWithSearchBar:self.searchBar contentsController:self];
-//    self.searchController.delegate = self;
-//    self.searchController.searchResultsDelegate = self;
-//    self.searchController.searchResultsDataSource = self;
-   
+    self.searchBar = [[UISearchBar alloc] initWithFrame:CGRectZero];
+    self.searchBar.accessibilityLabel = @"Search Bar";
+    self.searchBar.delegate = self;
+    self.searchController = [[UISearchDisplayController alloc] initWithSearchBar:self.searchBar contentsController:self];
+    self.searchController.delegate = self;
+    self.searchController.searchResultsDelegate = self;
+    self.searchController.searchResultsDataSource = self;
     
     // Set Search Bar as Table View Header
-    //self.tableView.tableHeaderView = self.searchBar;
-    //[self.tableView setContentOffset:CGPointMake(0, 44)];
+    self.tableView.tableHeaderView = self.searchBar;
     
     // DataSoure
-    self.conversationListDataSource = [[LYRUIConversationDataSource alloc] initWithLayerClient:self.layerClient];
-    self.conversationListDataSource.delegate = self;
+    [self setupConversationDataSource];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -171,6 +170,20 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
     self.navigationItem.leftBarButtonItem = editButtonItem;
 }
 
+
+- (void)setupConversationDataSource
+{
+    LYRQuery *query = [LYRQuery queryWithClass:[LYRConversation class]];
+    query.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"createdAt" ascending:NO]];
+    
+    self.queryController = [self.layerClient queryControllerWithQuery:query];
+    self.queryController.delegate = self;
+    NSError *error = nil;
+    BOOL success = [self.queryController execute:&error];
+    if (!success) NSLog(@"LayerKit failed to execute query");
+    [self.tableView reloadData];
+}
+
 - (void)reloadConversations
 {
     if (self.searchController.active) {
@@ -178,15 +191,6 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
     } else {
         [self.tableView reloadData];
     }
-}
-
-// Returns appropriate data set depending on search state
-- (NSArray *)currentDataSet
-{
-    if (self.isSearching) {
-        return self.filteredConversations;
-    }
-    return self.conversationListDataSource.identifiers;
 }
 
 - (BOOL)isSearching
@@ -219,7 +223,7 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return [[self currentDataSet] count];
+    return [self.queryController numberOfObjectsInSection:section];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -236,10 +240,8 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
  */
 - (void)configureCell:(UITableViewCell<LYRUIConversationPresenting> *)conversationCell atIndexPath:(NSIndexPath *)indexPath
 {
-    NSURL *conversationID = [[self currentDataSet] objectAtIndex:indexPath.row];
-   
     // Present Conversation
-    LYRConversation *conversation = [[[self.layerClient conversationsForIdentifiers:[NSSet setWithObject:conversationID]] allObjects] firstObject];
+    LYRConversation *conversation = [self.queryController objectAtIndexPath:indexPath];
     [conversationCell presentConversation:conversation];
     
     // Update cell with image if needed
@@ -292,8 +294,7 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
  */
 - (void)deleteConversationAtIndexPath:(NSIndexPath *)indexPath withDeletionMode:(LYRDeletionMode)deletionMode
 {
-    NSURL *conversationIdentifier = [[self currentDataSet] objectAtIndex:indexPath.row];
-    LYRConversation *conversation = [self.layerClient conversationForIdentifier:conversationIdentifier];
+    LYRConversation *conversation = [self.queryController objectAtIndexPath:indexPath];
     NSError *error;
     BOOL success = [self.layerClient deleteConversation:conversation mode:deletionMode error:&error];
     if (!success) {
@@ -316,8 +317,7 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSURL *conversationID = [[self currentDataSet] objectAtIndex:indexPath.row];
-    LYRConversation *conversation = [[[self.layerClient conversationsForIdentifiers:[NSSet setWithObject:conversationID]] allObjects] firstObject];
+    LYRConversation *conversation = [self.queryController objectAtIndexPath:indexPath];
     if ([self.delegate respondsToSelector:@selector(conversationListViewController:didSelectConversation:)]){
         [self.delegate conversationListViewController:self didSelectConversation:conversation];
     }
@@ -371,17 +371,47 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
     return UITableViewCellEditingStyleDelete;
 }
 
-#pragma mark
-#pragma mark Notification Observer Delegate Methods
+#pragma mark - Conversation Query Controller 
 
-- (void)observer:(LYRUIConversationDataSource *)observer updateWithChanges:(NSArray *)changes
+- (void)queryControllerWillChangeContent:(LYRQueryController *)queryController
 {
-    
+    [self.tableView beginUpdates];
 }
 
-- (void)observer:(LYRUIConversationDataSource *)observer didChangeContent:(BOOL)didChangeContent
+
+- (void)queryController:(LYRQueryController *)controller
+        didChangeObject:(id)object
+            atIndexPath:(NSIndexPath *)indexPath
+          forChangeType:(LYRQueryControllerChangeType)type
+           newIndexPath:(NSIndexPath *)newIndexPath
 {
-    [self.tableView reloadData];
+    switch (type) {
+        case LYRQueryControllerChangeTypeInsert:
+            [self.tableView insertRowsAtIndexPaths:@[newIndexPath]
+                                  withRowAnimation:UITableViewRowAnimationAutomatic];
+            break;
+        case LYRQueryControllerChangeTypeUpdate:
+            [self.tableView reloadRowsAtIndexPaths:@[indexPath]
+                                  withRowAnimation:UITableViewRowAnimationAutomatic];
+            break;
+        case LYRQueryControllerChangeTypeMove:
+            [self.tableView deleteRowsAtIndexPaths:@[indexPath]
+                                  withRowAnimation:UITableViewRowAnimationAutomatic];
+            [self.tableView insertRowsAtIndexPaths:@[indexPath]
+                                  withRowAnimation:UITableViewRowAnimationAutomatic];
+            break;
+        case LYRQueryControllerChangeTypeDelete:
+            [self.tableView deleteRowsAtIndexPaths:@[indexPath]
+                                  withRowAnimation:UITableViewRowAnimationAutomatic];
+            break;
+        default:
+            break;
+    }
+}
+
+- (void)queryControllerDidChangeContent:(LYRQueryController *)queryController
+{
+    [self.tableView endUpdates];
 }
 
 - (void)configureTableViewCellAppearance

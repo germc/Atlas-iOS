@@ -13,15 +13,14 @@
 #import "LYRUIConversationCollectionViewHeader.h"
 #import "LYRUIConversationCollectionViewFooter.h"
 #import "LYRUIConstants.h"
-#import "LYRUIMessageDataSource.h"
 #import "LYRUIDataSourceChange.h"
 #import "LYRUIMessagingUtilities.h"
 #import "LYRUITypingIndicatorView.h"
 #import "LYRQueryController.h"
+#import "LYRUIDataSourceChange.h"
 
-@interface LYRUIConversationViewController () <UICollectionViewDataSource, UICollectionViewDelegate, LYRUIMessageInputToolbarDelegate, UIActionSheetDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, LYRUIMessageDataSourceDelegate, UIGestureRecognizerDelegate, LYRQueryControllerDelegate>
+@interface LYRUIConversationViewController () <UICollectionViewDataSource, UICollectionViewDelegate, LYRUIMessageInputToolbarDelegate, UIActionSheetDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIGestureRecognizerDelegate, LYRQueryControllerDelegate>
 
-@property (nonatomic) LYRUIMessageDataSource *messageDataSource;
 @property (nonatomic) UICollectionView *collectionView;
 @property (nonatomic) UIView *inputAccessoryView;
 @property (nonatomic) UILabel *typingIndicatorLabel;
@@ -35,6 +34,7 @@
 @property (nonatomic) NSLayoutConstraint *typingIndicatorViewTopConstraint;
 @property (nonatomic) NSMutableDictionary *typingIndicatorStatusByParticipant;
 @property (nonatomic) LYRQueryController *queryController;
+@property (nonatomic) NSMutableArray *objectChages;
 
 @end
 
@@ -78,6 +78,8 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     return nil;
 }
 
+#pragma mark - VC Lifecycle Methods
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -97,7 +99,6 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     self.collectionView.bounces = TRUE;
     self.collectionView.keyboardDismissMode = UIScrollViewKeyboardDismissModeInteractive;
     self.collectionView.accessibilityLabel = @"Conversation Collection View";
-    self.collectionView.alpha = 0.0f;
     [self.view addSubview:self.collectionView];
     
     // Set the accessoryView to be a Message Input Toolbar
@@ -122,6 +123,11 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 {
     [super viewWillAppear:animated];
     
+    if (self.conversation) {
+        [self fetchLayerMessages];
+    }
+    self.objectChages = [NSMutableArray new];
+    
     if (!self.conversation && self.showsAddressBar && !self.addressBarController) {
         self.addressBarController = [[LYRUIAddressBarViewController alloc] init];
         self.addressBarController.delegate = self;
@@ -131,16 +137,6 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
         [self.addressBarController updateControllerOffset:CGPointMake(0, -64)];
         self.collectionViewTopConstraint.constant = 40;
         
-    }
-    
-    if (self.conversation) {
-        [self fetchLayerMessages];
-//        [self setupConversationDataSource:^{
-//            [self.collectionView reloadData];
-//            [UIView animateWithDuration:0.5 animations:^{
-//                self.collectionView.alpha = 1.0f;
-//            }];
-//        }];
     }
     
     // Register reusable collection view cells, header and footer
@@ -161,21 +157,6 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     // Collection View AutoLayout Config
     [self setConversationViewTitle];
     [self scrollToBottomOfCollectionViewAnimated:NO];
-}
-
-- (void)fetchLayerMessages
-{
-    LYRQuery *query = [LYRQuery queryWithClass:[LYRMessage class]];
-    query.predicate = [LYRPredicate predicateWithProperty:@"conversation" operator:LYRPredicateOperatorIsEqualTo value:self.conversation];
-    query.sortDescriptors = @[ [NSSortDescriptor sortDescriptorWithKey:@"index" ascending:YES]];
-    
-    self.queryController = [self.layerClient queryControllerWithQuery:query];
-    self.queryController.delegate = self;
-    NSError *error = nil;
-    BOOL success = [self.queryController execute:&error];
-    [self.collectionView reloadData];
-    self.collectionView.alpha = 1.0f;
-    
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -202,8 +183,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 {
     [super viewWillDisappear:animated];
     
-    self.messageDataSource.delegate = nil;
-    self.messageDataSource = nil;
+    self.queryController = nil;
     
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:UIKeyboardWillShowNotification
@@ -224,30 +204,27 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     return YES;
 }
 
+#pragma mark - Conversation Setup Methods
+
+- (void)fetchLayerMessages
+{
+    LYRQuery *query = [LYRQuery queryWithClass:[LYRMessage class]];
+    query.predicate = [LYRPredicate predicateWithProperty:@"conversation" operator:LYRPredicateOperatorIsEqualTo value:self.conversation];
+    query.sortDescriptors = @[ [NSSortDescriptor sortDescriptorWithKey:@"index" ascending:YES]];
+    
+    self.queryController = [self.layerClient queryControllerWithQuery:query];
+    self.queryController.delegate = self;
+    NSError *error = nil;
+    BOOL success = [self.queryController execute:&error];
+    if (!success) NSLog(@"LayerKit failed to execute query");
+    [self.collectionView reloadData];
+}
+
 - (void)setConversation:(LYRConversation *)conversation
 {
     _conversation = conversation;
     [self configureSendButtonEnablement];
-    [self setupConversationDataSource:^{
-        [self.collectionView reloadData];
-        [UIView animateWithDuration:0.5 animations:^{
-            
-        }];
-    }];
-}
-
-- (void)setupConversationDataSource:(void(^)(void))completion
-{
-    // Setup Layer Change notification observer
-    if (self.conversation) {
-        if(self.messageDataSource) self.messageDataSource = nil;
-        self.messageDataSource = [[LYRUIMessageDataSource alloc] initWithClient:self.layerClient conversation:self.conversation];
-        self.messageDataSource.delegate = self;
-    } else {
-        self.messageDataSource = nil;
-        self.messageDataSource.delegate = nil;
-    }
-    completion();
+    [self fetchLayerMessages];
 }
 
 - (void)setConversationViewTitle
@@ -309,7 +286,8 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
 {
     // Messages correspond to sections
-    return [self.queryController numberOfObjectsInSection:0];
+    NSInteger numberOfSections = [self.queryController numberOfObjectsInSection:0];
+    return numberOfSections;
 }
 
 /**
@@ -673,8 +651,6 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 
         LYRMessage *message = [LYRMessage messageWithConversation:self.conversation parts:messagePartsToSend];
         [self sendMessage:message pushText:[self pushNotificationStringForMessage:message]];
-        [self.messageDataSource sendMessages:message];
-        
         if (self.addressBarController) [self.addressBarController setPermanent];
     }
 }
@@ -856,11 +832,53 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 
 #pragma mark Notification Observer Delegate Methods
 
-- (void)observer:(LYRUIMessageDataSource *)observer updateWithChanges:(NSArray *)changes 
+- (void)queryControllerWillChangeContent:(LYRQueryController *)queryController
 {
-    [self.collectionView reloadData];
-    [self scrollToBottomOfCollectionViewAnimated:TRUE];
-    [self setConversationViewTitle];
+   NSLog(@"Changes Began");
+}
+
+- (void)queryController:(LYRQueryController *)controller
+        didChangeObject:(id)object
+            atIndexPath:(NSIndexPath *)indexPath
+          forChangeType:(LYRQueryControllerChangeType)type
+           newIndexPath:(NSIndexPath *)newIndexPath
+{
+    [self.objectChages addObject:[LYRUIDataSourceChange changeObjectWithType:type newIndex:newIndexPath.row currentIndex:indexPath.row]];
+}
+
+- (void)queryControllerDidChangeContent:(LYRQueryController *)queryController
+{
+    __block BOOL shouldScroll;
+    [self.collectionView performBatchUpdates:^{
+        for (LYRUIDataSourceChange *change in self.objectChages) {
+            switch (change.type) {
+                case LYRQueryControllerChangeTypeInsert:
+                    [self.collectionView insertSections:[NSIndexSet indexSetWithIndex:change.newIndex]];
+                    shouldScroll = YES;
+                    break;
+                    
+                case LYRQueryControllerChangeTypeMove:
+                    [self.collectionView moveSection:change.currentIndex toSection:change.newIndex];
+                    break;
+                    
+                case LYRQueryControllerChangeTypeDelete:
+                    [self.collectionView deleteSections:[NSIndexSet indexSetWithIndex:change.currentIndex]];
+                    break;
+                    
+                case LYRQueryControllerChangeTypeUpdate:
+                    [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:change.currentIndex]];
+                    break;
+                    
+                default:
+                    break;
+            }
+        }
+        [self.objectChages removeAllObjects];
+    } completion:^(BOOL finished) {
+        if (shouldScroll)  {
+            [self scrollToBottomOfCollectionViewAnimated:YES];
+        }
+    }];
 }
 
 - (void)scrollToBottomOfCollectionViewAnimated:(BOOL)animated
@@ -910,13 +928,12 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
         self.conversation = [LYRConversation conversationWithParticipants:participants];
     }
     [self setConversationViewTitle];
-    [self setupConversationDataSource:^{
-        [self.collectionView.collectionViewLayout invalidateLayout];
-        [self.collectionView reloadData];
-        [self scrollToBottomOfCollectionViewAnimated:NO];
-        [UIView animateWithDuration:0.5 animations:^{
-            self.collectionView.alpha = 1.0f;
-        }];
+    [self fetchLayerMessages];
+    [self.collectionView.collectionViewLayout invalidateLayout];
+    [self.collectionView reloadData];
+    [self scrollToBottomOfCollectionViewAnimated:NO];
+    [UIView animateWithDuration:0.5 animations:^{
+        self.collectionView.alpha = 1.0f;
     }];
 }
 

@@ -46,12 +46,12 @@
     NSUInteger insertIndex = self.messages.count;
     [self.messages addObject:message];
    
-    NSMutableArray *changeObjects = [[NSMutableArray alloc] init];
-    [changeObjects addObject:[LYRUIDataSourceChange changeObjectWithType:LYRUIDataSourceChangeTypeInsert newIndex:insertIndex oldIndex:0]];
-    if (insertIndex > 0) {
-       [changeObjects addObject:[LYRUIDataSourceChange changeObjectWithType:LYRUIDataSourceChangeTypeUpdate newIndex:insertIndex - 1 oldIndex:0]];
-    }
-    [self dispatchChanges:changeObjects];
+//    NSMutableArray *changeObjects = [[NSMutableArray alloc] init];
+//    [changeObjects addObject:[LYRUIDataSourceChange changeObjectWithType:LYRUIDataSourceChangeTypeInsert newIndex:insertIndex oldIndex:0]];
+//    if (insertIndex > 0) {
+//       [changeObjects addObject:[LYRUIDataSourceChange changeObjectWithType:LYRUIDataSourceChangeTypeUpdate newIndex:insertIndex - 1 oldIndex:0]];
+//    }
+//    [self dispatchChanges:changeObjects];
 }
 
 - (NSMutableArray *)fetchMessages
