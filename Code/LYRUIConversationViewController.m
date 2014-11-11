@@ -108,8 +108,9 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
     self.typingIndicatorContentView = [[UIView alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height, self.view.frame.size.width, 20.0)];
     CAGradientLayer *typingIndicatorBackgroundLayer = [CAGradientLayer layer];
     typingIndicatorBackgroundLayer.frame = CGRectMake(0, 0, self.view.frame.size.height, 20.0);
-    typingIndicatorBackgroundLayer.endPoint = CGPointMake(0, 0.5);
-    typingIndicatorBackgroundLayer.colors = @[(id)[[UIColor colorWithWhite:1.0 alpha:0.0] CGColor], (id)[[UIColor colorWithWhite:1.0 alpha:1.0] CGColor]];
+    typingIndicatorBackgroundLayer.startPoint = CGPointZero;
+    typingIndicatorBackgroundLayer.endPoint = CGPointMake(0, 1);
+    typingIndicatorBackgroundLayer.colors = @[(id)[[UIColor colorWithWhite:1.0 alpha:0.0] CGColor], (id)[[UIColor colorWithWhite:1.0 alpha:0.75] CGColor], (id)[[UIColor colorWithWhite:1.0 alpha:1.0] CGColor]];
     [self.typingIndicatorContentView.layer addSublayer:typingIndicatorBackgroundLayer];
     self.typingIndicatorLabel = [[UILabel alloc] initWithFrame:CGRectMake(52.0, 0, self.view.frame.size.width, 20.0)];
     self.typingIndicatorLabel.textColor = [UIColor lightGrayColor];
@@ -181,6 +182,7 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
 
     // Send the typing indicator behind the input bar
     [self.inputAccessoryView sendSubviewToBack:self.typingIndicatorContentView];
+    [self updateTypingIndicatorOverlay:YES];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -573,14 +575,13 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
     // Move the label to the visible section of the screen, if visible = YES,
     // otherwise hide it behind the input toolbar.
     [UIView animateWithDuration:animated ? (visible ? 0.3 : 0.1) : 0 animations:^{
-        self.typingIndicatorContentView.frame = CGRectMake(0, visible ? -20.0 : 0.0, self.messageInputToolbar.frame.size.width, self.typingIndicatorContentView.frame.size.height);
+        self.typingIndicatorContentView.frame = CGRectMake(0, visible ? -self.typingIndicatorContentView.frame.size.height : 0.0, self.messageInputToolbar.frame.size.width, self.typingIndicatorContentView.frame.size.height);
         self.typingIndicatorContentView.alpha = visible ? 1.0 : 0.0;
+        // Also update collection view insets (and scrollbars too), based
+        // on the
+        [self updateCollectionViewInsets];
         if (visible) [self scrollToBottomOfCollectionViewAnimated:YES];
     }];
-    
-    // Also update collection view insets (and scrollbars too), based
-    // on the
-    [self updateCollectionViewInsets];
 }
 
 #pragma mark - LYRUIMessageInputToolbar Delegate Methods
@@ -753,8 +754,10 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
 - (void)updateCollectionViewInsets
 {
     UIEdgeInsets existing = self.collectionView.contentInset;
-    self.collectionView.contentInset = UIEdgeInsetsMake(existing.top, 0, self.keyboardHeight + 20, 0);
-    self.collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(existing.top, 0, self.keyboardHeight, 0);
+    CGFloat keyboardHeight = self.keyboardHeight < 1.0 ? self.inputAccessoryView.frame.size.height : self.keyboardHeight;
+    keyboardHeight += self.typingIndicatorContentView.alpha ? self.typingIndicatorContentView.frame.size.height : 0;
+    self.collectionView.contentInset = UIEdgeInsetsMake(existing.top, 0, keyboardHeight, 0);
+    self.collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(existing.top, 0, keyboardHeight, 0);
 }
 
 - (CGPoint)bottomOffset
