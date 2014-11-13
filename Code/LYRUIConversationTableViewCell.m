@@ -219,14 +219,8 @@ static CGFloat const LSUnreadMessageCountLabelSize = 14.0f;
     
     self.backgroundColor = [UIColor whiteColor];
     
-    NSDictionary *conversationLabelAttributes = @{NSFontAttributeName:self.conversationLabel.font};
-    CGSize conversationLabelSize = [self.conversationLabel.text sizeWithAttributes:conversationLabelAttributes];
-    self.conversationLabelHeight = conversationLabelSize.height;
-    
-    NSDictionary *dateLabelAttributes = @{NSFontAttributeName:self.dateLabel.font};
-    CGSize dateLabelSize = [self.dateLabel.text sizeWithAttributes:dateLabelAttributes];
-    self.dateLabelHeight = dateLabelSize.height;
-    self.dateLabelWidth = dateLabelSize.width + 4;
+    [self.conversationLabel sizeToFit];
+    [self.dateLabel sizeToFit];
     [self updateConstraintConstants];
 }
 
@@ -235,16 +229,12 @@ static CGFloat const LSUnreadMessageCountLabelSize = 14.0f;
     self.imageViewLeftConstraint.constant = self.cellHorizontalMargin;
     
     self.conversationLabelLeftConstraint.constant = self.cellHorizontalMargin;
-    self.conversationLabelHeightConstraint.constant = self.conversationLabelHeight;
-    
-    self.dateLabelWidthConstraint.constant = self.dateLabelWidth;
+    self.conversationLabelHeightConstraint.constant = self.conversationLabel.frame.size.height;
     
     self.lastMessageTextLeftConstraint.constant = self.cellHorizontalMargin;
     self.lastMessageTextHeightConstraint.constant = self.lastMessageTextView.font.lineHeight * 2;
     
-    if (self.dateLabelWidthConstraint) {
-        [self.contentView removeConstraint:self.dateLabelWidthConstraint];
-    }
+    self.dateLabelWidthConstraint.constant = self.dateLabel.frame.size.width;
     
     [self setNeedsUpdateConstraints];
 }
@@ -324,7 +314,14 @@ static CGFloat const LSUnreadMessageCountLabelSize = 14.0f;
                                                                 multiplier:1.0
                                                                   constant:self.conversationLabelHeight];
     //**********Date Label Constraints**********//
-
+    // Width
+    self.dateLabelWidthConstraint = [NSLayoutConstraint constraintWithItem:self.dateLabel
+                                                                 attribute:NSLayoutAttributeWidth
+                                                                 relatedBy:NSLayoutRelationEqual
+                                                                    toItem:nil
+                                                                 attribute:NSLayoutAttributeNotAnAttribute
+                                                                multiplier:1.0
+                                                                  constant:0];
     // Right Margin
     self.dateLabelRightConstraint = [NSLayoutConstraint constraintWithItem:self.dateLabel
                                                                  attribute:NSLayoutAttributeRight
@@ -341,16 +338,7 @@ static CGFloat const LSUnreadMessageCountLabelSize = 14.0f;
                                                                     toItem:self.contentView
                                                                  attribute:NSLayoutAttributeTop
                                                                 multiplier:1.0
-                                                                  constant:LSCellVerticalMargin];
-    
-    // Width Margin
-    self.dateLabelWidthConstraint = [NSLayoutConstraint constraintWithItem:self.dateLabel
-                                                                 attribute:NSLayoutAttributeWidth
-                                                                 relatedBy:NSLayoutRelationEqual
-                                                                    toItem:nil
-                                                                 attribute:NSLayoutAttributeNotAnAttribute
-                                                                multiplier:1.0
-                                                                  constant:self.dateLabelWidth];
+                                                                 constant:LSCellVerticalMargin];
 
     //**********Message Text Constraints**********//
     //Left Margin

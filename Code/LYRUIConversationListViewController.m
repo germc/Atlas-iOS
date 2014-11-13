@@ -229,6 +229,11 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
     return conversationCell;
 }
 
+/**
+ 
+ LAYER - Extracting content from an LYRConversation object so that it can be displayed in a tableViewCell.
+ 
+ */
 - (void)configureCell:(UITableViewCell<LYRUIConversationPresenting> *)conversationCell atIndexPath:(NSIndexPath *)indexPath
 {
     NSURL *conversationID = [[self currentDataSet] objectAtIndex:indexPath.row];
@@ -280,6 +285,11 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
     return @[globalDeleteAction, localDeleteAction];
 }
 
+/**
+ 
+ LAYER - Deleting a Layer Conversation
+ 
+ */
 - (void)deleteConversationAtIndexPath:(NSIndexPath *)indexPath withDeletionMode:(LYRDeletionMode)deletionMode
 {
     NSURL *conversationIdentifier = [[self currentDataSet] objectAtIndex:indexPath.row];
@@ -341,13 +351,6 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 // Set table view into editing mode and change left bar buttong to a done button
 - (void)editButtonTapped
 {
-    [UIView animateWithDuration:0.5 delay:0.0 usingSpringWithDamping:0.5 initialSpringVelocity:0.5 options:UIViewAnimationOptionCurveEaseOut animations:^{
-        
-    } completion:^(BOOL finished) {
-        //
-    }];
-    
-    
     [self.tableView setEditing:TRUE animated:TRUE];
     UIBarButtonItem *doneButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Done"
                                                                        style:UIBarButtonItemStylePlain
@@ -371,32 +374,8 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 #pragma mark
 #pragma mark Notification Observer Delegate Methods
 
-- (void)observer:(LYRUIConversationDataSource *)observer updateWithChanges:(NSArray *)changes
-{
-//    NSLog(@"Changes %@", changes);
-//    [self.tableView beginUpdates];
-//    for (LYRUIDataSourceChange *change in changes) {
-//        if (change.type == LYRUIDataSourceChangeTypeUpdate) {
-//            [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:change.newIndex inSection:0]]
-//                                  withRowAnimation:UITableViewRowAnimationAutomatic];
-//        } else if (change.type == LYRUIDataSourceChangeTypeInsert) {
-//            [self.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:change.newIndex inSection:0]]
-//                                  withRowAnimation:UITableViewRowAnimationAutomatic];
-//        } else if (change.type == LYRUIDataSourceChangeTypeMove) {
-//            [self.tableView deleteRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:change.oldIndex inSection:0]]
-//                                  withRowAnimation:UITableViewRowAnimationAutomatic];
-//            [self.tableView insertRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:change.newIndex inSection:0]]
-//                                  withRowAnimation:UITableViewRowAnimationAutomatic];
-//        } else if (change.type == LYRUIDataSourceChangeTypeDelete) {
-//            [self.tableView deleteRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:change.newIndex inSection:0]]
-//                                  withRowAnimation:UITableViewRowAnimationAutomatic];
-//        }
-//    }
-}
-
 - (void)observer:(LYRUIConversationDataSource *)observer didChangeContent:(BOOL)didChangeContent
 {
-//    [self.tableView endUpdates];
     [self.tableView reloadData];
 }
 

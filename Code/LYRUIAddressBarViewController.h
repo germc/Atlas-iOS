@@ -80,8 +80,8 @@
  in an `LYRUIConversationViewController`.
  @discussion The class handles displaying the Address Bar in addition to a table view of participants in response to user search input. 
  When a participant is selected, the class appends that participants's full name to any existing text currently displayed. It also creates
- `LYRUIAddressToken` objects which all for the entire name to be highlighted in repsone to taps. The bar's design and functionality closely 
- correlates with the design and functionality of the address bar in iMessage.
+ `LYRUIAddressToken` objects which allow for the entire participant name to be highlighted in repsone to a tap. The bar's design and 
+ functionality closely correlates with the design and functionality of the address bar in iMessage.
  */
 @interface LYRUIAddressBarViewController : UIViewController
 

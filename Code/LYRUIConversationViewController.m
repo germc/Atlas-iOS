@@ -16,6 +16,7 @@
 #import "LYRUIMessageDataSource.h"
 #import "LYRUIDataSourceChange.h"
 #import "LYRUIMessagingUtilities.h"
+#import "LYRUITypingIndicatorView.h"
 
 @interface LYRUIConversationViewController () <UICollectionViewDataSource, UICollectionViewDelegate, LYRUIMessageInputToolbarDelegate, UIActionSheetDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, LYRUIMessageDataSourceDelegate, UIGestureRecognizerDelegate>
 
@@ -23,13 +24,14 @@
 @property (nonatomic) UICollectionView *collectionView;
 @property (nonatomic) UIView *inputAccessoryView;
 @property (nonatomic) UILabel *typingIndicatorLabel;
-@property (nonatomic) UIView *typingIndicatorContentView;
+@property (nonatomic) LYRUITypingIndicatorView *typingIndicatorView;
 @property (nonatomic) BOOL keyboardIsOnScreen;
 @property (nonatomic) CGFloat keyboardHeight;
 @property (nonatomic) BOOL shouldScrollToBottom;
 @property (nonatomic) BOOL shouldDisplayAvatarImage;
 @property (nonatomic) CGRect addressBarRect;
 @property (nonatomic) NSLayoutConstraint *collectionViewTopConstraint;
+@property (nonatomic) NSLayoutConstraint *typingIndicatorViewTopConstraint;
 @property (nonatomic) NSMutableDictionary *typingIndicatorStatusByParticipant;
 
 @end
@@ -40,6 +42,8 @@ static NSString *const LYRUIIncomingMessageCellIdentifier = @"incomingMessageCel
 static NSString *const LYRUIOutgoingMessageCellIdentifier = @"outgoingMessageCellIdentifier";
 static NSString *const LYRUIMessageCellHeaderIdentifier = @"messageCellHeaderIdentifier";
 static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIdentifier";
+
+static CGFloat const LYRUITypingIndicatorHeight = 20;
 
 + (instancetype)conversationViewControllerWithConversation:(LYRConversation *)conversation layerClient:(LYRClient *)layerClient;
 {
@@ -100,24 +104,14 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
     [self.messageInputToolbar sizeToFit];
     self.inputAccessoryView = self.messageInputToolbar;
     
-    [self updateCollectionViewConstraints];
+    // Set the typing indicator label
+    self.typingIndicatorView = [[LYRUITypingIndicatorView alloc] init];
+    self.typingIndicatorView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.view addSubview:self.typingIndicatorView];
+    
+    [self updateAutoLayoutConstraints];
     self.collectionView.contentInset = UIEdgeInsetsMake(0, 0, self.inputAccessoryView.intrinsicContentSize.height, 0);
     self.collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(0, 0, self.inputAccessoryView.intrinsicContentSize.height, 0);
-    
-    // Set the typing indicator label
-    self.typingIndicatorContentView = [[UIView alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height, self.view.frame.size.width, 20.0)];
-    CAGradientLayer *typingIndicatorBackgroundLayer = [CAGradientLayer layer];
-    typingIndicatorBackgroundLayer.frame = CGRectMake(0, 0, self.view.frame.size.height, 20.0);
-    typingIndicatorBackgroundLayer.startPoint = CGPointZero;
-    typingIndicatorBackgroundLayer.endPoint = CGPointMake(0, 1);
-    typingIndicatorBackgroundLayer.colors = @[(id)[[UIColor colorWithWhite:1.0 alpha:0.0] CGColor], (id)[[UIColor colorWithWhite:1.0 alpha:0.75] CGColor], (id)[[UIColor colorWithWhite:1.0 alpha:1.0] CGColor]];
-    [self.typingIndicatorContentView.layer addSublayer:typingIndicatorBackgroundLayer];
-    self.typingIndicatorLabel = [[UILabel alloc] initWithFrame:CGRectMake(52.0, 0, self.view.frame.size.width, 20.0)];
-    self.typingIndicatorLabel.textColor = [UIColor lightGrayColor];
-    self.typingIndicatorLabel.font = LSBoldFont(12);
-    self.typingIndicatorLabel.numberOfLines = 0;
-    [self.typingIndicatorContentView addSubview:self.typingIndicatorLabel];
-    [self.inputAccessoryView addSubview:self.typingIndicatorContentView];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -180,8 +174,7 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
                                                  name:LYRConversationDidReceiveTypingIndicatorNotification object:self.conversation];
     self.keyboardIsOnScreen = NO;
 
-    // Send the typing indicator behind the input bar
-    [self.inputAccessoryView sendSubviewToBack:self.typingIndicatorContentView];
+    // Update typing indicator
     [self updateTypingIndicatorOverlay:YES];
 }
 
@@ -243,6 +236,7 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
     } else if (1 >= self.conversation.participants.count) {
         self.title = @"Personal";
     } else if (2 >= self.conversation.participants.count) {
+        [self.typingIndicatorView updateLabelInset:10];
         self.shouldDisplayAvatarImage = NO;
         NSMutableSet *participants = [self.conversation.participants mutableCopy];
         [participants removeObject:self.layerClient.authenticatedUserID];
@@ -253,6 +247,7 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
             self.title = @"Unknown";
         }
     } else {
+        [self.typingIndicatorView updateLabelInset:48];
         self.shouldDisplayAvatarImage = YES;
         self.title = @"Group";
     }
@@ -260,6 +255,11 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
 
 # pragma mark - Collection View Data Source
 
+/**
+ 
+ LAYER - The `LYRUIConversationViewController` component uses `LYRMessageParts` to represent rows.
+ 
+ */
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
     // MessageParts correspond to rows in a section
@@ -267,12 +267,23 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
     return message.parts.count;
 }
 
+/**
+ 
+ LAYER - The `LYRUIConversationViewController` component uses `LYRMessages` to represent sections.
+ 
+ */
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
 {
     // Messages correspond to sections
     return self.messageDataSource.messages.count;
 }
 
+/**
+ 
+ LAYER - Configuring a subclass of `LYRUIMessageCollectionViewCell` to be displayed on screen. `LayerUIKit` supports both
+ `LYRUIIncomingMessageCollectionViewCell` and `LYRUIOutgoingMessageCollectionViewCell`.
+ 
+ */
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     LYRMessage *message = [self.messageDataSource.messages objectAtIndex:indexPath.section];
@@ -288,6 +299,11 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
     return cell;
 }
 
+/**
+ 
+ LAYER - Extracting the proper message part and analyzing its properties to determine the cell configuration.
+ 
+ */
 - (void)configureCell:(LYRUIMessageCollectionViewCell <LYRUIMessagePresenting> *)cell forMessage:(LYRMessage *)message indexPath:(NSIndexPath *)indexPath
 {
     LYRMessagePart *messagePart = [message.parts objectAtIndex:indexPath.row];
@@ -569,19 +585,18 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
     // on the scroll position.
     BOOL visible = (participantsTyping.count >= 1) && isScrolledToBottom;
     if (participantsTyping.count) {
-        self.typingIndicatorLabel.text = [NSString stringWithFormat:@"%@ %@ typing...", commaSeperatedParticipants, participantsTyping.count > 1 ? @"are" : @"is"];
+        [self.typingIndicatorView setText: [NSString stringWithFormat:@"%@ %@ typing...", commaSeperatedParticipants, participantsTyping.count > 1 ? @"are" : @"is"]];
     }
     
-    // Move the label to the visible section of the screen, if visible = YES,
-    // otherwise hide it behind the input toolbar.
+    self.typingIndicatorViewTopConstraint.constant = -self.inputAccessoryView.frame.size.height - LYRUITypingIndicatorHeight;
+    [self.view setNeedsUpdateConstraints];
     [UIView animateWithDuration:animated ? (visible ? 0.3 : 0.1) : 0 animations:^{
-        self.typingIndicatorContentView.frame = CGRectMake(0, visible ? -self.typingIndicatorContentView.frame.size.height : 0.0, self.messageInputToolbar.frame.size.width, self.typingIndicatorContentView.frame.size.height);
-        self.typingIndicatorContentView.alpha = visible ? 1.0 : 0.0;
-        // Also update collection view insets (and scrollbars too), based
-        // on the
+        self.typingIndicatorView.alpha = visible ? 1.0 : 0.0;
         [self updateCollectionViewInsets];
         if (visible) [self scrollToBottomOfCollectionViewAnimated:YES];
+        [self.view layoutIfNeeded];
     }];
+
 }
 
 #pragma mark - LYRUIMessageInputToolbar Delegate Methods
@@ -597,6 +612,12 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
     [actionSheet showInView:self.view];
 }
 
+/**
+ 
+ LAYER - Sending a message through Layer. The `LYRUIMessageInputToolbar` informs the controller that the `rightAccessoryButton` 
+ property (representing the `SEND` button) was tapped.
+ 
+ */
 - (void)messageInputToolbar:(LYRUIMessageInputToolbar *)messageInputToolbar didTapRightAccessoryButton:(UIButton *)rightAccessoryButton
 {
     if (!self.conversation) return;
@@ -622,11 +643,21 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
     }
 }
 
+/**
+ 
+ LAYER - Input tool bar began typing, so we can send a typing indicator.
+ 
+ */
 - (void)messageInputToolbarDidBeginTyping:(LYRUIMessageInputToolbar *)messageInputToolbar
 {
     [self.layerClient sendTypingIndicator:LYRTypingDidBegin toConversation:self.conversation];
 }
 
+/**
+ 
+ LAYER - Input tool bar ended typing, so we can terminate the typing indicator.
+ 
+ */
 - (void)messageInputToolbarDidEndTyping:(LYRUIMessageInputToolbar *)messageInputToolbar
 {
     [self.layerClient sendTypingIndicator:LYRTypingDidFinish toConversation:self.conversation];
@@ -755,7 +786,7 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
 {
     UIEdgeInsets existing = self.collectionView.contentInset;
     CGFloat keyboardHeight = self.keyboardHeight < 1.0 ? self.inputAccessoryView.frame.size.height : self.keyboardHeight;
-    keyboardHeight += self.typingIndicatorContentView.alpha ? self.typingIndicatorContentView.frame.size.height : 0;
+    keyboardHeight += self.typingIndicatorView.alpha ? LYRUITypingIndicatorHeight : 0;
     self.collectionView.contentInset = UIEdgeInsetsMake(existing.top, 0, keyboardHeight, 0);
     self.collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(existing.top, 0, keyboardHeight, 0);
 }
@@ -789,38 +820,6 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
 
 - (void)observer:(LYRUIMessageDataSource *)observer updateWithChanges:(NSArray *)changes 
 {
-//    NSLog(@"Update happening with changes:%@", changes);
-//    [self.collectionView performBatchUpdates:^{
-//        [self.collectionView reloadData];
-//        for (LYRUIDataSourceChange *change in changes) {
-//            switch (change.type) {
-//                case LYRUIDataSourceChangeTypeInsert:
-//                    [self.collectionView insertSections:[NSIndexSet indexSetWithIndex:change.newIndex]];
-//                    break;
-//                    
-//                case LYRUIDataSourceChangeTypeMove:
-//                    [self.collectionView deleteSections:[NSIndexSet indexSetWithIndex:change.oldIndex]];
-//                    [self.collectionView insertSections:[NSIndexSet indexSetWithIndex:change.newIndex]];
-//                    break;
-//                    
-//                case LYRUIDataSourceChangeTypeUpdate:
-//                    [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:change.newIndex]];
-//                    break;
-//                    
-//                case LYRUIDataSourceChangeTypeDelete:
-//                    [self.collectionView deleteSections:[NSIndexSet indexSetWithIndex:change.newIndex]];
-//                    break;
-//                    
-//                default:
-//                    break;
-//            }
-//        }
-//    } completion:^(BOOL finished) {
-//        if (self.shouldScrollToBottom) {
-//            [self scrollToBottomOfCollectionViewAnimated:TRUE];
-//            self.shouldScrollToBottom = FALSE;
-//        }
-//    }];
     [self.collectionView reloadData];
     [self scrollToBottomOfCollectionViewAnimated:TRUE];
 }
@@ -889,10 +888,33 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
 
 }
 
+#pragma mark Default Message Cell Appearance
+
+- (void)configureMessageBubbleAppearance
+{
+    [[LYRUIOutgoingMessageCollectionViewCell appearance] setMessageTextColor:[UIColor whiteColor]];
+    [[LYRUIOutgoingMessageCollectionViewCell appearance] setMessageTextFont:LSMediumFont(14)];
+    [[LYRUIOutgoingMessageCollectionViewCell appearance] setBubbleViewColor:LSBlueColor()];
+    [[LYRUIOutgoingMessageCollectionViewCell appearance] setPendingBubbleViewColor:LSBlueColor()];
+    
+    [[LYRUIIncomingMessageCollectionViewCell appearance] setMessageTextColor:[UIColor blackColor]];
+    [[LYRUIIncomingMessageCollectionViewCell appearance] setMessageTextFont:LSMediumFont(14)];
+    [[LYRUIIncomingMessageCollectionViewCell appearance] setBubbleViewColor:LSLighGrayColor()];
+    
+    [[LYRUIAvatarImageView appearance] setInitialViewBackgroundColor:LSGrayColor()];
+    [[LYRUIAvatarImageView appearance] setInitialColor:[UIColor blackColor]];
+    [[LYRUIAvatarImageView appearance] setInitialFont:LSLightFont(14)];
+    
+    [[LYRUIAddressBarTextView appearance] setAddressBarFont:LSMediumFont(14)];
+    [[LYRUIAddressBarTextView appearance] setAddressBarTextColor:[UIColor blackColor]];
+    [[LYRUIAddressBarTextView appearance] setAddressBarHightlightColor:LSBlueColor()];
+}
+
 #pragma mark - Auto Layout Configuration
 
-- (void)updateCollectionViewConstraints
+- (void)updateAutoLayoutConstraints
 {
+    //********** Collection View Constraints **********//
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.collectionView
                                                           attribute:NSLayoutAttributeLeft
                                                           relatedBy:NSLayoutRelationEqual
@@ -925,28 +947,40 @@ static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIde
                                                           attribute:NSLayoutAttributeBottom
                                                          multiplier:1.0
                                                            constant:0]];
-}
-
-#pragma mark Default Message Cell Appearance
-
-- (void)configureMessageBubbleAppearance
-{
-    [[LYRUIOutgoingMessageCollectionViewCell appearance] setMessageTextColor:[UIColor whiteColor]];
-    [[LYRUIOutgoingMessageCollectionViewCell appearance] setMessageTextFont:LSMediumFont(14)];
-    [[LYRUIOutgoingMessageCollectionViewCell appearance] setBubbleViewColor:LSBlueColor()];
-    [[LYRUIOutgoingMessageCollectionViewCell appearance] setPendingBubbleViewColor:LSBlueColor()];
     
-    [[LYRUIIncomingMessageCollectionViewCell appearance] setMessageTextColor:[UIColor blackColor]];
-    [[LYRUIIncomingMessageCollectionViewCell appearance] setMessageTextFont:LSMediumFont(14)];
-    [[LYRUIIncomingMessageCollectionViewCell appearance] setBubbleViewColor:LSLighGrayColor()];
+    //********** Typing Indicator View Constraints **********//
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.typingIndicatorView
+                                                          attribute:NSLayoutAttributeLeft
+                                                          relatedBy:NSLayoutRelationEqual
+                                                             toItem:self.view
+                                                          attribute:NSLayoutAttributeLeft
+                                                         multiplier:1.0
+                                                           constant:0]];
     
-    [[LYRUIAvatarImageView appearance] setInitialViewBackgroundColor:LSGrayColor()];
-    [[LYRUIAvatarImageView appearance] setInitialColor:[UIColor blackColor]];
-    [[LYRUIAvatarImageView appearance] setInitialFont:LSLightFont(14)];
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.typingIndicatorView
+                                                          attribute:NSLayoutAttributeWidth
+                                                          relatedBy:NSLayoutRelationEqual
+                                                             toItem:self.view
+                                                          attribute:NSLayoutAttributeWidth
+                                                         multiplier:1.0
+                                                           constant:0]];
     
-    [[LYRUIAddressBarTextView appearance] setAddressBarFont:LSMediumFont(14)];
-    [[LYRUIAddressBarTextView appearance] setAddressBarTextColor:[UIColor blackColor]];
-    [[LYRUIAddressBarTextView appearance] setAddressBarHightlightColor:LSBlueColor()];
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.typingIndicatorView
+                                                          attribute:NSLayoutAttributeHeight
+                                                          relatedBy:NSLayoutRelationEqual
+                                                             toItem:nil
+                                                          attribute:NSLayoutAttributeNotAnAttribute
+                                                         multiplier:1.0
+                                                           constant:LYRUITypingIndicatorHeight]];
+   
+    self.typingIndicatorViewTopConstraint = [NSLayoutConstraint constraintWithItem:self.typingIndicatorView
+                                                                         attribute:NSLayoutAttributeTop
+                                                                         relatedBy:NSLayoutRelationEqual
+                                                                            toItem:self.view
+                                                                         attribute:NSLayoutAttributeBottom
+                                                                        multiplier:1.0
+                                                                          constant:0];
+    [self.view addConstraint:self.typingIndicatorViewTopConstraint];
 }
 
 @end

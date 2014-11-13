@@ -37,6 +37,11 @@
  */
 - (void)conversationViewController:(LYRUIConversationViewController *)viewController didFailSendingMessage:(LYRMessage *)message error:(NSError *)error;
 
+/**
+ @abstract Informs the delegate that an `LYRMessage` object was tapped
+ @param conversationViewController The `LYRUIConversationViewController` in which the message failed to send.
+ @param message The `LYRMessage` object which that was tapped.
+ */
 - (void)conversationViewController:(LYRUIConversationViewController *)viewController didSelectMessage:(LYRMessage *)message;
 
 @end
