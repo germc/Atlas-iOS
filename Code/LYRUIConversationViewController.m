@@ -648,7 +648,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
             }
         }
 
-        LYRMessage *message = [self.layerClient newMessageWithConversation:self.conversation parts:messagePartsToSend options:nil error:nil];
+        LYRMessage *message = [LYRMessage messageWithConversation:self.conversation parts:messagePartsToSend];
         [self sendMessage:message pushText:[self pushNotificationStringForMessage:message]];
         [self.messageDataSource sendMessages:message];
         
