@@ -172,4 +172,9 @@
  */
 @property (nonatomic) BOOL showsAddressBar;
 
+/**
+ @abstract If set, places the text in the navigation bar, otherwise UI will place the names of the participants
+ */
+@property (nonatomic) NSString *conversationTitle;
+
 @end

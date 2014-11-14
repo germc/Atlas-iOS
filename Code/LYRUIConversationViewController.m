@@ -229,7 +229,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     completion();
 }
 
-- (void) setConversationViewTitle
+- (void)setConversationViewTitle
 {
     if (!self.conversation) {
         self.title = @"New Message";
@@ -250,6 +250,19 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
         [self.typingIndicatorView updateLabelInset:48];
         self.shouldDisplayAvatarImage = YES;
         self.title = @"Group";
+    }
+    self.title = self.conversationTitle ?: self.title;
+}
+
+#pragma mark - Conversation title
+
+- (void)setConversationTitle:(NSString *)conversationTitle
+{
+    _conversationTitle = conversationTitle;
+    
+    // Update UI if possible
+    if (self.isViewLoaded) {
+        [self setConversationViewTitle];
     }
 }
 
@@ -635,7 +648,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
             }
         }
 
-        LYRMessage *message = [LYRMessage messageWithConversation:self.conversation parts:messagePartsToSend];
+        LYRMessage *message = [self.layerClient newMessageWithConversation:self.conversation parts:messagePartsToSend options:nil error:nil];
         [self sendMessage:message pushText:[self pushNotificationStringForMessage:message]];
         [self.messageDataSource sendMessages:message];
         
@@ -822,6 +835,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 {
     [self.collectionView reloadData];
     [self scrollToBottomOfCollectionViewAnimated:TRUE];
+    [self setConversationViewTitle];
 }
 
 - (void)scrollToBottomOfCollectionViewAnimated:(BOOL)animated
