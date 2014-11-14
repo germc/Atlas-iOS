@@ -8,7 +8,7 @@ source 'https://github.com/CocoaPods/Specs.git'
 def import_common_pods
   xcodeproj 'LayerUIKit.xcodeproj'
   #pod 'LayerUIKit', path: '.'
-  pod 'LayerKit', '~> 0.8.7'
+  #pod 'LayerKit', '~> 0.8.7'
   #pod 'LayerKit', git: 'git@github.com:layerhq/LayerKit.git'
 end
 
