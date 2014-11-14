@@ -15,8 +15,6 @@
 
 @optional
 
-- (void)observerWillChangeContent:(LYRUIConversationDataSource *)observer;
-
 - (void)observer:(LYRUIConversationDataSource *)observer updateWithChanges:(NSArray *)changes;
 
 - (void)observer:(LYRUIConversationDataSource *)observer didChangeContent:(BOOL)didChangeContent;
