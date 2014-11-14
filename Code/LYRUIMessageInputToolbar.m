@@ -70,10 +70,10 @@ static CGFloat const LSButtonHeight = 28;
         self.rightAccessoryButton.accessibilityLabel = @"Send Button";
         self.rightAccessoryButton.titleLabel.font = [UIFont systemFontOfSize:16];
         [self.rightAccessoryButton setTitle:@"SEND" forState:UIControlStateNormal];
-        [self.rightAccessoryButton setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
-        [self.rightAccessoryButton setTitleColor:LSBlueColor() forState:UIControlStateHighlighted];
+        [self.rightAccessoryButton setTitleColor:[UIColor grayColor] forState:UIControlStateDisabled];
+        [self.rightAccessoryButton setTitleColor:LSBlueColor() forState:UIControlStateNormal];
         [self.rightAccessoryButton addTarget:self action:@selector(rightAccessoryButtonTapped) forControlEvents:UIControlEventTouchUpInside];
-        [self.rightAccessoryButton setHighlighted:FALSE];
+        self.rightAccessoryButton.enabled = NO;
         [self addSubview:self.rightAccessoryButton];
     
         [self setupLayoutConstraints];
@@ -99,7 +99,7 @@ static CGFloat const LSButtonHeight = 28;
 
 - (void)insertImage:(UIImage *)image
 {
-    [self.rightAccessoryButton setHighlighted:TRUE];
+    self.rightAccessoryButton.enabled = YES;
     [self.textInputView insertImage:image];
     [self adjustFrame];
 }
@@ -141,7 +141,7 @@ static CGFloat const LSButtonHeight = 28;
     }
     if (self.textInputView.text.length > 0) {
         [self.inputToolBarDelegate messageInputToolbar:self didTapRightAccessoryButton:self.rightAccessoryButton];
-        [self.rightAccessoryButton setHighlighted:FALSE];
+        self.rightAccessoryButton.enabled = NO;
         [self.textInputView removeAttachements];
         self.textInputView.text = @"";
         [self.textInputView layoutSubviews];
@@ -190,7 +190,7 @@ static CGFloat const LSButtonHeight = 28;
 
 - (BOOL)textViewShouldEndEditing:(UITextView *)textView
 {
-    [self.rightAccessoryButton setHighlighted:NO];
+    self.rightAccessoryButton.enabled = NO;
     return YES;
 }
 
@@ -198,9 +198,9 @@ static CGFloat const LSButtonHeight = 28;
 {
     [self adjustFrame];
     if (textView.text.length > 0) {
-        [self.rightAccessoryButton setHighlighted:YES];
+        self.rightAccessoryButton.enabled = YES;
     } else {
-        [self.rightAccessoryButton setHighlighted:NO];
+        self.rightAccessoryButton.enabled = NO;
     }
 }
 
