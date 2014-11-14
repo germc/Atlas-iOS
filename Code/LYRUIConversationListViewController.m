@@ -374,12 +374,11 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 #pragma mark
 #pragma mark Notification Observer Delegate Methods
 
-- (void)observerWillChangeContent:(LYRUIConversationDataSource *)observer
+- (void)observer:(LYRUIConversationDataSource *)observer updateWithChanges:(NSArray *)changes
 {
     
 }
-
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+- (void)observerWillChangeContent:(LYRUIConversationDataSource *)observer
 {
     
 }
