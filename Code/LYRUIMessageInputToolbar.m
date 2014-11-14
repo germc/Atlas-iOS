@@ -190,7 +190,6 @@ static CGFloat const LSButtonHeight = 28;
 
 - (BOOL)textViewShouldEndEditing:(UITextView *)textView
 {
-    self.rightAccessoryButton.enabled = NO;
     return YES;
 }
 
