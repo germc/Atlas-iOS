@@ -93,6 +93,12 @@
 @property (nonatomic) UIButton *rightAccessoryButton;
 
 /**
+ @abstract A Boolean value indicating whether the receiver can enable its send button.
+ @discussion By default, the button can be enabled.
+ */
+@property (nonatomic) BOOL canEnableSendButton;
+
+/**
  @abstract An automatically resizing message composisiton field
  */
 @property (nonatomic) LYRUIMessageComposeTextView *textInputView;
