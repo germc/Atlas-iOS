@@ -118,7 +118,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 {
     [super viewWillAppear:animated];
     
-    if (!self.conversation && self.showsAddressBar) {
+    if (!self.conversation && self.showsAddressBar && !self.addressBarController) {
         self.addressBarController = [[LYRUIAddressBarViewController alloc] init];
         self.addressBarController.delegate = self;
         [self addChildViewController:self.addressBarController];
