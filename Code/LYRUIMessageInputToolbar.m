@@ -152,35 +152,21 @@ static CGFloat const LSButtonHeight = 28;
 
 - (NSArray *)filterAttributedString:(NSAttributedString *)attributedString
 {
-    NSMutableArray *attachments = [[NSMutableArray alloc] init];
-    [self.textInputView.attributedText enumerateAttribute:NSAttachmentAttributeName
-                                                   inRange:NSMakeRange(0, self.textInputView.attributedText.length)
-                                                   options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired
-                                                usingBlock:^(id value, NSRange range, BOOL *stop) {
-                                                    if ([value isKindOfClass:[LYRUIMediaAttachment class]]) {
-                                                        [attachments addObject:[(LYRUIMediaAttachment *)value image]];
-                                                    }
-    }];
-    if (!attachments.count) {
-        NSString *trimmedString = [[self.textInputView.attributedText string] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-        [self.messageParts addObject:trimmedString];
-    } else {
-        NSArray *contentParts = [[self.textInputView.attributedText string] componentsSeparatedByString:@"\r\n"];
-        for (NSString *part in contentParts) {
-            NSString *trimmedString = [part stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-            if ([trimmedString isEqualToString:@"\U0000fffc"]) {
-                [self.messageParts addObject:[attachments firstObject]];
-                [attachments removeObjectAtIndex:0];
-            } else {
-                if (trimmedString.length > 0) {
-                    [self.messageParts addObject:trimmedString];
-                }
-            }
+    [attributedString enumerateAttributesInRange:NSMakeRange(0, attributedString.length) options:0 usingBlock:^(NSDictionary *attributes, NSRange range, BOOL *stop) {
+        id attachment = attributes[NSAttachmentAttributeName];
+        if ([attachment isKindOfClass:[LYRUIMediaAttachment class]]) {
+            LYRUIMediaAttachment *mediaAttachment = (LYRUIMediaAttachment *)attachment;
+            [self.messageParts addObject:mediaAttachment.image];
+            return;
         }
-    }
+        NSAttributedString *attributedSubstring = [attributedString attributedSubstringFromRange:range];
+        NSString *substring = attributedSubstring.string;
+        NSString *trimmedSubstring = [substring stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+        if (trimmedSubstring.length == 0) return;
+        [self.messageParts addObject:trimmedSubstring];
+    }];
     return self.messageParts;
 }
-
 
 #pragma mark TextViewDelegate Methods
 
