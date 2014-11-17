@@ -16,6 +16,8 @@
 
 @property (nonatomic) CLLocationManager *locationManager;
 @property (nonatomic) NSLayoutConstraint *textViewHeightConstraint;
+@property (nonatomic) NSArray *messageParts;
+@property (nonatomic, copy) NSAttributedString *attributedStringForMessageParts;
 
 @end
 
@@ -40,7 +42,6 @@ static CGFloat const LSButtonHeight = 28;
         
         // Setup
         self.backgroundColor =  LSLighGrayColor();
-        self.messageParts = [[NSMutableArray alloc] init];
 
         // Initialize the Camera Button
         self.leftAccessoryButton = [[UIButton alloc] init];
@@ -135,37 +136,48 @@ static CGFloat const LSButtonHeight = 28;
 - (void)rightAccessoryButtonTapped
 {
     if ([self.textInputView.text isEqualToString:LYRUIPlaceHolderText]) return;
-    [self filterAttributedString:self.textInputView.attributedText];
     if ([self.inputToolBarDelegate respondsToSelector:@selector(messageInputToolbarDidEndTyping:)]) {
         [self.inputToolBarDelegate messageInputToolbarDidEndTyping:self];
     }
     if (self.textInputView.text.length > 0) {
         [self.inputToolBarDelegate messageInputToolbar:self didTapRightAccessoryButton:self.rightAccessoryButton];
-        [self.messageParts removeAllObjects];
         [self.rightAccessoryButton setHighlighted:FALSE];
         [self.textInputView removeAttachements];
         self.textInputView.text = @"";
         [self.textInputView layoutSubviews];
+        self.messageParts = nil;
+        self.attributedStringForMessageParts = nil;
     }
     [self adjustFrame];
 }
 
-- (NSArray *)filterAttributedString:(NSAttributedString *)attributedString
+- (NSArray *)messageParts
 {
+    NSAttributedString *attributedString = self.textInputView.attributedText;
+    if (!_messageParts || ![attributedString isEqualToAttributedString:self.attributedStringForMessageParts]) {
+        self.attributedStringForMessageParts = attributedString;
+        self.messageParts = [self messagePartsFromAttributedString:attributedString];
+    }
+    return _messageParts;
+}
+
+- (NSArray *)messagePartsFromAttributedString:(NSAttributedString *)attributedString
+{
+    NSMutableArray *messageParts = [NSMutableArray new];
     [attributedString enumerateAttributesInRange:NSMakeRange(0, attributedString.length) options:0 usingBlock:^(NSDictionary *attributes, NSRange range, BOOL *stop) {
         id attachment = attributes[NSAttachmentAttributeName];
         if ([attachment isKindOfClass:[LYRUIMediaAttachment class]]) {
             LYRUIMediaAttachment *mediaAttachment = (LYRUIMediaAttachment *)attachment;
-            [self.messageParts addObject:mediaAttachment.image];
+            [messageParts addObject:mediaAttachment.image];
             return;
         }
         NSAttributedString *attributedSubstring = [attributedString attributedSubstringFromRange:range];
         NSString *substring = attributedSubstring.string;
         NSString *trimmedSubstring = [substring stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
         if (trimmedSubstring.length == 0) return;
-        [self.messageParts addObject:trimmedSubstring];
+        [messageParts addObject:trimmedSubstring];
     }];
-    return self.messageParts;
+    return messageParts;
 }
 
 #pragma mark TextViewDelegate Methods
