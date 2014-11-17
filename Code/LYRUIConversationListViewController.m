@@ -378,10 +378,6 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 {
     
 }
-- (void)observerWillChangeContent:(LYRUIConversationDataSource *)observer
-{
-    
-}
 
 - (void)observer:(LYRUIConversationDataSource *)observer didChangeContent:(BOOL)didChangeContent
 {
