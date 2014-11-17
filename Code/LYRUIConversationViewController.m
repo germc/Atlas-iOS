@@ -665,6 +665,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
  */
 - (void)messageInputToolbarDidBeginTyping:(LYRUIMessageInputToolbar *)messageInputToolbar
 {
+    if (!self.conversation) return;
     [self.layerClient sendTypingIndicator:LYRTypingDidBegin toConversation:self.conversation];
 }
 
@@ -675,6 +676,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
  */
 - (void)messageInputToolbarDidEndTyping:(LYRUIMessageInputToolbar *)messageInputToolbar
 {
+    if (!self.conversation) return;
     [self.layerClient sendTypingIndicator:LYRTypingDidFinish toConversation:self.conversation];
 }
 
