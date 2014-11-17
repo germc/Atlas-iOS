@@ -882,13 +882,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     if (!participants.count) {
         self.conversation = nil;
     } else {
-        LYRConversation *conversation = [[[self.layerClient conversationsForParticipants:participants] allObjects] lastObject];
-        if (conversation) {
-            self.conversation = conversation;
-        } else {
-            self.conversation = [LYRConversation conversationWithParticipants:participants];
-        }
-        if (self.conversation.participants.count > 2) self.shouldDisplayAvatarImage = YES;
+        self.conversation = [LYRConversation conversationWithParticipants:participants];
     }
     [self setConversationViewTitle];
     [self setupConversationDataSource:^{
@@ -899,7 +893,6 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
             self.collectionView.alpha = 1.0f;
         }];
     }];
-
 }
 
 #pragma mark Default Message Cell Appearance

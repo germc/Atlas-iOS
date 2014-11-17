@@ -26,9 +26,10 @@
         _layerClient = layerClient;
         _identifiers = [self refreshConversations];
         _conversationOperationQueue = dispatch_queue_create("com.layer.conversationProcess", NULL);
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveLayerObjectsDidChangeNotification:)
-                                                     name:LYRClientObjectsDidChangeNotification
-                                                   object:layerClient];
+//        [[NSNotificationCenter defaultCenter] addObserver:self
+//                                                 selector:@selector(didReceiveLayerObjectsDidChangeNotification:)
+//                                                     name:LYRClientObjectsDidChangeNotification
+//                                                   object:layerClient];
     }
     return self;
 }
@@ -61,11 +62,11 @@
 {
     NSMutableArray *conversationChanges = [[NSMutableArray alloc] init];
     NSArray *changes = [notification.userInfo objectForKey:LYRClientObjectChangesUserInfoKey];
-    for (NSDictionary *change in changes) {
-        if ([[change objectForKey:LYRObjectChangeObjectKey] isKindOfClass:[LYRConversation class]]) {
-            [conversationChanges addObject:change];
-        }
-    }
+//    for (NSDictionary *change in changes) {
+//        if ([[change objectForKey:LYRObjectChangeObjectKey] isKindOfClass:[LYRConversation class]]) {
+//            [conversationChanges addObject:change];
+//        }
+//    }
     return conversationChanges;
 }
 
@@ -85,6 +86,7 @@
             case LYRObjectChangeTypeUpdate: {
                 NSUInteger oldIndex;
                 if ([[conversationChange objectForKey:LYRObjectChangePropertyKey] isEqualToString:@"identifier"]){
+                    [self.delegate observer:self updateWithChanges:nil];
                     oldIndex = [self.identifiers indexOfObject:[conversationChange objectForKey:LYRObjectChangeOldValueKey]];
                 } else {
                     oldIndex = [self.identifiers indexOfObject:conversation.identifier];
@@ -114,7 +116,7 @@
 - (void)dispatchChanges:(NSArray *)changes
 {
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self.delegate observer:self updateWithChanges:changes];
+        //[self.delegate observer:self updateWithChanges:changes];
         [self.delegate observer:self didChangeContent:TRUE];
     });
 }
