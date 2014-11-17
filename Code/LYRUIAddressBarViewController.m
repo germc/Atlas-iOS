@@ -157,7 +157,9 @@ static NSString *const LSParticpantCellIdentifier = @"participantCellIdentifier"
     [self addToken:token];
     
     // Inform delegate of selection
-    [self.delegate addressBarViewController:self didSelectParticipant:participant];
+    if ([self.delegate respondsToSelector:@selector(addressBarViewController:didSelectParticipant:)]) {
+        [self.delegate addressBarViewController:self didSelectParticipant:participant];
+    }
     [self searchEnded];
 }
 
@@ -200,7 +202,9 @@ static NSString *const LSParticpantCellIdentifier = @"participantCellIdentifier"
     
     self.selectedParticipants = [NSSet setWithArray:[self.addressTokens valueForKey:@"participant"]];
     
-    [self.delegate addressBarViewController:self didRemoveParticipant:token.participant];
+    if ([self.delegate respondsToSelector:@selector(addressBarViewController:didRemoveParticipant:)]) {
+        [self.delegate addressBarViewController:self didRemoveParticipant:token.participant];
+    }
     [self sizeAddressBarView];
 }
 
@@ -250,7 +254,9 @@ static NSString *const LSParticpantCellIdentifier = @"participantCellIdentifier"
         for (LYRUIAddressToken *token in tempTokens) {
             [self addToken:[self createTokenForParticipant:token.participant]];
         }
-        [self.delegate addressBarViewControllerDidEndSearching:self];
+        if ([self.delegate respondsToSelector:@selector(addressBarViewControllerDidEndSearching:)]) {
+            [self.delegate addressBarViewControllerDidEndSearching:self];
+        }
         [self searchEnded];
     }
 }
@@ -313,7 +319,9 @@ static NSString *const LSParticpantCellIdentifier = @"participantCellIdentifier"
                 self.tableView.alpha = 1.0;
                 self.participants = [self filteredParticipants:participants];
                 [self.tableView reloadData];
-                [self.delegate addressBarViewControllerDidBeginSearching:self];
+                if ([self.delegate respondsToSelector:@selector(addressBarViewControllerDidBeginSearching:)]) {
+                    [self.delegate addressBarViewControllerDidBeginSearching:self];
+                }
                 [self updateControllerHeight];
             }];
         }
@@ -369,14 +377,18 @@ static NSString *const LSParticpantCellIdentifier = @"participantCellIdentifier"
 
 - (void)contactButtonTapped:(UIButton *)sender
 {
-    [self.delegate addressBarViewController:self didTapAddContactsButton:sender];
+    if ([self.delegate respondsToSelector:@selector(addressBarViewController:didTapAddContactsButton:)]) {
+        [self.delegate addressBarViewController:self didTapAddContactsButton:sender];
+    }
 }
 
 - (void)searchEnded
 {
     // Search resets on selection. Inform delegate
     [self resetControllerHeight];
-    [self.delegate addressBarViewControllerDidEndSearching:self];
+    if ([self.delegate respondsToSelector:@selector(addressBarViewControllerDidEndSearching:)]) {
+        [self.delegate addressBarViewControllerDidEndSearching:self];
+    }
     self.participants = nil;
     self.tableView.alpha = 0.0f;
 }
