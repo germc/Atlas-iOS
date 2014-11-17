@@ -29,7 +29,6 @@ NSString *const LYRUIPlaceHolderText = @"Enter Message";
         self.textContainerInset = UIEdgeInsetsMake(6, 0, 8, 0);
         self.font = [UIFont systemFontOfSize:14];
         self.textColor = [UIColor lightGrayColor];
-        self.allowsEditingTextAttributes = YES;
         self.dataDetectorTypes = UIDataDetectorTypeLink;
         [self layoutSubviews];
         
