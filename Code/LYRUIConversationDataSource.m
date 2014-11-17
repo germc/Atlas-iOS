@@ -114,8 +114,12 @@
 - (void)dispatchChanges:(NSArray *)changes
 {
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self.delegate observer:self updateWithChanges:changes];
-        [self.delegate observer:self didChangeContent:TRUE];
+        if ([self.delegate respondsToSelector:@selector(observer:updateWithChanges:)]) {
+            [self.delegate observer:self updateWithChanges:changes];
+        }
+        if ([self.delegate respondsToSelector:@selector(observer:didChangeContent:)]) {
+            [self.delegate observer:self didChangeContent:TRUE];
+        }
     });
 }
 
