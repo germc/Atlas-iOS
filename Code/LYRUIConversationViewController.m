@@ -118,7 +118,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 {
     [super viewWillAppear:animated];
     
-    if (!self.conversation && self.showsAddressBar) {
+    if (!self.conversation && self.showsAddressBar && !self.addressBarController) {
         self.addressBarController = [[LYRUIAddressBarViewController alloc] init];
         self.addressBarController.delegate = self;
         [self addChildViewController:self.addressBarController];
@@ -341,8 +341,10 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    LYRMessage *message = [self.messageDataSource.messages objectAtIndex:indexPath.section];
-    [self.delegate conversationViewController:self didSelectMessage:message];
+    if ([self.delegate respondsToSelector:@selector(conversationViewController:didSelectMessage:)]) {
+        LYRMessage *message = [self.messageDataSource.messages objectAtIndex:indexPath.section];
+        [self.delegate conversationViewController:self didSelectMessage:message];
+    }
 }
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
@@ -663,6 +665,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
  */
 - (void)messageInputToolbarDidBeginTyping:(LYRUIMessageInputToolbar *)messageInputToolbar
 {
+    if (!self.conversation) return;
     [self.layerClient sendTypingIndicator:LYRTypingDidBegin toConversation:self.conversation];
 }
 
@@ -673,6 +676,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
  */
 - (void)messageInputToolbarDidEndTyping:(LYRUIMessageInputToolbar *)messageInputToolbar
 {
+    if (!self.conversation) return;
     [self.layerClient sendTypingIndicator:LYRTypingDidFinish toConversation:self.conversation];
 }
 

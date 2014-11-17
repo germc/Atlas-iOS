@@ -295,8 +295,8 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
     NSURL *conversationIdentifier = [[self currentDataSet] objectAtIndex:indexPath.row];
     LYRConversation *conversation = [self.layerClient conversationForIdentifier:conversationIdentifier];
     NSError *error;
-    [self.layerClient deleteConversation:conversation mode:deletionMode error:&error];
-    if (error) {
+    BOOL success = [self.layerClient deleteConversation:conversation mode:deletionMode error:&error];
+    if (!success) {
         if ([self.delegate respondsToSelector:@selector(conversationListViewController:didFailDeletingConversation:deletionMode:error:)]) {
             [self.delegate conversationListViewController:self didFailDeletingConversation:conversation deletionMode:deletionMode error:error];
         }
@@ -375,10 +375,6 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 #pragma mark Notification Observer Delegate Methods
 
 - (void)observer:(LYRUIConversationDataSource *)observer updateWithChanges:(NSArray *)changes
-{
-    
-}
-- (void)observerWillChangeContent:(LYRUIConversationDataSource *)observer
 {
     
 }
