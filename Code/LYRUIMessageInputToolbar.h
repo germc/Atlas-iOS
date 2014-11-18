@@ -114,6 +114,6 @@
  @abstract An array of all content parts displayed in the view. 
  @discussion Any existing objects will be removed when the right accessory button is tapped
  */
-@property (nonatomic) NSMutableArray *messageParts;
+@property (nonatomic, readonly) NSArray *messageParts;
 
 @end
