@@ -253,23 +253,21 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
     }
 
     [self sizeAddressBarView];
+    NSString *searchText = [self filterTextViewText:textView];
     // If no text, reset search bar
-    if (!textView.text.length) {
+    if (searchText.length == 0) {
         [self searchEnded];
     } else {
-        NSString *searchText = [self filterTextViewText:textView];
-        if (searchText) {
-            self.tableView.alpha = 1.0f;
-            [self.dataSource searchForParticipantsMatchingText:searchText completion:^(NSSet *participants) {
-                self.tableView.alpha = 1.0;
-                self.participants = [self filteredParticipants:participants];
-                [self.tableView reloadData];
-                if ([self.delegate respondsToSelector:@selector(addressBarViewControllerDidBeginSearching:)]) {
-                    [self.delegate addressBarViewControllerDidBeginSearching:self];
-                }
-                [self updateControllerHeight];
-            }];
-        }
+        self.tableView.alpha = 1.0f;
+        [self.dataSource searchForParticipantsMatchingText:searchText completion:^(NSSet *participants) {
+            self.tableView.alpha = 1.0;
+            self.participants = [self filteredParticipants:participants];
+            [self.tableView reloadData];
+            if ([self.delegate respondsToSelector:@selector(addressBarViewControllerDidBeginSearching:)]) {
+                [self.delegate addressBarViewControllerDidBeginSearching:self];
+            }
+            [self updateControllerHeight];
+        }];
     }
 }
 
