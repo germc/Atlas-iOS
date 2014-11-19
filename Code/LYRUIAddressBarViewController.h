@@ -107,7 +107,7 @@
 @property (nonatomic, readonly) NSSet *selectedParticipants;
 
 /**
- @abstract Informs the receiver of it's its Y origin offset.
+ @abstract Informs the receiver of its Y origin offset.
  bar.
  */
 - (void)updateControllerOffset:(CGPoint)offset;
