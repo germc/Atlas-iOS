@@ -215,6 +215,15 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
     return YES;
 }
 
+- (void)textViewDidChangeSelection:(UITextView *)textView
+{
+    NSRange selectedRange = textView.selectedRange;
+    NSRange acceptableRange = [self acceptableSelectedRange];
+    if (!NSEqualRanges(acceptableRange, selectedRange)) {
+        textView.selectedRange = acceptableRange;
+    }
+}
+
 - (void)sizeAddressBarView
 {
     [self.addressBarView.addressBarTextView invalidateIntrinsicContentSize];
@@ -342,6 +351,37 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
     [attributedString addAttributes:@{LYRUIAddressBarParticipantAttributeName: participant, NSFontAttributeName: textView.font, NSParagraphStyleAttributeName: textView.typingAttributes[NSParagraphStyleAttributeName]} range:NSMakeRange(0, attributedString.length)];
 
     return attributedString;
+}
+
+- (NSRange)acceptableSelectedRange
+{
+    NSRange selectedRange = self.addressBarView.addressBarTextView.selectedRange;
+    NSAttributedString *attributedString = self.addressBarView.addressBarTextView.attributedText;
+    if (selectedRange.length == 0) {
+        if (selectedRange.location == 0) return selectedRange;
+        if (selectedRange.location == attributedString.length) return selectedRange;
+        NSRange participantRange;
+        id<LYRUIParticipant> participant = [attributedString attribute:LYRUIAddressBarParticipantAttributeName atIndex:selectedRange.location longestEffectiveRange:&participantRange inRange:NSMakeRange(0, attributedString.length)];
+        if (!participant) return selectedRange;
+        if (selectedRange.location <= participantRange.location) return selectedRange;
+        NSUInteger participantStartIndex = participantRange.location;
+        NSUInteger participantEndIndex = participantRange.location + participantRange.length;
+        BOOL closerToParticipantStart = selectedRange.location - participantStartIndex < participantEndIndex - selectedRange.location;
+        if (closerToParticipantStart) {
+            return NSMakeRange(participantStartIndex, 0);
+        } else {
+            return NSMakeRange(participantEndIndex, 0);
+        }
+    }
+
+    __block NSRange adjustedRange = selectedRange;
+    [attributedString enumerateAttribute:LYRUIAddressBarParticipantAttributeName inRange:NSMakeRange(0, attributedString.length) options:0 usingBlock:^(id<LYRUIParticipant> participant, NSRange range, BOOL *stop) {
+        if (!participant) return;
+        if (NSIntersectionRange(selectedRange, range).length == 0) return;
+        adjustedRange = NSUnionRange(adjustedRange, range);
+    }];
+
+    return adjustedRange;
 }
 
 @end
