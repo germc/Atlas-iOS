@@ -35,8 +35,7 @@ static NSUInteger const LYRUILineSpacingConstant = 6;
         [paragraphStyle setFirstLineHeadIndent:28.0f];
         [paragraphStyle setHeadIndent:0];
         [paragraphStyle setLineSpacing:LYRUILineSpacingConstant];
-        self.attributedText = [[NSAttributedString alloc] initWithString:@" " attributes:@{NSParagraphStyleAttributeName : paragraphStyle,
-                                                                                           NSForegroundColorAttributeName: [UIColor blackColor]}];
+        self.typingAttributes = @{NSParagraphStyleAttributeName: paragraphStyle, NSForegroundColorAttributeName: [UIColor blackColor]};
         
         self.toLabel = [[UILabel alloc] init];
         self.toLabel.translatesAutoresizingMaskIntoConstraints = NO;
@@ -79,7 +78,7 @@ static NSUInteger const LYRUILineSpacingConstant = 6;
 
 - (void)setUpMaxHeight
 {
-    CGSize size = LYRUITextPlainSize(self.text, self.font);
+    CGSize size = LYRUITextPlainSize(@" ", self.font);
     if (!self.maxHeight) {
         self.maxHeight = ceil(size.height) * 2 + LYRUILineSpacingConstant;
     }
