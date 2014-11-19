@@ -214,8 +214,7 @@ static NSString *const LSParticpantCellIdentifier = @"participantCellIdentifier"
     self.addressBarView.addressBarTextView.text = [self addressLabel];
     self.searchFilterIndex = self.addressBarView.addressBarTextView.text.length;
 
-    NSRange range = NSMakeRange(0, 0);
-    NSDictionary *currentAttributes = [self.addressBarView.addressBarTextView.attributedText attributesAtIndex:0 effectiveRange:&range];
+    NSDictionary *currentAttributes = [self.addressBarView.addressBarTextView.attributedText attributesAtIndex:0 effectiveRange:NULL];
     NSMutableAttributedString *selectedString = [[NSMutableAttributedString alloc] initWithString:self.addressBarView.addressBarTextView.text attributes:currentAttributes];
     [selectedString addAttribute:NSForegroundColorAttributeName value:self.addressBarView.addressBarTextView.addressBarHightlightColor range:NSMakeRange(0, selectedString.length - 2)];
     self.addressBarView.addressBarTextView.attributedText = selectedString;
