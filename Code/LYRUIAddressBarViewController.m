@@ -199,6 +199,12 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
 
 - (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
 {
+    if (textView.typingAttributes[NSForegroundColorAttributeName]) {
+        NSMutableDictionary *attributes = [textView.typingAttributes mutableCopy];
+        [attributes removeObjectForKey:NSForegroundColorAttributeName];
+        textView.typingAttributes = attributes;
+    }
+
     // If user is deleting...
     if ([text isEqualToString:@""]) {
         NSAttributedString *attributedString = textView.attributedText;
