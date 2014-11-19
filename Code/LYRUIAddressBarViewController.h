@@ -102,7 +102,7 @@
 @property (nonatomic) LYRUIAddressBarView *addressBarView;
 
 /**
- @abstract The `NSSet` of currently selected participant identifiers.
+ @abstract The `NSSet` of currently selected participants.
  */
 @property (nonatomic) NSSet *selectedParticipants;
 
