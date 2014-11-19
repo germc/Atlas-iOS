@@ -354,7 +354,13 @@ static CGFloat const LSButtonHeight = 28;
 
 - (void)layoutSubviews
 {
-    [[self superview] addConstraint:[NSLayoutConstraint constraintWithItem:self attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.superview attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0]];
+    [[self superview] addConstraint:[NSLayoutConstraint constraintWithItem:self
+                                                                 attribute:NSLayoutAttributeWidth
+                                                                 relatedBy:NSLayoutRelationEqual
+                                                                    toItem:self.superview
+                                                                 attribute:NSLayoutAttributeWidth
+                                                                multiplier:1.0
+                                                                  constant:0]];
     [super layoutSubviews];
 }
 
