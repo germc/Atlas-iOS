@@ -297,7 +297,7 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
 {
     // Make sure the addressTextView is first responder
     if (!self.addressBarView.addressBarTextView.isFirstResponder) {
-        [self.addressBarView.addressBarTextView  becomeFirstResponder];
+        [self.addressBarView.addressBarTextView becomeFirstResponder];
     }
     
     // Calculate the tap index
