@@ -96,7 +96,7 @@
 @property (nonatomic, weak) id <LYRUIAddressBarControllerDataSource>dataSource;
 
 /**
- @abstract The `LYRUIAddressBarView` displayes the `LYRUIAddressBarTextView` in which the actual text input occurs. It also displays
+ @abstract The `LYRUIAddressBarView` displays the `LYRUIAddressBarTextView` in which the actual text input occurs. It also displays
  a UIButton object represented by the `addContactButton` property.
  */
 @property (nonatomic) LYRUIAddressBarView *addressBarView;
