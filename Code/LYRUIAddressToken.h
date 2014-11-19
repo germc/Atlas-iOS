@@ -19,7 +19,7 @@
 
 @interface LYRUIAddressToken : NSObject
 
-+ (instancetype)tokenWithParticipant:(id<LYRUIParticipant>)particiapnt range:(NSRange)range;
++ (instancetype)tokenWithParticipant:(id<LYRUIParticipant>)participant range:(NSRange)range;
 
 @property (nonatomic) id<LYRUIParticipant>participant;
 

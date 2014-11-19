@@ -10,9 +10,9 @@
 
 @implementation LYRUIAddressToken
 
-+ (instancetype)tokenWithParticipant:(id<LYRUIParticipant>)particiapnt range:(NSRange)range;
++ (instancetype)tokenWithParticipant:(id<LYRUIParticipant>)participant range:(NSRange)range;
 {
-    return [[self alloc] initWithParticipant:particiapnt range:range];
+    return [[self alloc] initWithParticipant:participant range:range];
 }
 
 - (id)initWithParticipant:(id<LYRUIParticipant>)participant range:(NSRange)range
