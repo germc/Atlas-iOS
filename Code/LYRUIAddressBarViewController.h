@@ -104,7 +104,7 @@
 /**
  @abstract The `NSSet` of currently selected participants.
  */
-@property (nonatomic) NSSet *selectedParticipants;
+@property (nonatomic, readonly) NSSet *selectedParticipants;
 
 /**
  @abstract Informs the receiver of it's its Y origin offset.

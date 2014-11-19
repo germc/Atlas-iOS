@@ -17,6 +17,7 @@
 @property (nonatomic) CGFloat searchFilterIndex;
 @property (nonatomic) NSMutableArray *addressTokenIndex;
 @property (nonatomic) NSMutableArray *addressTokens;
+@property (nonatomic) NSSet *selectedParticipants;
 
 @property (nonatomic) NSLayoutConstraint *addressBarViewWidthConstraint;
 @property (nonatomic) NSLayoutConstraint *addressBarViewHeightConstraint;
