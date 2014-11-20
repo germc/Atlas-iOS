@@ -81,7 +81,7 @@ static NSUInteger const LYRUILineSpacingConstant = 6;
 {
     CGSize size = LYRUITextPlainSize(self.text, self.font);
     if (!self.maxHeight) {
-        self.maxHeight = size.height * 2 + LYRUILineSpacingConstant;
+        self.maxHeight = ceil(size.height) * 2 + LYRUILineSpacingConstant;
     }
 }
 
