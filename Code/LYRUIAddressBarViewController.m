@@ -148,6 +148,12 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
 
 - (void)selectParticipant:(id<LYRUIParticipant>)participant
 {
+    for (id<LYRUIParticipant> existingParticipant in self.selectedParticipants) {
+        if ([existingParticipant.participantIdentifier isEqualToString:participant.participantIdentifier]) {
+            return;
+        }
+    }
+
     NSSet *existingParticipants = [NSSet setWithSet:self.selectedParticipants];
     self.selectedParticipants = [existingParticipants setByAddingObject:participant];
 
