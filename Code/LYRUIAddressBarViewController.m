@@ -261,6 +261,16 @@ static NSString *const LSParticpantCellIdentifier = @"participantCellIdentifier"
     }
 }
 
+#pragma mark - UIScrollViewDelegate
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView
+{
+    if (scrollView != self.addressBarView.addressBarTextView) return;
+    if (CGSizeEqualToSize(scrollView.frame.size, scrollView.contentSize)) {
+        scrollView.contentOffset = CGPointZero;
+    }
+}
+
 #pragma mark - Address Bar Text View Delegate
 
 - (BOOL)textViewShouldBeginEditing:(UITextView *)textView
