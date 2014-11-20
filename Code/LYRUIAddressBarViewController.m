@@ -263,6 +263,7 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
             self.tableView.alpha = 1.0;
             self.participants = [self filteredParticipants:participants];
             [self.tableView reloadData];
+            [self.tableView setContentOffset:CGPointZero animated:NO];
             if ([self.delegate respondsToSelector:@selector(addressBarViewControllerDidBeginSearching:)]) {
                 [self.delegate addressBarViewControllerDidBeginSearching:self];
             }
