@@ -96,18 +96,18 @@
 @property (nonatomic, weak) id <LYRUIAddressBarControllerDataSource>dataSource;
 
 /**
- @abstract The `LYRUIAddressBarView` displayes the `LYRUIAddressBarTextView` in which the actual text input occurs. It also displays
+ @abstract The `LYRUIAddressBarView` displays the `LYRUIAddressBarTextView` in which the actual text input occurs. It also displays
  a UIButton object represented by the `addContactButton` property.
  */
 @property (nonatomic) LYRUIAddressBarView *addressBarView;
 
 /**
- @abstract The `NSSet` of currently selected participant identifiers.
+ @abstract The `NSSet` of currently selected participants.
  */
-@property (nonatomic) NSSet *selectedParticipants;
+@property (nonatomic, readonly) NSSet *selectedParticipants;
 
 /**
- @abstract Informs the receiver of it's its Y origin offset.
+ @abstract Informs the receiver of its Y origin offset.
  bar.
  */
 - (void)updateControllerOffset:(CGPoint)offset;
