@@ -107,6 +107,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     // Set the typing indicator label
     self.typingIndicatorView = [[LYRUITypingIndicatorView alloc] init];
     self.typingIndicatorView.translatesAutoresizingMaskIntoConstraints = NO;
+    self.typingIndicatorView.alpha = 0.0;
     [self.view addSubview:self.typingIndicatorView];
     
     [self updateAutoLayoutConstraints];
