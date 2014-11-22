@@ -16,6 +16,7 @@
 @property (nonatomic) CGFloat labelInset;
 @property (nonatomic) NSLayoutConstraint *labelLeftConstraint;
 @property (nonatomic) NSLayoutConstraint *labelWidthConstraint;
+@property (nonatomic) CAGradientLayer *backgroundGradientLayer;
 
 @end
 
@@ -25,15 +26,22 @@
 {
     self = [super init];
     if (self) {
-        
+        CAGradientLayer *typingIndicatorBackgroundLayer = [CAGradientLayer layer];
+        typingIndicatorBackgroundLayer.frame = self.bounds;
+        typingIndicatorBackgroundLayer.startPoint = CGPointZero;
+        typingIndicatorBackgroundLayer.endPoint = CGPointMake(0, 1);
+        typingIndicatorBackgroundLayer.colors = @[(id)[[UIColor colorWithWhite:1.0 alpha:0.0] CGColor], (id)[[UIColor colorWithWhite:1.0 alpha:0.75] CGColor], (id)[[UIColor colorWithWhite:1.0 alpha:1.0] CGColor]];
+        _backgroundGradientLayer = typingIndicatorBackgroundLayer;
+        [self.layer addSublayer:typingIndicatorBackgroundLayer];
+
         _typingIndicatorLabel = [[UILabel alloc] init];
         _typingIndicatorLabel.translatesAutoresizingMaskIntoConstraints = NO;
         _typingIndicatorLabel.textColor = [UIColor lightGrayColor];
         _typingIndicatorLabel.font = LSMediumFont(12);
         _typingIndicatorLabel.textColor = [UIColor grayColor];
         _typingIndicatorLabel.numberOfLines = 0;
+        _typingIndicatorLabel.backgroundColor = [UIColor clearColor];
         [self addSubview:_typingIndicatorLabel];
-        
     }
     return self;
 }
@@ -65,16 +73,7 @@
 - (void)layoutSubviews
 {
     [super layoutSubviews];
-
-    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
-    CAGradientLayer *typingIndicatorBackgroundLayer = [CAGradientLayer layer];
-    typingIndicatorBackgroundLayer.frame = view .frame;
-    typingIndicatorBackgroundLayer.startPoint = CGPointZero;
-    typingIndicatorBackgroundLayer.endPoint = CGPointMake(0, 1);
-    typingIndicatorBackgroundLayer.colors = @[(id)[[UIColor colorWithWhite:1.0 alpha:0.0] CGColor], (id)[[UIColor colorWithWhite:1.0 alpha:0.75] CGColor], (id)[[UIColor colorWithWhite:1.0 alpha:1.0] CGColor]];
-    [view.layer addSublayer:typingIndicatorBackgroundLayer];
-    [self addSubview:view];
-    [self sendSubviewToBack:view];
+    self.backgroundGradientLayer.frame = self.bounds;
 }
 
 @end
