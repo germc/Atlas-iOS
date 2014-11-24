@@ -116,6 +116,19 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     self.typingIndicatorView.alpha = 0.0;
     [self.view addSubview:self.typingIndicatorView];
     
+    if (!self.conversation && self.showsAddressBar) {
+        self.addressBarController = [[LYRUIAddressBarViewController alloc] init];
+        self.addressBarController.delegate = self;
+        [self addChildViewController:self.addressBarController];
+        [self.view addSubview:self.addressBarController.view];
+        [self.addressBarController didMoveToParentViewController:self];
+        [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.addressBarController.view attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0.0]];
+        [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.addressBarController.view attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0.0]];
+        [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.addressBarController.view attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.topLayoutGuide attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0]];
+        [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.addressBarController.view attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0]];
+        self.collectionViewTopConstraint.constant = 40;
+    }
+
     [self updateAutoLayoutConstraints];
     self.collectionView.contentInset = UIEdgeInsetsMake(0, 0, self.inputAccessoryView.intrinsicContentSize.height, 0);
     self.collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(0, 0, self.inputAccessoryView.intrinsicContentSize.height, 0);
@@ -129,20 +142,6 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
         [self fetchLayerMessages];
     }
     self.objectChages = [NSMutableArray new];
-    
-    if (!self.conversation && self.showsAddressBar && !self.addressBarController) {
-        self.addressBarController = [[LYRUIAddressBarViewController alloc] init];
-        self.addressBarController.delegate = self;
-        [self addChildViewController:self.addressBarController];
-        [self.view addSubview:self.addressBarController.view];
-        [self.addressBarController didMoveToParentViewController:self];
-        [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.addressBarController.view attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0.0]];
-        [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.addressBarController.view attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0.0]];
-        [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.addressBarController.view attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.topLayoutGuide attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0]];
-        [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.addressBarController.view attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0]];
-        self.collectionViewTopConstraint.constant = 40;
-        
-    }
     
     // Register reusable collection view cells, header and footer
     [self.collectionView registerClass:[LYRUIIncomingMessageCollectionViewCell class]
