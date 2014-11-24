@@ -50,8 +50,8 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:LSParticpantCellIdentifier];
-    self.tableView.alpha = 0.0;
     self.tableView.keyboardDismissMode = UIScrollViewKeyboardDismissModeOnDrag;
+    self.tableView.hidden = YES;
     [self.view addSubview:self.tableView];
     
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.addressBarView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0]];
@@ -233,9 +233,9 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
     if (searchText.length == 0) {
         [self searchEnded];
     } else {
-        self.tableView.alpha = 1.0f;
+        self.tableView.hidden = NO;
         [self.dataSource searchForParticipantsMatchingText:searchText completion:^(NSSet *participants) {
-            self.tableView.alpha = 1.0;
+            self.tableView.hidden = NO;
             self.participants = [self filteredParticipants:participants];
             [self.tableView reloadData];
             [self.tableView setContentOffset:CGPointZero animated:NO];
@@ -312,7 +312,7 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
         [self.delegate addressBarViewControllerDidEndSearching:self];
     }
     self.participants = nil;
-    self.tableView.alpha = 0.0f;
+    self.tableView.hidden = YES;
 }
 
 - (NSAttributedString *)attributedStringForParticipant:(id<LYRUIParticipant>)participant
