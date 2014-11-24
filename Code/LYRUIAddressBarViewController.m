@@ -57,19 +57,6 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
     self.tableView.keyboardDismissMode = UIScrollViewKeyboardDismissModeOnDrag;
     [self.view addSubview:self.tableView];
     
-    UITapGestureRecognizer *gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(addressBarTextViewTapped:)];
-    [self.addressBarView.addressBarTextView addGestureRecognizer:gestureRecognizer];
-}
-
-- (void)updateControllerOffset:(CGPoint)offset
-{
-    self.controllerYOffset = -offset.y;
-
-    [self updateConstraints];
-}
-
-- (void)updateConstraints
-{
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.addressBarView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0]];
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.addressBarView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeTop multiplier:1.0 constant:0]];
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.addressBarView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0]];
@@ -79,7 +66,13 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.tableView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.addressBarView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0]];
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.tableView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0]];
     
-    [super updateViewConstraints];
+    UITapGestureRecognizer *gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(addressBarTextViewTapped:)];
+    [self.addressBarView.addressBarTextView addGestureRecognizer:gestureRecognizer];
+}
+
+- (void)updateControllerOffset:(CGPoint)offset
+{
+    self.controllerYOffset = -offset.y;
 }
 
 #pragma mark - Table view data source
