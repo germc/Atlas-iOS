@@ -36,7 +36,6 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
     [super viewDidLoad];
     
     self.view.translatesAutoresizingMaskIntoConstraints = NO;
-    self.view.autoresizingMask = UIViewAutoresizingFlexibleHeight;
     
     self.addressBarView = [[LYRUIAddressBarView alloc] init];
     self.addressBarView.translatesAutoresizingMaskIntoConstraints = NO;
