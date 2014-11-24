@@ -16,7 +16,6 @@
 @property (nonatomic) NSSet *selectedParticipants;
 
 @property (nonatomic) NSLayoutConstraint *addressBarViewHeightConstraint;
-@property (nonatomic) NSLayoutConstraint *addressBarViewTopConstraint;
 
 @property (nonatomic) NSUInteger addressBarViewDefaultHeight;
 @property (nonatomic) NSUInteger addressBarViewOffset;
@@ -67,10 +66,9 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
     UIView *presentingView = [[self parentViewController] view];
     [presentingView addConstraint:[NSLayoutConstraint constraintWithItem:self.view attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:presentingView attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0.0]];
     self.addressBarViewHeightConstraint = [NSLayoutConstraint constraintWithItem:self.view attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:self.addressBarViewDefaultHeight];
-    self.addressBarViewTopConstraint = [NSLayoutConstraint constraintWithItem:self.view attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:presentingView attribute:NSLayoutAttributeTop multiplier:1.0 constant:self.controllerYOffset];
+    [presentingView addConstraint:[NSLayoutConstraint constraintWithItem:self.view attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:presentingView attribute:NSLayoutAttributeTop multiplier:1.0 constant:self.controllerYOffset]];
     
     [presentingView addConstraint:self.addressBarViewHeightConstraint];
-    [presentingView addConstraint:self.addressBarViewTopConstraint];
     
     [self updateConstraints];
 }
