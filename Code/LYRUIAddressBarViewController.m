@@ -65,7 +65,6 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
 
     UIView *presentingView = [[self parentViewController] view];
     self.addressBarViewHeightConstraint = [NSLayoutConstraint constraintWithItem:self.view attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:self.addressBarViewDefaultHeight];
-    [presentingView addConstraint:[NSLayoutConstraint constraintWithItem:self.view attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:presentingView attribute:NSLayoutAttributeTop multiplier:1.0 constant:self.controllerYOffset]];
     
     [presentingView addConstraint:self.addressBarViewHeightConstraint];
     
