@@ -17,9 +17,6 @@
 @property (nonatomic) NSArray *participants;
 @property (nonatomic) NSSet *selectedParticipants;
 
-@property (nonatomic) NSUInteger addressBarViewOffset;
-@property (nonatomic) NSUInteger controllerYOffset;
-
 @property (nonatomic, getter=isPermanent) BOOL permanent;
 
 @end
@@ -68,11 +65,6 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
     
     UITapGestureRecognizer *gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(addressBarTextViewTapped:)];
     [self.addressBarView.addressBarTextView addGestureRecognizer:gestureRecognizer];
-}
-
-- (void)updateControllerOffset:(CGPoint)offset
-{
-    self.controllerYOffset = -offset.y;
 }
 
 #pragma mark - Table view data source

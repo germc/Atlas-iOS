@@ -140,7 +140,6 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
         [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.addressBarController.view attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0.0]];
         [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.addressBarController.view attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.topLayoutGuide attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0]];
         [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.addressBarController.view attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0]];
-        [self.addressBarController updateControllerOffset:CGPointMake(0, -64)];
         self.collectionViewTopConstraint.constant = 40;
         
     }
@@ -824,12 +823,6 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 {
     [self.collectionView.collectionViewLayout invalidateLayout];
     
-}
-
-- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
-{
-    CGPoint point = self.collectionView.contentOffset;
-    [self.addressBarController updateControllerOffset:point];
 }
 
 #pragma mark Notification Observer Delegate Methods
