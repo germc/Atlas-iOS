@@ -30,7 +30,6 @@
 @property (nonatomic) BOOL shouldScrollToBottom;
 @property (nonatomic) BOOL shouldDisplayAvatarImage;
 @property (nonatomic) CGRect addressBarRect;
-@property (nonatomic) NSLayoutConstraint *collectionViewTopConstraint;
 @property (nonatomic) NSLayoutConstraint *typingIndicatorViewTopConstraint;
 @property (nonatomic) NSMutableDictionary *typingIndicatorStatusByParticipant;
 @property (nonatomic) LYRQueryController *queryController;
@@ -126,7 +125,6 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
         [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.addressBarController.view attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0.0]];
         [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.addressBarController.view attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.topLayoutGuide attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0]];
         [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.addressBarController.view attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0]];
-        self.collectionViewTopConstraint.constant = 40;
     }
 
     [self updateAutoLayoutConstraints];
@@ -196,6 +194,21 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:LYRConversationDidReceiveTypingIndicatorNotification
                                                   object:self.conversation];
+}
+
+- (void)viewDidLayoutSubviews
+{
+    [super viewDidLayoutSubviews];
+
+    if (self.addressBarController) {
+        UIEdgeInsets contentInset = self.collectionView.contentInset;
+        UIEdgeInsets scrollIndicatorInsets = self.collectionView.scrollIndicatorInsets;
+        CGRect frame = [self.view convertRect:self.addressBarController.addressBarView.frame fromView:self.addressBarController.addressBarView.superview];
+        contentInset.top = CGRectGetMaxY(frame);
+        scrollIndicatorInsets.top = contentInset.top;
+        self.collectionView.contentInset = contentInset;
+        self.collectionView.scrollIndicatorInsets = scrollIndicatorInsets;
+    }
 }
 
 - (void)dealloc
@@ -1006,16 +1019,15 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
                                                           attribute:NSLayoutAttributeRight
                                                          multiplier:1.0
                                                            constant:0]];
-    
-    self.collectionViewTopConstraint = [NSLayoutConstraint constraintWithItem:self.collectionView
-                                                                    attribute:NSLayoutAttributeTop
-                                                                    relatedBy:NSLayoutRelationEqual
-                                                                       toItem:self.view
-                                                                    attribute:NSLayoutAttributeTop
-                                                                   multiplier:1.0
-                                                                     constant:0];
-    [self.view addConstraint:self.collectionViewTopConstraint];
-    
+
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.collectionView
+                                                          attribute:NSLayoutAttributeTop
+                                                          relatedBy:NSLayoutRelationEqual
+                                                             toItem:self.view
+                                                          attribute:NSLayoutAttributeTop
+                                                         multiplier:1.0
+                                                           constant:0]];
+
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.collectionView
                                                           attribute:NSLayoutAttributeBottom
                                                           relatedBy:NSLayoutRelationEqual
