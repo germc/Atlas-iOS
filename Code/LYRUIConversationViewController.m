@@ -136,6 +136,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
         [self addChildViewController:self.addressBarController];
         [self.view addSubview:self.addressBarController.view];
         [self.addressBarController didMoveToParentViewController:self];
+        [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.addressBarController.view attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0.0]];
         [self.addressBarController updateControllerOffset:CGPointMake(0, -64)];
         self.collectionViewTopConstraint.constant = 40;
         
