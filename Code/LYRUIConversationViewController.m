@@ -993,10 +993,6 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     [[LYRUIAvatarImageView appearance] setInitialViewBackgroundColor:LSGrayColor()];
     [[LYRUIAvatarImageView appearance] setInitialColor:[UIColor blackColor]];
     [[LYRUIAvatarImageView appearance] setInitialFont:LSLightFont(14)];
-    
-    [[LYRUIAddressBarTextView appearance] setAddressBarFont:LSMediumFont(14)];
-    [[LYRUIAddressBarTextView appearance] setAddressBarTextColor:[UIColor blackColor]];
-    [[LYRUIAddressBarTextView appearance] setAddressBarHighlightColor:LSBlueColor()];
 }
 
 #pragma mark - Auto Layout Configuration
