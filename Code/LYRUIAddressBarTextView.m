@@ -13,7 +13,7 @@
 @interface LYRUIAddressBarTextView ()
 
 @property (nonatomic) UILabel *toLabel;
-@property (nonatomic) NSUInteger maxHeight;
+@property (nonatomic) CGFloat maxHeight;
 
 @end
 
