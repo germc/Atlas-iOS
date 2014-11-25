@@ -7,16 +7,13 @@
 //
 
 #import "LYRUIAddressBarViewController.h"
-#import "LYRUIAddressToken.h"
 #import "LYRUIConstants.h"
 
 @interface LYRUIAddressBarViewController () <UITextViewDelegate, UITableViewDataSource, UITableViewDelegate>
 
 @property (nonatomic) UITableView *tableView;
 @property (nonatomic) NSArray *participants;
-@property (nonatomic) CGFloat searchFilterIndex;
-@property (nonatomic) NSMutableArray *addressTokenIndex;
-@property (nonatomic) NSMutableArray *addressTokens;
+@property (nonatomic) NSSet *selectedParticipants;
 
 @property (nonatomic) NSLayoutConstraint *addressBarViewWidthConstraint;
 @property (nonatomic) NSLayoutConstraint *addressBarViewHeightConstraint;
@@ -31,6 +28,7 @@
 @implementation LYRUIAddressBarViewController
 
 static NSString *const LSParticpantCellIdentifier = @"participantCellIdentifier";
+static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressBarParticipant";
 
 - (void)viewDidLoad
 {
@@ -38,9 +36,6 @@ static NSString *const LSParticpantCellIdentifier = @"participantCellIdentifier"
     
     self.view.translatesAutoresizingMaskIntoConstraints = NO;
     self.view.autoresizingMask = UIViewAutoresizingFlexibleHeight;
-    
-    self.addressTokenIndex = [[NSMutableArray alloc] init];
-    self.addressTokens = [[NSMutableArray alloc] init];
     
     self.addressBarView = [[LYRUIAddressBarView alloc] init];
     self.addressBarView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -136,26 +131,46 @@ static NSString *const LSParticpantCellIdentifier = @"participantCellIdentifier"
 
 - (void)setPermanent
 {
-    if (self.addressTokens.count) {
-        LYRUIAddressToken *token = [self.addressTokens objectAtIndex:0];
-        NSString *permanentText = token.participant.firstName;
-        for (int i = 1; i < self.addressTokens.count; i++) {
-            token = [self.addressTokens objectAtIndex:i];
-            permanentText = [permanentText stringByAppendingString:[NSString stringWithFormat:@", %@", token.participant.firstName]];
+    NSAttributedString *attributedString = self.addressBarView.addressBarTextView.attributedText;
+    NSMutableString *permanentText = [NSMutableString new];
+    [attributedString enumerateAttribute:LYRUIAddressBarParticipantAttributeName inRange:NSMakeRange(0, attributedString.length) options:0 usingBlock:^(id<LYRUIParticipant> participant, NSRange range, BOOL *stop) {
+        if (!participant) return;
+        if (permanentText.length > 0) {
+            [permanentText appendString:@", "];
         }
-        self.addressBarView.addressBarTextView.text = permanentText;
-        self.addressBarView.addressBarTextView.textColor = LSGrayColor();
-        self.addressBarView.addressBarTextView.userInteractionEnabled = NO;
-    }
+        [permanentText appendString:participant.fullName];
+    }];
+    self.addressBarView.addressBarTextView.text = permanentText;
+    self.addressBarView.addressBarTextView.textColor = LSGrayColor();
+    self.addressBarView.addressBarTextView.userInteractionEnabled = NO;
     [self sizeAddressBarView];
 }
 
 - (void)selectParticipant:(id<LYRUIParticipant>)participant
 {
-    // Create a new token and add it to the token array
-    LYRUIAddressToken *token = [self createTokenForParticipant:participant];
-    [self addToken:token];
-    
+    for (id<LYRUIParticipant> existingParticipant in self.selectedParticipants) {
+        if ([existingParticipant.participantIdentifier isEqualToString:participant.participantIdentifier]) {
+            return;
+        }
+    }
+
+    NSSet *existingParticipants = [NSSet setWithSet:self.selectedParticipants];
+    self.selectedParticipants = [existingParticipants setByAddingObject:participant];
+
+    NSAttributedString *attributedString = self.addressBarView.addressBarTextView.attributedText;
+    NSMutableAttributedString *adjustedAttributedString = [NSMutableAttributedString new];
+    [attributedString enumerateAttribute:LYRUIAddressBarParticipantAttributeName inRange:NSMakeRange(0, attributedString.length) options:0 usingBlock:^(id<LYRUIParticipant> participant, NSRange range, BOOL *stop) {
+        if (!participant) return;
+        NSAttributedString *attributedParticipant = [self attributedStringForParticipant:participant];
+        [adjustedAttributedString appendAttributedString:attributedParticipant];
+    }];
+
+    NSAttributedString *attributedParticipant = [self attributedStringForParticipant:participant];
+    [adjustedAttributedString appendAttributedString:attributedParticipant];
+
+    self.addressBarView.addressBarTextView.attributedText = adjustedAttributedString;
+    [self sizeAddressBarView];
+
     // Inform delegate of selection
     if ([self.delegate respondsToSelector:@selector(addressBarViewController:didSelectParticipant:)]) {
         [self.delegate addressBarViewController:self didSelectParticipant:participant];
@@ -163,101 +178,13 @@ static NSString *const LSParticpantCellIdentifier = @"participantCellIdentifier"
     [self searchEnded];
 }
 
-#pragma mark - Token Configuration Methods
+#pragma mark - UIScrollViewDelegate
 
-- (LYRUIAddressToken *)createTokenForParticipant:(id<LYRUIParticipant>)participant
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
-    // Tokenize the participant and add to the token array
-    NSRange range = NSMakeRange([self addressLabel].length, participant.fullName.length + 1);
-    LYRUIAddressToken *token = [LYRUIAddressToken tokenWithParticipant:participant range:range];
-    return token;
-}
-
-- (void)addToken:(LYRUIAddressToken *)token
-{
-    // Add token to the token array
-    [self.addressTokens addObject:token];
-    
-    // Reset the text of the Address Bar text view on every selection
-    [self setAddressBarText];
-    
-    // Tokens must be mapped against their indexes. Used to look up tokens in response to tap events
-    [self mapAddressTokenIndex];
-    
-    self.selectedParticipants = [NSSet setWithArray:[self.addressTokens valueForKey:@"participant"]];
-    
-    [self sizeAddressBarView];
-}
-
-- (void)removeToken:(LYRUIAddressToken *)token
-{
-    // We are going to reset address bar text so clear it
-    self.searchFilterIndex = 0;
-    
-    // Remove token from the token array
-    [self.addressTokens removeObject:token];
-    
-    // Need to re-calculate token ranges after removal
-    [self mapTokenRanges];
-    
-    self.selectedParticipants = [NSSet setWithArray:[self.addressTokens valueForKey:@"participant"]];
-    
-    if ([self.delegate respondsToSelector:@selector(addressBarViewController:didRemoveParticipant:)]) {
-        [self.delegate addressBarViewController:self didRemoveParticipant:token.participant];
-    }
-    [self sizeAddressBarView];
-}
-
-- (void)setAddressBarText;
-{
-    self.addressBarView.addressBarTextView.text = [self addressLabel];
-    self.searchFilterIndex = self.addressBarView.addressBarTextView.text.length;
-
-    NSRange range = NSMakeRange(0, 0);
-    NSDictionary *currentAttributes = [self.addressBarView.addressBarTextView.attributedText attributesAtIndex:0 effectiveRange:&range];
-    NSMutableAttributedString *selectedString = [[NSMutableAttributedString alloc] initWithString:self.addressBarView.addressBarTextView.text attributes:currentAttributes];
-    [selectedString addAttribute:NSForegroundColorAttributeName value:self.addressBarView.addressBarTextView.addressBarHightlightColor range:NSMakeRange(0, selectedString.length - 2)];
-    self.addressBarView.addressBarTextView.attributedText = selectedString;
-    self.searchFilterIndex = self.addressBarView.addressBarTextView.text.length;
-}
-
-- (NSString *)addressLabel
-{
-    NSString *addressLabel = @"";
-    for (LYRUIAddressToken *token in self.addressTokens) {
-        NSString *participantName = [NSString stringWithFormat:@"%@, ", token.participant.fullName];
-        addressLabel = [addressLabel stringByAppendingString:participantName];
-    }
-    return addressLabel;
-}
-
-- (void)mapAddressTokenIndex
-{
-    [self.addressTokenIndex removeAllObjects];
-    for (LYRUIAddressToken *token in self.addressTokens) {
-        NSString *participantName = [NSString stringWithFormat:@"%@,", token.participant.fullName];
-        for (int i = 0; i < participantName.length; i++){
-            [self.addressTokenIndex addObject:token];
-        }
-        // Add `NSNull` object to represent spaces
-        [self.addressTokenIndex addObject:[NSNull null]];
-    }
-}
-
-- (void)mapTokenRanges
-{
-    NSMutableArray *tempTokens = [NSMutableArray arrayWithArray:self.addressTokens];
-    if (!tempTokens.count) {
-        [self searchEnded];
-    } else {
-        [self.addressTokens removeAllObjects];
-        for (LYRUIAddressToken *token in tempTokens) {
-            [self addToken:[self createTokenForParticipant:token.participant]];
-        }
-        if ([self.delegate respondsToSelector:@selector(addressBarViewControllerDidEndSearching:)]) {
-            [self.delegate addressBarViewControllerDidEndSearching:self];
-        }
-        [self searchEnded];
+    if (scrollView != self.addressBarView.addressBarTextView) return;
+    if (CGSizeEqualToSize(scrollView.frame.size, scrollView.contentSize)) {
+        scrollView.contentOffset = CGPointZero;
     }
 }
 
@@ -278,25 +205,35 @@ static NSString *const LSParticpantCellIdentifier = @"participantCellIdentifier"
 
 - (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
 {
+    if (textView.typingAttributes[NSForegroundColorAttributeName]) {
+        NSMutableDictionary *attributes = [textView.typingAttributes mutableCopy];
+        [attributes removeObjectForKey:NSForegroundColorAttributeName];
+        textView.typingAttributes = attributes;
+    }
+
     // If user is deleting...
     if ([text isEqualToString:@""]) {
-        // If we have a token maping for the current range...
-        if (self.addressTokenIndex.count > range.location) {
-            // If the user is not deleting a blank space we, need to get a token
-            if (![[self.addressTokenIndex objectAtIndex:range.location] isKindOfClass:[NSNull class]]) {
-                LYRUIAddressToken *token = [self.addressTokenIndex objectAtIndex:range.location];
-                // If range.length is 1, we need to select the token
-                if (range.length == 1) {
-                    [self.addressBarView.addressBarTextView setSelectedRange:token.range];
-                    return NO;
-                } else {
-                    // If range.length is more than 1, we need to delete the token
-                    [self removeToken:token];
-                }
+        NSAttributedString *attributedString = textView.attributedText;
+        // If range.length is 1, we need to select the participant
+        if (range.length == 1) {
+            NSRange effectiveRange;
+            id<LYRUIParticipant> participant = [attributedString attribute:LYRUIAddressBarParticipantAttributeName atIndex:range.location longestEffectiveRange:&effectiveRange inRange:NSMakeRange(0, attributedString.length)];
+            if (participant && effectiveRange.location + effectiveRange.length == range.location + range.length) {
+                textView.selectedRange = effectiveRange;
+                return NO;
             }
         }
     }
     return YES;
+}
+
+- (void)textViewDidChangeSelection:(UITextView *)textView
+{
+    NSRange selectedRange = textView.selectedRange;
+    NSRange acceptableRange = [self acceptableSelectedRange];
+    if (!NSEqualRanges(acceptableRange, selectedRange)) {
+        textView.selectedRange = acceptableRange;
+    }
 }
 
 - (void)sizeAddressBarView
@@ -306,52 +243,68 @@ static NSString *const LSParticpantCellIdentifier = @"participantCellIdentifier"
 
 - (void)textViewDidChange:(UITextView *)textView
 {
-    [self sizeAddressBarView];
-    // If no text, reset search bar
-    if (!textView.text.length) {
-        [self searchEnded];
-        self.searchFilterIndex = 0;
-    } else {
-        NSString *searchText = [self filterTextViewText:textView];
-        if (searchText) {
-            self.tableView.alpha = 1.0f;
-            [self.dataSource searchForParticipantsMatchingText:searchText completion:^(NSSet *participants) {
-                self.tableView.alpha = 1.0;
-                self.participants = [self filteredParticipants:participants];
-                [self.tableView reloadData];
-                if ([self.delegate respondsToSelector:@selector(addressBarViewControllerDidBeginSearching:)]) {
-                    [self.delegate addressBarViewControllerDidBeginSearching:self];
-                }
-                [self updateControllerHeight];
-            }];
+    NSAttributedString *attributedString = textView.attributedText;
+    NSMutableSet *participants = [NSMutableSet new];
+    [attributedString enumerateAttribute:LYRUIAddressBarParticipantAttributeName inRange:NSMakeRange(0, attributedString.length) options:0 usingBlock:^(id<LYRUIParticipant> participant, NSRange range, BOOL *stop) {
+        if (!participant) return;
+        [participants addObject:participant];
+    }];
+    NSMutableSet *removedParticipants = [NSMutableSet setWithSet:self.selectedParticipants];
+    [removedParticipants minusSet:participants];
+    self.selectedParticipants = participants;
+    if ([self.delegate respondsToSelector:@selector(addressBarViewController:didRemoveParticipant:)]) {
+        for (id<LYRUIParticipant> participant in removedParticipants) {
+            [self.delegate addressBarViewController:self didRemoveParticipant:participant];
         }
+    }
+
+    [self sizeAddressBarView];
+    NSString *searchText = [self filterTextViewText:textView];
+    // If no text, reset search bar
+    if (searchText.length == 0) {
+        [self searchEnded];
+    } else {
+        self.tableView.alpha = 1.0f;
+        [self.dataSource searchForParticipantsMatchingText:searchText completion:^(NSSet *participants) {
+            self.tableView.alpha = 1.0;
+            self.participants = [self filteredParticipants:participants];
+            [self.tableView reloadData];
+            [self.tableView setContentOffset:CGPointZero animated:NO];
+            if ([self.delegate respondsToSelector:@selector(addressBarViewControllerDidBeginSearching:)]) {
+                [self.delegate addressBarViewControllerDidBeginSearching:self];
+            }
+            [self updateControllerHeight];
+        }];
     }
 }
 
 - (NSString *)filterTextViewText:(UITextView *)textView
 {
-    if (textView.text.length >= self.searchFilterIndex) {
-        return [[textView.text substringFromIndex:self.searchFilterIndex] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-    } else if ((textView.text.length + 1) == self.searchFilterIndex){
-        return nil;
-    }
-    return nil;
+    NSAttributedString *attributedString = textView.attributedText;
+    __block NSRange searchRange = NSMakeRange(NSNotFound, 0);
+    [attributedString enumerateAttribute:LYRUIAddressBarParticipantAttributeName inRange:NSMakeRange(0, attributedString.length) options:0 usingBlock:^(id<LYRUIParticipant> participant, NSRange range, BOOL *stop) {
+        if (participant) return;
+        searchRange = range;
+    }];
+    if (searchRange.location == NSNotFound) return nil;
+    NSAttributedString *attributedSearchString = [attributedString attributedSubstringFromRange:searchRange];
+    NSString *searchString = attributedSearchString.string;
+    NSString *trimmedSearchString = [searchString stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    return trimmedSearchString;
 }
 
 - (NSArray *)filteredParticipants:(NSSet *)participants
 {
-    NSMutableArray *mutableParticipants = [[participants allObjects] mutableCopy];
-    for (LYRUIAddressToken *token in self.addressTokens) {
-        [mutableParticipants removeObject:token.participant];
-    }
-    return mutableParticipants;
+    NSMutableSet *prospectiveParticipants = [participants mutableCopy];
+    [prospectiveParticipants minusSet:self.selectedParticipants];
+    return prospectiveParticipants.allObjects;
 }
 
 - (void)addressBarTextViewTapped:(UITapGestureRecognizer *)recognizer
 {
     // Make sure the addressTextView is first responder
     if (!self.addressBarView.addressBarTextView.isFirstResponder) {
-        [self.addressBarView.addressBarTextView  becomeFirstResponder];
+        [self.addressBarView.addressBarTextView becomeFirstResponder];
     }
     
     // Calculate the tap index
@@ -359,19 +312,21 @@ static NSString *const LSParticpantCellIdentifier = @"participantCellIdentifier"
     CGPoint tapPoint = [recognizer locationInView:textView];
     UITextPosition *tapTextPosition = [textView closestPositionToPoint:tapPoint];
     NSInteger tapIndex = [self.addressBarView.addressBarTextView offsetFromPosition:self.addressBarView.addressBarTextView.beginningOfDocument toPosition:tapTextPosition];
-    
-    // Check if we have a mapping for the tap index
-    if ((self.addressTokenIndex.count > tapIndex )) {
-        // If the mapping is `NSNull` object, select the end last index of textView
-        if ([[self.addressTokenIndex objectAtIndex:tapIndex] isKindOfClass:[NSNull class]]) {
-            [self.addressBarView.addressBarTextView setSelectedRange:NSMakeRange(self.addressBarView.addressBarTextView.text.length, 0)];
-        } else {
-            // If the mapping is a token, select the entire token
-            LYRUIAddressToken *token = [self.addressTokenIndex objectAtIndex:tapIndex];
-            [self.addressBarView.addressBarTextView setSelectedRange:token.range];
-        }
+    NSAttributedString *attributedString = self.addressBarView.addressBarTextView.attributedText;
+    if (tapIndex == 0) {
+        textView.selectedRange = NSMakeRange(0, 0);
+        return;
+    }
+    if (tapIndex == attributedString.length) {
+        textView.selectedRange = NSMakeRange(attributedString.length, 0);
+        return;
+    }
+    NSRange participantRange;
+    id<LYRUIParticipant> participant = [attributedString attribute:LYRUIAddressBarParticipantAttributeName atIndex:tapIndex - 1 longestEffectiveRange:&participantRange inRange:NSMakeRange(0, attributedString.length)];
+    if (participant) {
+        textView.selectedRange = participantRange;
     } else {
-        [self.addressBarView.addressBarTextView setSelectedRange:NSMakeRange(self.addressBarView.addressBarTextView.text.length, 0)];
+        textView.selectedRange = NSMakeRange(tapIndex, 0);
     }
 }
 
@@ -393,5 +348,51 @@ static NSString *const LSParticpantCellIdentifier = @"participantCellIdentifier"
     self.tableView.alpha = 0.0f;
 }
 
+- (NSAttributedString *)attributedStringForParticipant:(id<LYRUIParticipant>)participant
+{
+    LYRUIAddressBarTextView *textView = self.addressBarView.addressBarTextView;
+    NSMutableAttributedString *attributedString = [NSMutableAttributedString new];
+
+    NSAttributedString *attributedName = [[NSAttributedString alloc] initWithString:participant.fullName attributes:@{NSForegroundColorAttributeName: textView.addressBarHightlightColor}];
+    [attributedString appendAttributedString:attributedName];
+
+    NSAttributedString *attributedDelimiter = [[NSAttributedString alloc] initWithString:@", " attributes:@{NSForegroundColorAttributeName: [UIColor grayColor]}];
+    [attributedString appendAttributedString:attributedDelimiter];
+
+    [attributedString addAttributes:@{LYRUIAddressBarParticipantAttributeName: participant, NSFontAttributeName: textView.font, NSParagraphStyleAttributeName: textView.typingAttributes[NSParagraphStyleAttributeName]} range:NSMakeRange(0, attributedString.length)];
+
+    return attributedString;
+}
+
+- (NSRange)acceptableSelectedRange
+{
+    NSRange selectedRange = self.addressBarView.addressBarTextView.selectedRange;
+    NSAttributedString *attributedString = self.addressBarView.addressBarTextView.attributedText;
+    if (selectedRange.length == 0) {
+        if (selectedRange.location == 0) return selectedRange;
+        if (selectedRange.location == attributedString.length) return selectedRange;
+        NSRange participantRange;
+        id<LYRUIParticipant> participant = [attributedString attribute:LYRUIAddressBarParticipantAttributeName atIndex:selectedRange.location longestEffectiveRange:&participantRange inRange:NSMakeRange(0, attributedString.length)];
+        if (!participant) return selectedRange;
+        if (selectedRange.location <= participantRange.location) return selectedRange;
+        NSUInteger participantStartIndex = participantRange.location;
+        NSUInteger participantEndIndex = participantRange.location + participantRange.length;
+        BOOL closerToParticipantStart = selectedRange.location - participantStartIndex < participantEndIndex - selectedRange.location;
+        if (closerToParticipantStart) {
+            return NSMakeRange(participantStartIndex, 0);
+        } else {
+            return NSMakeRange(participantEndIndex, 0);
+        }
+    }
+
+    __block NSRange adjustedRange = selectedRange;
+    [attributedString enumerateAttribute:LYRUIAddressBarParticipantAttributeName inRange:NSMakeRange(0, attributedString.length) options:0 usingBlock:^(id<LYRUIParticipant> participant, NSRange range, BOOL *stop) {
+        if (!participant) return;
+        if (NSIntersectionRange(selectedRange, range).length == 0) return;
+        adjustedRange = NSUnionRange(adjustedRange, range);
+    }];
+
+    return adjustedRange;
+}
 
 @end

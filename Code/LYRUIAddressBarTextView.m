@@ -29,14 +29,13 @@ static NSUInteger const LYRUILineSpacingConstant = 6;
     if (self) {
         
         self.backgroundColor = [UIColor clearColor];
-        self.textContainerInset = UIEdgeInsetsZero;
+        self.textContainerInset = UIEdgeInsetsMake(10, 0, 10, 0);
 
         NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
         [paragraphStyle setFirstLineHeadIndent:28.0f];
         [paragraphStyle setHeadIndent:0];
         [paragraphStyle setLineSpacing:LYRUILineSpacingConstant];
-        self.attributedText = [[NSAttributedString alloc] initWithString:@" " attributes:@{NSParagraphStyleAttributeName : paragraphStyle,
-                                                                                           NSForegroundColorAttributeName: [UIColor blackColor]}];
+        self.typingAttributes = @{NSParagraphStyleAttributeName: paragraphStyle, NSForegroundColorAttributeName: [UIColor blackColor]};
         
         self.toLabel = [[UILabel alloc] init];
         self.toLabel.translatesAutoresizingMaskIntoConstraints = NO;
@@ -54,7 +53,7 @@ static NSUInteger const LYRUILineSpacingConstant = 6;
 - (void)updateConstraints
 {
     [self addConstraint:[NSLayoutConstraint constraintWithItem:self.toLabel attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1.0 constant:12]];
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:self.toLabel attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1.0 constant:0]];
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:self.toLabel attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1.0 constant:10]];
     [super updateConstraints];
 }
 
@@ -79,9 +78,9 @@ static NSUInteger const LYRUILineSpacingConstant = 6;
 
 - (void)setUpMaxHeight
 {
-    CGSize size = LYRUITextPlainSize(self.text, self.font);
+    CGSize size = LYRUITextPlainSize(@" ", self.font);
     if (!self.maxHeight) {
-        self.maxHeight = size.height * 2 + LYRUILineSpacingConstant;
+        self.maxHeight = ceil(size.height) * 2 + LYRUILineSpacingConstant + self.textContainerInset.top + self.textContainerInset.bottom;
     }
 }
 
