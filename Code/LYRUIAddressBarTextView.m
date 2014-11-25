@@ -19,7 +19,7 @@
 
 @implementation LYRUIAddressBarTextView
 
-static CGFloat const LYRUILineSpacingConstant = 6;
+static CGFloat const LYRUILineSpacing = 6;
 
 - (id)init
 {
@@ -30,7 +30,7 @@ static CGFloat const LYRUILineSpacingConstant = 6;
 
         NSMutableParagraphStyle *paragraphStyle = [NSMutableParagraphStyle new];
         paragraphStyle.firstLineHeadIndent = 28.0f;
-        paragraphStyle.lineSpacing = LYRUILineSpacingConstant;
+        paragraphStyle.lineSpacing = LYRUILineSpacing;
         self.typingAttributes = @{NSParagraphStyleAttributeName: paragraphStyle, NSForegroundColorAttributeName: [UIColor blackColor]};
         
         self.toLabel = [UILabel new];
@@ -68,7 +68,7 @@ static CGFloat const LYRUILineSpacingConstant = 6;
 - (void)setUpMaxHeight
 {
     CGSize size = LYRUITextPlainSize(@" ", self.font);
-    self.maxHeight = ceil(size.height) * 2 + LYRUILineSpacingConstant + self.textContainerInset.top + self.textContainerInset.bottom;
+    self.maxHeight = ceil(size.height) * 2 + LYRUILineSpacing + self.textContainerInset.top + self.textContainerInset.bottom;
 }
 
 @end
