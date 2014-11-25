@@ -43,8 +43,6 @@ static NSUInteger const LYRUILineSpacingConstant = 6;
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.toLabel attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1.0 constant:10]];
         // Adding the constraint below works around a crash on iOS 7.1. It will be overriden by the content size.
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.toLabel attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeRight multiplier:1.0 constant:0]];
-
-        [self updateConstraints];
     }
     return self;
 }
