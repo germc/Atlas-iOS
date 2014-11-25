@@ -29,9 +29,9 @@ static NSUInteger const LYRUILineSpacingConstant = 6;
         self.textContainerInset = UIEdgeInsetsMake(10, 0, 10, 0);
 
         NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
-        [paragraphStyle setFirstLineHeadIndent:28.0f];
-        [paragraphStyle setHeadIndent:0];
-        [paragraphStyle setLineSpacing:LYRUILineSpacingConstant];
+        paragraphStyle.firstLineHeadIndent = 28.0f;
+        paragraphStyle.headIndent = 0;
+        paragraphStyle.lineSpacing = LYRUILineSpacingConstant;
         self.typingAttributes = @{NSParagraphStyleAttributeName: paragraphStyle, NSForegroundColorAttributeName: [UIColor blackColor]};
         
         self.toLabel = [[UILabel alloc] init];
