@@ -28,12 +28,12 @@ static NSUInteger const LYRUILineSpacingConstant = 6;
         self.backgroundColor = [UIColor clearColor];
         self.textContainerInset = UIEdgeInsetsMake(10, 0, 10, 0);
 
-        NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
+        NSMutableParagraphStyle *paragraphStyle = [NSMutableParagraphStyle new];
         paragraphStyle.firstLineHeadIndent = 28.0f;
         paragraphStyle.lineSpacing = LYRUILineSpacingConstant;
         self.typingAttributes = @{NSParagraphStyleAttributeName: paragraphStyle, NSForegroundColorAttributeName: [UIColor blackColor]};
         
-        self.toLabel = [[UILabel alloc] init];
+        self.toLabel = [UILabel new];
         self.toLabel.translatesAutoresizingMaskIntoConstraints = NO;
         self.toLabel.text = @"To:";
         self.toLabel.textColor = LSGrayColor();
