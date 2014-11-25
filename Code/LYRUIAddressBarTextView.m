@@ -19,7 +19,7 @@
 
 @implementation LYRUIAddressBarTextView
 
-static NSUInteger const LYRUILineSpacingConstant = 6;
+static CGFloat const LYRUILineSpacingConstant = 6;
 
 - (id)init
 {
