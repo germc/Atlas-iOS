@@ -103,6 +103,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     self.messageInputToolbar.inputToolBarDelegate = self;
     [self.messageInputToolbar sizeToFit];
     self.inputAccessoryView = self.messageInputToolbar;
+    [self configureSendButtonEnablement];
     
     // Set the typing indicator label
     self.typingIndicatorView = [[LYRUITypingIndicatorView alloc] init];
@@ -208,6 +209,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 - (void)setConversation:(LYRConversation *)conversation
 {
     _conversation = conversation;
+    [self configureSendButtonEnablement];
     [self setupConversationDataSource:^{
         [self.collectionView reloadData];
         [UIView animateWithDuration:0.5 animations:^{
@@ -898,6 +900,19 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
             self.collectionView.alpha = 1.0f;
         }];
     }];
+}
+
+#pragma mark Send Button Enablement
+
+- (void)configureSendButtonEnablement
+{
+    self.messageInputToolbar.canEnableSendButton = [self shouldAllowSendButtonEnablement];
+}
+
+- (BOOL)shouldAllowSendButtonEnablement
+{
+    if (!self.conversation) return NO;
+    return YES;
 }
 
 #pragma mark Default Message Cell Appearance

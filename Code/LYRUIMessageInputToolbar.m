@@ -42,6 +42,7 @@ static CGFloat const LSButtonHeight = 28;
         
         // Setup
         self.backgroundColor =  LSLighGrayColor();
+        self.canEnableSendButton = YES;
 
         // Initialize the Camera Button
         self.leftAccessoryButton = [[UIButton alloc] init];
@@ -70,10 +71,10 @@ static CGFloat const LSButtonHeight = 28;
         self.rightAccessoryButton.accessibilityLabel = @"Send Button";
         self.rightAccessoryButton.titleLabel.font = [UIFont systemFontOfSize:16];
         [self.rightAccessoryButton setTitle:@"SEND" forState:UIControlStateNormal];
-        [self.rightAccessoryButton setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
-        [self.rightAccessoryButton setTitleColor:LSBlueColor() forState:UIControlStateHighlighted];
+        [self.rightAccessoryButton setTitleColor:[UIColor grayColor] forState:UIControlStateDisabled];
+        [self.rightAccessoryButton setTitleColor:LSBlueColor() forState:UIControlStateNormal];
         [self.rightAccessoryButton addTarget:self action:@selector(rightAccessoryButtonTapped) forControlEvents:UIControlEventTouchUpInside];
-        [self.rightAccessoryButton setHighlighted:FALSE];
+        [self configureSendButtonEnablement];
         [self addSubview:self.rightAccessoryButton];
     
         [self setupLayoutConstraints];
@@ -99,9 +100,9 @@ static CGFloat const LSButtonHeight = 28;
 
 - (void)insertImage:(UIImage *)image
 {
-    [self.rightAccessoryButton setHighlighted:TRUE];
     [self.textInputView insertImage:image];
     [self adjustFrame];
+    [self configureSendButtonEnablement];
 }
 
 - (void)insertLocation:(CLLocation *)location
@@ -141,12 +142,13 @@ static CGFloat const LSButtonHeight = 28;
     }
     if (self.textInputView.text.length > 0) {
         [self.inputToolBarDelegate messageInputToolbar:self didTapRightAccessoryButton:self.rightAccessoryButton];
-        [self.rightAccessoryButton setHighlighted:FALSE];
+        self.rightAccessoryButton.enabled = NO;
         [self.textInputView removeAttachements];
         self.textInputView.text = @"";
         [self.textInputView layoutSubviews];
         self.messageParts = nil;
         self.attributedStringForMessageParts = nil;
+        [self configureSendButtonEnablement];
     }
     [self adjustFrame];
 }
@@ -190,18 +192,13 @@ static CGFloat const LSButtonHeight = 28;
 
 - (BOOL)textViewShouldEndEditing:(UITextView *)textView
 {
-    [self.rightAccessoryButton setHighlighted:NO];
     return YES;
 }
 
 - (void)textViewDidChange:(UITextView *)textView
 {
     [self adjustFrame];
-    if (textView.text.length > 0) {
-        [self.rightAccessoryButton setHighlighted:YES];
-    } else {
-        [self.rightAccessoryButton setHighlighted:NO];
-    }
+    [self configureSendButtonEnablement];
 }
 
 - (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
@@ -362,6 +359,28 @@ static CGFloat const LSButtonHeight = 28;
                                                                 multiplier:1.0
                                                                   constant:0]];
     [super layoutSubviews];
+}
+
+#pragma mark Send Button Enablement
+
+- (void)setCanEnableSendButton:(BOOL)canEnableSendButton
+{
+    if (canEnableSendButton == _canEnableSendButton) return;
+    _canEnableSendButton = canEnableSendButton;
+    [self configureSendButtonEnablement];
+}
+
+- (void)configureSendButtonEnablement
+{
+    self.rightAccessoryButton.enabled = [self shouldEnableSendButton];
+}
+
+- (BOOL)shouldEnableSendButton
+{
+    if (!self.canEnableSendButton) return NO;
+    if ([self.textInputView.text isEqualToString:LYRUIPlaceHolderText]) return NO;
+    if (self.textInputView.text.length == 0) return NO;
+    return YES;
 }
 
 @end
