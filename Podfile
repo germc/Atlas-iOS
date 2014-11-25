@@ -1,15 +1,11 @@
 platform :ios, '7.0'
-workspace 'LayerUIKit.xcworkspace'
 
 # Import CocoaPods sources
-source 'git@github.com:layerhq/cocoapods-specs.git'
 source 'https://github.com/CocoaPods/Specs.git'
 
 def import_common_pods
-  xcodeproj 'LayerUIKit.xcodeproj'
-  #pod 'LayerUIKit', path: '.'
-  #pod 'LayerKit', '~> 0.8.7'
-  #pod 'LayerKit', git: 'git@github.com:layerhq/LayerKit.git'
+  pod 'LayerUIKit', path: '.'
+  pod 'LayerKit'
 end
 
 def import_testing_pods

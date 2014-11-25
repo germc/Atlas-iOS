@@ -104,7 +104,7 @@
 		D0D778881A02E2B2000A5F51 = {
 			isa = PBXGroup;
 			children = (
-				D0D778BA1A02EAD8000A5F51 /* Samples */,
+				D0D778BA1A02EAD8000A5F51 /* Sample Code */,
 				D0D778D41A02EB83000A5F51 /* Tests */,
 				D0D778941A02EAA9000A5F51 /* Products */,
 				62DAD57DC0987BFBA6E8516D /* Pods */,
@@ -121,13 +121,13 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		D0D778BA1A02EAD8000A5F51 /* Samples */ = {
+		D0D778BA1A02EAD8000A5F51 /* Sample Code */ = {
 			isa = PBXGroup;
 			children = (
 				D0D778BC1A02EAEE000A5F51 /* Conversation */,
 				D0E729491A02F1C700B76672 /* Shared */,
 			);
-			name = Samples;
+			name = "Sample Code";
 			sourceTree = "<group>";
 		};
 		D0D778BC1A02EAEE000A5F51 /* Conversation */ = {
