@@ -8,16 +8,15 @@
 
 #import "LYRUIAddressBarViewController.h"
 #import "LYRUIConstants.h"
+#import "LYRUIAddressBarContainerView.h"
 
 @interface LYRUIAddressBarViewController () <UITextViewDelegate, UITableViewDataSource, UITableViewDelegate>
 
+@property (nonatomic) LYRUIAddressBarContainerView *view;
 @property (nonatomic) UITableView *tableView;
 @property (nonatomic) NSArray *participants;
 @property (nonatomic) NSSet *selectedParticipants;
 
-@property (nonatomic) NSLayoutConstraint *addressBarViewHeightConstraint;
-
-@property (nonatomic) NSUInteger addressBarViewDefaultHeight;
 @property (nonatomic) NSUInteger addressBarViewOffset;
 @property (nonatomic) NSUInteger controllerYOffset;
 
@@ -29,6 +28,11 @@
 
 static NSString *const LSParticpantCellIdentifier = @"participantCellIdentifier";
 static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressBarParticipant";
+
+- (void)loadView
+{
+    self.view = [LYRUIAddressBarContainerView new];
+}
 
 - (void)viewDidLoad
 {
@@ -49,13 +53,11 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:LSParticpantCellIdentifier];
+    self.tableView.alpha = 0.0;
     [self.view addSubview:self.tableView];
     
     UITapGestureRecognizer *gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(addressBarTextViewTapped:)];
     [self.addressBarView.addressBarTextView addGestureRecognizer:gestureRecognizer];
-    
-    self.addressBarViewDefaultHeight = 38;
-
 }
 
 - (void)updateControllerOffset:(CGPoint)offset
@@ -63,26 +65,7 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
     self.controllerYOffset = -offset.y;
     self.tableView.contentInset = UIEdgeInsetsMake(0, 0, -self.controllerYOffset, 0);
 
-    UIView *presentingView = [[self parentViewController] view];
-    self.addressBarViewHeightConstraint = [NSLayoutConstraint constraintWithItem:self.view attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:self.addressBarViewDefaultHeight];
-    
-    [presentingView addConstraint:self.addressBarViewHeightConstraint];
-    
     [self updateConstraints];
-}
-
-- (void)updateControllerHeight
-{
-    UIView *presentingView = [[self parentViewController] view];
-    self.addressBarViewHeightConstraint.constant = presentingView.frame.size.height - self.controllerYOffset;
-    [presentingView setNeedsUpdateConstraints];
-}
-
-- (void)resetControllerHeight
-{
-    UIView *presentingView = [[self parentViewController] view];
-    self.addressBarViewHeightConstraint.constant = self.addressBarViewDefaultHeight;
-    [presentingView setNeedsUpdateConstraints];
 }
 
 - (void)updateConstraints
@@ -274,7 +257,6 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
             if ([self.delegate respondsToSelector:@selector(addressBarViewControllerDidBeginSearching:)]) {
                 [self.delegate addressBarViewControllerDidBeginSearching:self];
             }
-            [self updateControllerHeight];
         }];
     }
 }
@@ -341,7 +323,6 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
 - (void)searchEnded
 {
     // Search resets on selection. Inform delegate
-    [self resetControllerHeight];
     if ([self.delegate respondsToSelector:@selector(addressBarViewControllerDidEndSearching:)]) {
         [self.delegate addressBarViewControllerDidEndSearching:self];
     }
