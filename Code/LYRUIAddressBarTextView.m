@@ -66,11 +66,24 @@ static CGFloat const LYRUILineSpacing = 6;
 
 - (void)setAddressBarFont:(UIFont *)addressBarFont
 {
+    if (!addressBarFont) return;
     self.font = addressBarFont;
     self.toLabel.font = addressBarFont;
     [self setUpMaxHeight];
     [self invalidateIntrinsicContentSize];
     _addressBarFont = addressBarFont;
+}
+
+ - (void)setAddressBarTextColor:(UIColor *)addressBarTextColor
+{
+    if (!addressBarTextColor) return;
+    _addressBarTextColor = addressBarTextColor;
+}
+
+- (void)setAddressBarHighlightColor:(UIColor *)addressBarHighlightColor
+{
+    if (!addressBarHighlightColor) return;
+    _addressBarHighlightColor = addressBarHighlightColor;
 }
 
 - (void)setUpMaxHeight
