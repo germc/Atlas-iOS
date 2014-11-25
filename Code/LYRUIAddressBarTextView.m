@@ -30,7 +30,6 @@ static NSUInteger const LYRUILineSpacingConstant = 6;
 
         NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
         paragraphStyle.firstLineHeadIndent = 28.0f;
-        paragraphStyle.headIndent = 0;
         paragraphStyle.lineSpacing = LYRUILineSpacingConstant;
         self.typingAttributes = @{NSParagraphStyleAttributeName: paragraphStyle, NSForegroundColorAttributeName: [UIColor blackColor]};
         
