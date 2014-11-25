@@ -175,7 +175,7 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
 {
     if (textView.typingAttributes[NSForegroundColorAttributeName]) {
         NSMutableDictionary *attributes = [textView.typingAttributes mutableCopy];
-        [attributes removeObjectForKey:NSForegroundColorAttributeName];
+        attributes[NSForegroundColorAttributeName] = self.addressBarView.addressBarTextView.addressBarTextColor;
         textView.typingAttributes = attributes;
     }
 

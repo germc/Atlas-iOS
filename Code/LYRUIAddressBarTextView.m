@@ -35,7 +35,7 @@ static CGFloat const LYRUILineSpacing = 6;
         NSMutableParagraphStyle *paragraphStyle = [NSMutableParagraphStyle new];
         paragraphStyle.firstLineHeadIndent = 28.0f;
         paragraphStyle.lineSpacing = LYRUILineSpacing;
-        self.typingAttributes = @{NSParagraphStyleAttributeName: paragraphStyle, NSForegroundColorAttributeName: [UIColor blackColor]};
+        self.typingAttributes = @{NSParagraphStyleAttributeName: paragraphStyle, NSForegroundColorAttributeName: self.addressBarTextColor};
         self.font = self.addressBarFont;
         
         self.toLabel = [UILabel new];
