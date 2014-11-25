@@ -37,7 +37,6 @@ static NSUInteger const LYRUILineSpacingConstant = 6;
         self.toLabel.translatesAutoresizingMaskIntoConstraints = NO;
         self.toLabel.text = @"To:";
         self.toLabel.textColor = LSGrayColor();
-        [self.toLabel sizeToFit];
         [self addSubview:self.toLabel];
         
         [self updateConstraints];
