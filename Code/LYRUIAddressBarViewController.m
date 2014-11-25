@@ -23,6 +23,8 @@
 @property (nonatomic) NSUInteger addressBarViewOffset;
 @property (nonatomic) NSUInteger controllerYOffset;
 
+@property (nonatomic, getter=isPermanent) BOOL permanent;
+
 @end
 
 @implementation LYRUIAddressBarViewController
@@ -133,6 +135,9 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
 
 - (void)setPermanent
 {
+    if (self.isPermanent) return;
+    self.permanent = YES;
+
     NSAttributedString *attributedString = self.addressBarView.addressBarTextView.attributedText;
     NSMutableString *permanentText = [NSMutableString new];
     [attributedString enumerateAttribute:LYRUIAddressBarParticipantAttributeName inRange:NSMakeRange(0, attributedString.length) options:0 usingBlock:^(id<LYRUIParticipant> participant, NSRange range, BOOL *stop) {
