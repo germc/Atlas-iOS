@@ -319,7 +319,7 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
     LYRUIAddressBarTextView *textView = self.addressBarView.addressBarTextView;
     NSMutableAttributedString *attributedString = [NSMutableAttributedString new];
 
-    NSAttributedString *attributedName = [[NSAttributedString alloc] initWithString:participant.fullName attributes:@{NSForegroundColorAttributeName: textView.addressBarHightlightColor}];
+    NSAttributedString *attributedName = [[NSAttributedString alloc] initWithString:participant.fullName attributes:@{NSForegroundColorAttributeName: textView.addressBarHighlightColor}];
     [attributedString appendAttributedString:attributedName];
 
     NSAttributedString *attributedDelimiter = [[NSAttributedString alloc] initWithString:@", " attributes:@{NSForegroundColorAttributeName: [UIColor grayColor]}];

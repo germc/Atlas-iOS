@@ -14,6 +14,6 @@
 
 @property (nonatomic) UIColor *addressBarTextColor UI_APPEARANCE_SELECTOR;
 
-@property (nonatomic) UIColor *addressBarHightlightColor UI_APPEARANCE_SELECTOR;
+@property (nonatomic) UIColor *addressBarHighlightColor UI_APPEARANCE_SELECTOR;
 
 @end

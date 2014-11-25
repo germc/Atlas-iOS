@@ -996,7 +996,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     
     [[LYRUIAddressBarTextView appearance] setAddressBarFont:LSMediumFont(14)];
     [[LYRUIAddressBarTextView appearance] setAddressBarTextColor:[UIColor blackColor]];
-    [[LYRUIAddressBarTextView appearance] setAddressBarHightlightColor:LSBlueColor()];
+    [[LYRUIAddressBarTextView appearance] setAddressBarHighlightColor:LSBlueColor()];
 }
 
 #pragma mark - Auto Layout Configuration
