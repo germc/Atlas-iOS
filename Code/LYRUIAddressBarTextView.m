@@ -27,7 +27,6 @@ static NSUInteger const LYRUILineSpacingConstant = 6;
 {
     self = [super init];
     if (self) {
-        
         self.backgroundColor = [UIColor clearColor];
         self.textContainerInset = UIEdgeInsetsMake(10, 0, 10, 0);
 
@@ -45,7 +44,6 @@ static NSUInteger const LYRUILineSpacingConstant = 6;
         [self addSubview:self.toLabel];
         
         [self updateConstraints];
-    
     }
     return self;
 }
@@ -67,7 +65,6 @@ static NSUInteger const LYRUILineSpacingConstant = 6;
     }
     return self.contentSize;
 }
-
 
 - (void)setAddressBarFont:(UIFont *)addressBarFont
 {
