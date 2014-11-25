@@ -8,8 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-extern NSString *const LYRUIPlaceHolderText;
-
 @interface LYRUIAddressBarTextView : UITextView
 
 @property (nonatomic) UIFont *addressBarFont UI_APPEARANCE_SELECTOR;

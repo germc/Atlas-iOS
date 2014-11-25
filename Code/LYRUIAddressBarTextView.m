@@ -10,8 +10,6 @@
 #import "LYRUIConstants.h"
 #import "LYRUIMessagingUtilities.h"
 
-NSString *const LYRUIPlaceHolder = @"Enter Name";
-
 @interface LYRUIAddressBarTextView ()
 
 @property (nonatomic) UILabel *toLabel;
