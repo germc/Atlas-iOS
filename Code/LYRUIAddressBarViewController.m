@@ -202,6 +202,9 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
     if (!NSEqualRanges(acceptableRange, selectedRange)) {
         textView.selectedRange = acceptableRange;
     }
+
+    // Workaround for automatic scrolling not occurring in some cases after text entry.
+    [textView scrollRangeToVisible:textView.selectedRange];
 }
 
 - (void)sizeAddressBarView

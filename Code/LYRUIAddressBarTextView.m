@@ -61,11 +61,13 @@ static CGFloat const LYRUILineSpacing = 6;
 
 - (CGSize)intrinsicContentSize
 {
-    [self layoutSubviews];
-    if (self.contentSize.height > self.maxHeight) {
-        return CGSizeMake(self.contentSize.width, self.maxHeight);
+    CGSize size = [self sizeThatFits:CGSizeMake(CGRectGetWidth(self.frame), MAXFLOAT)];
+    size.width = ceil(size.width);
+    size.height = ceil(size.height);
+    if (size.height > self.maxHeight) {
+        size.height = self.maxHeight;
     }
-    return self.contentSize;
+    return size;
 }
 
 - (void)setAddressBarFont:(UIFont *)addressBarFont
