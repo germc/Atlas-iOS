@@ -191,6 +191,8 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
                 return NO;
             }
         }
+    } else if ([text rangeOfString:@"\n"].location != NSNotFound) {
+        return NO;
     }
     return YES;
 }
