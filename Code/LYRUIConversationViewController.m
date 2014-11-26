@@ -914,12 +914,12 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 
 - (void)addressBarViewControllerDidBeginSearching:(LYRUIAddressBarViewController *)addressBarViewController
 {
-    self.inputAccessoryView.alpha = 0.0f;
+    self.inputAccessoryView.hidden = YES;
 }
 
 - (void)addressBarViewControllerDidEndSearching:(LYRUIAddressBarViewController *)addressBarViewController
 {
-    self.inputAccessoryView.alpha = 1.0f;
+    self.inputAccessoryView.hidden = NO;
 }
 
 - (void)addressBarViewController:(LYRUIAddressBarViewController *)addressBarViewController didSelectParticipant:(id<LYRUIParticipant>)participant
