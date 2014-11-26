@@ -69,17 +69,18 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
     self.tableView.accessibilityLabel = @"Conversation List";
     
     // Search Bar Setup
-    self.searchBar = [[UISearchBar alloc] initWithFrame:CGRectZero];
-    self.searchBar.accessibilityLabel = @"Search Bar";
-    self.searchBar.delegate = self;
-    self.searchController = [[UISearchDisplayController alloc] initWithSearchBar:self.searchBar contentsController:self];
-    self.searchController.delegate = self;
-    self.searchController.searchResultsDelegate = self;
-    self.searchController.searchResultsDataSource = self;
-    
+//    self.searchBar = [[UISearchBar alloc] initWithFrame:CGRectZero];
+//    self.searchBar.accessibilityLabel = @"Search Bar";
+//    self.searchBar.delegate = self;
+//    self.searchController = [[UISearchDisplayController alloc] initWithSearchBar:self.searchBar contentsController:self];
+//    self.searchController.delegate = self;
+//    self.searchController.searchResultsDelegate = self;
+//    self.searchController.searchResultsDataSource = self;
+
     // Set Search Bar as Table View Header
-    self.tableView.tableHeaderView = self.searchBar;
-    
+    //self.tableView.tableHeaderView = self.searchBar;
+    //[self.tableView setContentOffset:CGPointMake(0, 44)];
+
     // DataSoure
     [self setupConversationDataSource];
 }
