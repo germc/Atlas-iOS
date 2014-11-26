@@ -22,9 +22,6 @@
 {
     self = [super init];
     if (self) {
-        
-        self.autoresizingMask = UIViewAutoresizingFlexibleHeight;
-        
         self.addressBarTextView = [[LYRUIAddressBarTextView alloc] init];
         self.addressBarTextView.autoresizingMask = UIViewAutoresizingFlexibleHeight;
         self.addressBarTextView.translatesAutoresizingMaskIntoConstraints = NO;
