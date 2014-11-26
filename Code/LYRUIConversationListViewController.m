@@ -10,11 +10,9 @@
 #import "LYRUIConversationListViewController.h"
 #import "LYRUIDataSourceChange.h"
 #import "LYRUIConstants.h"
-#import "LYRUIConversationDataSource.h"
 
-@interface LYRUIConversationListViewController () <UISearchBarDelegate, UISearchDisplayDelegate, LYRUIConversationDataSourceDelegate, LYRQueryControllerDelegate>
+@interface LYRUIConversationListViewController () <UISearchBarDelegate, UISearchDisplayDelegate, LYRQueryControllerDelegate>
 
-@property (nonatomic) LYRUIConversationDataSource *conversationListDataSource;
 @property (nonatomic) UISearchBar *searchBar;
 @property (nonatomic) UISearchDisplayController *searchController;
 @property (nonatomic) NSMutableArray *filteredConversations;
@@ -107,12 +105,6 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 {
     [super viewDidDisappear:animated];
     self.isOnScreen = NO;
-}
-
-- (void)dealloc
-{
-    self.conversationListDataSource = nil;
-    self.conversationListDataSource.delegate = nil;
 }
 
 #pragma mark - Public setters
@@ -296,7 +288,7 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 {
     LYRConversation *conversation = [self.queryController objectAtIndexPath:indexPath];
     NSError *error;
-    BOOL success = [self.layerClient deleteConversation:conversation mode:deletionMode error:&error];
+    BOOL success = [conversation delete:deletionMode error:&error];
     if (!success) {
         if ([self.delegate respondsToSelector:@selector(conversationListViewController:didFailDeletingConversation:deletionMode:error:)]) {
             [self.delegate conversationListViewController:self didFailDeletingConversation:conversation deletionMode:deletionMode error:error];
@@ -326,24 +318,6 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     return self.rowHeight;
-}
-
-- (NSUInteger)unreadMessageCountForConversation:(LYRConversation *)conversation
-{
-    NSOrderedSet *messages = [self.layerClient messagesForConversation:conversation];
-    NSUInteger unreadMessageCount = 0;
-    for (LYRMessage *message in messages) {
-        LYRRecipientStatus status = [[message.recipientStatusByUserID objectForKey:self.layerClient.authenticatedUserID] integerValue];
-        switch (status) {
-            case LYRRecipientStatusDelivered:
-                unreadMessageCount += 1;
-                break;
-                
-            default:
-                break;
-        }
-    }
-    return unreadMessageCount;
 }
 
 #pragma mark - Conversation Editing Methods

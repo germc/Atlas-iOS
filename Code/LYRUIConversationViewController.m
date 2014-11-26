@@ -437,7 +437,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     NSNumber *recipientStatus = [message.recipientStatusByUserID objectForKey:self.layerClient.authenticatedUserID];
     if (![recipientStatus isEqualToNumber:[NSNumber numberWithInteger:LYRRecipientStatusRead]] ) {
         NSError *error;
-        BOOL success = [self.layerClient markMessageAsRead:message error:&error];
+        BOOL success = [message markAsRead:&error];
         if (success) {
             NSLog(@"Message successfully marked as read");
         } else {
@@ -648,9 +648,12 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
                 [messagePartsToSend addObject:LYRUIMessagePartWithLocation(part)];
             }
         }
-
-        LYRMessage *message = [LYRMessage messageWithConversation:self.conversation parts:messagePartsToSend];
-        [self sendMessage:message pushText:[self pushNotificationStringForMessage:message]];
+        id<LYRUIParticipant>sender = [self participantForIdentifier:self.layerClient.authenticatedUserID];
+        NSString *pushText = [self pushNotificationStringForMessageParts:messagePartsToSend];
+        NSString *text = [NSString stringWithFormat:@"%@: %@", [sender fullName], pushText];
+        LYRMessage *message = [self.layerClient newMessageWithParts:messagePartsToSend options:@{LYRMessagePushNotificationAlertMessageKey : text,
+                                                                                                 LYRMessagePushNotificationSoundNameKey : @"default"} error:nil];
+        [self sendMessage:message];
         if (self.addressBarController) [self.addressBarController setPermanent];
     }
 }
@@ -679,26 +682,21 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 
 #pragma mark - Message Send Methods
 
-- (NSString *)pushNotificationStringForMessage:(LYRMessage *)message
+- (NSString *)pushNotificationStringForMessageParts:(NSArray *)messageParts
 {
     NSString *pushText;
-    if ( [self.dataSource respondsToSelector:@selector(conversationViewController:pushNotificationTextForMessage:)]) {
-        pushText = [self.dataSource conversationViewController:self pushNotificationTextForMessage:message];
+    if ( [self.dataSource respondsToSelector:@selector(conversationViewController:pushNotificationTextForMessageParts:)]) {
+        pushText = [self.dataSource conversationViewController:self pushNotificationTextForMessageParts:messageParts];
     } 
     return pushText;
 }
 
-- (void)sendMessage:(LYRMessage *)message pushText:(NSString *)pushText
+- (void)sendMessage:(LYRMessage *)message
 {
     self.shouldScrollToBottom = TRUE;
-    id<LYRUIParticipant>sender = [self participantForIdentifier:self.layerClient.authenticatedUserID];
-    if (pushText) {
-        NSString *text = [NSString stringWithFormat:@"%@: %@", [sender fullName], pushText];
-        [self.layerClient setMetadata:@{LYRMessagePushNotificationAlertMessageKey: text,
-                                        LYRMessagePushNotificationSoundNameKey : @"default"} onObject:message];
-    }
+
     NSError *error;
-    BOOL success = [self.layerClient sendMessage:message error:&error];
+    BOOL success = [self.conversation sendMessage:message error:&error];
     if (success) {
         if ([self.delegate respondsToSelector:@selector(conversationViewController:didSendMessage:)]) {
             [self.delegate conversationViewController:self didSendMessage:message];
@@ -925,7 +923,13 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     if (!participants.count) {
         self.conversation = nil;
     } else {
-        self.conversation = [LYRConversation conversationWithParticipants:participants];
+        LYRConversation *conversation = [self conversationWithParticipants:participants];
+        if (conversation) {
+            self.conversation = conversation;
+        } else {
+            self.conversation = [self.layerClient newConversationWithParticipants:participants options:nil error:nil];
+        }
+        if (self.conversation.participants.count > 2) self.shouldDisplayAvatarImage = YES;
     }
     [self setConversationViewTitle];
     [self fetchLayerMessages];
@@ -935,6 +939,15 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     [UIView animateWithDuration:0.5 animations:^{
         self.collectionView.alpha = 1.0f;
     }];
+}
+
+- (LYRConversation *)conversationWithParticipants:(NSSet *)participants
+{
+    NSMutableSet *set = [participants copy];
+    [set addObject:self.layerClient.authenticatedUserID];
+    LYRQuery *query = [LYRQuery queryWithClass:[LYRConversation class]];
+    query.predicate = [LYRPredicate predicateWithProperty:@"participants" operator:LYRPredicateOperatorIsEqualTo value:set];
+    return [[self.layerClient executeQuery:query error:nil] lastObject];
 }
 
 #pragma mark Send Button Enablement

@@ -89,7 +89,7 @@
  @return a string representing the push notification text.
  @discussion If this method is not implemented, or it returns nil, Layer will deliver silent push notifications.
  */
-- (NSString *)conversationViewController:(LYRUIConversationViewController *)conversationViewController pushNotificationTextForMessage:(LYRMessage *)message;
+- (NSString *)conversationViewController:(LYRUIConversationViewController *)conversationViewController pushNotificationTextForMessageParts:(NSArray *)messageParts;
 
 /**
  @abstract Asks the data source if the `LRYRecipientStatus` should be updated.
