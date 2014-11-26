@@ -48,6 +48,7 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
         
         // Configure default UIAppearance Proxy
         [self configureTableViewCellAppearance];
+        
     }
     return self;
 }
@@ -166,7 +167,7 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 - (void)setupConversationDataSource
 {
     LYRQuery *query = [LYRQuery queryWithClass:[LYRConversation class]];
-    query.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"createdAt" ascending:NO]];
+    //query.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"createdAt" ascending:NO]];
     
     self.queryController = [self.layerClient queryControllerWithQuery:query];
     self.queryController.delegate = self;
@@ -350,6 +351,7 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 - (void)queryControllerWillChangeContent:(LYRQueryController *)queryController
 {
     [self.tableView beginUpdates];
+    NSLog(@"Number of Conversations %lu", (unsigned long)[self.queryController numberOfObjectsInSection:0]);
 }
 
 
@@ -359,6 +361,8 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
           forChangeType:(LYRQueryControllerChangeType)type
            newIndexPath:(NSIndexPath *)newIndexPath
 {
+    NSLog(@"Update");
+    
     switch (type) {
         case LYRQueryControllerChangeTypeInsert:
             [self.tableView insertRowsAtIndexPaths:@[newIndexPath]
@@ -371,7 +375,7 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
         case LYRQueryControllerChangeTypeMove:
             [self.tableView deleteRowsAtIndexPaths:@[indexPath]
                                   withRowAnimation:UITableViewRowAnimationAutomatic];
-            [self.tableView insertRowsAtIndexPaths:@[indexPath]
+            [self.tableView insertRowsAtIndexPaths:@[newIndexPath]
                                   withRowAnimation:UITableViewRowAnimationAutomatic];
             break;
         case LYRQueryControllerChangeTypeDelete:
@@ -385,6 +389,7 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 
 - (void)queryControllerDidChangeContent:(LYRQueryController *)queryController
 {
+    NSLog(@"Number of Conversations %lu", (unsigned long)[self.queryController numberOfObjectsInSection:0]);
     [self.tableView endUpdates];
 }
 

@@ -666,7 +666,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 - (void)messageInputToolbarDidBeginTyping:(LYRUIMessageInputToolbar *)messageInputToolbar
 {
     if (!self.conversation) return;
-    [self.layerClient sendTypingIndicator:LYRTypingDidBegin toConversation:self.conversation];
+    [self.conversation sendTypingIndicator:LYRTypingDidBegin];
 }
 
 /**
@@ -677,7 +677,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 - (void)messageInputToolbarDidEndTyping:(LYRUIMessageInputToolbar *)messageInputToolbar
 {
     if (!self.conversation) return;
-    [self.layerClient sendTypingIndicator:LYRTypingDidFinish toConversation:self.conversation];
+    [self.conversation sendTypingIndicator:LYRTypingDidFinish];
 }
 
 #pragma mark - Message Send Methods
@@ -873,17 +873,15 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
         }
         [self.objectChages removeAllObjects];
     } completion:^(BOOL finished) {
-        if (shouldScroll)  {
-            [self scrollToBottomOfCollectionViewAnimated:YES];
-        }
+//        if (shouldScroll)  {
+            [self scrollToBottomOfCollectionViewAnimated:NO];
+//        }
     }];
 }
 
 - (void)scrollToBottomOfCollectionViewAnimated:(BOOL)animated
 {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self.collectionView setContentOffset:[self bottomOffset] animated:animated];
-    });
+    [self.collectionView setContentOffset:[self bottomOffset] animated:animated];
 }
 
 - (id<LYRUIParticipant>)participantForIdentifier:(NSString *)identifier
@@ -943,7 +941,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 
 - (LYRConversation *)conversationWithParticipants:(NSSet *)participants
 {
-    NSMutableSet *set = [participants copy];
+    NSMutableSet *set = [participants mutableCopy];
     [set addObject:self.layerClient.authenticatedUserID];
     LYRQuery *query = [LYRQuery queryWithClass:[LYRConversation class]];
     query.predicate = [LYRPredicate predicateWithProperty:@"participants" operator:LYRPredicateOperatorIsEqualTo value:set];
