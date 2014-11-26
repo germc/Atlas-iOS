@@ -319,10 +319,10 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
     LYRUIAddressBarTextView *textView = self.addressBarView.addressBarTextView;
     NSMutableAttributedString *attributedString = [NSMutableAttributedString new];
 
-    NSAttributedString *attributedName = [[NSAttributedString alloc] initWithString:participant.fullName attributes:@{NSForegroundColorAttributeName: textView.addressBarHighlightColor}];
+    NSAttributedString *attributedName = [[NSAttributedString alloc] initWithString:participant.fullName attributes:@{LYRUIAddressBarPartAttributeName: LYRUIAddressBarNamePart, LYRUIAddressBarPartAttributeName: LYRUIAddressBarNamePart, NSForegroundColorAttributeName: textView.addressBarHighlightColor}];
     [attributedString appendAttributedString:attributedName];
 
-    NSAttributedString *attributedDelimiter = [[NSAttributedString alloc] initWithString:@", " attributes:@{NSForegroundColorAttributeName: [UIColor grayColor]}];
+    NSAttributedString *attributedDelimiter = [[NSAttributedString alloc] initWithString:@", " attributes:@{LYRUIAddressBarPartAttributeName: LYRUIAddressBarDelimiterPart, NSForegroundColorAttributeName: [UIColor grayColor]}];
     [attributedString appendAttributedString:attributedDelimiter];
 
     [attributedString addAttributes:@{LYRUIAddressBarParticipantAttributeName: participant, NSFontAttributeName: textView.font, NSParagraphStyleAttributeName: textView.typingAttributes[NSParagraphStyleAttributeName]} range:NSMakeRange(0, attributedString.length)];

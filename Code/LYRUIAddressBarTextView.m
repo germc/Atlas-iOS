@@ -10,6 +10,10 @@
 #import "LYRUIConstants.h"
 #import "LYRUIMessagingUtilities.h"
 
+NSString *const LYRUIAddressBarPartAttributeName = @"LYRUIAddressBarPart";
+NSString *const LYRUIAddressBarNamePart = @"fullName";
+NSString *const LYRUIAddressBarDelimiterPart = @"delimiter";
+
 @interface LYRUIAddressBarTextView ()
 
 @property (nonatomic) UILabel *toLabel;
@@ -78,12 +82,33 @@ static CGFloat const LYRUILineSpacing = 6;
 {
     if (!addressBarTextColor) return;
     _addressBarTextColor = addressBarTextColor;
+    if (!self.userInteractionEnabled) return;
+    NSAttributedString *attributedText = self.attributedText;
+    NSMutableAttributedString *adjustedAttributedText = [attributedText mutableCopy];
+    NSRange selectedRange = self.selectedRange;
+    [attributedText enumerateAttributesInRange:NSMakeRange(0, attributedText.length) options:0 usingBlock:^(NSDictionary *attrs, NSRange range, BOOL *stop) {
+        if (attrs[LYRUIAddressBarNamePart]) return;
+        if (attrs[LYRUIAddressBarDelimiterPart]) return;
+        [adjustedAttributedText addAttribute:NSForegroundColorAttributeName value:addressBarTextColor range:range];
+    }];
+    self.attributedText = adjustedAttributedText;
+    self.selectedRange = selectedRange;
 }
 
 - (void)setAddressBarHighlightColor:(UIColor *)addressBarHighlightColor
 {
     if (!addressBarHighlightColor) return;
     _addressBarHighlightColor = addressBarHighlightColor;
+    if (!self.userInteractionEnabled) return;
+    NSAttributedString *attributedText = self.attributedText;
+    NSMutableAttributedString *adjustedAttributedText = [attributedText mutableCopy];
+    NSRange selectedRange = self.selectedRange;
+    [attributedText enumerateAttribute:LYRUIAddressBarPartAttributeName inRange:NSMakeRange(0, attributedText.length) options:0 usingBlock:^(NSString *partName, NSRange range, BOOL *stop) {
+        if (!partName || ![partName isEqualToString:LYRUIAddressBarNamePart]) return;
+        [adjustedAttributedText addAttribute:NSForegroundColorAttributeName value:addressBarHighlightColor range:range];
+    }];
+    self.attributedText = adjustedAttributedText;
+    self.selectedRange = selectedRange;
 }
 
 - (void)setUpMaxHeight

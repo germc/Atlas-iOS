@@ -8,6 +8,11 @@
 
 #import <UIKit/UIKit.h>
 
+extern NSString *const LYRUIAddressBarPartAttributeName;
+
+extern NSString *const LYRUIAddressBarNamePart;
+extern NSString *const LYRUIAddressBarDelimiterPart;
+
 @interface LYRUIAddressBarTextView : UITextView
 
 @property (nonatomic) UIFont *addressBarFont UI_APPEARANCE_SELECTOR;
