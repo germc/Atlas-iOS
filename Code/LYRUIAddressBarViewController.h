@@ -88,12 +88,12 @@
 /**
  @abstract The `LYRUIAddressBarControllerDelegate` class informs the reciever to specific events that occured within the controller.
  */
-@property (nonatomic, weak) id <LYRUIAddressBarControllerDelegate>delegate;
+@property (nonatomic, weak) id<LYRUIAddressBarControllerDelegate> delegate;
 
 /**
  @abstract The `LYRUIAddressBarControllerDataSource` class requests information from the receiver to be displayed in the controller.
  */
-@property (nonatomic, weak) id <LYRUIAddressBarControllerDataSource>dataSource;
+@property (nonatomic, weak) id<LYRUIAddressBarControllerDataSource> dataSource;
 
 /**
  @abstract The `LYRUIAddressBarView` displays the `LYRUIAddressBarTextView` in which the actual text input occurs. It also displays
