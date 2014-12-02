@@ -322,6 +322,7 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
     }
     self.participants = nil;
     self.tableView.hidden = YES;
+    [self.tableView reloadData];
 }
 
 - (NSAttributedString *)attributedStringForParticipant:(id<LYRUIParticipant>)participant
