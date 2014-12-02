@@ -81,7 +81,8 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     UITableViewCell *cell =[tableView dequeueReusableCellWithIdentifier:LSParticpantCellIdentifier];
-    cell.textLabel.text = [self.participants[indexPath.row] fullName];
+    id<LYRUIParticipant> participant = self.participants[indexPath.row];
+    cell.textLabel.text = participant.fullName;
     cell.textLabel.font = LSMediumFont(14);
     return cell;
 }
