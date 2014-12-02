@@ -16,7 +16,6 @@
 @property (nonatomic) UITableView *tableView;
 @property (nonatomic) NSArray *participants;
 @property (nonatomic) NSSet *selectedParticipants;
-
 @property (nonatomic, getter=isPermanent) BOOL permanent;
 
 @end
@@ -64,33 +63,6 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
     
     UITapGestureRecognizer *gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(addressBarTextViewTapped:)];
     [self.addressBarView.addressBarTextView addGestureRecognizer:gestureRecognizer];
-}
-
-#pragma mark - UITableViewDataSource
-
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
-{
-    return 1;
-}
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
-    return self.participants.count;
-}
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    UITableViewCell *cell =[tableView dequeueReusableCellWithIdentifier:LSParticpantCellIdentifier];
-    id<LYRUIParticipant> participant = self.participants[indexPath.row];
-    cell.textLabel.text = participant.fullName;
-    cell.textLabel.font = LSMediumFont(14);
-    return cell;
-}
-
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    id<LYRUIParticipant> participant = self.participants[indexPath.row];
-    [self selectParticipant:participant];
 }
 
 #pragma mark - Public Method Implementation
@@ -144,6 +116,33 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
         [self.delegate addressBarViewController:self didSelectParticipant:participant];
     }
     [self searchEnded];
+}
+
+#pragma mark - UITableViewDataSource
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return 1;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return self.participants.count;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    UITableViewCell *cell =[tableView dequeueReusableCellWithIdentifier:LSParticpantCellIdentifier];
+    id<LYRUIParticipant> participant = self.participants[indexPath.row];
+    cell.textLabel.text = participant.fullName;
+    cell.textLabel.font = LSMediumFont(14);
+    return cell;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    id<LYRUIParticipant> participant = self.participants[indexPath.row];
+    [self selectParticipant:participant];
 }
 
 #pragma mark - UIScrollViewDelegate
@@ -208,11 +207,6 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
     [textView scrollRangeToVisible:textView.selectedRange];
 }
 
-- (void)sizeAddressBarView
-{
-    [self.addressBarView.addressBarTextView invalidateIntrinsicContentSize];
-}
-
 - (void)textViewDidChange:(UITextView *)textView
 {
     NSAttributedString *attributedString = textView.attributedText;
@@ -255,27 +249,7 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
     }
 }
 
-- (NSString *)textForSearchFromTextView:(UITextView *)textView
-{
-    NSAttributedString *attributedString = textView.attributedText;
-    __block NSRange searchRange = NSMakeRange(NSNotFound, 0);
-    [attributedString enumerateAttribute:LYRUIAddressBarParticipantAttributeName inRange:NSMakeRange(0, attributedString.length) options:0 usingBlock:^(id<LYRUIParticipant> participant, NSRange range, BOOL *stop) {
-        if (participant) return;
-        searchRange = range;
-    }];
-    if (searchRange.location == NSNotFound) return nil;
-    NSAttributedString *attributedSearchString = [attributedString attributedSubstringFromRange:searchRange];
-    NSString *searchString = attributedSearchString.string;
-    NSString *trimmedSearchString = [searchString stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-    return trimmedSearchString;
-}
-
-- (NSArray *)filteredParticipants:(NSSet *)participants
-{
-    NSMutableSet *prospectiveParticipants = [participants mutableCopy];
-    [prospectiveParticipants minusSet:self.selectedParticipants];
-    return prospectiveParticipants.allObjects;
-}
+#pragma mark - Actions
 
 - (void)addressBarTextViewTapped:(UITapGestureRecognizer *)recognizer
 {
@@ -312,6 +286,36 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
     if ([self.delegate respondsToSelector:@selector(addressBarViewController:didTapAddContactsButton:)]) {
         [self.delegate addressBarViewController:self didTapAddContactsButton:sender];
     }
+}
+
+#pragma mark - Helpers
+
+- (void)sizeAddressBarView
+{
+    [self.addressBarView.addressBarTextView invalidateIntrinsicContentSize];
+}
+
+
+- (NSString *)textForSearchFromTextView:(UITextView *)textView
+{
+    NSAttributedString *attributedString = textView.attributedText;
+    __block NSRange searchRange = NSMakeRange(NSNotFound, 0);
+    [attributedString enumerateAttribute:LYRUIAddressBarParticipantAttributeName inRange:NSMakeRange(0, attributedString.length) options:0 usingBlock:^(id<LYRUIParticipant> participant, NSRange range, BOOL *stop) {
+        if (participant) return;
+        searchRange = range;
+    }];
+    if (searchRange.location == NSNotFound) return nil;
+    NSAttributedString *attributedSearchString = [attributedString attributedSubstringFromRange:searchRange];
+    NSString *searchString = attributedSearchString.string;
+    NSString *trimmedSearchString = [searchString stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    return trimmedSearchString;
+}
+
+- (NSArray *)filteredParticipants:(NSSet *)participants
+{
+    NSMutableSet *prospectiveParticipants = [participants mutableCopy];
+    [prospectiveParticipants minusSet:self.selectedParticipants];
+    return prospectiveParticipants.allObjects;
 }
 
 - (void)searchEnded
