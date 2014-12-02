@@ -88,7 +88,7 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    id<LYRUIParticipant>participant = self.participants[indexPath.row];
+    id<LYRUIParticipant> participant = self.participants[indexPath.row];
     [self selectParticipant:participant];
 }
 
