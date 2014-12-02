@@ -316,7 +316,6 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
 
 - (void)searchEnded
 {
-    // Search resets on selection. Inform delegate
     if ([self.delegate respondsToSelector:@selector(addressBarViewControllerDidEndSearching:)]) {
         [self.delegate addressBarViewControllerDidEndSearching:self];
     }
