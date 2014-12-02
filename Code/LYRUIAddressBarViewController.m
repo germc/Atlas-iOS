@@ -232,7 +232,7 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
 
     [self sizeAddressBarView];
     NSString *enteredText = textView.text;
-    NSString *searchText = [self filterTextViewText:textView];
+    NSString *searchText = [self textForSearchFromTextView:textView];
     // If no text, reset search bar
     if (searchText.length == 0) {
         [self searchEnded];
@@ -253,7 +253,7 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
     }
 }
 
-- (NSString *)filterTextViewText:(UITextView *)textView
+- (NSString *)textForSearchFromTextView:(UITextView *)textView
 {
     NSAttributedString *attributedString = textView.attributedText;
     __block NSRange searchRange = NSMakeRange(NSNotFound, 0);
