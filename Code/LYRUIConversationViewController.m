@@ -35,6 +35,7 @@
 @property (nonatomic) NSMutableDictionary *typingIndicatorStatusByParticipant;
 @property (nonatomic) LYRQueryController *queryController;
 @property (nonatomic) NSMutableArray *objectChages;
+@property (nonatomic) NSHashTable *sectionFooters;
 
 @end
 
@@ -65,6 +66,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
         _dateDisplayTimeInterval = 60*15;
         _showsAddressBar = NO;
         _typingIndicatorStatusByParticipant = [NSMutableDictionary dictionaryWithCapacity:conversation.participants.count];
+        _sectionFooters = [NSHashTable weakObjectsHashTable];
         
         // Configure default UIAppearance Proxy
         [self configureMessageBubbleAppearance];
@@ -385,15 +387,8 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
         return header;
     } else {
         LYRUIConversationCollectionViewFooter *footer = [self.collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:LYRUIMessageCellFooterIdentifier forIndexPath:indexPath];
-        if ([self shouldDisplayReadReceiptForSection:indexPath.section]) {
-            if ([self.dataSource respondsToSelector:@selector(conversationViewController:attributedStringForDisplayOfRecipientStatus:)]) {
-                NSAttributedString *recipientStatusString = [self.dataSource conversationViewController:self attributedStringForDisplayOfRecipientStatus:message.recipientStatusByUserID];
-                NSAssert([recipientStatusString isKindOfClass:[NSAttributedString class]], @"`Date String must be an attributed string");
-                [footer updateWithAttributedStringForRecipientStatus:recipientStatusString];
-            } else {
-                @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"LYRUIConversationViewControllerDataSource must return an attributed string for recipient status" userInfo:nil];
-            }
-        }
+        [self configureFooter:footer atIndexPath:indexPath];
+        [self.sectionFooters addObject:footer];
         return footer;
     }
 }
@@ -877,6 +872,14 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
             [self scrollToBottomOfCollectionViewAnimated:NO];
 //        }
     }];
+
+    // Since each section's footer content depends on the existence of other messages, we need to update footers even when the corresponding message to a footer has not changed.
+    for (LYRUIConversationCollectionViewFooter *footer in self.sectionFooters) {
+        NSIndexPath *queryControllerIndexPath = [self.queryController indexPathForObject:footer.message];
+        if (!queryControllerIndexPath) continue;
+        NSIndexPath *collectionViewIndexPath = [NSIndexPath indexPathForItem:0 inSection:queryControllerIndexPath.row];
+        [self configureFooter:footer atIndexPath:collectionViewIndexPath];
+    }
 }
 
 - (void)scrollToBottomOfCollectionViewAnimated:(BOOL)animated
@@ -1054,6 +1057,26 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
                                                                         multiplier:1.0
                                                                           constant:0];
     [self.view addConstraint:self.typingIndicatorViewTopConstraint];
+}
+
+#pragma mark - Helpers
+
+- (void)configureFooter:(LYRUIConversationCollectionViewFooter *)footer atIndexPath:(NSIndexPath *)indexPath
+{
+    NSIndexPath *queryControllerIndexPath = [NSIndexPath indexPathForRow:indexPath.section inSection:0];
+    LYRMessage *message = [self.queryController objectAtIndexPath:queryControllerIndexPath];
+    footer.message = message;
+    if ([self shouldDisplayReadReceiptForSection:indexPath.section]) {
+        if ([self.dataSource respondsToSelector:@selector(conversationViewController:attributedStringForDisplayOfRecipientStatus:)]) {
+            NSAttributedString *recipientStatusString = [self.dataSource conversationViewController:self attributedStringForDisplayOfRecipientStatus:message.recipientStatusByUserID];
+            NSAssert([recipientStatusString isKindOfClass:[NSAttributedString class]], @"`Date String must be an attributed string");
+            [footer updateWithAttributedStringForRecipientStatus:recipientStatusString];
+        } else {
+            @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"LYRUIConversationViewControllerDataSource must return an attributed string for recipient status" userInfo:nil];
+        }
+    } else {
+        [footer updateWithAttributedStringForRecipientStatus:nil];
+    }
 }
 
 @end

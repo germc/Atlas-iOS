@@ -8,6 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
+@class LYRMessage;
+
 /**
  @abstract The `LYRUIConversationCollectionViewFooter` class provides support for displaying
  read receipts below message cells.
@@ -19,5 +21,10 @@
  @param recipientStatus the string representing the status
  */
 - (void)updateWithAttributedStringForRecipientStatus:(NSAttributedString *)recipientStatus;
+
+/**
+ @abstract The message associated with the footer
+ */
+@property (nonatomic) LYRMessage *message;
 
 @end
