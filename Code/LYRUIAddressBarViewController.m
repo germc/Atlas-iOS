@@ -161,13 +161,13 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
 - (BOOL)textViewShouldBeginEditing:(UITextView *)textView
 {
     [self sizeAddressBarView];
-    self.addressBarView.addContactsButton.alpha = 1.0f;
+    self.addressBarView.addContactsButton.hidden = NO;
     return YES;
 }
 
 - (BOOL)textViewShouldEndEditing:(UITextView *)textView
 {
-    self.addressBarView.addContactsButton.alpha = 0.0f;
+    self.addressBarView.addContactsButton.hidden = YES;
     return YES;
 }
 
