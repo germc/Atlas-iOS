@@ -316,6 +316,7 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
 
 - (void)searchEnded
 {
+    if (self.tableView.isHidden) return;
     if ([self.delegate respondsToSelector:@selector(addressBarViewControllerDidEndSearching:)]) {
         [self.delegate addressBarViewControllerDidEndSearching:self];
     }
