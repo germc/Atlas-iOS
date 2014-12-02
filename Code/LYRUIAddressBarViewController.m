@@ -139,7 +139,6 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
     self.addressBarView.addressBarTextView.attributedText = adjustedAttributedString;
     [self sizeAddressBarView];
 
-    // Inform delegate of selection
     if ([self.delegate respondsToSelector:@selector(addressBarViewController:didSelectParticipant:)]) {
         [self.delegate addressBarViewController:self didSelectParticipant:participant];
     }
