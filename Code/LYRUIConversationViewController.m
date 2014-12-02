@@ -226,7 +226,12 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 {
     _conversation = conversation;
     [self configureSendButtonEnablement];
-    [self fetchLayerMessages];
+    if (conversation) {
+        [self fetchLayerMessages];
+    } else {
+        self.queryController = nil;
+        [self.collectionView reloadData];
+    }
 }
 
 - (void)setConversationViewTitle
@@ -933,7 +938,6 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
         if (self.conversation.participants.count > 2) self.shouldDisplayAvatarImage = YES;
     }
     [self setConversationViewTitle];
-    [self fetchLayerMessages];
     [self.collectionView.collectionViewLayout invalidateLayout];
     [self.collectionView reloadData];
     [self scrollToBottomOfCollectionViewAnimated:NO];
