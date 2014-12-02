@@ -117,6 +117,4 @@
  */
 - (void)setPermanent;
 
-
-
 @end
