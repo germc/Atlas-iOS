@@ -237,7 +237,12 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
     if (searchText.length == 0) {
         [self searchEnded];
     } else {
-        self.tableView.hidden = NO;
+        if (self.tableView.isHidden) {
+            self.tableView.hidden = NO;
+            if ([self.delegate respondsToSelector:@selector(addressBarViewControllerDidBeginSearching:)]) {
+                [self.delegate addressBarViewControllerDidBeginSearching:self];
+            }
+        }
         if ([self.dataSource respondsToSelector:@selector(searchForParticipantsMatchingText:completion:)]) {
             [self.dataSource searchForParticipantsMatchingText:searchText completion:^(NSSet *participants) {
                 if (![enteredText isEqualToString:textView.text]) return;
@@ -245,9 +250,6 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
                 self.participants = [self filteredParticipants:participants];
                 [self.tableView reloadData];
                 [self.tableView setContentOffset:CGPointZero animated:NO];
-                if ([self.delegate respondsToSelector:@selector(addressBarViewControllerDidBeginSearching:)]) {
-                    [self.delegate addressBarViewControllerDidBeginSearching:self];
-                }
             }];
         }
     }
