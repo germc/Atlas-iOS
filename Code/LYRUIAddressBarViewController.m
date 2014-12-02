@@ -231,6 +231,7 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
     }
 
     [self sizeAddressBarView];
+    NSString *enteredText = textView.text;
     NSString *searchText = [self filterTextViewText:textView];
     // If no text, reset search bar
     if (searchText.length == 0) {
@@ -239,6 +240,7 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
         self.tableView.hidden = NO;
         if ([self.dataSource respondsToSelector:@selector(searchForParticipantsMatchingText:completion:)]) {
             [self.dataSource searchForParticipantsMatchingText:searchText completion:^(NSSet *participants) {
+                if (![enteredText isEqualToString:textView.text]) return;
                 self.tableView.hidden = NO;
                 self.participants = [self filteredParticipants:participants];
                 [self.tableView reloadData];
