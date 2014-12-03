@@ -86,12 +86,12 @@
 @interface LYRUIAddressBarViewController : UIViewController
 
 /**
- @abstract The `LYRUIAddressBarControllerDelegate` class informs the receiver of specific events that occurred within the controller.
+ @abstract The object to be informed of specific events that occur within the controller.
  */
 @property (nonatomic, weak) id<LYRUIAddressBarControllerDelegate> delegate;
 
 /**
- @abstract The `LYRUIAddressBarControllerDataSource` class requests information from the receiver to be displayed in the controller.
+ @abstract The object that provides data to be displayed in the controller.
  */
 @property (nonatomic, weak) id<LYRUIAddressBarControllerDataSource> dataSource;
 
