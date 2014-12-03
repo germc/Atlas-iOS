@@ -89,16 +89,6 @@ NSString *const LYRUIPlaceHolderText = @"Enter Message";
     [self layoutIfNeeded];
 }
 
-- (void)insertVideoAtPath:(NSString *)videoPath
-{
-    [self layoutIfNeeded];
-}
-
-- (void)insertLocation:(CLLocationCoordinate2D)location
-{
-    [self layoutIfNeeded];
-}
-
 - (void)removeAttachements
 {
     NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:self.text attributes:@{NSFontAttributeName : [UIFont systemFontOfSize:14]}];
