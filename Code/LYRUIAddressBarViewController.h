@@ -67,11 +67,12 @@
 
 /**
  @abstract Asks the data source for an NSSet of participants given a search string.
+ @param addressBarViewController The `LYRUIAddressBarViewController` in which the tap occurred.
  @param searchText The text upon which a participant search should be performed.
  @param completion The completion block to be called upon search completion.
  @discussion Search should be performed across each `LYRUIParticipant` object's fullName property.
  */
-- (void)searchForParticipantsMatchingText:(NSString *)searchText completion:(void (^)(NSArray *participants))completion;
+- (void)addressBarViewController:(LYRUIAddressBarViewController *)addressBarViewController searchForParticipantsMatchingText:(NSString *)searchText completion:(void (^)(NSArray *participants))completion;
 
 @end
 

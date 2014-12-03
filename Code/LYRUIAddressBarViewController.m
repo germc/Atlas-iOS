@@ -237,8 +237,8 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
                 [self.delegate addressBarViewControllerDidBeginSearching:self];
             }
         }
-        if ([self.dataSource respondsToSelector:@selector(searchForParticipantsMatchingText:completion:)]) {
-            [self.dataSource searchForParticipantsMatchingText:searchText completion:^(NSArray *participants) {
+        if ([self.dataSource respondsToSelector:@selector(addressBarViewController:searchForParticipantsMatchingText:completion:)]) {
+            [self.dataSource addressBarViewController:self searchForParticipantsMatchingText:searchText completion:^(NSArray *participants) {
                 if (![enteredText isEqualToString:textView.text]) return;
                 self.tableView.hidden = NO;
                 self.participants = [self filteredParticipants:participants];
