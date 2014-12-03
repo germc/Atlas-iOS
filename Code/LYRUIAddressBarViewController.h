@@ -71,7 +71,7 @@
  @param completion The completion block to be called upon search completion.
  @discussion Search should be performed across each `LYRUIParticipant` object's fullName property.
  */
-- (void)searchForParticipantsMatchingText:(NSString *)searchText completion:(void (^)(NSSet *participants))completion;
+- (void)searchForParticipantsMatchingText:(NSString *)searchText completion:(void (^)(NSArray *participants))completion;
 
 @end
 
