@@ -228,7 +228,12 @@ static CGFloat const LSButtonHeight = 28;
 
 - (void)paste:(id)sender
 {
-    //
+    UIImage *image = [UIPasteboard generalPasteboard].image;
+    if (image) {
+        [self insertImage:image];
+        return;
+    }
+    [super paste:sender];
 }
 
 - (void)adjustFrame

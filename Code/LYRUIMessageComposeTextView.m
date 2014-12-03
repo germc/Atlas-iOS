@@ -145,15 +145,4 @@ NSString *const LYRUIPlaceHolderText = @"Enter Message";
     self.font = [UIFont systemFontOfSize:14];
 }
 
-- (void)paste:(id)sender
-{
-    UIImage *image = [[UIPasteboard generalPasteboard] image];
-    if (image) {
-        [self insertImage:image];
-        [self.delegate textViewDidChange:self];
-    } else {
-        [super paste:sender];
-    }
-    [self.delegate textViewDidChange:self];
-}
 @end
