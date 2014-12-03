@@ -27,9 +27,9 @@
 
 /**
  @abstract Informs the delegate that the user made a participant selection.
- @param addressBarViewController The `LYRUIAddressBarViewController` in which the selection occurred
+ @param addressBarViewController The `LYRUIAddressBarViewController` in which the selection occurred.
  @param participant The participant that was selected and added to the address bar.
- @discussion Upon selection, the participant's full name will be appended ot any existing text in the `LYRUIAddressBarTextView`
+ @discussion Upon selection, the participant's full name will be appended ot any existing text in the `LYRUIAddressBarTextView`.
  The set of participants represents the identifiers for all currently displayed participants.
  */
 - (void)addressBarViewController:(LYRUIAddressBarViewController *)addressBarViewController didSelectParticipant:(id<LYRUIParticipant>)participant;
@@ -42,15 +42,15 @@
 - (void)addressBarViewController:(LYRUIAddressBarViewController *)addressBarViewController didRemoveParticipant:(id<LYRUIParticipant>)participant;
 
 /**
- @abstract Informs the delegate that the user finished searching
- @param addressBarViewController The `LYRUIAddressBarViewController` in which the search occurred
+ @abstract Informs the delegate that the user finished searching.
+ @param addressBarViewController The `LYRUIAddressBarViewController` in which the search occurred.
  @discussion Searching ends when the user either selectes a participant or removes all pariticipants from the `LYRUIAddressBarTextView`.
  */
 - (void)addressBarViewControllerDidEndSearching:(LYRUIAddressBarViewController *)addressBarViewController;
 
 /**
  @abstract Informs the delegate that the user tapped on the `addContactsButton`.
- @param addressBarViewController The `LYRUIAddressBarViewController` in which the tap occurred
+ @param addressBarViewController The `LYRUIAddressBarViewController` in which the tap occurred.
  @param addContactsButton The button that was tapped.
  */
 - (void)addressBarViewController:(LYRUIAddressBarViewController *)addressBarViewController didTapAddContactsButton:(UIButton *)addContactsButton;
@@ -69,7 +69,7 @@
  @abstract Asks the data source for an NSSet of participants given a search string.
  @param searchText The text upon which a participant search should be performed.
  @param completion The completion block to be called upon search completion.
- @discussion Search should be performed across `LYRUIPaticipant` object's fullName property
+ @discussion Search should be performed across `LYRUIPaticipant` object's fullName property.
  */
 - (void)searchForParticipantsMatchingText:(NSString *)searchText completion:(void (^)(NSSet *participants))completion;
 
