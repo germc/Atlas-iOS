@@ -8,7 +8,10 @@
 
 #import <UIKit/UIKit.h>
 
-extern NSString *const LYRUIPlaceHolderText;
+extern NSString *const LYRUIAddressBarPartAttributeName;
+
+extern NSString *const LYRUIAddressBarNamePart;
+extern NSString *const LYRUIAddressBarDelimiterPart;
 
 @interface LYRUIAddressBarTextView : UITextView
 
@@ -16,6 +19,6 @@ extern NSString *const LYRUIPlaceHolderText;
 
 @property (nonatomic) UIColor *addressBarTextColor UI_APPEARANCE_SELECTOR;
 
-@property (nonatomic) UIColor *addressBarHightlightColor UI_APPEARANCE_SELECTOR;
+@property (nonatomic) UIColor *addressBarHighlightColor UI_APPEARANCE_SELECTOR;
 
 @end

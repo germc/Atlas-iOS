@@ -30,7 +30,6 @@
 @property (nonatomic) BOOL shouldScrollToBottom;
 @property (nonatomic) BOOL shouldDisplayAvatarImage;
 @property (nonatomic) CGRect addressBarRect;
-@property (nonatomic) NSLayoutConstraint *collectionViewTopConstraint;
 @property (nonatomic) NSLayoutConstraint *typingIndicatorViewTopConstraint;
 @property (nonatomic) NSMutableDictionary *typingIndicatorStatusByParticipant;
 @property (nonatomic) LYRQueryController *queryController;
@@ -116,6 +115,18 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     self.typingIndicatorView.alpha = 0.0;
     [self.view addSubview:self.typingIndicatorView];
     
+    if (!self.conversation && self.showsAddressBar) {
+        self.addressBarController = [[LYRUIAddressBarViewController alloc] init];
+        self.addressBarController.delegate = self;
+        [self addChildViewController:self.addressBarController];
+        [self.view addSubview:self.addressBarController.view];
+        [self.addressBarController didMoveToParentViewController:self];
+        [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.addressBarController.view attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0.0]];
+        [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.addressBarController.view attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0.0]];
+        [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.addressBarController.view attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.topLayoutGuide attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0]];
+        [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.addressBarController.view attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0]];
+    }
+
     [self updateAutoLayoutConstraints];
     self.collectionView.contentInset = UIEdgeInsetsMake(0, 0, self.inputAccessoryView.intrinsicContentSize.height, 0);
     self.collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(0, 0, self.inputAccessoryView.intrinsicContentSize.height, 0);
@@ -129,17 +140,6 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
         [self fetchLayerMessages];
     }
     self.objectChages = [NSMutableArray new];
-    
-    if (!self.conversation && self.showsAddressBar && !self.addressBarController) {
-        self.addressBarController = [[LYRUIAddressBarViewController alloc] init];
-        self.addressBarController.delegate = self;
-        [self addChildViewController:self.addressBarController];
-        [self.view addSubview:self.addressBarController.view];
-        [self.addressBarController didMoveToParentViewController:self];
-        [self.addressBarController updateControllerOffset:CGPointMake(0, -64)];
-        self.collectionViewTopConstraint.constant = 40;
-        
-    }
     
     // Register reusable collection view cells, header and footer
     [self.collectionView registerClass:[LYRUIIncomingMessageCollectionViewCell class]
@@ -194,6 +194,21 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:LYRConversationDidReceiveTypingIndicatorNotification
                                                   object:self.conversation];
+}
+
+- (void)viewDidLayoutSubviews
+{
+    [super viewDidLayoutSubviews];
+
+    if (self.addressBarController) {
+        UIEdgeInsets contentInset = self.collectionView.contentInset;
+        UIEdgeInsets scrollIndicatorInsets = self.collectionView.scrollIndicatorInsets;
+        CGRect frame = [self.view convertRect:self.addressBarController.addressBarView.frame fromView:self.addressBarController.addressBarView.superview];
+        contentInset.top = CGRectGetMaxY(frame);
+        scrollIndicatorInsets.top = contentInset.top;
+        self.collectionView.contentInset = contentInset;
+        self.collectionView.scrollIndicatorInsets = scrollIndicatorInsets;
+    }
 }
 
 - (void)dealloc
@@ -822,12 +837,6 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     
 }
 
-- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
-{
-    CGPoint point = self.collectionView.contentOffset;
-    [self.addressBarController updateControllerOffset:point];
-}
-
 #pragma mark Notification Observer Delegate Methods
 
 - (void)queryControllerWillChangeContent:(LYRQueryController *)queryController
@@ -905,12 +914,12 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 
 - (void)addressBarViewControllerDidBeginSearching:(LYRUIAddressBarViewController *)addressBarViewController
 {
-    self.inputAccessoryView.alpha = 0.0f;
+    self.inputAccessoryView.hidden = YES;
 }
 
 - (void)addressBarViewControllerDidEndSearching:(LYRUIAddressBarViewController *)addressBarViewController
 {
-    self.inputAccessoryView.alpha = 1.0f;
+    self.inputAccessoryView.hidden = NO;
 }
 
 - (void)addressBarViewController:(LYRUIAddressBarViewController *)addressBarViewController didSelectParticipant:(id<LYRUIParticipant>)participant
@@ -984,10 +993,6 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     [[LYRUIAvatarImageView appearance] setInitialViewBackgroundColor:LSGrayColor()];
     [[LYRUIAvatarImageView appearance] setInitialColor:[UIColor blackColor]];
     [[LYRUIAvatarImageView appearance] setInitialFont:LSLightFont(14)];
-    
-    [[LYRUIAddressBarTextView appearance] setAddressBarFont:LSMediumFont(14)];
-    [[LYRUIAddressBarTextView appearance] setAddressBarTextColor:[UIColor blackColor]];
-    [[LYRUIAddressBarTextView appearance] setAddressBarHightlightColor:LSBlueColor()];
 }
 
 #pragma mark - Auto Layout Configuration
@@ -1010,16 +1015,15 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
                                                           attribute:NSLayoutAttributeRight
                                                          multiplier:1.0
                                                            constant:0]];
-    
-    self.collectionViewTopConstraint = [NSLayoutConstraint constraintWithItem:self.collectionView
-                                                                    attribute:NSLayoutAttributeTop
-                                                                    relatedBy:NSLayoutRelationEqual
-                                                                       toItem:self.view
-                                                                    attribute:NSLayoutAttributeTop
-                                                                   multiplier:1.0
-                                                                     constant:0];
-    [self.view addConstraint:self.collectionViewTopConstraint];
-    
+
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.collectionView
+                                                          attribute:NSLayoutAttributeTop
+                                                          relatedBy:NSLayoutRelationEqual
+                                                             toItem:self.view
+                                                          attribute:NSLayoutAttributeTop
+                                                         multiplier:1.0
+                                                           constant:0]];
+
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.collectionView
                                                           attribute:NSLayoutAttributeBottom
                                                           relatedBy:NSLayoutRelationEqual

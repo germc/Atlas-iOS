@@ -8,21 +8,14 @@
 
 #import "LYRUIAddressBarViewController.h"
 #import "LYRUIConstants.h"
+#import "LYRUIAddressBarContainerView.h"
 
 @interface LYRUIAddressBarViewController () <UITextViewDelegate, UITableViewDataSource, UITableViewDelegate>
 
+@property (nonatomic) LYRUIAddressBarContainerView *view;
 @property (nonatomic) UITableView *tableView;
 @property (nonatomic) NSArray *participants;
 @property (nonatomic) NSSet *selectedParticipants;
-
-@property (nonatomic) NSLayoutConstraint *addressBarViewWidthConstraint;
-@property (nonatomic) NSLayoutConstraint *addressBarViewHeightConstraint;
-@property (nonatomic) NSLayoutConstraint *addressBarViewTopConstraint;
-
-@property (nonatomic) NSUInteger addressBarViewDefaultHeight;
-@property (nonatomic) NSUInteger addressBarViewOffset;
-@property (nonatomic) NSUInteger controllerYOffset;
-
 @property (nonatomic, getter=isPermanent) BOOL permanent;
 
 @end
@@ -32,12 +25,16 @@
 static NSString *const LSParticpantCellIdentifier = @"participantCellIdentifier";
 static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressBarParticipant";
 
+- (void)loadView
+{
+    self.view = [LYRUIAddressBarContainerView new];
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     
     self.view.translatesAutoresizingMaskIntoConstraints = NO;
-    self.view.autoresizingMask = UIViewAutoresizingFlexibleHeight;
     
     self.addressBarView = [[LYRUIAddressBarView alloc] init];
     self.addressBarView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -51,84 +48,21 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:LSParticpantCellIdentifier];
+    self.tableView.keyboardDismissMode = UIScrollViewKeyboardDismissModeOnDrag;
+    self.tableView.hidden = YES;
     [self.view addSubview:self.tableView];
     
-    UITapGestureRecognizer *gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(addressBarTextViewTapped:)];
-    [self.addressBarView.addressBarTextView addGestureRecognizer:gestureRecognizer];
-    
-    self.addressBarViewDefaultHeight = 38;
-
-}
-
-- (void)updateControllerOffset:(CGPoint)offset
-{
-    self.controllerYOffset = -offset.y;
-    self.tableView.contentInset = UIEdgeInsetsMake(0, 0, -self.controllerYOffset, 0);
-
-    UIView *presentingView = [[self parentViewController] view];
-    self.addressBarViewWidthConstraint = [NSLayoutConstraint constraintWithItem:self.view attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:presentingView attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0.0];
-    self.addressBarViewHeightConstraint = [NSLayoutConstraint constraintWithItem:self.view attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:self.addressBarViewDefaultHeight];
-    self.addressBarViewTopConstraint = [NSLayoutConstraint constraintWithItem:self.view attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:presentingView attribute:NSLayoutAttributeTop multiplier:1.0 constant:self.controllerYOffset];
-    
-    [presentingView addConstraint:self.addressBarViewWidthConstraint];
-    [presentingView addConstraint:self.addressBarViewHeightConstraint];
-    [presentingView addConstraint:self.addressBarViewTopConstraint];
-    
-    [self updateConstraints];
-}
-
-- (void)updateControllerHeight
-{
-    UIView *presentingView = [[self parentViewController] view];
-    self.addressBarViewHeightConstraint.constant = presentingView.frame.size.height - self.controllerYOffset;
-    [presentingView setNeedsUpdateConstraints];
-}
-
-- (void)resetControllerHeight
-{
-    UIView *presentingView = [[self parentViewController] view];
-    self.addressBarViewHeightConstraint.constant = self.addressBarViewDefaultHeight;
-    [presentingView setNeedsUpdateConstraints];
-}
-
-- (void)updateConstraints
-{
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.addressBarView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0]];
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.addressBarView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeTop multiplier:1.0 constant:0]];
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.addressBarView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0]];
     
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.tableView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0]];
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.tableView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeHeight multiplier:1.0 constant:0]];
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.tableView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0]];
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.tableView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.addressBarView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0]];
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.tableView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0]];
     
-    [super updateViewConstraints];
-}
-
-#pragma mark - Table view data source
-
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
-{
-    return 1;
-}
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
-    return self.participants.count;
-}
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    UITableViewCell *cell =[tableView dequeueReusableCellWithIdentifier:LSParticpantCellIdentifier];
-    cell.textLabel.text = [[self.participants objectAtIndex:indexPath.row] fullName];
-    cell.textLabel.font = LSMediumFont(14);
-    return cell;
-}
-
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    id<LYRUIParticipant>participant = [self.participants objectAtIndex:indexPath.row];
-    [self selectParticipant:participant];
+    UITapGestureRecognizer *gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(addressBarTextViewTapped:)];
+    [self.addressBarView.addressBarTextView addGestureRecognizer:gestureRecognizer];
 }
 
 #pragma mark - Public Method Implementation
@@ -178,11 +112,37 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
     self.addressBarView.addressBarTextView.attributedText = adjustedAttributedString;
     [self sizeAddressBarView];
 
-    // Inform delegate of selection
     if ([self.delegate respondsToSelector:@selector(addressBarViewController:didSelectParticipant:)]) {
         [self.delegate addressBarViewController:self didSelectParticipant:participant];
     }
     [self searchEnded];
+}
+
+#pragma mark - UITableViewDataSource
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return 1;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return self.participants.count;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    UITableViewCell *cell =[tableView dequeueReusableCellWithIdentifier:LSParticpantCellIdentifier];
+    id<LYRUIParticipant> participant = self.participants[indexPath.row];
+    cell.textLabel.text = participant.fullName;
+    cell.textLabel.font = LSMediumFont(14);
+    return cell;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    id<LYRUIParticipant> participant = self.participants[indexPath.row];
+    [self selectParticipant:participant];
 }
 
 #pragma mark - UIScrollViewDelegate
@@ -195,18 +155,17 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
     }
 }
 
-#pragma mark - Address Bar Text View Delegate
+#pragma mark - UITextViewDelegate
 
 - (BOOL)textViewShouldBeginEditing:(UITextView *)textView
 {
-    [self sizeAddressBarView];
-    self.addressBarView.addContactsButton.alpha = 1.0f;
+    self.addressBarView.addContactsButton.hidden = NO;
     return YES;
 }
 
 - (BOOL)textViewShouldEndEditing:(UITextView *)textView
 {
-    self.addressBarView.addContactsButton.alpha = 0.0f;
+    self.addressBarView.addContactsButton.hidden = YES;
     return YES;
 }
 
@@ -214,7 +173,7 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
 {
     if (textView.typingAttributes[NSForegroundColorAttributeName]) {
         NSMutableDictionary *attributes = [textView.typingAttributes mutableCopy];
-        [attributes removeObjectForKey:NSForegroundColorAttributeName];
+        attributes[NSForegroundColorAttributeName] = self.addressBarView.addressBarTextView.addressBarTextColor;
         textView.typingAttributes = attributes;
     }
 
@@ -230,6 +189,8 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
                 return NO;
             }
         }
+    } else if ([text rangeOfString:@"\n"].location != NSNotFound) {
+        return NO;
     }
     return YES;
 }
@@ -241,11 +202,9 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
     if (!NSEqualRanges(acceptableRange, selectedRange)) {
         textView.selectedRange = acceptableRange;
     }
-}
 
-- (void)sizeAddressBarView
-{
-    [self.addressBarView.addressBarTextView invalidateIntrinsicContentSize];
+    // Workaround for automatic scrolling not occurring in some cases after text entry.
+    [textView scrollRangeToVisible:textView.selectedRange];
 }
 
 - (void)textViewDidChange:(UITextView *)textView
@@ -266,46 +225,31 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
     }
 
     [self sizeAddressBarView];
-    NSString *searchText = [self filterTextViewText:textView];
+    NSString *enteredText = textView.text;
+    NSString *searchText = [self textForSearchFromTextView:textView];
     // If no text, reset search bar
     if (searchText.length == 0) {
         [self searchEnded];
     } else {
-        self.tableView.alpha = 1.0f;
-        [self.dataSource searchForParticipantsMatchingText:searchText completion:^(NSSet *participants) {
-            self.tableView.alpha = 1.0;
-            self.participants = [self filteredParticipants:participants];
-            [self.tableView reloadData];
-            [self.tableView setContentOffset:CGPointZero animated:NO];
+        if (self.tableView.isHidden) {
+            self.tableView.hidden = NO;
             if ([self.delegate respondsToSelector:@selector(addressBarViewControllerDidBeginSearching:)]) {
                 [self.delegate addressBarViewControllerDidBeginSearching:self];
             }
-            [self updateControllerHeight];
-        }];
+        }
+        if ([self.dataSource respondsToSelector:@selector(searchForParticipantsMatchingText:completion:)]) {
+            [self.dataSource searchForParticipantsMatchingText:searchText completion:^(NSSet *participants) {
+                if (![enteredText isEqualToString:textView.text]) return;
+                self.tableView.hidden = NO;
+                self.participants = [self filteredParticipants:participants];
+                [self.tableView reloadData];
+                [self.tableView setContentOffset:CGPointZero animated:NO];
+            }];
+        }
     }
 }
 
-- (NSString *)filterTextViewText:(UITextView *)textView
-{
-    NSAttributedString *attributedString = textView.attributedText;
-    __block NSRange searchRange = NSMakeRange(NSNotFound, 0);
-    [attributedString enumerateAttribute:LYRUIAddressBarParticipantAttributeName inRange:NSMakeRange(0, attributedString.length) options:0 usingBlock:^(id<LYRUIParticipant> participant, NSRange range, BOOL *stop) {
-        if (participant) return;
-        searchRange = range;
-    }];
-    if (searchRange.location == NSNotFound) return nil;
-    NSAttributedString *attributedSearchString = [attributedString attributedSubstringFromRange:searchRange];
-    NSString *searchString = attributedSearchString.string;
-    NSString *trimmedSearchString = [searchString stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-    return trimmedSearchString;
-}
-
-- (NSArray *)filteredParticipants:(NSSet *)participants
-{
-    NSMutableSet *prospectiveParticipants = [participants mutableCopy];
-    [prospectiveParticipants minusSet:self.selectedParticipants];
-    return prospectiveParticipants.allObjects;
-}
+#pragma mark - Actions
 
 - (void)addressBarTextViewTapped:(UITapGestureRecognizer *)recognizer
 {
@@ -344,15 +288,45 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
     }
 }
 
+#pragma mark - Helpers
+
+- (void)sizeAddressBarView
+{
+    [self.addressBarView.addressBarTextView invalidateIntrinsicContentSize];
+}
+
+
+- (NSString *)textForSearchFromTextView:(UITextView *)textView
+{
+    NSAttributedString *attributedString = textView.attributedText;
+    __block NSRange searchRange = NSMakeRange(NSNotFound, 0);
+    [attributedString enumerateAttribute:LYRUIAddressBarParticipantAttributeName inRange:NSMakeRange(0, attributedString.length) options:0 usingBlock:^(id<LYRUIParticipant> participant, NSRange range, BOOL *stop) {
+        if (participant) return;
+        searchRange = range;
+    }];
+    if (searchRange.location == NSNotFound) return nil;
+    NSAttributedString *attributedSearchString = [attributedString attributedSubstringFromRange:searchRange];
+    NSString *searchString = attributedSearchString.string;
+    NSString *trimmedSearchString = [searchString stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    return trimmedSearchString;
+}
+
+- (NSArray *)filteredParticipants:(NSSet *)participants
+{
+    NSMutableSet *prospectiveParticipants = [participants mutableCopy];
+    [prospectiveParticipants minusSet:self.selectedParticipants];
+    return prospectiveParticipants.allObjects;
+}
+
 - (void)searchEnded
 {
-    // Search resets on selection. Inform delegate
-    [self resetControllerHeight];
+    if (self.tableView.isHidden) return;
     if ([self.delegate respondsToSelector:@selector(addressBarViewControllerDidEndSearching:)]) {
         [self.delegate addressBarViewControllerDidEndSearching:self];
     }
     self.participants = nil;
-    self.tableView.alpha = 0.0f;
+    self.tableView.hidden = YES;
+    [self.tableView reloadData];
 }
 
 - (NSAttributedString *)attributedStringForParticipant:(id<LYRUIParticipant>)participant
@@ -360,10 +334,10 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
     LYRUIAddressBarTextView *textView = self.addressBarView.addressBarTextView;
     NSMutableAttributedString *attributedString = [NSMutableAttributedString new];
 
-    NSAttributedString *attributedName = [[NSAttributedString alloc] initWithString:participant.fullName attributes:@{NSForegroundColorAttributeName: textView.addressBarHightlightColor}];
+    NSAttributedString *attributedName = [[NSAttributedString alloc] initWithString:participant.fullName attributes:@{LYRUIAddressBarPartAttributeName: LYRUIAddressBarNamePart, LYRUIAddressBarPartAttributeName: LYRUIAddressBarNamePart, NSForegroundColorAttributeName: textView.addressBarHighlightColor}];
     [attributedString appendAttributedString:attributedName];
 
-    NSAttributedString *attributedDelimiter = [[NSAttributedString alloc] initWithString:@", " attributes:@{NSForegroundColorAttributeName: [UIColor grayColor]}];
+    NSAttributedString *attributedDelimiter = [[NSAttributedString alloc] initWithString:@", " attributes:@{LYRUIAddressBarPartAttributeName: LYRUIAddressBarDelimiterPart, NSForegroundColorAttributeName: [UIColor grayColor]}];
     [attributedString appendAttributedString:attributedDelimiter];
 
     [attributedString addAttributes:@{LYRUIAddressBarParticipantAttributeName: participant, NSFontAttributeName: textView.font, NSParagraphStyleAttributeName: textView.typingAttributes[NSParagraphStyleAttributeName]} range:NSMakeRange(0, attributedString.length)];
