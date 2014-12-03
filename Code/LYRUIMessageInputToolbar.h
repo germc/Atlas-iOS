@@ -110,8 +110,8 @@
 
 /**
  @abstract The maximum number of lines of next to be displayd
- @default 6
- @discussion The text view will stop growing once 6 lines are displayed. It
+ @default 8
+ @discussion The text view will stop growing once the maximum number of lines are displayed. It
  will scroll its text view to keep the latest content visible
  */
 @property (nonatomic) NSUInteger maxNumberOfLines;
