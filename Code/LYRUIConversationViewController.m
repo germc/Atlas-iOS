@@ -666,8 +666,8 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
         id<LYRUIParticipant>sender = [self participantForIdentifier:self.layerClient.authenticatedUserID];
         NSString *pushText = [self pushNotificationStringForMessageParts:messagePartsToSend];
         NSString *text = [NSString stringWithFormat:@"%@: %@", [sender fullName], pushText];
-        LYRMessage *message = [self.layerClient newMessageWithParts:messagePartsToSend options:@{LYRMessagePushNotificationAlertMessageKey : text,
-                                                                                                 LYRMessagePushNotificationSoundNameKey : @"default"} error:nil];
+        LYRMessage *message = [self.layerClient newMessageWithParts:messagePartsToSend options:@{LYRMessageOptionsPushNotificationAlertKey : text,
+                                                                                                 LYRMessageOptionsPushNotificationSoundNameKey : @"default"} error:nil];
         [self sendMessage:message];
         if (self.addressBarController) [self.addressBarController setPermanent];
     }
