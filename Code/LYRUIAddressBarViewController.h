@@ -81,7 +81,7 @@
  @discussion The class handles displaying the address bar in addition to a table view of participants in response to user search input.
  When a participant is selected, the class appends that participant's full name to any existing text currently displayed. It also allows
  for the entire participant name to be highlighted in response to a tap. The bar's design and functionality closely correlates with the
- design and functionality of the address bar in iMessage.
+ design and functionality of the address bar in Messages.
  */
 @interface LYRUIAddressBarViewController : UIViewController
 
