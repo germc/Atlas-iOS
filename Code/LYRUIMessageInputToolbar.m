@@ -306,7 +306,9 @@ static CGFloat const LYRUIButtonHeight = 28;
 - (BOOL)shouldEnableSendButton
 {
     if (!self.canEnableSendButton) return NO;
-    if (self.textInputView.text.length == 0) return NO;
+    NSString *text = self.textInputView.text;
+    NSString *trimmedText = [text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    if (trimmedText.length == 0) return NO;
     return YES;
 }
 
