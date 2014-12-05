@@ -74,14 +74,68 @@ static CGFloat const LYRUIButtonHeight = 28;
     return self;
 }
 
+- (void)layoutSubviews
+{
+    [super layoutSubviews];
+
+    // We layout the views manually since using Auto Layout seems to cause issues in this context (i.e. an auto height resizing text view in an input accessory view) especially with iOS 7.1.
+    CGRect frame = self.frame;
+    CGRect leftButtonFrame = self.leftAccessoryButton.frame;
+    CGRect rightButtonFrame = self.rightAccessoryButton.frame;
+    CGRect textViewFrame = self.textInputView.frame;
+
+    leftButtonFrame.size.width = LYRUILeftAccessoryButtonWidth;
+    leftButtonFrame.size.height = LYRUIButtonHeight;
+    leftButtonFrame.origin.x = LYRUIHorizontalMargin;
+
+    rightButtonFrame.size.width = LYRUIRightAccessoryButtonWidth;
+    rightButtonFrame.size.height = LYRUIButtonHeight;
+    rightButtonFrame.origin.x = CGRectGetWidth(frame) - CGRectGetWidth(rightButtonFrame) - LYRUIVerticalMargin;
+
+    textViewFrame.origin.x = CGRectGetMaxX(leftButtonFrame) + LYRUIHorizontalMargin;
+    textViewFrame.origin.y = LYRUIVerticalMargin;
+    textViewFrame.size.width = CGRectGetMinX(rightButtonFrame) - CGRectGetMinX(textViewFrame) - LYRUIHorizontalMargin;
+
+    self.dummyTextView.font = self.textInputView.font;
+    self.dummyTextView.attributedText = self.textInputView.attributedText;
+    CGSize fittedTextViewSize = [self.dummyTextView sizeThatFits:CGSizeMake(CGRectGetWidth(textViewFrame), MAXFLOAT)];
+    textViewFrame.size.height = MIN(fittedTextViewSize.height, self.textViewMaxHeight);
+
+    frame.size.height = CGRectGetHeight(textViewFrame) + LYRUIVerticalMargin * 2;
+    frame.origin.y -= frame.size.height - CGRectGetHeight(self.frame);
+
+    leftButtonFrame.origin.y = CGRectGetHeight(frame) - CGRectGetHeight(leftButtonFrame) - LYRUIVerticalMargin;
+
+    rightButtonFrame.origin.y = CGRectGetHeight(frame) - CGRectGetHeight(rightButtonFrame) - LYRUIVerticalMargin;
+
+    self.leftAccessoryButton.frame = leftButtonFrame;
+    self.rightAccessoryButton.frame = rightButtonFrame;
+    self.textInputView.frame = textViewFrame;
+
+    // Setting one's own frame like this is a no-no but seems to be the lesser of evils when working around the layout issues mentioned above.
+    self.frame = frame;
+}
+
+- (void)paste:(id)sender
+{
+    NSArray *images = [UIPasteboard generalPasteboard].images;
+    if (images.count > 0) {
+        for (UIImage *image in images) {
+            [self insertImage:image];
+        }
+        return;
+    }
+    [super paste:sender];
+}
+
+#pragma mark - Public Methods
+
 - (void)setMaxNumberOfLines:(NSUInteger)maxNumberOfLines
 {
     _maxNumberOfLines = maxNumberOfLines;
     self.textViewMaxHeight = self.maxNumberOfLines * self.textInputView.font.lineHeight;
     [self setNeedsLayout];
 }
-
-#pragma mark Public Content Insertion Methods
 
 - (void)insertImage:(UIImage *)image
 {
@@ -128,7 +182,17 @@ static CGFloat const LYRUIButtonHeight = 28;
     }];
 }
 
-#pragma mark Compose View Delegate Methods
+- (NSArray *)messageParts
+{
+    NSAttributedString *attributedString = self.textInputView.attributedText;
+    if (!_messageParts || ![attributedString isEqualToAttributedString:self.attributedStringForMessageParts]) {
+        self.attributedStringForMessageParts = attributedString;
+        self.messageParts = [self messagePartsFromAttributedString:attributedString];
+    }
+    return _messageParts;
+}
+
+#pragma mark - Actions
 
 - (void)leftAccessoryButtonTapped
 {
@@ -150,36 +214,7 @@ static CGFloat const LYRUIButtonHeight = 28;
     [self configureSendButtonEnablement];
 }
 
-- (NSArray *)messageParts
-{
-    NSAttributedString *attributedString = self.textInputView.attributedText;
-    if (!_messageParts || ![attributedString isEqualToAttributedString:self.attributedStringForMessageParts]) {
-        self.attributedStringForMessageParts = attributedString;
-        self.messageParts = [self messagePartsFromAttributedString:attributedString];
-    }
-    return _messageParts;
-}
-
-- (NSArray *)messagePartsFromAttributedString:(NSAttributedString *)attributedString
-{
-    NSMutableArray *messageParts = [NSMutableArray new];
-    [attributedString enumerateAttributesInRange:NSMakeRange(0, attributedString.length) options:0 usingBlock:^(NSDictionary *attributes, NSRange range, BOOL *stop) {
-        id attachment = attributes[NSAttachmentAttributeName];
-        if ([attachment isKindOfClass:[LYRUIMediaAttachment class]]) {
-            LYRUIMediaAttachment *mediaAttachment = (LYRUIMediaAttachment *)attachment;
-            [messageParts addObject:mediaAttachment.image];
-            return;
-        }
-        NSAttributedString *attributedSubstring = [attributedString attributedSubstringFromRange:range];
-        NSString *substring = attributedSubstring.string;
-        NSString *trimmedSubstring = [substring stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-        if (trimmedSubstring.length == 0) return;
-        [messageParts addObject:trimmedSubstring];
-    }];
-    return messageParts;
-}
-
-#pragma mark TextViewDelegate Methods
+#pragma mark - UITextViewDelegate
 
 - (void)textViewDidChange:(UITextView *)textView
 {
@@ -233,61 +268,28 @@ static CGFloat const LYRUIButtonHeight = 28;
     return YES;
 }
 
-- (void)paste:(id)sender
+#pragma mark - Helpers
+
+- (NSArray *)messagePartsFromAttributedString:(NSAttributedString *)attributedString
 {
-    NSArray *images = [UIPasteboard generalPasteboard].images;
-    if (images.count > 0) {
-        for (UIImage *image in images) {
-            [self insertImage:image];
+    NSMutableArray *messageParts = [NSMutableArray new];
+    [attributedString enumerateAttributesInRange:NSMakeRange(0, attributedString.length) options:0 usingBlock:^(NSDictionary *attributes, NSRange range, BOOL *stop) {
+        id attachment = attributes[NSAttachmentAttributeName];
+        if ([attachment isKindOfClass:[LYRUIMediaAttachment class]]) {
+            LYRUIMediaAttachment *mediaAttachment = (LYRUIMediaAttachment *)attachment;
+            [messageParts addObject:mediaAttachment.image];
+            return;
         }
-        return;
-    }
-    [super paste:sender];
+        NSAttributedString *attributedSubstring = [attributedString attributedSubstringFromRange:range];
+        NSString *substring = attributedSubstring.string;
+        NSString *trimmedSubstring = [substring stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+        if (trimmedSubstring.length == 0) return;
+        [messageParts addObject:trimmedSubstring];
+    }];
+    return messageParts;
 }
 
-- (void)layoutSubviews
-{
-    [super layoutSubviews];
-
-    // We layout the views manually since using Auto Layout seems to cause issues in this context (i.e. an auto height resizing text view in an input accessory view) especially with iOS 7.1.
-    CGRect frame = self.frame;
-    CGRect leftButtonFrame = self.leftAccessoryButton.frame;
-    CGRect rightButtonFrame = self.rightAccessoryButton.frame;
-    CGRect textViewFrame = self.textInputView.frame;
-
-    leftButtonFrame.size.width = LYRUILeftAccessoryButtonWidth;
-    leftButtonFrame.size.height = LYRUIButtonHeight;
-    leftButtonFrame.origin.x = LYRUIHorizontalMargin;
-
-    rightButtonFrame.size.width = LYRUIRightAccessoryButtonWidth;
-    rightButtonFrame.size.height = LYRUIButtonHeight;
-    rightButtonFrame.origin.x = CGRectGetWidth(frame) - CGRectGetWidth(rightButtonFrame) - LYRUIVerticalMargin;
-
-    textViewFrame.origin.x = CGRectGetMaxX(leftButtonFrame) + LYRUIHorizontalMargin;
-    textViewFrame.origin.y = LYRUIVerticalMargin;
-    textViewFrame.size.width = CGRectGetMinX(rightButtonFrame) - CGRectGetMinX(textViewFrame) - LYRUIHorizontalMargin;
-
-    self.dummyTextView.font = self.textInputView.font;
-    self.dummyTextView.attributedText = self.textInputView.attributedText;
-    CGSize fittedTextViewSize = [self.dummyTextView sizeThatFits:CGSizeMake(CGRectGetWidth(textViewFrame), MAXFLOAT)];
-    textViewFrame.size.height = MIN(fittedTextViewSize.height, self.textViewMaxHeight);
-
-    frame.size.height = CGRectGetHeight(textViewFrame) + LYRUIVerticalMargin * 2;
-    frame.origin.y -= frame.size.height - CGRectGetHeight(self.frame);
-
-    leftButtonFrame.origin.y = CGRectGetHeight(frame) - CGRectGetHeight(leftButtonFrame) - LYRUIVerticalMargin;
-
-    rightButtonFrame.origin.y = CGRectGetHeight(frame) - CGRectGetHeight(rightButtonFrame) - LYRUIVerticalMargin;
-
-    self.leftAccessoryButton.frame = leftButtonFrame;
-    self.rightAccessoryButton.frame = rightButtonFrame;
-    self.textInputView.frame = textViewFrame;
-
-    // Setting one's own frame like this is a no-no but seems to be the lesser of evils when working around the layout issues mentioned above.
-    self.frame = frame;
-}
-
-#pragma mark Send Button Enablement
+#pragma mark - Send Button Enablement
 
 - (void)setCanEnableSendButton:(BOOL)canEnableSendButton
 {
