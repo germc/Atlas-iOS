@@ -12,9 +12,8 @@
 #import "LYRUIMessagingUtilities.h"
 #import <CoreLocation/CoreLocation.h>
 
-@interface LYRUIMessageInputToolbar () <UITextViewDelegate, CLLocationManagerDelegate>
+@interface LYRUIMessageInputToolbar () <UITextViewDelegate>
 
-@property (nonatomic) CLLocationManager *locationManager;
 @property (nonatomic) NSLayoutConstraint *textViewHeightConstraint;
 @property (nonatomic) NSArray *messageParts;
 @property (nonatomic, copy) NSAttributedString *attributedStringForMessageParts;
