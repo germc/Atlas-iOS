@@ -24,13 +24,13 @@
 @implementation LYRUIMessageInputToolbar
 
 // Compose View Margin Constants
-static CGFloat const LSComposeviewHorizontalMargin = 6;
-static CGFloat const LSComposeviewVerticalMargin = 6;
+static CGFloat const LYRUIHorizontalMargin = 6;
+static CGFloat const LYRUIVerticalMargin = 6;
 
 // Compose View Button Constants
-static CGFloat const LSLeftAccessoryButtonWidth = 40;
-static CGFloat const LSRightAccessoryButtonWidth = 46;
-static CGFloat const LSButtonHeight = 28;
+static CGFloat const LYRUILeftAccessoryButtonWidth = 40;
+static CGFloat const LYRUIRightAccessoryButtonWidth = 46;
+static CGFloat const LYRUIButtonHeight = 28;
 
 - (id)init
 {
@@ -256,29 +256,29 @@ static CGFloat const LSButtonHeight = 28;
     CGRect rightButtonFrame = self.rightAccessoryButton.frame;
     CGRect textViewFrame = self.textInputView.frame;
 
-    leftButtonFrame.size.width = LSLeftAccessoryButtonWidth;
-    leftButtonFrame.size.height = LSButtonHeight;
-    leftButtonFrame.origin.x = LSComposeviewHorizontalMargin;
+    leftButtonFrame.size.width = LYRUILeftAccessoryButtonWidth;
+    leftButtonFrame.size.height = LYRUIButtonHeight;
+    leftButtonFrame.origin.x = LYRUIHorizontalMargin;
 
-    rightButtonFrame.size.width = LSRightAccessoryButtonWidth;
-    rightButtonFrame.size.height = LSButtonHeight;
-    rightButtonFrame.origin.x = CGRectGetWidth(frame) - CGRectGetWidth(rightButtonFrame) - LSComposeviewVerticalMargin;
+    rightButtonFrame.size.width = LYRUIRightAccessoryButtonWidth;
+    rightButtonFrame.size.height = LYRUIButtonHeight;
+    rightButtonFrame.origin.x = CGRectGetWidth(frame) - CGRectGetWidth(rightButtonFrame) - LYRUIVerticalMargin;
 
-    textViewFrame.origin.x = CGRectGetMaxX(leftButtonFrame) + LSComposeviewHorizontalMargin;
-    textViewFrame.origin.y = LSComposeviewVerticalMargin;
-    textViewFrame.size.width = CGRectGetMinX(rightButtonFrame) - CGRectGetMinX(textViewFrame) - LSComposeviewHorizontalMargin;
+    textViewFrame.origin.x = CGRectGetMaxX(leftButtonFrame) + LYRUIHorizontalMargin;
+    textViewFrame.origin.y = LYRUIVerticalMargin;
+    textViewFrame.size.width = CGRectGetMinX(rightButtonFrame) - CGRectGetMinX(textViewFrame) - LYRUIHorizontalMargin;
 
     self.dummyTextView.font = self.textInputView.font;
     self.dummyTextView.attributedText = self.textInputView.attributedText;
     CGSize fittedTextViewSize = [self.dummyTextView sizeThatFits:CGSizeMake(CGRectGetWidth(textViewFrame), MAXFLOAT)];
     textViewFrame.size.height = MIN(fittedTextViewSize.height, self.textViewMaxHeight);
 
-    frame.size.height = CGRectGetHeight(textViewFrame) + LSComposeviewVerticalMargin * 2;
+    frame.size.height = CGRectGetHeight(textViewFrame) + LYRUIVerticalMargin * 2;
     frame.origin.y -= frame.size.height - CGRectGetHeight(self.frame);
 
-    leftButtonFrame.origin.y = CGRectGetHeight(frame) - CGRectGetHeight(leftButtonFrame) - LSComposeviewVerticalMargin;
+    leftButtonFrame.origin.y = CGRectGetHeight(frame) - CGRectGetHeight(leftButtonFrame) - LYRUIVerticalMargin;
 
-    rightButtonFrame.origin.y = CGRectGetHeight(frame) - CGRectGetHeight(rightButtonFrame) - LSComposeviewVerticalMargin;
+    rightButtonFrame.origin.y = CGRectGetHeight(frame) - CGRectGetHeight(rightButtonFrame) - LYRUIVerticalMargin;
 
     self.leftAccessoryButton.frame = leftButtonFrame;
     self.rightAccessoryButton.frame = rightButtonFrame;
