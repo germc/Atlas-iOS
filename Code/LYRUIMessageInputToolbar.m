@@ -39,12 +39,9 @@ static CGFloat const LSButtonHeight = 28;
         self.accessibilityLabel = @"Message Input Toolbar";
         self.translatesAutoresizingMaskIntoConstraints = NO;
         self.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-        
-        // Setup
         self.backgroundColor =  LSLighGrayColor();
         self.canEnableSendButton = YES;
 
-        // Initialize the Camera Button
         self.leftAccessoryButton = [[UIButton alloc] init];
         self.leftAccessoryButton.accessibilityLabel = @"Camera Button";
         self.leftAccessoryButton.layer.cornerRadius = 2;
@@ -52,7 +49,6 @@ static CGFloat const LSButtonHeight = 28;
         [self.leftAccessoryButton addTarget:self action:@selector(leftAccessoryButtonTapped) forControlEvents:UIControlEventTouchUpInside];
         [self addSubview:self.leftAccessoryButton];
         
-        // Initialize the Text Input View
         self.textInputView = [[LYRUIMessageComposeTextView alloc] init];
         self.textInputView.delegate = self;
         self.textInputView.layer.borderColor = [UIColor lightGrayColor].CGColor;
@@ -61,7 +57,6 @@ static CGFloat const LSButtonHeight = 28;
         self.textInputView.accessibilityLabel = @"Text Input View";
         [self addSubview:self.textInputView];
         
-        // Initialize the Send Button
         self.rightAccessoryButton = [[UIButton alloc] init];
         self.rightAccessoryButton.accessibilityLabel = @"Send Button";
         self.rightAccessoryButton.titleLabel.font = [UIFont systemFontOfSize:16];
