@@ -7,142 +7,103 @@
 //
 
 #import "LYRUIMessageComposeTextView.h"
-#import "LYRUIMediaAttachment.h"
-#import "LYRUIConstants.h"
-#import "LYRUIMessagingUtilities.h"
 
-@interface LYRUIMessageComposeTextView () <UITextViewDelegate>
+@interface LYRUIMessageComposeTextView ()
 
-@property (nonatomic) CGFloat contentHeight;
+@property (nonatomic) UILabel *placeholderLabel;
 
 @end
 
-@implementation LYRUIMessageComposeTextView
+static NSString *const LYRUIPlaceHolderText = @"Enter Message";
 
-NSString *const LYRUIPlaceHolderText = @"Enter Message";
+@implementation LYRUIMessageComposeTextView
 
 - (id)init
 {
     self = [super init];
     if (self) {
-        
-        self.textContainerInset = UIEdgeInsetsMake(6, 0, 8, 0);
+        self.textContainerInset = UIEdgeInsetsMake(8, 0, 8, 0);
         self.font = [UIFont systemFontOfSize:14];
-        self.textColor = [UIColor lightGrayColor];
         self.dataDetectorTypes = UIDataDetectorTypeLink;
-        [self layoutSubviews];
-        
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(textViewBeganEditing)
-                                                     name:UITextViewTextDidBeginEditingNotification
-                                                   object:nil];
-        
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(textViewDidChange)
-                                                     name:UITextViewTextDidChangeNotification
-                                                   object:nil];
+        self.placeHolderText = LYRUIPlaceHolderText;
+
+        self.placeholderLabel = [UILabel new];
+        self.placeholderLabel.font = self.font;
+        self.placeholderLabel.text = self.placeHolderText;
+        self.placeholderLabel.textColor = [UIColor lightGrayColor];
+        self.placeholderLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+        [self addSubview:self.placeholderLabel];
+
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textViewTextDidChange:) name:UITextViewTextDidChangeNotification object:self];
     }
     return self;
 }
 
-- (CGSize)intrinsicContentSize
+- (void)dealloc
 {
-    CGFloat currentWidth = self.contentSize.width;
-    CGFloat currentHeight = self.contentSize.height;
-    CGSize contentSize;
-    if (self.maxHeight + 12 > currentHeight) {
-        contentSize = CGSizeMake(currentWidth, currentHeight);
-    } else {
-        contentSize = CGSizeMake(currentWidth, self.maxHeight + 12);
-    }
-    return contentSize;
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (void)scrollRectToVisible:(CGRect)rect animated:(BOOL)animated
+- (void)layoutSubviews
 {
-    
-}
+    [super layoutSubviews];
 
-- (void)insertImage:(UIImage *)image
-{
-    // Create a text attachement with the image
-    LYRUIMediaAttachment *textAttachment = [[LYRUIMediaAttachment alloc] init];
-    textAttachment.image = image;
-    
-    // Create a mutable attributed string with an attachment
-    NSMutableAttributedString *attachmentString = [[NSMutableAttributedString attributedStringWithAttachment:textAttachment] mutableCopy];
-    [attachmentString addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:14] range:NSMakeRange(attachmentString.length, 0)];
-    
-    NSMutableAttributedString *mutableAttributedString;
-    if ([self.text isEqualToString:LYRUIPlaceHolderText]) {
-        mutableAttributedString = attachmentString;
-    } else {
-        mutableAttributedString = [self.attributedText mutableCopy];
-        if (mutableAttributedString.length > 0) {
-            [self insertLineBreak:mutableAttributedString];
+    if (!self.placeholderLabel.isHidden) {
+        // Position the placeholder label over where entered text would be displayed.
+        CGRect placeholderFrame = self.placeholderLabel.frame;
+        CGFloat textViewHorizontalIndent = 5;
+        placeholderFrame.origin.x = self.textContainerInset.left + textViewHorizontalIndent;
+        placeholderFrame.origin.y = self.textContainerInset.top;
+        CGSize fittedPlaceholderSize = [self.placeholderLabel sizeThatFits:CGSizeMake(MAXFLOAT, MAXFLOAT)];
+        placeholderFrame.size = fittedPlaceholderSize;
+        CGFloat maxPlaceholderWidth = CGRectGetWidth(self.frame) - self.textContainerInset.left - self.textContainerInset.right - textViewHorizontalIndent * 2;
+        if (fittedPlaceholderSize.width > maxPlaceholderWidth) {
+            placeholderFrame.size.width = maxPlaceholderWidth;
         }
-        [mutableAttributedString replaceCharactersInRange:NSMakeRange(mutableAttributedString.length, 0)
-                                     withAttributedString:attachmentString];
-    }
-    self.attributedText = mutableAttributedString;
-    
-    [self layoutIfNeeded];
-}
+        self.placeholderLabel.frame = placeholderFrame;
 
-- (void)removeAttachements
-{
-    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:self.text attributes:@{NSFontAttributeName : [UIFont systemFontOfSize:14]}];
-    self.attributedText = attributedString;
-    [self layoutIfNeeded];
-}
-
-- (void)insertLineBreak:(NSMutableAttributedString *)mutableAttributedString
-{
-    [mutableAttributedString insertAttributedString:[[NSMutableAttributedString alloc] initWithString:@"\r\n"] atIndex:mutableAttributedString.length];
-    [mutableAttributedString addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:14] range:NSMakeRange(0, mutableAttributedString.length)];
-}
-
-- (BOOL)previousIndexIsAttachement
-{
-    if (!(self.attributedText.length > 0)) return FALSE;
-    NSDictionary *theAttributes = [self.attributedText attributesAtIndex:self.attributedText.length - 1
-                                                   longestEffectiveRange:nil
-                                                                 inRange:NSMakeRange(0, self.attributedText.length)];
-    NSTextAttachment *theAttachment = [theAttributes objectForKey:NSAttachmentAttributeName];
-    if (theAttachment != NULL) {
-        return TRUE;
-    } else {
-        return FALSE;
+        // We want the placeholder to be overlapped by / underneath the cursor.
+        [self sendSubviewToBack:self.placeholderLabel];
     }
 }
 
-- (void)displayPlaceHolderText:(BOOL)displayPlaceHolderText
+- (void)setFont:(UIFont *)font
 {
-    if ([self.text isEqualToString:LYRUIPlaceHolderText]) {
-        if (displayPlaceHolderText) {
-            self.text = @"Enter Message";
-        } else {
-            self.text = @"";
-        }
-    }
+    [super setFont:font];
+    self.placeholderLabel.font = font;
 }
 
-- (void)textViewBeganEditing
+- (void)setText:(NSString *)text
 {
-    [self displayPlaceHolderText:NO];
-    if ([self previousIndexIsAttachement]) {
-        NSMutableAttributedString *mutableAttributedString = [self.attributedText mutableCopy];
-        [self insertLineBreak:mutableAttributedString];
-        self.attributedText = mutableAttributedString;
-        [self layoutIfNeeded];
-        [self.delegate textViewDidChange:self];
-    }
-    self.textColor = [UIColor blackColor];
+    [super setText:text];
+    [self configurePlaceholderVisibility];
 }
 
-- (void)textViewDidChange
+- (void)setAttributedText:(NSAttributedString *)attributedText
 {
-    self.font = [UIFont systemFontOfSize:14];
+    [super setAttributedText:attributedText];
+    [self configurePlaceholderVisibility];
+}
+
+- (void)setPlaceHolderText:(NSString *)placeHolderText
+{
+    _placeHolderText = placeHolderText;
+    self.placeholderLabel.text = placeHolderText;
+    [self setNeedsLayout];
+}
+
+#pragma mark - Notification Handlers
+
+- (void)textViewTextDidChange:(NSNotification *)notification
+{
+    [self configurePlaceholderVisibility];
+}
+
+#pragma mark - Helpers
+
+- (void)configurePlaceholderVisibility
+{
+    self.placeholderLabel.hidden = self.attributedText.length > 0;
 }
 
 @end

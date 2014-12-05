@@ -9,8 +9,6 @@
 #import <UIKit/UIKit.h>
 #import <MapKit/MapKit.h>
 
-extern NSString *const LYRUIPlaceHolderText;
-
 /**
  @abstract The LYRUIMessageComposeTextView handles displaying content in an 
  `LYRUIMessageInputToolbar`. The class provides support for displaying text, 
@@ -22,19 +20,5 @@ extern NSString *const LYRUIPlaceHolderText;
  @abstract Configures the placeholder text for the textView
  */
 @property (nonatomic) NSString *placeHolderText;
-
-@property (nonatomic) CGFloat maxHeight;
-/**
- @abstract Displays the provided image in the textView
- */
-- (void)insertImage:(UIImage *)image;
-
-/**
- @abstract Removes all existing attachements from the textView
- @discussion This method should be called when all content should 
- be cleared from the textView
- */
-- (void)removeAttachements;
-
 
 @end
