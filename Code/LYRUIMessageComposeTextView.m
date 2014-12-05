@@ -14,7 +14,7 @@
 
 @end
 
-static NSString *const LYRUIPlaceHolderText = @"Enter Message";
+static NSString *const LYRUIPlaceholderText = @"Enter Message";
 
 @implementation LYRUIMessageComposeTextView
 
@@ -25,7 +25,7 @@ static NSString *const LYRUIPlaceHolderText = @"Enter Message";
         self.textContainerInset = UIEdgeInsetsMake(8, 0, 8, 0);
         self.font = [UIFont systemFontOfSize:14];
         self.dataDetectorTypes = UIDataDetectorTypeLink;
-        self.placeholder = LYRUIPlaceHolderText;
+        self.placeholder = LYRUIPlaceholderText;
 
         self.placeholderLabel = [UILabel new];
         self.placeholderLabel.font = self.font;
