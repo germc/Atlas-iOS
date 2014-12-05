@@ -237,8 +237,8 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
                 [self.delegate addressBarViewControllerDidBeginSearching:self];
             }
         }
-        if ([self.dataSource respondsToSelector:@selector(searchForParticipantsMatchingText:completion:)]) {
-            [self.dataSource searchForParticipantsMatchingText:searchText completion:^(NSSet *participants) {
+        if ([self.dataSource respondsToSelector:@selector(addressBarViewController:searchForParticipantsMatchingText:completion:)]) {
+            [self.dataSource addressBarViewController:self searchForParticipantsMatchingText:searchText completion:^(NSArray *participants) {
                 if (![enteredText isEqualToString:textView.text]) return;
                 self.tableView.hidden = NO;
                 self.participants = [self filteredParticipants:participants];
@@ -311,11 +311,11 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
     return trimmedSearchString;
 }
 
-- (NSArray *)filteredParticipants:(NSSet *)participants
+- (NSArray *)filteredParticipants:(NSArray *)participants
 {
-    NSMutableSet *prospectiveParticipants = [participants mutableCopy];
-    [prospectiveParticipants minusSet:self.selectedParticipants];
-    return prospectiveParticipants.allObjects;
+    NSMutableArray *prospectiveParticipants = [participants mutableCopy];
+    [prospectiveParticipants removeObjectsInArray:self.selectedParticipants.allObjects];
+    return prospectiveParticipants;
 }
 
 - (void)searchEnded
