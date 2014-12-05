@@ -18,6 +18,7 @@
 @property (nonatomic, copy) NSAttributedString *attributedStringForMessageParts;
 @property (nonatomic) UITextView *dummyTextView;
 @property (nonatomic) CGFloat textViewMaxHeight;
+@property (nonatomic, getter=isTyping) BOOL typing;
 
 @end
 
@@ -192,6 +193,20 @@ static CGFloat const LYRUIButtonHeight = 28;
     return _messageParts;
 }
 
+#pragma mark - Accessors
+
+- (void)setTyping:(BOOL)typing
+{
+    if (typing == _typing) return;
+    _typing = typing;
+
+    if (typing && [self.inputToolBarDelegate respondsToSelector:@selector(messageInputToolbarDidBeginTyping:)]) {
+        [self.inputToolBarDelegate messageInputToolbarDidBeginTyping:self];
+    } else if (!typing && [self.inputToolBarDelegate respondsToSelector:@selector(messageInputToolbarDidEndTyping:)]) {
+        [self.inputToolBarDelegate messageInputToolbarDidEndTyping:self];
+    }
+}
+
 #pragma mark - Actions
 
 - (void)leftAccessoryButtonTapped
@@ -202,9 +217,7 @@ static CGFloat const LYRUIButtonHeight = 28;
 - (void)rightAccessoryButtonTapped
 {
     if (self.textInputView.text.length == 0) return;
-    if ([self.inputToolBarDelegate respondsToSelector:@selector(messageInputToolbarDidEndTyping:)]) {
-        [self.inputToolBarDelegate messageInputToolbarDidEndTyping:self];
-    }
+    self.typing = NO;
     [self.inputToolBarDelegate messageInputToolbar:self didTapRightAccessoryButton:self.rightAccessoryButton];
     self.rightAccessoryButton.enabled = NO;
     self.textInputView.text = @"";
@@ -218,6 +231,7 @@ static CGFloat const LYRUIButtonHeight = 28;
 
 - (void)textViewDidChange:(UITextView *)textView
 {
+    self.typing = textView.text.length > 0;
     [self setNeedsLayout];
     [self configureSendButtonEnablement];
 
@@ -241,21 +255,6 @@ static CGFloat const LYRUIButtonHeight = 28;
 
     // Workaround for automatic scrolling not occurring in some cases.
     [textView scrollRangeToVisible:textView.selectedRange];
-}
-
-- (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
-{
-    if (textView.text.length && (text.length == 0 && range.location == 0 && range.length == textView.text.length)) {
-        // user cleared out the text
-        if ([self.inputToolBarDelegate respondsToSelector:@selector(messageInputToolbarDidEndTyping:)]) {
-            [self.inputToolBarDelegate messageInputToolbarDidEndTyping:self];
-        }
-    } else if (text.length) {
-        if ([self.inputToolBarDelegate respondsToSelector:@selector(messageInputToolbarDidBeginTyping:)]) {
-            [self.inputToolBarDelegate messageInputToolbarDidBeginTyping:self];
-        }
-    }
-    return YES;
 }
 
 - (BOOL)textView:(UITextView *)textView shouldInteractWithURL:(NSURL *)URL inRange:(NSRange)characterRange
