@@ -19,6 +19,6 @@
 /**
  @abstract Configures the placeholder text for the textView
  */
-@property (nonatomic) NSString *placeHolderText;
+@property (nonatomic) NSString *placeholder;
 
 @end

@@ -25,11 +25,11 @@ static NSString *const LYRUIPlaceHolderText = @"Enter Message";
         self.textContainerInset = UIEdgeInsetsMake(8, 0, 8, 0);
         self.font = [UIFont systemFontOfSize:14];
         self.dataDetectorTypes = UIDataDetectorTypeLink;
-        self.placeHolderText = LYRUIPlaceHolderText;
+        self.placeholder = LYRUIPlaceHolderText;
 
         self.placeholderLabel = [UILabel new];
         self.placeholderLabel.font = self.font;
-        self.placeholderLabel.text = self.placeHolderText;
+        self.placeholderLabel.text = self.placeholder;
         self.placeholderLabel.textColor = [UIColor lightGrayColor];
         self.placeholderLabel.lineBreakMode = NSLineBreakByTruncatingTail;
         [self addSubview:self.placeholderLabel];
@@ -85,10 +85,10 @@ static NSString *const LYRUIPlaceHolderText = @"Enter Message";
     [self configurePlaceholderVisibility];
 }
 
-- (void)setPlaceHolderText:(NSString *)placeHolderText
+- (void)setPlaceholder:(NSString *)placeholder
 {
-    _placeHolderText = placeHolderText;
-    self.placeholderLabel.text = placeHolderText;
+    _placeholder = placeholder;
+    self.placeholderLabel.text = placeholder;
     [self setNeedsLayout];
 }
 
