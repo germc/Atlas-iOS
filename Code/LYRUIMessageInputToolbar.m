@@ -157,6 +157,7 @@ static CGFloat const LYRUIButtonHeight = 28;
     [attributedString appendAttributedString:lineBreak];
 
     textView.attributedText = attributedString;
+    self.typing = YES;
     [self setNeedsLayout];
     [self configureSendButtonEnablement];
 }
