@@ -105,7 +105,6 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     // Set the accessoryView to be a Message Input Toolbar
     self.messageInputToolbar =  [LYRUIMessageInputToolbar new];
     self.messageInputToolbar.inputToolBarDelegate = self;
-    [self.messageInputToolbar sizeToFit];
     self.inputAccessoryView = self.messageInputToolbar;
     [self configureSendButtonEnablement];
     
@@ -128,8 +127,8 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     }
 
     [self updateAutoLayoutConstraints];
-    self.collectionView.contentInset = UIEdgeInsetsMake(0, 0, self.inputAccessoryView.intrinsicContentSize.height, 0);
-    self.collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(0, 0, self.inputAccessoryView.intrinsicContentSize.height, 0);
+    self.collectionView.contentInset = UIEdgeInsetsMake(0, 0, CGRectGetHeight(self.inputAccessoryView.frame), 0);
+    self.collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(0, 0, CGRectGetHeight(self.inputAccessoryView.frame), 0);
 }
 
 - (void)viewWillAppear:(BOOL)animated
