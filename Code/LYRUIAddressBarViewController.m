@@ -292,9 +292,8 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
 
 - (void)sizeAddressBarView
 {
-    [self.addressBarView.addressBarTextView invalidateIntrinsicContentSize];
+    [self.addressBarView.addressBarTextView setNeedsUpdateConstraints];
 }
-
 
 - (NSString *)textForSearchFromTextView:(UITextView *)textView
 {
