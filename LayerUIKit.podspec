@@ -22,5 +22,5 @@ Pod::Spec.new do |s|
   s.ios.frameworks = 'UIKit'
   s.ios.deployment_target = '7.0'
 
-  #s.dependency 'LayerKit', '~> 0.9.0'
+  #s.dependency 'LayerKit', git: 'git@github.com:layerhq/LayerKit.git', :tag => 'v0.9.0-pre3 '
 end

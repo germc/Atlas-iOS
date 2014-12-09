@@ -9,10 +9,6 @@
 #import "LYRClientMockFactory.h"
 #import <LayerKit/LayerKit.h>
 
-NSString *const LYRClientMockFactoryNameAlice       = @"Alice";
-NSString *const LYRClientMockFactoryNameBob         = @"Bob";
-NSString *const LYRClientMockFactoryNameCarol       = @"Carol";
-
 @interface LYRClientMockFactory ()
 
 @property (nonatomic, readwrite) LYRClientMock *layerClient;
@@ -37,35 +33,26 @@ NSString *const LYRClientMockFactoryNameCarol       = @"Carol";
 
 #pragma mark - Initializers
 
-- (instancetype)initWithAuthenticatedUserID:(NSString *)authenticatedUserID
++ (id)sharedFactory
 {
-    self = [super init];
-    if (self) {
-        _layerClient = [LYRClientMock layerClientMockWithAuthenticatedUserID:authenticatedUserID];
-        _dispatchQueue = dispatch_queue_create("com.layer.LayerUIKit.TimedIncomingMessages", NULL);
-        _timerRunning = NO;
-        _dateFormatter = [[NSDateFormatter alloc] init];
-        _dateFormatter.dateStyle = NSDateFormatterNoStyle;
-        _dateFormatter.timeStyle = NSDateFormatterMediumStyle;
-        _minimumTimeInterval = 2;
-        _maximumTimeInterval = 7;
-    }
-    return self;
+    static LYRClientMockFactory *sharedFactory = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        sharedFactory = [[self alloc] init];
+    });
+    return sharedFactory;
 }
 
-- (instancetype)init
+- (void)setAuthenticatedUserID:(NSString *)authenticatedUserID
 {
-    @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"Failed to call designated initializer, use %@", NSStringFromSelector(@selector(initWithAuthenticatedUserID:))]  userInfo:nil];
-}
-
-+ (instancetype)emptyClientWithAuthenticatedUserID:(NSString *)authenticatedUserID
-{
-    return [[LYRClientMockFactory alloc] initWithAuthenticatedUserID:authenticatedUserID];
-}
-
-- (NSString *)authenticatedUserID
-{
-    return self.layerClient.authenticatedUserID;
+    _layerClient = [LYRClientMock layerClientMockWithAuthenticatedUserID:authenticatedUserID];
+    _dispatchQueue = dispatch_queue_create("com.layer.LayerUIKit.TimedIncomingMessages", NULL);
+    _timerRunning = NO;
+    _dateFormatter = [[NSDateFormatter alloc] init];
+    _dateFormatter.dateStyle = NSDateFormatterNoStyle;
+    _dateFormatter.timeStyle = NSDateFormatterMediumStyle;
+    _minimumTimeInterval = 2;
+    _maximumTimeInterval = 7;
 }
 
 - (void)dealloc
@@ -73,42 +60,19 @@ NSString *const LYRClientMockFactoryNameCarol       = @"Carol";
     [self stopTimedIncomingMessages];
 }
 
-#pragma mark - Factory methods
+#pragma mark - Content Hydration
 
-+ (LYRClientMockFactory *)emptyClientForAlice
+- (void)hydrateConversationsWithCount:(NSUInteger)count
 {
-    return [LYRClientMockFactory emptyClientWithAuthenticatedUserID:LYRClientMockFactoryNameAlice];
-}
-
-+ (LYRClientMockFactory *)emptyClientForBob
-{
-    return [LYRClientMockFactory emptyClientWithAuthenticatedUserID:LYRClientMockFactoryNameBob];
-}
-
-+ (LYRClientMockFactory *)emptyClientForCarol
-{
-    return [LYRClientMockFactory emptyClientWithAuthenticatedUserID:LYRClientMockFactoryNameCarol];
-}
-
-+ (LYRClientMockFactory *)clientForAliceWithConversation
-{
-    LYRClientMockFactory *factory = [LYRClientMockFactory emptyClientWithAuthenticatedUserID:LYRClientMockFactoryNameAlice];
-    [factory addConversationBetweenAliceAndBob];
-    return factory;
-}
-
-#pragma mark - ParticipantID-to-user resolver
-
-+ (LYRUserMock *)userForParticipantIdentifier:(NSString *)participantIdentifier
-{
-    if ([participantIdentifier isEqualToString:LYRClientMockFactoryNameAlice]) {
-        return [LYRUserMock userWithFirstName:@"Alice" lastName:@"Liddell" participantIdentifier:LYRClientMockFactoryNameAlice];
-    } else if ([participantIdentifier isEqualToString:LYRClientMockFactoryNameBob]) {
-        return [LYRUserMock userWithFirstName:@"Bob" lastName:@"Wiley" participantIdentifier:LYRClientMockFactoryNameBob];
-    } else if ([participantIdentifier isEqualToString:LYRClientMockFactoryNameCarol]) {
-        return [LYRUserMock userWithFirstName:@"Carol" lastName:@"Peletier" participantIdentifier:LYRClientMockFactoryNameCarol];
+    for (int i = 0; i < count; i++) {
+        //int r = arc4random_uniform(6);
+        
     }
-    return [LYRUserMock userWithFirstName:@"John" lastName:@"Doe" participantIdentifier:participantIdentifier];
+}
+
+- (void)conversationWithParticipant
+{
+    self.layerClient newConversationWithParticipants:<#(NSSet *)#> options:<#(NSDictionary *)#> error:<#(NSError *__autoreleasing *)#>
 }
 
 #pragma mark - Timed incoming messages

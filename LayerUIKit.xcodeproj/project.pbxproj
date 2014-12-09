@@ -18,6 +18,12 @@
 		D0E729511A03202700B76672 /* LYRClientMockTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D0E729501A03202700B76672 /* LYRClientMockTests.m */; };
 		D0E729541A04306F00B76672 /* LYRClientMockFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = D0E729531A04306F00B76672 /* LYRClientMockFactory.m */; };
 		D0E7295A1A04413D00B76672 /* LYRUserMock.m in Sources */ = {isa = PBXBuildFile; fileRef = D0E729591A04413D00B76672 /* LYRUserMock.m */; };
+		D667D0641A36561300D63546 /* LYRConversationMock.m in Sources */ = {isa = PBXBuildFile; fileRef = D667D0631A36561300D63546 /* LYRConversationMock.m */; };
+		D667D0671A36561F00D63546 /* LYRMessageMock.m in Sources */ = {isa = PBXBuildFile; fileRef = D667D0661A36561F00D63546 /* LYRMessageMock.m */; };
+		D667D0701A36589E00D63546 /* LYRQueryMock.m in Sources */ = {isa = PBXBuildFile; fileRef = D667D06F1A36589E00D63546 /* LYRQueryMock.m */; };
+		D667D0731A3658A800D63546 /* LYRQueryControllerMock.m in Sources */ = {isa = PBXBuildFile; fileRef = D667D0721A3658A800D63546 /* LYRQueryControllerMock.m */; };
+		D667D0761A3658B200D63546 /* LYRPredicateMock.m in Sources */ = {isa = PBXBuildFile; fileRef = D667D0751A3658B200D63546 /* LYRPredicateMock.m */; };
+		D6B282601A368065001DC713 /* LYRMockContentStore.m in Sources */ = {isa = PBXBuildFile; fileRef = D6B2825F1A368065001DC713 /* LYRMockContentStore.m */; };
 		F309E194D1651CC5D4FEA717 /* libPods-Conversation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D9A79E80B908428B22486437 /* libPods-Conversation.a */; };
 /* End PBXBuildFile section */
 
@@ -49,8 +55,8 @@
 		D0D778D31A02EB83000A5F51 /* Unit Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Unit Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D0D778D61A02EB83000A5F51 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D0D778DE1A02EBDE000A5F51 /* LYRUIConversationDataSourceTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIConversationDataSourceTests.m; sourceTree = "<group>"; };
-		D0E7294A1A02F1C700B76672 /* LYRUIAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUIAppDelegate.h; sourceTree = "<group>"; };
-		D0E7294B1A02F1C700B76672 /* LYRUIAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIAppDelegate.m; sourceTree = "<group>"; };
+		D0E7294A1A02F1C700B76672 /* LYRUIAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LYRUIAppDelegate.h; path = "Sample Code/Shared/LYRUIAppDelegate.h"; sourceTree = "<group>"; };
+		D0E7294B1A02F1C700B76672 /* LYRUIAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LYRUIAppDelegate.m; path = "Sample Code/Shared/LYRUIAppDelegate.m"; sourceTree = "<group>"; };
 		D0E7294D1A02FDB900B76672 /* LYRClientMock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRClientMock.h; sourceTree = "<group>"; };
 		D0E7294E1A02FDB900B76672 /* LYRClientMock.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRClientMock.m; sourceTree = "<group>"; };
 		D0E729501A03202700B76672 /* LYRClientMockTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRClientMockTests.m; sourceTree = "<group>"; };
@@ -58,6 +64,19 @@
 		D0E729531A04306F00B76672 /* LYRClientMockFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRClientMockFactory.m; sourceTree = "<group>"; };
 		D0E729581A04413D00B76672 /* LYRUserMock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUserMock.h; sourceTree = "<group>"; };
 		D0E729591A04413D00B76672 /* LYRUserMock.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUserMock.m; sourceTree = "<group>"; };
+		D667D0621A36561300D63546 /* LYRConversationMock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRConversationMock.h; sourceTree = "<group>"; };
+		D667D0631A36561300D63546 /* LYRConversationMock.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRConversationMock.m; sourceTree = "<group>"; };
+		D667D0651A36561F00D63546 /* LYRMessageMock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRMessageMock.h; sourceTree = "<group>"; };
+		D667D0661A36561F00D63546 /* LYRMessageMock.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRMessageMock.m; sourceTree = "<group>"; };
+		D667D06B1A36586F00D63546 /* LayerKitMock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LayerKitMock.h; sourceTree = "<group>"; };
+		D667D06E1A36589E00D63546 /* LYRQueryMock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRQueryMock.h; sourceTree = "<group>"; };
+		D667D06F1A36589E00D63546 /* LYRQueryMock.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRQueryMock.m; sourceTree = "<group>"; };
+		D667D0711A3658A800D63546 /* LYRQueryControllerMock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRQueryControllerMock.h; sourceTree = "<group>"; };
+		D667D0721A3658A800D63546 /* LYRQueryControllerMock.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRQueryControllerMock.m; sourceTree = "<group>"; };
+		D667D0741A3658B200D63546 /* LYRPredicateMock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRPredicateMock.h; sourceTree = "<group>"; };
+		D667D0751A3658B200D63546 /* LYRPredicateMock.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRPredicateMock.m; sourceTree = "<group>"; };
+		D6B2825E1A368065001DC713 /* LYRMockContentStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRMockContentStore.h; sourceTree = "<group>"; };
+		D6B2825F1A368065001DC713 /* LYRMockContentStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRMockContentStore.m; sourceTree = "<group>"; };
 		D9A79E80B908428B22486437 /* libPods-Conversation.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Conversation.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -124,6 +143,8 @@
 		D0D778BA1A02EAD8000A5F51 /* Sample Code */ = {
 			isa = PBXGroup;
 			children = (
+				D0E7294A1A02F1C700B76672 /* LYRUIAppDelegate.h */,
+				D0E7294B1A02F1C700B76672 /* LYRUIAppDelegate.m */,
 				D0D778BC1A02EAEE000A5F51 /* Conversation */,
 				D0E729491A02F1C700B76672 /* Shared */,
 			);
@@ -167,10 +188,21 @@
 			isa = PBXGroup;
 			children = (
 				D0D778C51A02EAEE000A5F51 /* main.m */,
-				D0E7294A1A02F1C700B76672 /* LYRUIAppDelegate.h */,
-				D0E7294B1A02F1C700B76672 /* LYRUIAppDelegate.m */,
+				D667D0621A36561300D63546 /* LYRConversationMock.h */,
+				D667D0631A36561300D63546 /* LYRConversationMock.m */,
+				D667D0651A36561F00D63546 /* LYRMessageMock.h */,
+				D667D0661A36561F00D63546 /* LYRMessageMock.m */,
 				D0E7294D1A02FDB900B76672 /* LYRClientMock.h */,
 				D0E7294E1A02FDB900B76672 /* LYRClientMock.m */,
+				D667D06B1A36586F00D63546 /* LayerKitMock.h */,
+				D667D06E1A36589E00D63546 /* LYRQueryMock.h */,
+				D667D06F1A36589E00D63546 /* LYRQueryMock.m */,
+				D667D0711A3658A800D63546 /* LYRQueryControllerMock.h */,
+				D667D0721A3658A800D63546 /* LYRQueryControllerMock.m */,
+				D667D0741A3658B200D63546 /* LYRPredicateMock.h */,
+				D667D0751A3658B200D63546 /* LYRPredicateMock.m */,
+				D6B2825E1A368065001DC713 /* LYRMockContentStore.h */,
+				D6B2825F1A368065001DC713 /* LYRMockContentStore.m */,
 				D0E729521A04306F00B76672 /* LYRClientMockFactory.h */,
 				D0E729531A04306F00B76672 /* LYRClientMockFactory.m */,
 				D0E729581A04413D00B76672 /* LYRUserMock.h */,
@@ -344,12 +376,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D667D0701A36589E00D63546 /* LYRQueryMock.m in Sources */,
 				D0AF56C11A08383F0093D5A5 /* LYRUISampleConversationsViewController.m in Sources */,
+				D667D0671A36561F00D63546 /* LYRMessageMock.m in Sources */,
+				D6B282601A368065001DC713 /* LYRMockContentStore.m in Sources */,
 				D0D778CB1A02EAEE000A5F51 /* main.m in Sources */,
 				D0E7294C1A02F1C700B76672 /* LYRUIAppDelegate.m in Sources */,
 				D0E7295A1A04413D00B76672 /* LYRUserMock.m in Sources */,
+				D667D0641A36561300D63546 /* LYRConversationMock.m in Sources */,
+				D667D0761A3658B200D63546 /* LYRPredicateMock.m in Sources */,
 				D0E7294F1A02FDB900B76672 /* LYRClientMock.m in Sources */,
 				D0D778CA1A02EAEE000A5F51 /* LYRUISampleConversationRootViewController.m in Sources */,
+				D667D0731A3658A800D63546 /* LYRQueryControllerMock.m in Sources */,
 				D0E729541A04306F00B76672 /* LYRClientMockFactory.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

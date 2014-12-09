@@ -16,15 +16,10 @@
 @property (nonatomic, readonly) NSString *authenticatedUserID;
 
 #pragma mark - Producing LYRClientMock
-- (instancetype)initWithAuthenticatedUserID:(NSString *)authenticatedUserID;
-+ (LYRClientMockFactory *)emptyClientWithAuthenticatedUserID:(NSString *)authenticatedUserID;
-+ (LYRClientMockFactory *)emptyClientForAlice;
-+ (LYRClientMockFactory *)emptyClientForBob;
-+ (LYRClientMockFactory *)emptyClientForCarol;
-+ (LYRClientMockFactory *)clientForAliceWithConversation;
 
-#pragma mark - ParticipantID-to-user resolver
-+ (LYRUserMock *)userForParticipantIdentifier:(NSString *)participantIdentifier;
++ (id)sharedFactory;
+
+- (void)hydrateConversationsWithCount:(NSUInteger)count;
 
 #pragma mark - Producing conversations
 - (void)addConversationBetweenAliceAndBob;
