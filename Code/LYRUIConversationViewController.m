@@ -30,11 +30,12 @@
 @property (nonatomic) BOOL shouldScrollToBottom;
 @property (nonatomic) BOOL shouldDisplayAvatarImage;
 @property (nonatomic) CGRect addressBarRect;
-@property (nonatomic) NSLayoutConstraint *typingIndicatorViewTopConstraint;
+@property (nonatomic) NSLayoutConstraint *typingIndicatorViewBottomConstraint;
 @property (nonatomic) NSMutableDictionary *typingIndicatorStatusByParticipant;
 @property (nonatomic) LYRQueryController *queryController;
 @property (nonatomic) NSMutableArray *objectChages;
 @property (nonatomic) NSHashTable *sectionFooters;
+@property (nonatomic, getter=isFirstAppearance) BOOL firstAppearance;
 
 @end
 
@@ -66,6 +67,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
         _showsAddressBar = NO;
         _typingIndicatorStatusByParticipant = [NSMutableDictionary dictionaryWithCapacity:conversation.participants.count];
         _sectionFooters = [NSHashTable weakObjectsHashTable];
+        _firstAppearance = YES;
         
         // Configure default UIAppearance Proxy
         [self configureMessageBubbleAppearance];
@@ -117,6 +119,8 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     // Set the typing indicator label
     self.typingIndicatorView = [[LYRUITypingIndicatorView alloc] init];
     self.typingIndicatorView.translatesAutoresizingMaskIntoConstraints = NO;
+    // Make dragging on the typing indicator scroll the scroll view / keyboard.
+    self.typingIndicatorView.userInteractionEnabled = NO;
     self.typingIndicatorView.alpha = 0.0;
     [self.view addSubview:self.typingIndicatorView];
     
@@ -133,10 +137,13 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     }
 
     [self updateAutoLayoutConstraints];
-    self.collectionView.contentInset = UIEdgeInsetsMake(0, 0, CGRectGetHeight(self.messageInputToolbar.frame), 0);
-    self.collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(0, 0, CGRectGetHeight(self.messageInputToolbar.frame), 0);
+    [self updateCollectionViewInsets];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidHide:) name:UIKeyboardDidHideNotification object:nil];
 
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textViewTextDidBeginEditing:) name:UITextViewTextDidBeginEditingNotification object:self.messageInputToolbar.textInputView];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveTypingIndicator:) name:LYRConversationDidReceiveTypingIndicatorNotification object:self.conversation];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -165,7 +172,6 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     
     // Collection View AutoLayout Config
     [self setConversationViewTitle];
-    [self scrollToBottomOfCollectionViewAnimated:NO];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -173,17 +179,6 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     [super viewDidAppear:animated];
     [self.addressBarController.addressBarView.addressBarTextView becomeFirstResponder];
     
-    // Register for keyboard notifications
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(keyboardWillShow:)
-                                                 name:UIKeyboardWillShowNotification
-                                               object:nil];
-
-    // Register for typing indicator notifications
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(didReceiveTypingIndicator:)
-                                                 name:LYRConversationDidReceiveTypingIndicatorNotification object:self.conversation];
-
     // Update typing indicator
     [self updateTypingIndicatorOverlay:YES];
 }
@@ -193,14 +188,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     [super viewWillDisappear:animated];
     
     self.queryController = nil;
-    
-    [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                    name:UIKeyboardWillShowNotification
-                                                  object:nil];
 
-    [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                    name:LYRConversationDidReceiveTypingIndicatorNotification
-                                                  object:self.conversation];
 }
 
 - (void)viewDidLayoutSubviews
@@ -221,6 +209,27 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     if (!self.presentedViewController && !self.view.inputAccessoryView.superview) {
         [self.view becomeFirstResponder];
     }
+
+    if (self.isFirstAppearance) {
+        self.firstAppearance = NO;
+        [self scrollToBottomOfCollectionViewAnimated:NO];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
+    }
+}
+
+- (void)updateViewConstraints
+{
+    CGFloat typingIndicatorBottomConstraintConstant = -self.collectionView.scrollIndicatorInsets.bottom;
+    if (self.messageInputToolbar.superview) {
+        CGRect toolbarFrame = [self.view convertRect:self.messageInputToolbar.frame fromView:self.messageInputToolbar.superview];
+        CGFloat keyboardOnscreenHeight = CGRectGetHeight(self.view.frame) - CGRectGetMinY(toolbarFrame);
+        if (-keyboardOnscreenHeight > typingIndicatorBottomConstraintConstant) {
+            typingIndicatorBottomConstraintConstant = -keyboardOnscreenHeight;
+        }
+    }
+    self.typingIndicatorViewBottomConstraint.constant = typingIndicatorBottomConstraintConstant;
+
+    [super updateViewConstraints];
 }
 
 - (void)dealloc
@@ -292,6 +301,14 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     if (self.isViewLoaded) {
         [self setConversationViewTitle];
     }
+}
+
+#pragma mark - UIScrollViewDelegate
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView
+{
+    // When the keyboard is being dragged, we need to update the position of the typing indicator.
+    [self.view setNeedsUpdateConstraints];
 }
 
 # pragma mark - Collection View Data Source
@@ -563,14 +580,26 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 
 - (void)keyboardWillShow:(NSNotification *)notification
 {
-    self.keyboardHeight = [[[notification userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue].size.height;
+    CGRect keyboardFrame = [notification.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
+    keyboardFrame = [self.view convertRect:keyboardFrame fromView:nil];
+    keyboardFrame = CGRectIntersection(self.view.bounds, keyboardFrame);
+    self.keyboardHeight = CGRectGetHeight(keyboardFrame);
+    [self.view layoutIfNeeded];
     [UIView beginAnimations:nil context:NULL];
-    [self updateTypingIndicatorOverlay:NO];
     [UIView setAnimationDuration:[notification.userInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue]];
     [UIView setAnimationCurve:[notification.userInfo[UIKeyboardAnimationCurveUserInfoKey] integerValue]];
     [UIView setAnimationBeginsFromCurrentState:YES];
     [self updateCollectionViewInsets];
+    self.typingIndicatorViewBottomConstraint.constant = -self.collectionView.scrollIndicatorInsets.bottom;
+    [self.view layoutIfNeeded];
     [UIView commitAnimations];
+}
+
+- (void)keyboardDidHide:(NSNotification *)notification
+{
+    self.keyboardHeight = 0;
+    [self updateCollectionViewInsets];
+    [self.view setNeedsUpdateConstraints];
 }
 
 - (void)textViewTextDidBeginEditing:(NSNotification *)notification
@@ -610,26 +639,16 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     if (lastCommaRange.location != NSNotFound) {
         commaSeperatedParticipants = [commaSeperatedParticipants stringByReplacingOccurrencesOfString:@", " withString:@" and " options:NSBackwardsSearch range:lastCommaRange];
     }
-    
-    // Check if the collection view is scrolled to the bottom
-    BOOL isScrolledToBottom = (self.collectionView.contentOffset.y >= (self.collectionView.contentSize.height - self.collectionView.bounds.size.height));
-    
+
     // Figure out if we can display the typing indicator label, based
     // on the scroll position.
-    BOOL visible = (participantsTyping.count >= 1) && isScrolledToBottom;
+    BOOL visible = participantsTyping.count >= 1;
     if (participantsTyping.count) {
         [self.typingIndicatorView setText: [NSString stringWithFormat:@"%@ %@ typing...", commaSeperatedParticipants, participantsTyping.count > 1 ? @"are" : @"is"]];
     }
-    
-    self.typingIndicatorViewTopConstraint.constant = -self.messageInputToolbar.frame.size.height - LYRUITypingIndicatorHeight;
-    [self.view setNeedsUpdateConstraints];
     [UIView animateWithDuration:animated ? (visible ? 0.3 : 0.1) : 0 animations:^{
         self.typingIndicatorView.alpha = visible ? 1.0 : 0.0;
-        [self updateCollectionViewInsets];
-        if (visible) [self scrollToBottomOfCollectionViewAnimated:YES];
-        [self.view layoutIfNeeded];
     }];
-
 }
 
 #pragma mark - LYRUIMessageInputToolbar Delegate Methods
@@ -817,11 +836,13 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 
 - (void)updateCollectionViewInsets
 {
-    UIEdgeInsets existing = self.collectionView.contentInset;
-    CGFloat keyboardHeight = self.keyboardHeight < 1.0 ? self.messageInputToolbar.frame.size.height : self.keyboardHeight;
-    keyboardHeight += self.typingIndicatorView.alpha ? LYRUITypingIndicatorHeight : 0;
-    self.collectionView.contentInset = UIEdgeInsetsMake(existing.top, 0, keyboardHeight, 0);
-    self.collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(existing.top, 0, keyboardHeight, 0);
+    [self.messageInputToolbar layoutIfNeeded];
+    UIEdgeInsets insets = self.collectionView.contentInset;
+    CGFloat keyboardHeight = MAX(self.keyboardHeight, CGRectGetHeight(self.messageInputToolbar.frame));
+    insets.bottom = keyboardHeight;
+    self.collectionView.scrollIndicatorInsets = insets;
+    insets.bottom += LYRUITypingIndicatorHeight;
+    self.collectionView.contentInset = insets;
 }
 
 - (CGPoint)bottomOffset
@@ -1063,14 +1084,14 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
                                                          multiplier:1.0
                                                            constant:LYRUITypingIndicatorHeight]];
    
-    self.typingIndicatorViewTopConstraint = [NSLayoutConstraint constraintWithItem:self.typingIndicatorView
-                                                                         attribute:NSLayoutAttributeTop
-                                                                         relatedBy:NSLayoutRelationEqual
-                                                                            toItem:self.view
-                                                                         attribute:NSLayoutAttributeBottom
-                                                                        multiplier:1.0
-                                                                          constant:0];
-    [self.view addConstraint:self.typingIndicatorViewTopConstraint];
+    self.typingIndicatorViewBottomConstraint = [NSLayoutConstraint constraintWithItem:self.typingIndicatorView
+                                                                            attribute:NSLayoutAttributeBottom
+                                                                            relatedBy:NSLayoutRelationEqual
+                                                                               toItem:self.view
+                                                                            attribute:NSLayoutAttributeBottom
+                                                                           multiplier:1.0
+                                                                             constant:0];
+    [self.view addConstraint:self.typingIndicatorViewBottomConstraint];
 }
 
 #pragma mark - Helpers
