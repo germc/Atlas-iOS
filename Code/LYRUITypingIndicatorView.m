@@ -39,11 +39,13 @@
         _typingIndicatorLabel.textColor = [UIColor lightGrayColor];
         _typingIndicatorLabel.font = LSMediumFont(12);
         _typingIndicatorLabel.textColor = [UIColor grayColor];
-        _typingIndicatorLabel.numberOfLines = 0;
+        _typingIndicatorLabel.numberOfLines = 1;
+        _typingIndicatorLabel.textAlignment = NSTextAlignmentCenter;
         _typingIndicatorLabel.backgroundColor = [UIColor clearColor];
         [self addSubview:_typingIndicatorLabel];
 
-        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.typingIndicatorLabel attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0]];
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.typingIndicatorLabel attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1.0 constant:8]];
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.typingIndicatorLabel attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeRight multiplier:1.0 constant:-8]];
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.typingIndicatorLabel attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1.0 constant:0]];
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.typingIndicatorLabel attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeHeight multiplier:1.0 constant:0]];
     }
@@ -53,8 +55,6 @@
 - (void)setText:(NSString *)text
 {
     self.typingIndicatorLabel.text = text;
-    [self.typingIndicatorLabel sizeToFit];
-    [self setNeedsUpdateConstraints];
 }
 
 - (void)layoutSubviews
