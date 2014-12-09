@@ -13,9 +13,6 @@
 @interface LYRUITypingIndicatorView ()
 
 @property (nonatomic) UILabel *typingIndicatorLabel;
-@property (nonatomic) CGFloat labelInset;
-@property (nonatomic) NSLayoutConstraint *labelLeftConstraint;
-@property (nonatomic) NSLayoutConstraint *labelWidthConstraint;
 @property (nonatomic) CAGradientLayer *backgroundGradientLayer;
 
 @end
