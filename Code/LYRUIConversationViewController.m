@@ -175,8 +175,9 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     
     // Register for keyboard notifications
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(keyboardWasShown:)
-                                                 name:UIKeyboardWillShowNotification object:nil];
+                                             selector:@selector(keyboardWillShow:)
+                                                 name:UIKeyboardWillShowNotification
+                                               object:nil];
 
     // Register for typing indicator notifications
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -565,7 +566,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 
 #pragma mark - Notification Handlers
 
-- (void)keyboardWasShown:(NSNotification*)notification
+- (void)keyboardWillShow:(NSNotification *)notification
 {
     self.keyboardHeight = [[[notification userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue].size.height;
     [UIView beginAnimations:nil context:NULL];
