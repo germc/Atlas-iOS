@@ -26,7 +26,6 @@
 @property (nonatomic) UICollectionView *collectionView;
 @property (nonatomic) UILabel *typingIndicatorLabel;
 @property (nonatomic) LYRUITypingIndicatorView *typingIndicatorView;
-@property (nonatomic) BOOL keyboardIsOnScreen;
 @property (nonatomic) CGFloat keyboardHeight;
 @property (nonatomic) BOOL shouldScrollToBottom;
 @property (nonatomic) BOOL shouldDisplayAvatarImage;
@@ -136,6 +135,8 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     [self updateAutoLayoutConstraints];
     self.collectionView.contentInset = UIEdgeInsetsMake(0, 0, CGRectGetHeight(self.messageInputToolbar.frame), 0);
     self.collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(0, 0, CGRectGetHeight(self.messageInputToolbar.frame), 0);
+
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textViewTextDidBeginEditing:) name:UITextViewTextDidBeginEditingNotification object:self.messageInputToolbar.textInputView];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -181,7 +182,6 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(didReceiveTypingIndicator:)
                                                  name:LYRConversationDidReceiveTypingIndicatorNotification object:self.conversation];
-    self.keyboardIsOnScreen = NO;
 
     // Update typing indicator
     [self updateTypingIndicatorOverlay:YES];
@@ -225,6 +225,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 - (void)dealloc
 {
     self.collectionView.delegate = nil;
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (BOOL)canBecomeFirstResponder
@@ -562,16 +563,10 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     return size;
 }
 
-#pragma mark - Keyboard Nofifications
+#pragma mark - Notification Handlers
 
 - (void)keyboardWasShown:(NSNotification*)notification
 {
-    if (self.keyboardIsOnScreen) {
-        self.keyboardIsOnScreen = NO;
-    } else {
-        self.keyboardIsOnScreen = YES;
-    }
-    
     self.keyboardHeight = [[[notification userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue].size.height;
     [UIView beginAnimations:nil context:NULL];
     [self updateTypingIndicatorOverlay:NO];
@@ -580,9 +575,11 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     [UIView setAnimationBeginsFromCurrentState:YES];
     [self updateCollectionViewInsets];
     [UIView commitAnimations];
-    if (self.keyboardIsOnScreen) {
-        [self scrollToBottomOfCollectionViewAnimated:TRUE];
-    }
+}
+
+- (void)textViewTextDidBeginEditing:(NSNotification *)notification
+{
+    [self scrollToBottomOfCollectionViewAnimated:YES];
 }
 
 #pragma mark - Typing indicator notifications
