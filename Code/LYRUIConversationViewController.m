@@ -18,11 +18,12 @@
 #import "LYRUITypingIndicatorView.h"
 #import "LYRQueryController.h"
 #import "LYRUIDataSourceChange.h"
+#import "LYRUIConversationView.h"
 
 @interface LYRUIConversationViewController () <UICollectionViewDataSource, UICollectionViewDelegate, LYRUIMessageInputToolbarDelegate, UIActionSheetDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIGestureRecognizerDelegate, LYRQueryControllerDelegate>
 
+@property (nonatomic) LYRUIConversationView *view;
 @property (nonatomic) UICollectionView *collectionView;
-@property (nonatomic) UIView *inputAccessoryView;
 @property (nonatomic) UILabel *typingIndicatorLabel;
 @property (nonatomic) LYRUITypingIndicatorView *typingIndicatorView;
 @property (nonatomic) BOOL keyboardIsOnScreen;
@@ -81,6 +82,11 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 
 #pragma mark - VC Lifecycle Methods
 
+- (void)loadView
+{
+    self.view = [LYRUIConversationView new];
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -105,7 +111,8 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     // Set the accessoryView to be a Message Input Toolbar
     self.messageInputToolbar =  [LYRUIMessageInputToolbar new];
     self.messageInputToolbar.inputToolBarDelegate = self;
-    self.inputAccessoryView = self.messageInputToolbar;
+    // An apparent system bug causes a view controller to not be deallocated if the view controller's own inputAccessoryView property is used.
+    self.view.inputAccessoryView = self.messageInputToolbar;
     [self configureSendButtonEnablement];
     
     // Set the typing indicator label
@@ -127,8 +134,8 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     }
 
     [self updateAutoLayoutConstraints];
-    self.collectionView.contentInset = UIEdgeInsetsMake(0, 0, CGRectGetHeight(self.inputAccessoryView.frame), 0);
-    self.collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(0, 0, CGRectGetHeight(self.inputAccessoryView.frame), 0);
+    self.collectionView.contentInset = UIEdgeInsetsMake(0, 0, CGRectGetHeight(self.messageInputToolbar.frame), 0);
+    self.collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(0, 0, CGRectGetHeight(self.messageInputToolbar.frame), 0);
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -207,6 +214,11 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
         scrollIndicatorInsets.top = contentInset.top;
         self.collectionView.contentInset = contentInset;
         self.collectionView.scrollIndicatorInsets = scrollIndicatorInsets;
+    }
+
+    // To get the toolbar to slide onscreen with the view controller's content, we have to make the view the first responder here. Even so, it will not animate on iOS 8 the first time.
+    if (!self.presentedViewController && !self.view.inputAccessoryView.superview) {
+        [self.view becomeFirstResponder];
     }
 }
 
@@ -616,7 +628,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
         [self.typingIndicatorView setText: [NSString stringWithFormat:@"%@ %@ typing...", commaSeperatedParticipants, participantsTyping.count > 1 ? @"are" : @"is"]];
     }
     
-    self.typingIndicatorViewTopConstraint.constant = -self.inputAccessoryView.frame.size.height - LYRUITypingIndicatorHeight;
+    self.typingIndicatorViewTopConstraint.constant = -self.messageInputToolbar.frame.size.height - LYRUITypingIndicatorHeight;
     [self.view setNeedsUpdateConstraints];
     [UIView animateWithDuration:animated ? (visible ? 0.3 : 0.1) : 0 animations:^{
         self.typingIndicatorView.alpha = visible ? 1.0 : 0.0;
@@ -748,7 +760,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 
 - (void)displayImagePickerWithSourceType:(UIImagePickerControllerSourceType)sourceType;
 {
-    [[(LYRUIMessageInputToolbar *)self.inputAccessoryView textInputView] resignFirstResponder];
+    [self.messageInputToolbar.textInputView resignFirstResponder];
     BOOL pickerSourceTypeAvailable = [UIImagePickerController isSourceTypeAvailable:sourceType];
     if (pickerSourceTypeAvailable) {
         UIImagePickerController *picker = [[UIImagePickerController alloc] init];
@@ -783,7 +795,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
                 *stop = YES; *innerStop = YES;
                 
                 // Do something interesting with the AV asset.
-                [(LYRUIMessageInputToolbar *)self.inputAccessoryView insertImage:latestPhoto];
+                [self.messageInputToolbar insertImage:latestPhoto];
             }
         }];
     } failureBlock:nil];
@@ -796,14 +808,16 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     NSString *mediaType = [info objectForKey:@"UIImagePickerControllerMediaType"];
     if ([mediaType isEqualToString:@"public.image"]) {
         UIImage *selectedImage = (UIImage *)[info objectForKey:UIImagePickerControllerOriginalImage];
-        [(LYRUIMessageInputToolbar *)self.inputAccessoryView insertImage:selectedImage];
+        [self.messageInputToolbar insertImage:selectedImage];
     }
     [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+    [self.view becomeFirstResponder];
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker
 {
     [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+    [self.view becomeFirstResponder];
 }
 
 #pragma mark CollectionView Content Inset Methods
@@ -811,7 +825,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 - (void)updateCollectionViewInsets
 {
     UIEdgeInsets existing = self.collectionView.contentInset;
-    CGFloat keyboardHeight = self.keyboardHeight < 1.0 ? self.inputAccessoryView.frame.size.height : self.keyboardHeight;
+    CGFloat keyboardHeight = self.keyboardHeight < 1.0 ? self.messageInputToolbar.frame.size.height : self.keyboardHeight;
     keyboardHeight += self.typingIndicatorView.alpha ? LYRUITypingIndicatorHeight : 0;
     self.collectionView.contentInset = UIEdgeInsetsMake(existing.top, 0, keyboardHeight, 0);
     self.collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(existing.top, 0, keyboardHeight, 0);
@@ -913,12 +927,12 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 
 - (void)addressBarViewControllerDidBeginSearching:(LYRUIAddressBarViewController *)addressBarViewController
 {
-    self.inputAccessoryView.hidden = YES;
+    self.messageInputToolbar.hidden = YES;
 }
 
 - (void)addressBarViewControllerDidEndSearching:(LYRUIAddressBarViewController *)addressBarViewController
 {
-    self.inputAccessoryView.hidden = NO;
+    self.messageInputToolbar.hidden = NO;
 }
 
 - (void)addressBarViewController:(LYRUIAddressBarViewController *)addressBarViewController didSelectParticipant:(id<LYRUIParticipant>)participant
