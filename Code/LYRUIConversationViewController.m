@@ -643,7 +643,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     // on the scroll position.
     BOOL visible = participantsTyping.count >= 1;
     if (participantsTyping.count) {
-        [self.typingIndicatorView setText: [NSString stringWithFormat:@"%@ %@ typing...", commaSeperatedParticipants, participantsTyping.count > 1 ? @"are" : @"is"]];
+        self.typingIndicatorView.label.text = [NSString stringWithFormat:@"%@ %@ typing...", commaSeperatedParticipants, participantsTyping.count > 1 ? @"are" : @"is"];
     }
     [UIView animateWithDuration:animated ? (visible ? 0.3 : 0.1) : 0 animations:^{
         self.typingIndicatorView.alpha = visible ? 1.0 : 0.0;

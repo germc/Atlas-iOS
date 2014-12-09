@@ -12,7 +12,6 @@
 
 @interface LYRUITypingIndicatorView ()
 
-@property (nonatomic) UILabel *label;
 @property (nonatomic) CAGradientLayer *backgroundGradientLayer;
 
 @end
@@ -47,11 +46,6 @@
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.label attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeHeight multiplier:1.0 constant:0]];
     }
     return self;
-}
-
-- (void)setText:(NSString *)text
-{
-    self.label.text = text;
 }
 
 - (void)layoutSubviews
