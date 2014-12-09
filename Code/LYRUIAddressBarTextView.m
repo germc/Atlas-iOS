@@ -18,6 +18,7 @@ NSString *const LYRUIAddressBarDelimiterPart = @"delimiter";
 
 @property (nonatomic) UILabel *toLabel;
 @property (nonatomic) CGFloat maxHeight;
+@property (nonatomic) NSLayoutConstraint *heightConstraint;
 
 @end
 
@@ -49,6 +50,9 @@ static CGFloat const LYRUILineSpacing = 6;
         self.toLabel.font = self.addressBarFont;
         [self addSubview:self.toLabel];
         
+        self.heightConstraint = [NSLayoutConstraint constraintWithItem:self attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:0];
+        [self addConstraint:self.heightConstraint];
+
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.toLabel attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1.0 constant:12]];
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.toLabel attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1.0 constant:10]];
         // Adding the constraint below works around a crash on iOS 7.1. It will be overriden by the content size.
@@ -59,15 +63,16 @@ static CGFloat const LYRUILineSpacing = 6;
     return self;
 }
 
-- (CGSize)intrinsicContentSize
+- (void)updateConstraints
 {
     CGSize size = [self sizeThatFits:CGSizeMake(CGRectGetWidth(self.frame), MAXFLOAT)];
-    size.width = ceil(size.width);
     size.height = ceil(size.height);
     if (size.height > self.maxHeight) {
         size.height = self.maxHeight;
     }
-    return size;
+    self.heightConstraint.constant = size.height;
+
+    [super updateConstraints];
 }
 
 - (void)setAddressBarFont:(UIFont *)addressBarFont
@@ -76,7 +81,7 @@ static CGFloat const LYRUILineSpacing = 6;
     self.font = addressBarFont;
     self.toLabel.font = addressBarFont;
     [self setUpMaxHeight];
-    [self invalidateIntrinsicContentSize];
+    [self setNeedsUpdateConstraints];
     _addressBarFont = addressBarFont;
 }
 
