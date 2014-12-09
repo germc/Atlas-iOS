@@ -61,15 +61,6 @@
     [self setNeedsUpdateConstraints];
 }
 
-- (void)updateLabelInset:(NSUInteger)inset
-{
-//    if (self.labelLeftConstraint) {
-//        [self removeConstraints:@[self.labelLeftConstraint, self.labelWidthConstraint]];
-//    }
-//    self.labelInset = inset;
-//    [self setNeedsUpdateConstraints];
-}
-
 - (void)layoutSubviews
 {
     [super layoutSubviews];

@@ -12,6 +12,4 @@
 
 - (void)setText:(NSString *)text;
 
-- (void)updateLabelInset:(NSUInteger)inset;
-
 @end

@@ -273,7 +273,6 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     } else if (1 >= self.conversation.participants.count) {
         self.title = @"Personal";
     } else if (2 >= self.conversation.participants.count) {
-        [self.typingIndicatorView updateLabelInset:10];
         self.shouldDisplayAvatarImage = NO;
         NSMutableSet *participants = [self.conversation.participants mutableCopy];
         [participants removeObject:self.layerClient.authenticatedUserID];
@@ -284,7 +283,6 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
             self.title = @"Unknown";
         }
     } else {
-        [self.typingIndicatorView updateLabelInset:48];
         self.shouldDisplayAvatarImage = YES;
         self.title = @"Group";
     }
