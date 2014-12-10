@@ -573,6 +573,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     } else {
         size = CGSizeMake(320, 10);
     }
+    size.height = ceil(size.height);
     return size;
 }
 
@@ -882,13 +883,15 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 
 - (void)queryControllerDidChangeContent:(LYRQueryController *)queryController
 {
-    __block BOOL shouldScroll;
+    CGPoint bottomOffset = [self bottomOffset];
+    CGFloat distanceToBottom = bottomOffset.y - self.collectionView.contentOffset.y;
+    BOOL shouldScrollToBottom = distanceToBottom <= 50 && !self.collectionView.isTracking && !self.collectionView.isDragging && !self.collectionView.isDecelerating;
+
     [self.collectionView performBatchUpdates:^{
         for (LYRUIDataSourceChange *change in self.objectChages) {
             switch (change.type) {
                 case LYRQueryControllerChangeTypeInsert:
                     [self.collectionView insertSections:[NSIndexSet indexSetWithIndex:change.newIndex]];
-                    shouldScroll = YES;
                     break;
                     
                 case LYRQueryControllerChangeTypeMove:
@@ -908,11 +911,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
             }
         }
         [self.objectChages removeAllObjects];
-    } completion:^(BOOL finished) {
-//        if (shouldScroll)  {
-            [self scrollToBottomOfCollectionViewAnimated:NO];
-//        }
-    }];
+    } completion:nil];
 
     // Since each section's footer content depends on the existence of other messages, we need to update footers even when the corresponding message to a footer has not changed.
     for (LYRUIConversationCollectionViewFooter *footer in self.sectionFooters) {
@@ -920,6 +919,10 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
         if (!queryControllerIndexPath) continue;
         NSIndexPath *collectionViewIndexPath = [NSIndexPath indexPathForItem:0 inSection:queryControllerIndexPath.row];
         [self configureFooter:footer atIndexPath:collectionViewIndexPath];
+    }
+
+    if (shouldScrollToBottom)  {
+        [self scrollToBottomOfCollectionViewAnimated:YES];
     }
 }
 
