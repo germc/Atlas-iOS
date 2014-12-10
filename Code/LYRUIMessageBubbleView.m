@@ -92,25 +92,25 @@
         typeof(self) strongSelf = weakSelf;
         if (!strongSelf) return;
         
-        // Create a Pin Image
+        // Create a pin image.
         MKAnnotationView *pin = [[MKPinAnnotationView alloc] initWithAnnotation:nil reuseIdentifier:@""];
         UIImage *pinImage = pin.image;
         
-        //Draw The Image
+        // Draw the image.
         UIImage *image = snapshot.image;
         UIGraphicsBeginImageContextWithOptions(image.size, YES, image.scale);
         [image drawAtPoint:CGPointMake(0, 0)];
         
-        // Draw the Pin
+        // Draw the pin.
         CGPoint point = [snapshot pointForCoordinate:location];
         [pinImage drawAtPoint:CGPointMake(point.x, point.y - pinImage.size.height)];
         UIImage *finalImage = UIGraphicsGetImageFromCurrentImageContext();
         UIGraphicsEndImageContext();
         
-        // Set image
+        // Set image.
         strongSelf.bubbleImageView.image = finalImage;
         
-        // Animate into view
+        // Animate into view.
         [UIView animateWithDuration:0.2 animations:^{
             strongSelf.bubbleImageView.alpha = 1.0;
         }];
