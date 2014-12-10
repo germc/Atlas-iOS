@@ -16,7 +16,6 @@
 
 @property (nonatomic) NSLayoutConstraint *avatarImageWidthConstraint;
 @property (nonatomic) NSLayoutConstraint *avatarImageHeightConstraint;
-@property (nonatomic) NSLayoutConstraint *avatarImageBottomConstraint;
 @property (nonatomic) NSLayoutConstraint *avatarImageLeftConstraint;
 
 @end
@@ -84,15 +83,7 @@ static CGFloat const LYRAvatarImageDiameter = 30.0f;
                                                                     attribute:NSLayoutAttributeNotAnAttribute
                                                                    multiplier:1.0
                                                                      constant:self.imageViewDiameter];
-    
-    self.avatarImageBottomConstraint = [NSLayoutConstraint constraintWithItem:self.avatarImage
-                                                                    attribute:NSLayoutAttributeBottom
-                                                                    relatedBy:NSLayoutRelationEqual
-                                                                       toItem:self.contentView
-                                                                    attribute:NSLayoutAttributeBottom
-                                                                   multiplier:1.0
-                                                                     constant:0];
-    
+
     self.avatarImageLeftConstraint = [NSLayoutConstraint constraintWithItem:self.avatarImage
                                                                   attribute:NSLayoutAttributeLeft
                                                                   relatedBy:NSLayoutRelationEqual
@@ -103,7 +94,13 @@ static CGFloat const LYRAvatarImageDiameter = 30.0f;
     // Add avatar constraints
     [self.contentView addConstraint:self.avatarImageWidthConstraint];
     [self.contentView addConstraint:self.avatarImageHeightConstraint];
-    [self.contentView addConstraint:self.avatarImageBottomConstraint];
+    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.avatarImage
+                                                                 attribute:NSLayoutAttributeBottom
+                                                                 relatedBy:NSLayoutRelationEqual
+                                                                    toItem:self.contentView
+                                                                 attribute:NSLayoutAttributeBottom
+                                                                multiplier:1.0
+                                                                  constant:0]];
     [self.contentView addConstraint:self.avatarImageLeftConstraint];
 
     [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleView
