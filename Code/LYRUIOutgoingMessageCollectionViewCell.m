@@ -19,11 +19,6 @@
     return self;
 }
 
-- (void)updateWithParticipant:(id<LYRUIParticipant>)participant
-{
-    //
-}
-
 - (void)updateConstraints
 {
     [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleView
