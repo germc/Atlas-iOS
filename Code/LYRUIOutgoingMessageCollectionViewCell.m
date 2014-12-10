@@ -14,14 +14,9 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-        
+        self.avatarImage.hidden = YES;
     }
     return self;
-}
-
-- (void)shouldDisplayAvatarImage:(BOOL)shouldDisplayAvatarImage
-{
-    self.avatarImage.hidden = YES;
 }
 
 - (void)updateWithParticipant:(id<LYRUIParticipant>)participant
