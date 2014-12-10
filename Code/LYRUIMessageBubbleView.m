@@ -78,6 +78,10 @@
     options.size = CGSizeMake(200, 200);
     MKMapSnapshotter *snapshotter = [[MKMapSnapshotter alloc] initWithOptions:options];
     [snapshotter startWithCompletionHandler:^(MKMapSnapshot *snapshot, NSError *error) {
+        if (error) {
+            NSLog(@"Error generating map snapshot: %@", error);
+            return;
+        }
         
         // Create a Pin Image
         MKAnnotationView *pin = [[MKPinAnnotationView alloc] initWithAnnotation:nil reuseIdentifier:@""];
