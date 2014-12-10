@@ -24,13 +24,11 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-        
         self.bubbleView = [[LYRUIMessageBubbleView alloc] init];
         self.bubbleView.translatesAutoresizingMaskIntoConstraints = NO;
         [self.contentView addSubview:self.bubbleView];
         
         self.avatarImage = [[LYRUIAvatarImageView alloc] init];
-
         [self.avatarImage setInitialViewBackgroundColor:LSLighGrayColor()];
         self.avatarImage.translatesAutoresizingMaskIntoConstraints = NO;
         [self.contentView addSubview:self.avatarImage];
