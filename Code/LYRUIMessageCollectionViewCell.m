@@ -13,7 +13,6 @@
 
 @interface LYRUIMessageCollectionViewCell ()
 
-@property (nonatomic) CGFloat bubbleViewWidth;
 @property (nonatomic) BOOL messageSentState;
 @property (nonatomic) NSLayoutConstraint *bubbleViewWidthConstraint;
 
@@ -58,7 +57,7 @@
                                                                          toItem:nil
                                                                       attribute:NSLayoutAttributeNotAnAttribute
                                                                      multiplier:1.0
-                                                                       constant:self.bubbleViewWidth];
+                                                                       constant:0];
         [self.contentView addConstraint:self.bubbleViewWidthConstraint];
     }
     return self;
@@ -106,8 +105,7 @@
 
 - (void)updateWithBubbleViewWidth:(CGFloat)bubbleViewWidth
 {
-    self.bubbleViewWidth = bubbleViewWidth + 26; //Adding 24px for bubble view horizontal padding + 2px for extra coverage
-    self.bubbleViewWidthConstraint.constant = self.bubbleViewWidth;
+    self.bubbleViewWidthConstraint.constant = bubbleViewWidth + 26; // Adding 24px for bubble view horizontal padding + 2px for extra coverage.
 }
 
 - (void)setMessageTextFont:(UIFont *)messageTextFont
