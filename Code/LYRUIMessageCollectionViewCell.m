@@ -35,8 +35,23 @@
         [self.avatarImage setInitialViewBackgroundColor:LSLighGrayColor()];
         self.avatarImage.translatesAutoresizingMaskIntoConstraints = NO;
         [self.contentView addSubview:self.avatarImage];
+
+        [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleView
+                                                                     attribute:NSLayoutAttributeHeight
+                                                                     relatedBy:NSLayoutRelationEqual
+                                                                        toItem:self.contentView
+                                                                     attribute:NSLayoutAttributeHeight
+                                                                    multiplier:1.0
+                                                                      constant:0]];
+
+        [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleView
+                                                                     attribute:NSLayoutAttributeTop
+                                                                     relatedBy:NSLayoutRelationEqual
+                                                                        toItem:self.contentView
+                                                                     attribute:NSLayoutAttributeTop
+                                                                    multiplier:1.0
+                                                                      constant:0]];
     }
-    [self updateMessageCellConstraints];
     return self;
 }
 
@@ -94,27 +109,6 @@
                                                                  multiplier:1.0
                                                                    constant:self.bubbleViewWidth];
      [self.contentView addConstraint:self.bubbleViewWidthConstraint];
-}
-
-
-- (void)updateMessageCellConstraints
-{
-    //***************Bubble View Constraints***************//
-    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleView
-                                                                 attribute:NSLayoutAttributeHeight
-                                                                 relatedBy:NSLayoutRelationEqual
-                                                                    toItem:self.contentView
-                                                                 attribute:NSLayoutAttributeHeight
-                                                                multiplier:1.0
-                                                                  constant:0]];
-
-    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleView
-                                                                 attribute:NSLayoutAttributeTop
-                                                                 relatedBy:NSLayoutRelationEqual
-                                                                    toItem:self.contentView
-                                                                 attribute:NSLayoutAttributeTop
-                                                                multiplier:1.0
-                                                                  constant:0]];
 }
 
 - (void)setMessageTextFont:(UIFont *)messageTextFont
