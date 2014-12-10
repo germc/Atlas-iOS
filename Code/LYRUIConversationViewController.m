@@ -1079,7 +1079,6 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     [[LYRUIOutgoingMessageCollectionViewCell appearance] setMessageTextColor:[UIColor whiteColor]];
     [[LYRUIOutgoingMessageCollectionViewCell appearance] setMessageTextFont:LSMediumFont(14)];
     [[LYRUIOutgoingMessageCollectionViewCell appearance] setBubbleViewColor:LSBlueColor()];
-    [[LYRUIOutgoingMessageCollectionViewCell appearance] setPendingBubbleViewColor:LSBlueColor()];
     
     [[LYRUIIncomingMessageCollectionViewCell appearance] setMessageTextColor:[UIColor blackColor]];
     [[LYRUIIncomingMessageCollectionViewCell appearance] setMessageTextFont:LSMediumFont(14)];

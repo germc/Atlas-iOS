@@ -129,11 +129,4 @@
     }
 }
 
-- (void)setPendingBubbleViewColor:(UIColor *)pendingBubbleViewColor
-{
-    if ([self isKindOfClass:[LYRUIOutgoingMessageCollectionViewCell class]] && !self.messageSentState) {
-        self.bubbleView.backgroundColor = pendingBubbleViewColor;
-    }
-}
-
 @end
