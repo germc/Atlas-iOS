@@ -7,8 +7,6 @@
 //
 
 #import "LYRUIMessageBubbleView.h"
-#import "LYRUIIncomingMessageCollectionViewCell.h"
-#import "LYRUIOutgoingMessageCollectionViewCell.h"
 
 @interface LYRUIMessageBubbleView ()
 
