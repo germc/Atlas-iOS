@@ -700,7 +700,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
  LAYER - Input tool bar began typing, so we can send a typing indicator.
  
  */
-- (void)messageInputToolbarDidBeginTyping:(LYRUIMessageInputToolbar *)messageInputToolbar
+- (void)messageInputToolbarDidType:(LYRUIMessageInputToolbar *)messageInputToolbar
 {
     if (!self.conversation) return;
     [self.conversation sendTypingIndicator:LYRTypingDidBegin];
