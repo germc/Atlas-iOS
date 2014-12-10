@@ -12,7 +12,6 @@
 
 @property (nonatomic) UIFont *font;
 @property (nonatomic) UIColor *color;
-@property (nonatomic) CGFloat imageViewDiameter;
 
 @property (nonatomic) NSLayoutConstraint *avatarImageWidthConstraint;
 @property (nonatomic) NSLayoutConstraint *avatarImageHeightConstraint;
@@ -74,7 +73,7 @@ static CGFloat const LYRAvatarImageDiameter = 30.0f;
                                                                       toItem:nil
                                                                    attribute:NSLayoutAttributeNotAnAttribute
                                                                   multiplier:1.0
-                                                                    constant:self.imageViewDiameter];
+                                                                    constant:0];
     
     self.avatarImageHeightConstraint = [NSLayoutConstraint constraintWithItem:self.avatarImage
                                                                     attribute:NSLayoutAttributeHeight
@@ -82,7 +81,7 @@ static CGFloat const LYRAvatarImageDiameter = 30.0f;
                                                                        toItem:nil
                                                                     attribute:NSLayoutAttributeNotAnAttribute
                                                                    multiplier:1.0
-                                                                     constant:self.imageViewDiameter];
+                                                                     constant:0];
 
     self.avatarImageLeftConstraint = [NSLayoutConstraint constraintWithItem:self.avatarImage
                                                                   attribute:NSLayoutAttributeLeft
