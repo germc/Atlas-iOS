@@ -63,17 +63,17 @@
 
 - (void)updateWithParticipant:(id<LYRUIParticipant>)participant
 {
-    NSLog(@"Implemented by subclass");
+
 }
 
 - (void)shouldDisplayAvatarImage:(BOOL)shouldDisplayAvatarImage
 {
-    NSLog(@"Implemented by subclass");
+
 }
 
 - (void)isGroupConversation:(BOOL)isGroupConversation
 {
-    NSLog(@"Implemented by subclass");
+
 }
 
 - (void)presentMessagePart:(LYRMessagePart *)messagePart
