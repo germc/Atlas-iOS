@@ -8,12 +8,10 @@
 
 #import "LYRUISampleConversationsViewController.h"
 #import "LYRClientMock.h"
-#import "LYRClientMockFactory.h"
 #import "LYRUIParticipant.h"
 
 @interface LYRUISampleConversationsViewController () <LYRUIConversationViewControllerDataSource>
 
-@property (nonatomic) LYRClientMockFactory *clientMockFactory;
 @property (nonatomic) NSDateFormatter *dateFormatter;
 
 @end
@@ -38,7 +36,7 @@
 
 - (id<LYRUIParticipant>)conversationViewController:(LYRUIConversationViewController *)conversationViewController participantForIdentifier:(NSString *)participantIdentifier
 {
-    return [LYRClientMockFactory userForParticipantIdentifier:participantIdentifier];
+    return [LYRUserMock mockUserForIdentifier:participantIdentifier];
 }
 
 - (NSAttributedString *)conversationViewController:(LYRUIConversationViewController *)conversationViewController attributedStringForDisplayOfDate:(NSDate *)date
@@ -56,7 +54,8 @@
         if ([participant isEqualToString:self.layerClient.authenticatedUserID]) {
             return;
         }
-        NSString *participantNameWithCheckmark = [NSString stringWithFormat:@"%@✔︎ ", [LYRClientMockFactory userForParticipantIdentifier:participant].firstName];
+    
+        NSString *participantNameWithCheckmark = [NSString stringWithFormat:@"%@✔︎ ", [LYRUserMock mockUserForIdentifier:participant].firstName];
         UIColor *textColor = [UIColor lightGrayColor];
         if (status == LYRRecipientStatusSent) {
             textColor = [UIColor lightGrayColor];

@@ -9,6 +9,12 @@
 #import <Foundation/Foundation.h>
 #import "LayerKitMock.h"
 
+extern NSString *const LYRMockObjectsDidChangeNotification;
+extern NSString *const LYRMockObjectChangeObjectKey;
+extern NSString *const LYRMockObjectChangeNewValueKey;
+extern NSString *const LYRMockObjectChangeOldValueKey;
+extern NSString *const LYRMockObjectChangeChangeTypeKey;
+
 @class LYRConversationMock, LYRMessageMock, LYRQueryMock, LYRQueryControllerMock;
 
 @interface LYRClientMock : NSObject
@@ -17,7 +23,6 @@
 @property (nonatomic, weak) id<LYRClientDelegate> delegate;
 
 + (instancetype)layerClientMockWithAuthenticatedUserID:(NSString *)authenticatedUserID;
-+ (instancetype)layerClientMockWithAuthenticatedUserID:(NSString *)authenticatedUserID conversations:(NSArray *)conversations;
 
 ///------------------------------------------------
 /// @name LYRClient's Public API - Sending changes
@@ -27,7 +32,7 @@
 - (LYRMessageMock *)newMessageWithParts:(NSArray *)messageParts options:(NSDictionary *)options error:(NSError **)error;
 - (NSOrderedSet *)executeQuery:(LYRQuery *)query error:(NSError **)error;
 - (NSUInteger)countForQuery:(LYRQuery *)query error:(NSError **)error;
-- (LYRQueryControllerMock *)queryControllerWithQuery:(LYRQueryMock *)query; 
+- (LYRQueryControllerMock *)queryControllerWithQuery:(LYRQuery *)query;
 
 ///------------------------------------------
 /// @name LYRClient Mocking incoming changes

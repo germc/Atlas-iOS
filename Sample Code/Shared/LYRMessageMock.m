@@ -7,20 +7,18 @@
 //
 
 #import "LYRMessageMock.h"
+#import "LYRMockContentStore.h"
 
 @interface LYRMessageMock ()
 
 @property (nonatomic, readwrite) NSURL *identifier;
-@property (nonatomic, readwrite) NSUInteger index;
-@property (nonatomic, readwrite) LYRConversation *conversation;
 @property (nonatomic, readwrite) NSArray *parts;
 @property (nonatomic, readwrite) BOOL isSent;
 @property (nonatomic, readwrite) BOOL isDeleted;
 @property (nonatomic, readwrite) BOOL isUnread;
-@property (nonatomic, readwrite) NSDate *sentAt;
 @property (nonatomic, readwrite) NSDate *receivedAt;
 @property (nonatomic, readwrite) NSString *sentByUserID;
-@property (nonatomic, readwrite) NSDictionary *recipientStatusByUserID;
+
 
 @end
 
@@ -49,18 +47,22 @@
 - (BOOL)markAsRead:(NSError **)error
 {
     self.isUnread = NO;
+    [[LYRMockContentStore sharedStore] updateMessage:self];
+    [[LYRMockContentStore sharedStore] broadCastChanges];
     return YES;
 }
 
 - (BOOL)delete:(LYRDeletionMode)deletionMode error:(NSError **)error
 {
     self.isDeleted = YES;
+    [[LYRMockContentStore sharedStore] deleteMessage:self];
+    [[LYRMockContentStore sharedStore] broadCastChanges];
     return YES;
 }
 
 - (LYRRecipientStatus)recipientStatusForUserID:(NSString *)userID
 {
-    return nil;
+    return [[self.recipientStatusByUserID valueForKey:userID] integerValue];
 }
 
 @end

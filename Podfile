@@ -12,6 +12,7 @@ def import_testing_pods
   pod 'KIF'
   pod 'Expecta'
   pod 'OCMock'
+  pod 'LayerKit'
 end
 
 target 'Unit Tests' do

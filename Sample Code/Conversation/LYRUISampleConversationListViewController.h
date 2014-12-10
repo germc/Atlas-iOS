@@ -7,7 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <LayerUIKit/LayerUIKit.h> 
 
-@interface LYRUISampleConversationRootViewController : UITableViewController
+@interface LYRUISampleConversationListViewController : LYRUIConversationListViewController
 
 @end

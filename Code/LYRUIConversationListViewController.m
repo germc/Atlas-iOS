@@ -42,7 +42,7 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
         
         // Set default configuration for public configuration properties
         _cellClass = [LYRUIConversationTableViewCell class];
-        _displaysConversationImage = YES;
+        _displaysConversationImage = NO;
         _allowsEditing = YES;
         _rowHeight = 72.0f;
     }

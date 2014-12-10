@@ -7,9 +7,9 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "LayerKitMock.h"
+#import "LYRClientMock.h"
 
-@class LYRQueryControllerMock;
+@class LYRQueryControllerMock, LYRClientMock;
 
 @protocol LYRQueryControllerMockDelegate <NSObject>
 
@@ -25,11 +25,11 @@
 
 @interface LYRQueryControllerMock : NSObject
 
-@property (nonatomic, readonly) LYRQueryMock *query;
+@property (nonatomic, readonly) LYRQuery *query;
 @property (nonatomic, weak) id<LYRQueryControllerMockDelegate> delegate;
 @property (nonatomic) LYRClientMock *layerClient;
 
-+ (instancetype)initWithQuery:(LYRQueryMock *)query;
++ (instancetype)initWithQuery:(LYRQuery *)query;
 
 - (NSUInteger)numberOfSections;
 
