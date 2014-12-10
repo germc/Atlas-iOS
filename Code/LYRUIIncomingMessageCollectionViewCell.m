@@ -14,7 +14,6 @@
 @property (nonatomic) UIColor *color;
 
 @property (nonatomic) NSLayoutConstraint *avatarImageWidthConstraint;
-@property (nonatomic) NSLayoutConstraint *avatarImageHeightConstraint;
 @property (nonatomic) NSLayoutConstraint *avatarImageLeftConstraint;
 
 @end
@@ -39,14 +38,13 @@ static CGFloat const LYRAvatarImageDiameter = 30.0f;
                                                                         constant:0];
         [self.contentView addConstraint:self.avatarImageWidthConstraint];
 
-        self.avatarImageHeightConstraint = [NSLayoutConstraint constraintWithItem:self.avatarImage
-                                                                        attribute:NSLayoutAttributeHeight
-                                                                        relatedBy:NSLayoutRelationEqual
-                                                                           toItem:nil
-                                                                        attribute:NSLayoutAttributeNotAnAttribute
-                                                                       multiplier:1.0
-                                                                         constant:0];
-        [self.contentView addConstraint:self.avatarImageHeightConstraint];
+        [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.avatarImage
+                                                                     attribute:NSLayoutAttributeHeight
+                                                                     relatedBy:NSLayoutRelationEqual
+                                                                        toItem:self.avatarImage
+                                                                     attribute:NSLayoutAttributeWidth
+                                                                    multiplier:1.0
+                                                                      constant:0]];
 
         self.avatarImageLeftConstraint = [NSLayoutConstraint constraintWithItem:self.avatarImage
                                                                       attribute:NSLayoutAttributeLeft
@@ -81,11 +79,9 @@ static CGFloat const LYRAvatarImageDiameter = 30.0f;
     if (shouldDisplayAvatarImage) {
         self.avatarImageLeftConstraint.constant = 10;
         self.avatarImageWidthConstraint.constant = LYRAvatarImageDiameter;
-        self.avatarImageHeightConstraint.constant = LYRAvatarImageDiameter;
     } else {
         self.avatarImageLeftConstraint.constant = 0;
         self.avatarImageWidthConstraint.constant = 0;
-        self.avatarImageHeightConstraint.constant = 0;
     }
 }
 
