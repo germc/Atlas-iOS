@@ -13,7 +13,6 @@
 @property (nonatomic) UIFont *font;
 @property (nonatomic) UIColor *color;
 @property (nonatomic) CGFloat imageViewDiameter;
-@property (nonatomic) CGFloat imageViewLeft;
 @property (nonatomic) BOOL avatarConstraintsAreSet;
 
 @property (nonatomic) NSLayoutConstraint *avatarImageWidthConstraint;
@@ -107,7 +106,7 @@ static CGFloat const LYRAvatarImageDiameter = 30.0f;
                                                                      toItem:self.contentView
                                                                   attribute:NSLayoutAttributeLeft
                                                                  multiplier:1.0
-                                                                   constant:self.imageViewLeft];
+                                                                   constant:0];
     // Add avatar constraints
     [self.contentView addConstraint:self.avatarImageWidthConstraint];
     [self.contentView addConstraint:self.avatarImageHeightConstraint];
