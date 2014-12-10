@@ -110,16 +110,19 @@
 
 - (void)setMessageTextFont:(UIFont *)messageTextFont
 {
+    _messageTextFont = messageTextFont;
     self.bubbleView.bubbleViewLabel.font = messageTextFont;
 }
 
 - (void)setMessageTextColor:(UIColor *)messageTextColor
 {
+    _messageTextColor = messageTextColor;
     self.bubbleView.bubbleViewLabel.textColor = messageTextColor;
 }
 
 - (void)setBubbleViewColor:(UIColor *)bubbleViewColor
 {
+    _bubbleViewColor = bubbleViewColor;
     if ([self isKindOfClass:[LYRUIOutgoingMessageCollectionViewCell class]] && self.messageSentState) {
         self.bubbleView.backgroundColor = bubbleViewColor;
     }
@@ -133,21 +136,6 @@
     if ([self isKindOfClass:[LYRUIOutgoingMessageCollectionViewCell class]] && !self.messageSentState) {
         self.bubbleView.backgroundColor = pendingBubbleViewColor;
     }
-}
-
-- (UIFont *)messageTextFont
-{
-    return self.bubbleView.bubbleViewLabel.font;
-}
-
-- (UIColor *)messageTextColor
-{
-    return self.bubbleView.bubbleViewLabel.textColor;
-}
-
-- (UIColor *)bubbleViewColor
-{
-    return self.bubbleView.backgroundColor;
 }
 
 @end
