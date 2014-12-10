@@ -13,16 +13,12 @@
 
 @interface LYRUIMessageCollectionViewCell ()
 
-@property (nonatomic) UILabel *dateLabel;
 @property (nonatomic) CGFloat bubbleViewWidth;
 @property (nonatomic) BOOL messageSentState;
 
 @property (nonatomic) NSLayoutConstraint *bubbleViewHeightConstraint;
 @property (nonatomic) NSLayoutConstraint *bubbleViewTopConstraint;
 @property (nonatomic) NSLayoutConstraint *bubbleViewWidthConstraint;
-
-@property (nonatomic) NSLayoutConstraint *dateLabelLeftConstraint;
-@property (nonatomic) NSLayoutConstraint *dateLabelCenterYConstraint;
 
 @end
 
@@ -42,15 +38,6 @@
         [self.avatarImage setInitialViewBackgroundColor:LSLighGrayColor()];
         self.avatarImage.translatesAutoresizingMaskIntoConstraints = NO;
         [self.contentView addSubview:self.avatarImage];
-       
-        self.dateLabel  = [[UILabel alloc] init];
-        self.dateLabel.font = [UIFont systemFontOfSize:10];
-        self.dateLabel.textColor = [UIColor lightGrayColor];
-        self.dateLabel.text = @"10:36AM";
-        self.dateLabel.translatesAutoresizingMaskIntoConstraints = NO;
-        [self.dateLabel sizeToFit];
-        [self.contentView addSubview:self.dateLabel];
-
     }
     [self updateMessageCellConstraints];
     return self;
@@ -131,30 +118,10 @@
                                                                 attribute:NSLayoutAttributeTop
                                                                multiplier:1.0
                                                                  constant:0];
-    //***************Date Label Constraints***************//
-    self.dateLabelLeftConstraint = [NSLayoutConstraint constraintWithItem:self.dateLabel
-                                                                attribute:NSLayoutAttributeLeft
-                                                                relatedBy:NSLayoutRelationEqual
-                                                                   toItem:self.contentView
-                                                                attribute:NSLayoutAttributeRight
-                                                               multiplier:1.0
-                                                                 constant:2];
-    
-    self.dateLabelCenterYConstraint = [NSLayoutConstraint constraintWithItem:self.dateLabel
-                                                                   attribute:NSLayoutAttributeCenterY
-                                                                   relatedBy:NSLayoutRelationEqual
-                                                                      toItem:self.contentView
-                                                                   attribute:NSLayoutAttributeCenterY
-                                                                  multiplier:1.0
-                                                                    constant:0];
-    
+
     // Add bubbleView constraints
     [self.contentView addConstraint:self.bubbleViewHeightConstraint];
     [self.contentView addConstraint:self.bubbleViewTopConstraint];
-    
-    // Add date label constraints
-    [self.contentView addConstraint:self.dateLabelLeftConstraint];
-    [self.contentView addConstraint:self.dateLabelCenterYConstraint];
 }
 
 - (void)setMessageTextFont:(UIFont *)messageTextFont
