@@ -51,7 +51,6 @@ static CGFloat const LYRAvatarImageDiameter = 30.0f;
         self.avatarImageWidthConstraint.constant = LYRAvatarImageDiameter;
         self.avatarImageHeightConstraint.constant = LYRAvatarImageDiameter;
     }
-    [self.contentView layoutIfNeeded];
 }
 
 - (void)updateWithParticipant:(id<LYRUIParticipant>)participant
