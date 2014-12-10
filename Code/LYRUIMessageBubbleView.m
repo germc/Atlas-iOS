@@ -27,8 +27,8 @@
     self = [super initWithFrame:frame];
     if (self) {
         self.layer.cornerRadius = 12;
-       // self.clipsToBounds = TRUE;
-        
+        self.clipsToBounds = YES;
+
         self.bubbleViewLabel = [[UILabel alloc] init];
         self.bubbleViewLabel.backgroundColor = [UIColor clearColor];
         self.bubbleViewLabel.lineBreakMode = NSLineBreakByWordWrapping;
