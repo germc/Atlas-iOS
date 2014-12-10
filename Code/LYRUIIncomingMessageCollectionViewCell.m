@@ -13,8 +13,8 @@
 @property (nonatomic) UIFont *font;
 @property (nonatomic) UIColor *color;
 
-@property (nonatomic) NSLayoutConstraint *avatarImageWidthConstraint;
-@property (nonatomic) NSLayoutConstraint *avatarImageLeftConstraint;
+@property (nonatomic) NSLayoutConstraint *bubbleWithAvatarLeftConstraint;
+@property (nonatomic) NSLayoutConstraint *bubbleWithoutAvatarLeftConstraint;
 
 @end
 
@@ -29,14 +29,13 @@ static CGFloat const LYRAvatarImageDiameter = 30.0f;
         self.avatarImage.layer.cornerRadius = (LYRAvatarImageDiameter / 2);
         self.avatarImage.clipsToBounds = YES;
         
-        self.avatarImageWidthConstraint = [NSLayoutConstraint constraintWithItem:self.avatarImage
-                                                                       attribute:NSLayoutAttributeWidth
-                                                                       relatedBy:NSLayoutRelationEqual
-                                                                          toItem:nil
-                                                                       attribute:NSLayoutAttributeNotAnAttribute
-                                                                      multiplier:1.0
-                                                                        constant:0];
-        [self.contentView addConstraint:self.avatarImageWidthConstraint];
+        [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.avatarImage
+                                                                     attribute:NSLayoutAttributeWidth
+                                                                     relatedBy:NSLayoutRelationEqual
+                                                                        toItem:nil
+                                                                     attribute:NSLayoutAttributeNotAnAttribute
+                                                                    multiplier:1.0
+                                                                      constant:LYRAvatarImageDiameter]];
 
         [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.avatarImage
                                                                      attribute:NSLayoutAttributeHeight
@@ -46,13 +45,13 @@ static CGFloat const LYRAvatarImageDiameter = 30.0f;
                                                                     multiplier:1.0
                                                                       constant:0]];
 
-        self.avatarImageLeftConstraint = [NSLayoutConstraint constraintWithItem:self.avatarImage
-                                                                      attribute:NSLayoutAttributeLeft
-                                                                      relatedBy:NSLayoutRelationEqual
-                                                                         toItem:self.contentView
-                                                                      attribute:NSLayoutAttributeLeft
-                                                                     multiplier:1.0
-                                                                       constant:0];
+        [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.avatarImage
+                                                                     attribute:NSLayoutAttributeLeft
+                                                                     relatedBy:NSLayoutRelationEqual
+                                                                        toItem:self.contentView
+                                                                     attribute:NSLayoutAttributeLeft
+                                                                    multiplier:1.0
+                                                                      constant:10]];
 
         [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.avatarImage
                                                                      attribute:NSLayoutAttributeBottom
@@ -61,28 +60,40 @@ static CGFloat const LYRAvatarImageDiameter = 30.0f;
                                                                      attribute:NSLayoutAttributeBottom
                                                                     multiplier:1.0
                                                                       constant:0]];
-        [self.contentView addConstraint:self.avatarImageLeftConstraint];
 
-        [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleView
-                                                                     attribute:NSLayoutAttributeLeft
-                                                                     relatedBy:NSLayoutRelationEqual
-                                                                        toItem:self.avatarImage
-                                                                     attribute:NSLayoutAttributeRight
-                                                                    multiplier:1.0
-                                                                      constant:10]];
+        self.bubbleWithAvatarLeftConstraint = [NSLayoutConstraint constraintWithItem:self.bubbleView
+                                                                           attribute:NSLayoutAttributeLeft
+                                                                           relatedBy:NSLayoutRelationEqual
+                                                                              toItem:self.avatarImage
+                                                                           attribute:NSLayoutAttributeRight
+                                                                          multiplier:1.0
+                                                                            constant:10];
+        [self.contentView addConstraint:self.bubbleWithAvatarLeftConstraint];
+
+        self.bubbleWithoutAvatarLeftConstraint = [NSLayoutConstraint constraintWithItem:self.bubbleView
+                                                                              attribute:NSLayoutAttributeLeft
+                                                                              relatedBy:NSLayoutRelationEqual
+                                                                                 toItem:self.avatarImage
+                                                                              attribute:NSLayoutAttributeLeft
+                                                                             multiplier:1.0
+                                                                               constant:0];
     }
     return self;
 }
 
 - (void)shouldDisplayAvatarImage:(BOOL)shouldDisplayAvatarImage
 {
+    NSArray *constraints = [self.contentView constraints];
     if (shouldDisplayAvatarImage) {
-        self.avatarImageLeftConstraint.constant = 10;
-        self.avatarImageWidthConstraint.constant = LYRAvatarImageDiameter;
+        if ([constraints containsObject:self.bubbleWithAvatarLeftConstraint]) return;
+        [self.contentView removeConstraint:self.bubbleWithoutAvatarLeftConstraint];
+        [self.contentView addConstraint:self.bubbleWithAvatarLeftConstraint];
     } else {
-        self.avatarImageLeftConstraint.constant = 0;
-        self.avatarImageWidthConstraint.constant = 0;
+        if ([constraints containsObject:self.bubbleWithoutAvatarLeftConstraint]) return;
+        [self.contentView removeConstraint:self.bubbleWithAvatarLeftConstraint];
+        [self.contentView addConstraint:self.bubbleWithoutAvatarLeftConstraint];
     }
+    [self setNeedsUpdateConstraints];
 }
 
 - (void)updateWithParticipant:(id<LYRUIParticipant>)participant
