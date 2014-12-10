@@ -30,7 +30,6 @@
         self.clipsToBounds = YES;
 
         self.bubbleViewLabel = [[UILabel alloc] init];
-        self.bubbleViewLabel.lineBreakMode = NSLineBreakByWordWrapping;
         self.bubbleViewLabel.numberOfLines = 0;
         self.bubbleViewLabel.textColor = [UIColor greenColor];
         self.bubbleViewLabel.userInteractionEnabled = YES;
