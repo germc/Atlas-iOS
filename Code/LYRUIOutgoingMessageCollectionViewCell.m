@@ -15,20 +15,16 @@
     self = [super initWithFrame:frame];
     if (self) {
         self.avatarImage.hidden = YES;
+
+        [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleView
+                                                                     attribute:NSLayoutAttributeRight
+                                                                     relatedBy:NSLayoutRelationEqual
+                                                                        toItem:self.contentView
+                                                                     attribute:NSLayoutAttributeRight
+                                                                    multiplier:1.0
+                                                                      constant:-10]];
     }
     return self;
-}
-
-- (void)updateConstraints
-{
-    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleView
-                                                                 attribute:NSLayoutAttributeRight
-                                                                 relatedBy:NSLayoutRelationEqual
-                                                                    toItem:self.contentView
-                                                                 attribute:NSLayoutAttributeRight
-                                                                multiplier:1.0
-                                                                  constant:-10]];
-    [super updateConstraints];
 }
 
 @end
