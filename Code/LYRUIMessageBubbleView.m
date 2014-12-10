@@ -41,8 +41,6 @@
         self.bubbleImageView = [[UIImageView alloc] init];
         self.bubbleImageView.translatesAutoresizingMaskIntoConstraints = NO;
         self.bubbleImageView.contentMode = UIViewContentModeScaleAspectFill;
-        self.bubbleImageView.layer.cornerRadius = 12;
-        self.bubbleImageView.clipsToBounds = TRUE;
         [self addSubview:self.bubbleImageView];
 
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleViewLabel attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeHeight multiplier:1.0 constant:0]];
