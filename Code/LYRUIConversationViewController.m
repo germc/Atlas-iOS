@@ -26,16 +26,16 @@
 @property (nonatomic) UICollectionView *collectionView;
 @property (nonatomic) UILabel *typingIndicatorLabel;
 @property (nonatomic) LYRUITypingIndicatorView *typingIndicatorView;
-@property (nonatomic) BOOL keyboardIsOnScreen;
 @property (nonatomic) CGFloat keyboardHeight;
 @property (nonatomic) BOOL shouldScrollToBottom;
 @property (nonatomic) BOOL shouldDisplayAvatarImage;
 @property (nonatomic) CGRect addressBarRect;
-@property (nonatomic) NSLayoutConstraint *typingIndicatorViewTopConstraint;
-@property (nonatomic) NSMutableDictionary *typingIndicatorStatusByParticipant;
+@property (nonatomic) NSLayoutConstraint *typingIndicatorViewBottomConstraint;
+@property (nonatomic) NSMutableArray *typingParticipantIDs;
 @property (nonatomic) LYRQueryController *queryController;
 @property (nonatomic) NSMutableArray *objectChages;
 @property (nonatomic) NSHashTable *sectionFooters;
+@property (nonatomic, getter=isFirstAppearance) BOOL firstAppearance;
 
 @end
 
@@ -65,8 +65,9 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
         // Set default configuration for public configuration properties
         _dateDisplayTimeInterval = 60*15;
         _showsAddressBar = NO;
-        _typingIndicatorStatusByParticipant = [NSMutableDictionary dictionaryWithCapacity:conversation.participants.count];
+        _typingParticipantIDs = [NSMutableArray new];
         _sectionFooters = [NSHashTable weakObjectsHashTable];
+        _firstAppearance = YES;
         
         // Configure default UIAppearance Proxy
         [self configureMessageBubbleAppearance];
@@ -118,6 +119,8 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     // Set the typing indicator label
     self.typingIndicatorView = [[LYRUITypingIndicatorView alloc] init];
     self.typingIndicatorView.translatesAutoresizingMaskIntoConstraints = NO;
+    // Make dragging on the typing indicator scroll the scroll view / keyboard.
+    self.typingIndicatorView.userInteractionEnabled = NO;
     self.typingIndicatorView.alpha = 0.0;
     [self.view addSubview:self.typingIndicatorView];
     
@@ -134,8 +137,13 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     }
 
     [self updateAutoLayoutConstraints];
-    self.collectionView.contentInset = UIEdgeInsetsMake(0, 0, CGRectGetHeight(self.messageInputToolbar.frame), 0);
-    self.collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(0, 0, CGRectGetHeight(self.messageInputToolbar.frame), 0);
+    [self updateCollectionViewInsets];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidHide:) name:UIKeyboardDidHideNotification object:nil];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textViewTextDidBeginEditing:) name:UITextViewTextDidBeginEditingNotification object:self.messageInputToolbar.textInputView];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveTypingIndicator:) name:LYRConversationDidReceiveTypingIndicatorNotification object:self.conversation];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -164,7 +172,6 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     
     // Collection View AutoLayout Config
     [self setConversationViewTitle];
-    [self scrollToBottomOfCollectionViewAnimated:NO];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -172,17 +179,6 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     [super viewDidAppear:animated];
     [self.addressBarController.addressBarView.addressBarTextView becomeFirstResponder];
     
-    // Register for keyboard notifications
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(keyboardWasShown:)
-                                                 name:UIKeyboardWillShowNotification object:nil];
-
-    // Register for typing indicator notifications
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(didReceiveTypingIndicator:)
-                                                 name:LYRConversationDidReceiveTypingIndicatorNotification object:self.conversation];
-    self.keyboardIsOnScreen = NO;
-
     // Update typing indicator
     [self updateTypingIndicatorOverlay:YES];
 }
@@ -192,14 +188,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     [super viewWillDisappear:animated];
     
     self.queryController = nil;
-    
-    [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                    name:UIKeyboardWillShowNotification
-                                                  object:nil];
 
-    [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                    name:LYRConversationDidReceiveTypingIndicatorNotification
-                                                  object:self.conversation];
 }
 
 - (void)viewDidLayoutSubviews
@@ -220,16 +209,33 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     if (!self.presentedViewController && !self.view.inputAccessoryView.superview) {
         [self.view becomeFirstResponder];
     }
+
+    if (self.isFirstAppearance) {
+        self.firstAppearance = NO;
+        [self scrollToBottomOfCollectionViewAnimated:NO];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
+    }
+}
+
+- (void)updateViewConstraints
+{
+    CGFloat typingIndicatorBottomConstraintConstant = -self.collectionView.scrollIndicatorInsets.bottom;
+    if (self.messageInputToolbar.superview) {
+        CGRect toolbarFrame = [self.view convertRect:self.messageInputToolbar.frame fromView:self.messageInputToolbar.superview];
+        CGFloat keyboardOnscreenHeight = CGRectGetHeight(self.view.frame) - CGRectGetMinY(toolbarFrame);
+        if (-keyboardOnscreenHeight > typingIndicatorBottomConstraintConstant) {
+            typingIndicatorBottomConstraintConstant = -keyboardOnscreenHeight;
+        }
+    }
+    self.typingIndicatorViewBottomConstraint.constant = typingIndicatorBottomConstraintConstant;
+
+    [super updateViewConstraints];
 }
 
 - (void)dealloc
 {
     self.collectionView.delegate = nil;
-}
-
-- (BOOL)canBecomeFirstResponder
-{
-    return YES;
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 #pragma mark - Conversation Setup Methods
@@ -267,7 +273,6 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     } else if (1 >= self.conversation.participants.count) {
         self.title = @"Personal";
     } else if (2 >= self.conversation.participants.count) {
-        [self.typingIndicatorView updateLabelInset:10];
         self.shouldDisplayAvatarImage = NO;
         NSMutableSet *participants = [self.conversation.participants mutableCopy];
         [participants removeObject:self.layerClient.authenticatedUserID];
@@ -278,7 +283,6 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
             self.title = @"Unknown";
         }
     } else {
-        [self.typingIndicatorView updateLabelInset:48];
         self.shouldDisplayAvatarImage = YES;
         self.title = @"Group";
     }
@@ -295,6 +299,14 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     if (self.isViewLoaded) {
         [self setConversationViewTitle];
     }
+}
+
+#pragma mark - UIScrollViewDelegate
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView
+{
+    // When the keyboard is being dragged, we need to update the position of the typing indicator.
+    [self.view setNeedsUpdateConstraints];
 }
 
 # pragma mark - Collection View Data Source
@@ -559,84 +571,150 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     } else {
         size = CGSizeMake(320, 10);
     }
+    size.height = ceil(size.height);
     return size;
 }
 
-#pragma mark - Keyboard Nofifications
+#pragma mark - Notification Handlers
 
-- (void)keyboardWasShown:(NSNotification*)notification
+- (void)keyboardWillShow:(NSNotification *)notification
 {
-    if (self.keyboardIsOnScreen) {
-        self.keyboardIsOnScreen = NO;
-    } else {
-        self.keyboardIsOnScreen = YES;
-    }
-    
-    self.keyboardHeight = [[[notification userInfo] objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue].size.height;
+    CGRect keyboardFrame = [notification.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
+    keyboardFrame = [self.view convertRect:keyboardFrame fromView:nil];
+    keyboardFrame = CGRectIntersection(self.view.bounds, keyboardFrame);
+    self.keyboardHeight = CGRectGetHeight(keyboardFrame);
+    [self.view layoutIfNeeded];
     [UIView beginAnimations:nil context:NULL];
-    [self updateTypingIndicatorOverlay:NO];
     [UIView setAnimationDuration:[notification.userInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue]];
     [UIView setAnimationCurve:[notification.userInfo[UIKeyboardAnimationCurveUserInfoKey] integerValue]];
     [UIView setAnimationBeginsFromCurrentState:YES];
     [self updateCollectionViewInsets];
+    self.typingIndicatorViewBottomConstraint.constant = -self.collectionView.scrollIndicatorInsets.bottom;
+    [self.view layoutIfNeeded];
     [UIView commitAnimations];
-    if (self.keyboardIsOnScreen) {
-        [self scrollToBottomOfCollectionViewAnimated:TRUE];
-    }
 }
 
-#pragma mark - Typing indicator notifications
+- (void)keyboardDidHide:(NSNotification *)notification
+{
+    self.keyboardHeight = 0;
+    [self updateCollectionViewInsets];
+    [self.view setNeedsUpdateConstraints];
+}
+
+- (void)textViewTextDidBeginEditing:(NSNotification *)notification
+{
+    [self scrollToBottomOfCollectionViewAnimated:YES];
+}
 
 - (void)didReceiveTypingIndicator:(NSNotification *)notification
 {
     NSString *participantID = notification.userInfo[LYRTypingIndicatorParticipantUserInfoKey];
-    self.typingIndicatorStatusByParticipant[participantID] = notification.userInfo[LYRTypingIndicatorValueUserInfoKey];
+    NSNumber *statusNumber = notification.userInfo[LYRTypingIndicatorValueUserInfoKey];
+    LYRTypingIndicator status = statusNumber.unsignedIntegerValue;
+    if (status == LYRTypingDidBegin) {
+        [self.typingParticipantIDs addObject:participantID];
+    } else {
+        [self.typingParticipantIDs removeObject:participantID];
+    }
     [self updateTypingIndicatorOverlay:YES];
 }
+
+#pragma mark - Typing Indicator
 
 - (void)updateTypingIndicatorOverlay:(BOOL)animated
 {
     NSMutableArray *participantsTyping = [NSMutableArray array];
-    
-    // Collect participant's first names, but no more than three.
-    [self.typingIndicatorStatusByParticipant.allKeys enumerateObjectsUsingBlock:^(NSString *participantID, NSUInteger idx, BOOL *stop) {
-        if ([self.typingIndicatorStatusByParticipant[participantID] unsignedIntegerValue] == LYRTypingDidBegin) {
-            [participantsTyping addObject:[self participantForIdentifier:participantID].firstName];
-            if (idx++ > 3) *stop = YES; // stop adding participants to the string if there are more that 3 people typing at once
-        }
-    }];
-    
-    // If there are more than three participants, add "others" at the end.
-    if (participantsTyping.count >= 3) [participantsTyping addObject:@"others"];
-    
-    // Seperate the list of participants with a comma.
-    NSString *commaSeperatedParticipants = [participantsTyping componentsJoinedByString:@", "];
-    
-    // Replace the last comma with an "and" word.
-    NSRange lastCommaRange = [commaSeperatedParticipants rangeOfString:@", " options:NSBackwardsSearch];
-    if (lastCommaRange.location != NSNotFound) {
-        commaSeperatedParticipants = [commaSeperatedParticipants stringByReplacingOccurrencesOfString:@", " withString:@" and " options:NSBackwardsSearch range:lastCommaRange];
-    }
-    
-    // Check if the collection view is scrolled to the bottom
-    BOOL isScrolledToBottom = (self.collectionView.contentOffset.y >= (self.collectionView.contentSize.height - self.collectionView.bounds.size.height));
-    
-    // Figure out if we can display the typing indicator label, based
-    // on the scroll position.
-    BOOL visible = (participantsTyping.count >= 1) && isScrolledToBottom;
-    if (participantsTyping.count) {
-        [self.typingIndicatorView setText: [NSString stringWithFormat:@"%@ %@ typing...", commaSeperatedParticipants, participantsTyping.count > 1 ? @"are" : @"is"]];
-    }
-    
-    self.typingIndicatorViewTopConstraint.constant = -self.messageInputToolbar.frame.size.height - LYRUITypingIndicatorHeight;
-    [self.view setNeedsUpdateConstraints];
-    [UIView animateWithDuration:animated ? (visible ? 0.3 : 0.1) : 0 animations:^{
-        self.typingIndicatorView.alpha = visible ? 1.0 : 0.0;
-        [self updateCollectionViewInsets];
-        if (visible) [self scrollToBottomOfCollectionViewAnimated:YES];
-        [self.view layoutIfNeeded];
+    [self.typingParticipantIDs enumerateObjectsUsingBlock:^(NSString *participantID, NSUInteger idx, BOOL *stop) {
+        id<LYRUIParticipant> participant = [self participantForIdentifier:participantID];
+        [participantsTyping addObject:participant];
     }];
 
+    BOOL visible = participantsTyping.count > 0;
+    if (visible) {
+        NSString *text = [self typingIndicatorTextWithParticipantsTyping:participantsTyping];
+        self.typingIndicatorView.label.text = text;
+    }
+
+    NSTimeInterval duration;
+    if (!animated) {
+        duration = 0;
+    } else if (visible) {
+        duration = 0.3;
+    } else {
+        duration = 0.1;
+    }
+
+    [UIView animateWithDuration:duration animations:^{
+        self.typingIndicatorView.alpha = visible ? 1.0 : 0.0;
+    }];
+}
+
+- (NSString *)typingIndicatorTextWithParticipantsTyping:(NSArray *)participantsTyping
+{
+    if (participantsTyping.count == 0) return nil;
+
+    NSArray *fullNames = [participantsTyping valueForKey:@"fullName"];
+    NSString *fullNamesText = [self typingIndicatorTextWithParticipantStrings:fullNames participantsCount:participantsTyping.count];
+    if ([self typingIndicatorLabelHasSpaceForText:fullNamesText]) return fullNamesText;
+
+    NSArray *firstNames = [participantsTyping valueForKey:@"firstName"];
+    NSString *firstNamesText = [self typingIndicatorTextWithParticipantStrings:firstNames participantsCount:participantsTyping.count];
+    if ([self typingIndicatorLabelHasSpaceForText:firstNamesText]) return firstNamesText;
+
+    NSMutableArray *strings = [NSMutableArray new];
+    for (NSInteger displayedFirstNamesCount = participantsTyping.count - 1; displayedFirstNamesCount >= 0; displayedFirstNamesCount--) {
+        [strings removeAllObjects];
+
+        NSRange displayedRange = NSMakeRange(0, displayedFirstNamesCount);
+        NSArray *displayedFirstNames = [firstNames subarrayWithRange:displayedRange];
+        [strings addObjectsFromArray:displayedFirstNames];
+
+        NSUInteger undisplayedCount = participantsTyping.count - displayedRange.length;
+        NSMutableString *textForUndisplayedParticipants = [NSMutableString new];;
+        [textForUndisplayedParticipants appendFormat:@"%ld", (unsigned long)undisplayedCount];
+        if (undisplayedCount != participantsTyping.count && undisplayedCount == 1) {
+            [textForUndisplayedParticipants appendString:@" other"];
+        } else if (undisplayedCount != participantsTyping.count) {
+            [textForUndisplayedParticipants appendString:@" others"];
+        }
+        [strings addObject:textForUndisplayedParticipants];
+
+        NSString *proposedSummary = [self typingIndicatorTextWithParticipantStrings:strings participantsCount:participantsTyping.count];
+        if ([self typingIndicatorLabelHasSpaceForText:proposedSummary]) {
+            return proposedSummary;
+        }
+    }
+
+    return nil;
+}
+
+- (NSString *)typingIndicatorTextWithParticipantStrings:(NSArray *)participantStrings participantsCount:(NSUInteger)participantsCount
+{
+    NSMutableString *text = [NSMutableString new];
+    NSUInteger lastIndex = participantStrings.count - 1;
+    [participantStrings enumerateObjectsUsingBlock:^(NSString *participantString, NSUInteger index, BOOL *stop) {
+        if (index == lastIndex && participantStrings.count == 2) {
+            [text appendString:@" and "];
+        } else if (index == lastIndex && participantStrings.count > 2) {
+            [text appendString:@", and "];
+        } else if (index > 0) {
+            [text appendString:@", "];
+        }
+        [text appendString:participantString];
+    }];
+    if (participantsCount == 1) {
+        [text appendString:@" is typing…"];
+    } else {
+        [text appendString:@" are typing…"];
+    }
+    return text;
+}
+
+- (BOOL)typingIndicatorLabelHasSpaceForText:(NSString *)text
+{
+    UILabel *label = self.typingIndicatorView.label;
+    CGSize fittedSize = [text sizeWithAttributes:@{NSFontAttributeName: label.font}];
+    return fittedSize.width <= CGRectGetWidth(label.frame);
 }
 
 #pragma mark - LYRUIMessageInputToolbar Delegate Methods
@@ -689,7 +767,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
  LAYER - Input tool bar began typing, so we can send a typing indicator.
  
  */
-- (void)messageInputToolbarDidBeginTyping:(LYRUIMessageInputToolbar *)messageInputToolbar
+- (void)messageInputToolbarDidType:(LYRUIMessageInputToolbar *)messageInputToolbar
 {
     if (!self.conversation) return;
     [self.conversation sendTypingIndicator:LYRTypingDidBegin];
@@ -824,11 +902,13 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 
 - (void)updateCollectionViewInsets
 {
-    UIEdgeInsets existing = self.collectionView.contentInset;
-    CGFloat keyboardHeight = self.keyboardHeight < 1.0 ? self.messageInputToolbar.frame.size.height : self.keyboardHeight;
-    keyboardHeight += self.typingIndicatorView.alpha ? LYRUITypingIndicatorHeight : 0;
-    self.collectionView.contentInset = UIEdgeInsetsMake(existing.top, 0, keyboardHeight, 0);
-    self.collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(existing.top, 0, keyboardHeight, 0);
+    [self.messageInputToolbar layoutIfNeeded];
+    UIEdgeInsets insets = self.collectionView.contentInset;
+    CGFloat keyboardHeight = MAX(self.keyboardHeight, CGRectGetHeight(self.messageInputToolbar.frame));
+    insets.bottom = keyboardHeight;
+    self.collectionView.scrollIndicatorInsets = insets;
+    insets.bottom += LYRUITypingIndicatorHeight;
+    self.collectionView.contentInset = insets;
 }
 
 - (CGPoint)bottomOffset
@@ -868,13 +948,15 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 
 - (void)queryControllerDidChangeContent:(LYRQueryController *)queryController
 {
-    __block BOOL shouldScroll;
+    CGPoint bottomOffset = [self bottomOffset];
+    CGFloat distanceToBottom = bottomOffset.y - self.collectionView.contentOffset.y;
+    BOOL shouldScrollToBottom = distanceToBottom <= 50 && !self.collectionView.isTracking && !self.collectionView.isDragging && !self.collectionView.isDecelerating;
+
     [self.collectionView performBatchUpdates:^{
         for (LYRUIDataSourceChange *change in self.objectChages) {
             switch (change.type) {
                 case LYRQueryControllerChangeTypeInsert:
                     [self.collectionView insertSections:[NSIndexSet indexSetWithIndex:change.newIndex]];
-                    shouldScroll = YES;
                     break;
                     
                 case LYRQueryControllerChangeTypeMove:
@@ -894,11 +976,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
             }
         }
         [self.objectChages removeAllObjects];
-    } completion:^(BOOL finished) {
-//        if (shouldScroll)  {
-            [self scrollToBottomOfCollectionViewAnimated:NO];
-//        }
-    }];
+    } completion:nil];
 
     // Since each section's footer content depends on the existence of other messages, we need to update footers even when the corresponding message to a footer has not changed.
     for (LYRUIConversationCollectionViewFooter *footer in self.sectionFooters) {
@@ -906,6 +984,10 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
         if (!queryControllerIndexPath) continue;
         NSIndexPath *collectionViewIndexPath = [NSIndexPath indexPathForItem:0 inSection:queryControllerIndexPath.row];
         [self configureFooter:footer atIndexPath:collectionViewIndexPath];
+    }
+
+    if (shouldScrollToBottom)  {
+        [self scrollToBottomOfCollectionViewAnimated:YES];
     }
 }
 
@@ -1070,14 +1152,14 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
                                                          multiplier:1.0
                                                            constant:LYRUITypingIndicatorHeight]];
    
-    self.typingIndicatorViewTopConstraint = [NSLayoutConstraint constraintWithItem:self.typingIndicatorView
-                                                                         attribute:NSLayoutAttributeTop
-                                                                         relatedBy:NSLayoutRelationEqual
-                                                                            toItem:self.view
-                                                                         attribute:NSLayoutAttributeBottom
-                                                                        multiplier:1.0
-                                                                          constant:0];
-    [self.view addConstraint:self.typingIndicatorViewTopConstraint];
+    self.typingIndicatorViewBottomConstraint = [NSLayoutConstraint constraintWithItem:self.typingIndicatorView
+                                                                            attribute:NSLayoutAttributeBottom
+                                                                            relatedBy:NSLayoutRelationEqual
+                                                                               toItem:self.view
+                                                                            attribute:NSLayoutAttributeBottom
+                                                                           multiplier:1.0
+                                                                             constant:0];
+    [self.view addConstraint:self.typingIndicatorViewBottomConstraint];
 }
 
 #pragma mark - Helpers

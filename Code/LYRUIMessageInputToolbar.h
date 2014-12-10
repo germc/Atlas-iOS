@@ -43,9 +43,9 @@
 @optional
 
 /**
- @abstract Notifies the receiver that typing has begun.
+ @abstract Notifies the receiver that typing has occurred.
  */
-- (void)messageInputToolbarDidBeginTyping:(LYRUIMessageInputToolbar *)messageInputToolbar;
+- (void)messageInputToolbarDidType:(LYRUIMessageInputToolbar *)messageInputToolbar;
 
 /**
  @abstract Notifies the receiver that typing has ended.

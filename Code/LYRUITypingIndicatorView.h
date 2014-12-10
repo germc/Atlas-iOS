@@ -10,8 +10,6 @@
 
 @interface LYRUITypingIndicatorView : UIView
 
-- (void)setText:(NSString *)text;
-
-- (void)updateLabelInset:(NSUInteger)inset;
+@property (nonatomic) UILabel *label;
 
 @end

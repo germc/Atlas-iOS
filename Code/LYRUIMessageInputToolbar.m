@@ -18,7 +18,6 @@
 @property (nonatomic, copy) NSAttributedString *attributedStringForMessageParts;
 @property (nonatomic) UITextView *dummyTextView;
 @property (nonatomic) CGFloat textViewMaxHeight;
-@property (nonatomic, getter=isTyping) BOOL typing;
 
 @end
 
@@ -157,7 +156,9 @@ static CGFloat const LYRUIButtonHeight = 28;
     [attributedString appendAttributedString:lineBreak];
 
     textView.attributedText = attributedString;
-    self.typing = YES;
+    if ([self.inputToolBarDelegate respondsToSelector:@selector(messageInputToolbarDidType:)]) {
+        [self.inputToolBarDelegate messageInputToolbarDidType:self];
+    }
     [self setNeedsLayout];
     [self configureSendButtonEnablement];
 }
@@ -194,20 +195,6 @@ static CGFloat const LYRUIButtonHeight = 28;
     return _messageParts;
 }
 
-#pragma mark - Accessors
-
-- (void)setTyping:(BOOL)typing
-{
-    if (typing == _typing) return;
-    _typing = typing;
-
-    if (typing && [self.inputToolBarDelegate respondsToSelector:@selector(messageInputToolbarDidBeginTyping:)]) {
-        [self.inputToolBarDelegate messageInputToolbarDidBeginTyping:self];
-    } else if (!typing && [self.inputToolBarDelegate respondsToSelector:@selector(messageInputToolbarDidEndTyping:)]) {
-        [self.inputToolBarDelegate messageInputToolbarDidEndTyping:self];
-    }
-}
-
 #pragma mark - Actions
 
 - (void)leftAccessoryButtonTapped
@@ -218,7 +205,9 @@ static CGFloat const LYRUIButtonHeight = 28;
 - (void)rightAccessoryButtonTapped
 {
     if (self.textInputView.text.length == 0) return;
-    self.typing = NO;
+    if ([self.inputToolBarDelegate respondsToSelector:@selector(messageInputToolbarDidEndTyping:)]) {
+        [self.inputToolBarDelegate messageInputToolbarDidEndTyping:self];
+    }
     [self.inputToolBarDelegate messageInputToolbar:self didTapRightAccessoryButton:self.rightAccessoryButton];
     self.rightAccessoryButton.enabled = NO;
     self.textInputView.text = @"";
@@ -232,7 +221,12 @@ static CGFloat const LYRUIButtonHeight = 28;
 
 - (void)textViewDidChange:(UITextView *)textView
 {
-    self.typing = textView.text.length > 0;
+    if (textView.text.length > 0 && [self.inputToolBarDelegate respondsToSelector:@selector(messageInputToolbarDidType:)]) {
+        [self.inputToolBarDelegate messageInputToolbarDidType:self];
+    } else if (textView.text.length == 0 && [self.inputToolBarDelegate respondsToSelector:@selector(messageInputToolbarDidEndTyping:)]) {
+        [self.inputToolBarDelegate messageInputToolbarDidEndTyping:self];
+    }
+
     [self setNeedsLayout];
     [self configureSendButtonEnablement];
 

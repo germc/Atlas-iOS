@@ -12,10 +12,6 @@
 
 @interface LYRUITypingIndicatorView ()
 
-@property (nonatomic) UILabel *typingIndicatorLabel;
-@property (nonatomic) CGFloat labelInset;
-@property (nonatomic) NSLayoutConstraint *labelLeftConstraint;
-@property (nonatomic) NSLayoutConstraint *labelWidthConstraint;
 @property (nonatomic) CAGradientLayer *backgroundGradientLayer;
 
 @end
@@ -26,48 +22,31 @@
 {
     self = [super init];
     if (self) {
-        CAGradientLayer *typingIndicatorBackgroundLayer = [CAGradientLayer layer];
-        typingIndicatorBackgroundLayer.frame = self.bounds;
-        typingIndicatorBackgroundLayer.startPoint = CGPointZero;
-        typingIndicatorBackgroundLayer.endPoint = CGPointMake(0, 1);
-        typingIndicatorBackgroundLayer.colors = @[(id)[[UIColor colorWithWhite:1.0 alpha:0.0] CGColor], (id)[[UIColor colorWithWhite:1.0 alpha:0.75] CGColor], (id)[[UIColor colorWithWhite:1.0 alpha:1.0] CGColor]];
-        _backgroundGradientLayer = typingIndicatorBackgroundLayer;
-        [self.layer addSublayer:typingIndicatorBackgroundLayer];
+        _backgroundGradientLayer = [CAGradientLayer layer];
+        _backgroundGradientLayer.frame = self.bounds;
+        _backgroundGradientLayer.startPoint = CGPointZero;
+        _backgroundGradientLayer.endPoint = CGPointMake(0, 1);
+        _backgroundGradientLayer.colors = @[
+            (id)[UIColor colorWithWhite:1.0 alpha:0.0].CGColor,
+            (id)[UIColor colorWithWhite:1.0 alpha:0.75].CGColor,
+            (id)[UIColor colorWithWhite:1.0 alpha:1.0].CGColor
+        ];
+        [self.layer addSublayer:_backgroundGradientLayer];
 
-        _typingIndicatorLabel = [[UILabel alloc] init];
-        _typingIndicatorLabel.translatesAutoresizingMaskIntoConstraints = NO;
-        _typingIndicatorLabel.textColor = [UIColor lightGrayColor];
-        _typingIndicatorLabel.font = LSMediumFont(12);
-        _typingIndicatorLabel.textColor = [UIColor grayColor];
-        _typingIndicatorLabel.numberOfLines = 0;
-        _typingIndicatorLabel.backgroundColor = [UIColor clearColor];
-        [self addSubview:_typingIndicatorLabel];
+        _label = [[UILabel alloc] init];
+        _label.translatesAutoresizingMaskIntoConstraints = NO;
+        _label.font = LSMediumFont(12);
+        _label.textColor = [UIColor grayColor];
+        _label.numberOfLines = 1;
+        _label.textAlignment = NSTextAlignmentCenter;
+        [self addSubview:_label];
+
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.label attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1.0 constant:8]];
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.label attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeRight multiplier:1.0 constant:-8]];
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.label attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1.0 constant:0]];
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.label attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeHeight multiplier:1.0 constant:0]];
     }
     return self;
-}
-
-- (void)updateConstraints
-{
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:self.typingIndicatorLabel attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0]];
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:self.typingIndicatorLabel attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1.0 constant:0]];
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:self.typingIndicatorLabel attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeHeight multiplier:1.0 constant:0]];
-    [super updateConstraints];
-}
-
-- (void)setText:(NSString *)text
-{
-    self.typingIndicatorLabel.text = text;
-    [self.typingIndicatorLabel sizeToFit];
-    [self setNeedsUpdateConstraints];
-}
-
-- (void)updateLabelInset:(NSUInteger)inset
-{
-//    if (self.labelLeftConstraint) {
-//        [self removeConstraints:@[self.labelLeftConstraint, self.labelWidthConstraint]];
-//    }
-//    self.labelInset = inset;
-//    [self setNeedsUpdateConstraints];
 }
 
 - (void)layoutSubviews
