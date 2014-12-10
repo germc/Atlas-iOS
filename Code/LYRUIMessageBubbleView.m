@@ -15,8 +15,6 @@
 @property (nonatomic) NSLayoutConstraint *contentCenterXConstraint;
 @property (nonatomic) NSLayoutConstraint *contentCenterYConstraint;
 
-@property (nonatomic) UIFont *font;
-@property (nonatomic) UIColor *color;
 @property (nonatomic) UIView *longPressMask;
 
 @end
