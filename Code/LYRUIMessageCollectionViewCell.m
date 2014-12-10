@@ -76,7 +76,7 @@
         NSString *text = [[NSString alloc] initWithData:messagePart.data encoding:NSUTF8StringEncoding];
         [self.bubbleView updateWithText:text];
         self.accessibilityLabel = [NSString stringWithFormat:@"Message: %@", text];
-    } else if ([messagePart.MIMEType isEqualToString:LYRUIMIMETypeImageJPEG] || [messagePart.MIMEType isEqualToString:LYRUIMIMETypeImageJPEG]) {
+    } else if ([messagePart.MIMEType isEqualToString:LYRUIMIMETypeImageJPEG] || [messagePart.MIMEType isEqualToString:LYRUIMIMETypeImagePNG]) {
         UIImage *image = [UIImage imageWithData:messagePart.data];
         [self.bubbleView updateWithImage:image];
         self.accessibilityLabel = [NSString stringWithFormat:@"Message: Photo"];
