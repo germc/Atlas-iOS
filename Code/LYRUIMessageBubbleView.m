@@ -139,7 +139,7 @@
         
         UIMenuController *menuController = [UIMenuController sharedMenuController];
         UIMenuItem *resetMenuItem = [[UIMenuItem alloc] initWithTitle:@"Copy" action:@selector(copyItem)];
-        [menuController setMenuItems:[NSArray arrayWithObject:resetMenuItem]];
+        [menuController setMenuItems:@[resetMenuItem]];
         [menuController setTargetRect:CGRectMake(self.frame.size.width / 2, 0.0f, 0.0f, 0.0f) inView:[recognizer view]];
         [menuController setMenuVisible:YES animated:YES];
     }
