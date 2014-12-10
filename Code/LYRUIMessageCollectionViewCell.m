@@ -15,9 +15,6 @@
 
 @property (nonatomic) CGFloat bubbleViewWidth;
 @property (nonatomic) BOOL messageSentState;
-
-@property (nonatomic) NSLayoutConstraint *bubbleViewHeightConstraint;
-@property (nonatomic) NSLayoutConstraint *bubbleViewTopConstraint;
 @property (nonatomic) NSLayoutConstraint *bubbleViewWidthConstraint;
 
 @end
@@ -103,25 +100,21 @@
 - (void)updateMessageCellConstraints
 {
     //***************Bubble View Constraints***************//
-    self.bubbleViewHeightConstraint = [NSLayoutConstraint constraintWithItem:self.bubbleView
-                                                                    attribute:NSLayoutAttributeHeight
-                                                                    relatedBy:NSLayoutRelationEqual
-                                                                       toItem:self.contentView
-                                                                    attribute:NSLayoutAttributeHeight
-                                                                   multiplier:1.0
-                                                                     constant:0];
-    
-    self.bubbleViewTopConstraint = [NSLayoutConstraint constraintWithItem:self.bubbleView
-                                                                attribute:NSLayoutAttributeTop
-                                                                relatedBy:NSLayoutRelationEqual
-                                                                   toItem:self.contentView
-                                                                attribute:NSLayoutAttributeTop
-                                                               multiplier:1.0
-                                                                 constant:0];
+    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleView
+                                                                 attribute:NSLayoutAttributeHeight
+                                                                 relatedBy:NSLayoutRelationEqual
+                                                                    toItem:self.contentView
+                                                                 attribute:NSLayoutAttributeHeight
+                                                                multiplier:1.0
+                                                                  constant:0]];
 
-    // Add bubbleView constraints
-    [self.contentView addConstraint:self.bubbleViewHeightConstraint];
-    [self.contentView addConstraint:self.bubbleViewTopConstraint];
+    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleView
+                                                                 attribute:NSLayoutAttributeTop
+                                                                 relatedBy:NSLayoutRelationEqual
+                                                                    toItem:self.contentView
+                                                                 attribute:NSLayoutAttributeTop
+                                                                multiplier:1.0
+                                                                  constant:0]];
 }
 
 - (void)setMessageTextFont:(UIFont *)messageTextFont
