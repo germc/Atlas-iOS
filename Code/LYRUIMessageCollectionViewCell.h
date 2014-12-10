@@ -14,13 +14,13 @@
 
 /**
  @abstract The `LYRUIMessageCollectionViewCell` class provides a lightweight, customizable collection
- view cell for presenting Layer message objects. The class is subclassed by by the LYRUIIncomingMessageCollectionViewCell`
- and the `LYRUIOutgoingMessageCollectionViewCell
+ view cell for presenting Layer message objects. The class is subclassed by `LYRUIIncomingMessageCollectionViewCell`
+ and `LYRUIOutgoingMessageCollectionViewCell`.
  */
 @interface LYRUIMessageCollectionViewCell : UICollectionViewCell <LYRUIMessagePresenting>
 
 /**
- @abstract Customization selectors for configuring cell appearance
+ @abstract Customization selectors for configuring cell appearance.
  */
 @property (nonatomic) UIFont *messageTextFont UI_APPEARANCE_SELECTOR;
 @property (nonatomic) UIColor *messageTextColor UI_APPEARANCE_SELECTOR;
@@ -28,12 +28,12 @@
 @property (nonatomic) UIColor *pendingBubbleViewColor UI_APPEARANCE_SELECTOR;
 
 /**
- @abstract The cell `Bubble View` which handles displaying the cell content
+ @abstract The view that handles displaying the cell content.
  */
 @property (nonatomic) LYRUIMessageBubbleView *bubbleView;
 
 /**
- @abstract The optional avatar image view representing a user
+ @abstract The optional avatar image view representing a user.
  */
 @property (nonatomic) LYRUIAvatarImageView *avatarImage;
 
