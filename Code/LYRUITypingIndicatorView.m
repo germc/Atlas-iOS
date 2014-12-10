@@ -37,7 +37,6 @@
         _label.textColor = [UIColor grayColor];
         _label.numberOfLines = 1;
         _label.textAlignment = NSTextAlignmentCenter;
-        _label.backgroundColor = [UIColor clearColor];
         [self addSubview:_label];
 
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.label attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1.0 constant:8]];
