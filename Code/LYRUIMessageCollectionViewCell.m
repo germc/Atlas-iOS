@@ -51,6 +51,15 @@
                                                                      attribute:NSLayoutAttributeTop
                                                                     multiplier:1.0
                                                                       constant:0]];
+
+        self.bubbleViewWidthConstraint = [NSLayoutConstraint constraintWithItem:self.bubbleView
+                                                                      attribute:NSLayoutAttributeWidth
+                                                                      relatedBy:NSLayoutRelationEqual
+                                                                         toItem:nil
+                                                                      attribute:NSLayoutAttributeNotAnAttribute
+                                                                     multiplier:1.0
+                                                                       constant:self.bubbleViewWidth];
+        [self.contentView addConstraint:self.bubbleViewWidthConstraint];
     }
     return self;
 }
@@ -97,18 +106,8 @@
 
 - (void)updateWithBubbleViewWidth:(CGFloat)bubbleViewWidth
 {
-    if ([[self.contentView constraints] containsObject:self.bubbleViewWidthConstraint]) {
-        [self.contentView removeConstraint:self.bubbleViewWidthConstraint];
-    }
     self.bubbleViewWidth = bubbleViewWidth + 26; //Adding 24px for bubble view horizontal padding + 2px for extra coverage
-    self.bubbleViewWidthConstraint = [NSLayoutConstraint constraintWithItem:self.bubbleView
-                                                                  attribute:NSLayoutAttributeWidth
-                                                                  relatedBy:NSLayoutRelationEqual
-                                                                     toItem:nil
-                                                                  attribute:NSLayoutAttributeNotAnAttribute
-                                                                 multiplier:1.0
-                                                                   constant:self.bubbleViewWidth];
-     [self.contentView addConstraint:self.bubbleViewWidthConstraint];
+    self.bubbleViewWidthConstraint.constant = self.bubbleViewWidth;
 }
 
 - (void)setMessageTextFont:(UIFont *)messageTextFont
