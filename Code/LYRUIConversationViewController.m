@@ -229,11 +229,6 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (BOOL)canBecomeFirstResponder
-{
-    return YES;
-}
-
 #pragma mark - Conversation Setup Methods
 
 - (void)fetchLayerMessages
