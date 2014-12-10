@@ -132,6 +132,7 @@
         [self becomeFirstResponder];
         
         self.longPressMask = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
+        self.longPressMask.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         self.longPressMask.backgroundColor = [UIColor blackColor];
         self.longPressMask.alpha = 0.1;
         [self addSubview:self.longPressMask];
