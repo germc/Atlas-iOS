@@ -31,7 +31,7 @@
 @property (nonatomic) BOOL shouldDisplayAvatarImage;
 @property (nonatomic) CGRect addressBarRect;
 @property (nonatomic) NSLayoutConstraint *typingIndicatorViewBottomConstraint;
-@property (nonatomic) NSMutableDictionary *typingIndicatorStatusByParticipant;
+@property (nonatomic) NSMutableArray *typingParticipantIDs;
 @property (nonatomic) LYRQueryController *queryController;
 @property (nonatomic) NSMutableArray *objectChages;
 @property (nonatomic) NSHashTable *sectionFooters;
@@ -65,7 +65,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
         // Set default configuration for public configuration properties
         _dateDisplayTimeInterval = 60*15;
         _showsAddressBar = NO;
-        _typingIndicatorStatusByParticipant = [NSMutableDictionary dictionaryWithCapacity:conversation.participants.count];
+        _typingParticipantIDs = [NSMutableArray new];
         _sectionFooters = [NSHashTable weakObjectsHashTable];
         _firstAppearance = YES;
         
@@ -609,7 +609,13 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 - (void)didReceiveTypingIndicator:(NSNotification *)notification
 {
     NSString *participantID = notification.userInfo[LYRTypingIndicatorParticipantUserInfoKey];
-    self.typingIndicatorStatusByParticipant[participantID] = notification.userInfo[LYRTypingIndicatorValueUserInfoKey];
+    NSNumber *statusNumber = notification.userInfo[LYRTypingIndicatorValueUserInfoKey];
+    LYRTypingIndicator status = statusNumber.unsignedIntegerValue;
+    if (status == LYRTypingDidBegin) {
+        [self.typingParticipantIDs addObject:participantID];
+    } else {
+        [self.typingParticipantIDs removeObject:participantID];
+    }
     [self updateTypingIndicatorOverlay:YES];
 }
 
@@ -618,12 +624,9 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 - (void)updateTypingIndicatorOverlay:(BOOL)animated
 {
     NSMutableArray *participantsTyping = [NSMutableArray array];
-    [self.typingIndicatorStatusByParticipant enumerateKeysAndObjectsUsingBlock:^(NSString *participantID, NSNumber *statusNumber, BOOL *stop) {
-        LYRTypingIndicator status = statusNumber.unsignedIntegerValue;
-        if (status == LYRTypingDidBegin) {
-            id<LYRUIParticipant> participant = [self participantForIdentifier:participantID];
-            [participantsTyping addObject:participant];
-        }
+    [self.typingParticipantIDs enumerateObjectsUsingBlock:^(NSString *participantID, NSUInteger idx, BOOL *stop) {
+        id<LYRUIParticipant> participant = [self participantForIdentifier:participantID];
+        [participantsTyping addObject:participant];
     }];
 
     BOOL visible = participantsTyping.count > 0;
