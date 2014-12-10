@@ -58,24 +58,24 @@
 
 - (void)updateWithText:(NSString *)text
 {
-    self.bubbleImageView.alpha = 0.0;
-    self.bubbleViewLabel.alpha = 1.0;
+    self.bubbleImageView.hidden = YES;
+    self.bubbleViewLabel.hidden = NO;
     self.bubbleViewLabel.text = text;
     [self.snapshotter cancel];
 }
 
 - (void)updateWithImage:(UIImage *)image
 {
-    self.bubbleViewLabel.alpha = 0.0;
-    self.bubbleImageView.alpha = 1.0;
+    self.bubbleViewLabel.hidden = YES;
+    self.bubbleImageView.hidden = NO;
     self.bubbleImageView.image = image;
     [self.snapshotter cancel];
 }
 
 - (void)updateWithLocation:(CLLocationCoordinate2D)location
 {
-    self.bubbleViewLabel.alpha = 0.0;
-    self.bubbleImageView.alpha = 0.0;
+    self.bubbleViewLabel.hidden = YES;
+    self.bubbleImageView.hidden = YES;
     [self.snapshotter cancel];
     
     MKMapSnapshotOptions *options = [[MKMapSnapshotOptions alloc] init];
@@ -111,6 +111,8 @@
         UIGraphicsEndImageContext();
         
         // Set image.
+        strongSelf.bubbleImageView.hidden = NO;
+        strongSelf.bubbleImageView.alpha = 0.0;
         strongSelf.bubbleImageView.image = finalImage;
         
         // Animate into view.
@@ -148,7 +150,7 @@
 - (void)copyItem
 {
     UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-    if (self.bubbleViewLabel.alpha == 1.0f) {
+    if (!self.bubbleViewLabel.isHidden) {
         pasteboard.string = self.bubbleViewLabel.text;
     } else {
         pasteboard.image = self.bubbleImageView.image;
