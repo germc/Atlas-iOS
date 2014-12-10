@@ -606,8 +606,6 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     [self scrollToBottomOfCollectionViewAnimated:YES];
 }
 
-#pragma mark - Typing indicator notifications
-
 - (void)didReceiveTypingIndicator:(NSNotification *)notification
 {
     NSString *participantID = notification.userInfo[LYRTypingIndicatorParticipantUserInfoKey];
@@ -615,39 +613,105 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     [self updateTypingIndicatorOverlay:YES];
 }
 
+#pragma mark - Typing Indicator
+
 - (void)updateTypingIndicatorOverlay:(BOOL)animated
 {
     NSMutableArray *participantsTyping = [NSMutableArray array];
-    
-    // Collect participant's first names, but no more than three.
-    [self.typingIndicatorStatusByParticipant.allKeys enumerateObjectsUsingBlock:^(NSString *participantID, NSUInteger idx, BOOL *stop) {
-        if ([self.typingIndicatorStatusByParticipant[participantID] unsignedIntegerValue] == LYRTypingDidBegin) {
-            [participantsTyping addObject:[self participantForIdentifier:participantID].firstName];
-            if (idx++ > 3) *stop = YES; // stop adding participants to the string if there are more that 3 people typing at once
+    [self.typingIndicatorStatusByParticipant enumerateKeysAndObjectsUsingBlock:^(NSString *participantID, NSNumber *statusNumber, BOOL *stop) {
+        LYRTypingIndicator status = statusNumber.unsignedIntegerValue;
+        if (status == LYRTypingDidBegin) {
+            id<LYRUIParticipant> participant = [self participantForIdentifier:participantID];
+            [participantsTyping addObject:participant];
         }
     }];
-    
-    // If there are more than three participants, add "others" at the end.
-    if (participantsTyping.count >= 3) [participantsTyping addObject:@"others"];
-    
-    // Seperate the list of participants with a comma.
-    NSString *commaSeperatedParticipants = [participantsTyping componentsJoinedByString:@", "];
-    
-    // Replace the last comma with an "and" word.
-    NSRange lastCommaRange = [commaSeperatedParticipants rangeOfString:@", " options:NSBackwardsSearch];
-    if (lastCommaRange.location != NSNotFound) {
-        commaSeperatedParticipants = [commaSeperatedParticipants stringByReplacingOccurrencesOfString:@", " withString:@" and " options:NSBackwardsSearch range:lastCommaRange];
+
+    BOOL visible = participantsTyping.count > 0;
+    if (visible) {
+        NSString *text = [self typingIndicatorTextWithParticipantsTyping:participantsTyping];
+        self.typingIndicatorView.label.text = text;
     }
 
-    // Figure out if we can display the typing indicator label, based
-    // on the scroll position.
-    BOOL visible = participantsTyping.count >= 1;
-    if (participantsTyping.count) {
-        self.typingIndicatorView.label.text = [NSString stringWithFormat:@"%@ %@ typing...", commaSeperatedParticipants, participantsTyping.count > 1 ? @"are" : @"is"];
+    NSTimeInterval duration;
+    if (!animated) {
+        duration = 0;
+    } else if (visible) {
+        duration = 0.3;
+    } else {
+        duration = 0.1;
     }
-    [UIView animateWithDuration:animated ? (visible ? 0.3 : 0.1) : 0 animations:^{
+
+    [UIView animateWithDuration:duration animations:^{
         self.typingIndicatorView.alpha = visible ? 1.0 : 0.0;
     }];
+}
+
+- (NSString *)typingIndicatorTextWithParticipantsTyping:(NSArray *)participantsTyping
+{
+    if (participantsTyping.count == 0) return nil;
+
+    NSArray *fullNames = [participantsTyping valueForKey:@"fullName"];
+    NSString *fullNamesText = [self typingIndicatorTextWithParticipantStrings:fullNames participantsCount:participantsTyping.count];
+    if ([self typingIndicatorLabelHasSpaceForText:fullNamesText]) return fullNamesText;
+
+    NSArray *firstNames = [participantsTyping valueForKey:@"firstName"];
+    NSString *firstNamesText = [self typingIndicatorTextWithParticipantStrings:firstNames participantsCount:participantsTyping.count];
+    if ([self typingIndicatorLabelHasSpaceForText:firstNamesText]) return firstNamesText;
+
+    NSMutableArray *strings = [NSMutableArray new];
+    for (NSInteger displayedFirstNamesCount = participantsTyping.count - 1; displayedFirstNamesCount >= 0; displayedFirstNamesCount--) {
+        [strings removeAllObjects];
+
+        NSRange displayedRange = NSMakeRange(0, displayedFirstNamesCount);
+        NSArray *displayedFirstNames = [firstNames subarrayWithRange:displayedRange];
+        [strings addObjectsFromArray:displayedFirstNames];
+
+        NSUInteger undisplayedCount = participantsTyping.count - displayedRange.length;
+        NSMutableString *textForUndisplayedParticipants = [NSMutableString new];;
+        [textForUndisplayedParticipants appendFormat:@"%ld", (unsigned long)undisplayedCount];
+        if (undisplayedCount != participantsTyping.count && undisplayedCount == 1) {
+            [textForUndisplayedParticipants appendString:@" other"];
+        } else if (undisplayedCount != participantsTyping.count) {
+            [textForUndisplayedParticipants appendString:@" others"];
+        }
+        [strings addObject:textForUndisplayedParticipants];
+
+        NSString *proposedSummary = [self typingIndicatorTextWithParticipantStrings:strings participantsCount:participantsTyping.count];
+        if ([self typingIndicatorLabelHasSpaceForText:proposedSummary]) {
+            return proposedSummary;
+        }
+    }
+
+    return nil;
+}
+
+- (NSString *)typingIndicatorTextWithParticipantStrings:(NSArray *)participantStrings participantsCount:(NSUInteger)participantsCount
+{
+    NSMutableString *text = [NSMutableString new];
+    NSUInteger lastIndex = participantStrings.count - 1;
+    [participantStrings enumerateObjectsUsingBlock:^(NSString *participantString, NSUInteger index, BOOL *stop) {
+        if (index == lastIndex && participantStrings.count == 2) {
+            [text appendString:@" and "];
+        } else if (index == lastIndex && participantStrings.count > 2) {
+            [text appendString:@", and "];
+        } else if (index > 0) {
+            [text appendString:@", "];
+        }
+        [text appendString:participantString];
+    }];
+    if (participantsCount == 1) {
+        [text appendString:@" is typing…"];
+    } else {
+        [text appendString:@" are typing…"];
+    }
+    return text;
+}
+
+- (BOOL)typingIndicatorLabelHasSpaceForText:(NSString *)text
+{
+    UILabel *label = self.typingIndicatorView.label;
+    CGSize fittedSize = [text sizeWithAttributes:@{NSFontAttributeName: label.font}];
+    return fittedSize.width <= CGRectGetWidth(label.frame);
 }
 
 #pragma mark - LYRUIMessageInputToolbar Delegate Methods
