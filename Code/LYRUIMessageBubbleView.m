@@ -16,6 +16,7 @@
 @property (nonatomic) NSLayoutConstraint *contentCenterYConstraint;
 
 @property (nonatomic) UIView *longPressMask;
+@property (nonatomic) MKMapSnapshotter *snapshotter;
 
 @end
 
@@ -57,6 +58,7 @@
     self.bubbleImageView.alpha = 0.0;
     self.bubbleViewLabel.alpha = 1.0;
     self.bubbleViewLabel.text = text;
+    [self.snapshotter cancel];
 }
 
 - (void)updateWithImage:(UIImage *)image
@@ -64,24 +66,31 @@
     self.bubbleViewLabel.alpha = 0.0;
     self.bubbleImageView.alpha = 1.0;
     self.bubbleImageView.image = image;
+    [self.snapshotter cancel];
 }
 
 - (void)updateWithLocation:(CLLocationCoordinate2D)location
 {
     self.bubbleViewLabel.alpha = 0.0;
     self.bubbleImageView.alpha = 0.0;
+    [self.snapshotter cancel];
     
     MKMapSnapshotOptions *options = [[MKMapSnapshotOptions alloc] init];
     MKCoordinateSpan span = MKCoordinateSpanMake(0.005, 0.005);
     options.region = MKCoordinateRegionMake(location, span);
     options.scale = [UIScreen mainScreen].scale;
     options.size = CGSizeMake(200, 200);
-    MKMapSnapshotter *snapshotter = [[MKMapSnapshotter alloc] initWithOptions:options];
-    [snapshotter startWithCompletionHandler:^(MKMapSnapshot *snapshot, NSError *error) {
+    self.snapshotter = [[MKMapSnapshotter alloc] initWithOptions:options];
+
+    __weak typeof(self) weakSelf = self;
+    [self.snapshotter startWithCompletionHandler:^(MKMapSnapshot *snapshot, NSError *error) {
         if (error) {
             NSLog(@"Error generating map snapshot: %@", error);
             return;
         }
+
+        typeof(self) strongSelf = weakSelf;
+        if (!strongSelf) return;
         
         // Create a Pin Image
         MKAnnotationView *pin = [[MKPinAnnotationView alloc] initWithAnnotation:nil reuseIdentifier:@""];
@@ -99,11 +108,11 @@
         UIGraphicsEndImageContext();
         
         // Set image
-        self.bubbleImageView.image = finalImage;
+        strongSelf.bubbleImageView.image = finalImage;
         
         // Animate into view
         [UIView animateWithDuration:0.2 animations:^{
-            self.bubbleImageView.alpha = 1.0;
+            strongSelf.bubbleImageView.alpha = 1.0;
         }];
     }];
 }
