@@ -27,12 +27,10 @@ static CGFloat const LYRAvatarImageDiameter = 30.0f;
 {
     self = [super initWithFrame:frame];
     if (self) {
-        
         self.avatarImage.layer.cornerRadius = (LYRAvatarImageDiameter / 2);
         self.avatarImage.clipsToBounds = YES;
         
         [self updateAvatarImageConstraints];
-        
     }
     return self;
 }
