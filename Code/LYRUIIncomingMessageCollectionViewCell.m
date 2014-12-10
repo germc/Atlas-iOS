@@ -112,10 +112,7 @@ static CGFloat const LYRAvatarImageDiameter = 30.0f;
     [self.contentView addConstraint:self.avatarImageHeightConstraint];
     [self.contentView addConstraint:self.avatarImageBottomConstraint];
     [self.contentView addConstraint:self.avatarImageLeftConstraint];
-}
 
-- (void)updateConstraints
-{
     [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleView
                                                                  attribute:NSLayoutAttributeLeft
                                                                  relatedBy:NSLayoutRelationEqual
@@ -123,7 +120,6 @@ static CGFloat const LYRAvatarImageDiameter = 30.0f;
                                                                  attribute:NSLayoutAttributeRight
                                                                 multiplier:1.0
                                                                   constant:10]];
-    [super updateConstraints];
 }
 
 @end
