@@ -150,11 +150,4 @@
     return self.bubbleView.backgroundColor;
 }
 
-- (void)layoutSubviews
-{
-    [super layoutSubviews];
-    if ([self isKindOfClass:[LYRUIIncomingMessageCollectionViewCell class]]) {
-        //UIBezierPath
-    }
-}
 @end
