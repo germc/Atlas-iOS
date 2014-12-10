@@ -10,9 +10,6 @@
 
 @interface LYRUIIncomingMessageCollectionViewCell ()
 
-@property (nonatomic) UIFont *font;
-@property (nonatomic) UIColor *color;
-
 @property (nonatomic) NSLayoutConstraint *bubbleWithAvatarLeftConstraint;
 @property (nonatomic) NSLayoutConstraint *bubbleWithoutAvatarLeftConstraint;
 
