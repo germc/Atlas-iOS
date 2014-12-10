@@ -84,8 +84,8 @@
         NSDictionary *dictionary = [NSJSONSerialization JSONObjectWithData:messagePart.data
                                                                    options:NSJSONReadingAllowFragments
                                                                      error:nil];
-        double lat = [[dictionary valueForKey:@"lat"] doubleValue];
-        double lon = [[dictionary valueForKey:@"lon"] doubleValue];
+        double lat = [dictionary[@"lat"] doubleValue];
+        double lon = [dictionary[@"lon"] doubleValue];
         [self.bubbleView updateWithLocation:CLLocationCoordinate2DMake(lat, lon)];
     }
 }
