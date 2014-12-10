@@ -22,13 +22,12 @@
 {
     self = [super init];
     if (self) {
-        CAGradientLayer *backgroundGradientLayer = [CAGradientLayer layer];
-        backgroundGradientLayer.frame = self.bounds;
-        backgroundGradientLayer.startPoint = CGPointZero;
-        backgroundGradientLayer.endPoint = CGPointMake(0, 1);
-        backgroundGradientLayer.colors = @[(id)[UIColor colorWithWhite:1.0 alpha:0.0].CGColor, (id)[UIColor colorWithWhite:1.0 alpha:0.75].CGColor, (id)[UIColor colorWithWhite:1.0 alpha:1.0].CGColor];
-        _backgroundGradientLayer = backgroundGradientLayer;
-        [self.layer addSublayer:backgroundGradientLayer];
+        _backgroundGradientLayer = [CAGradientLayer layer];
+        _backgroundGradientLayer.frame = self.bounds;
+        _backgroundGradientLayer.startPoint = CGPointZero;
+        _backgroundGradientLayer.endPoint = CGPointMake(0, 1);
+        _backgroundGradientLayer.colors = @[(id)[UIColor colorWithWhite:1.0 alpha:0.0].CGColor, (id)[UIColor colorWithWhite:1.0 alpha:0.75].CGColor, (id)[UIColor colorWithWhite:1.0 alpha:1.0].CGColor];
+        [self.layer addSublayer:_backgroundGradientLayer];
 
         _label = [[UILabel alloc] init];
         _label.translatesAutoresizingMaskIntoConstraints = NO;
