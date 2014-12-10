@@ -31,7 +31,6 @@
 
         self.bubbleViewLabel = [[UILabel alloc] init];
         self.bubbleViewLabel.numberOfLines = 0;
-        self.bubbleViewLabel.textColor = [UIColor greenColor];
         self.bubbleViewLabel.translatesAutoresizingMaskIntoConstraints = NO;
         [self addSubview:self.bubbleViewLabel];
 
