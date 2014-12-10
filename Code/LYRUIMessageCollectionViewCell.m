@@ -121,12 +121,7 @@
 - (void)setBubbleViewColor:(UIColor *)bubbleViewColor
 {
     _bubbleViewColor = bubbleViewColor;
-    if ([self isKindOfClass:[LYRUIOutgoingMessageCollectionViewCell class]] && self.messageSentState) {
-        self.bubbleView.backgroundColor = bubbleViewColor;
-    }
-    if ([self isKindOfClass:[LYRUIIncomingMessageCollectionViewCell class]]) {
-        self.bubbleView.backgroundColor = bubbleViewColor;
-    }
+    self.bubbleView.backgroundColor = bubbleViewColor;
 }
 
 @end
