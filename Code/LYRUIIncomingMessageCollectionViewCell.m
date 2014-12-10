@@ -43,13 +43,10 @@ static CGFloat const LYRAvatarImageDiameter = 30.0f;
 - (void)shouldDisplayAvatarImage:(BOOL)shouldDisplayAvatarImage
 {
     if (!shouldDisplayAvatarImage) {
-        self.avatarImage.alpha = 1.0;
         self.avatarImageLeftConstraint.constant = 0;
         self.avatarImageWidthConstraint.constant = 0;
         self.avatarImageHeightConstraint.constant = 0;
-
     } else {
-        self.avatarImage.alpha = 0.0;
         self.avatarImageLeftConstraint.constant = 10;
         self.avatarImageWidthConstraint.constant = LYRAvatarImageDiameter;
         self.avatarImageHeightConstraint.constant = LYRAvatarImageDiameter;
