@@ -99,14 +99,14 @@ static CGFloat const LYRAvatarImageDiameter = 30.0f;
 - (void)updateWithParticipant:(id<LYRUIParticipant>)participant
 {
     if (participant) {
-        self.avatarImage.alpha = 1.0f;
+        self.avatarImage.hidden = NO;
         if (participant.avatarImage) {
             [self.avatarImage setImage:participant.avatarImage];
         } else {
             [self.avatarImage setInitialsForName:participant.fullName];
         }
     } else {
-        self.avatarImage.alpha = 0.0f;
+        self.avatarImage.hidden = YES;
     }
 }
 
