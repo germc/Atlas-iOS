@@ -26,7 +26,7 @@
         typingIndicatorBackgroundLayer.frame = self.bounds;
         typingIndicatorBackgroundLayer.startPoint = CGPointZero;
         typingIndicatorBackgroundLayer.endPoint = CGPointMake(0, 1);
-        typingIndicatorBackgroundLayer.colors = @[(id)[[UIColor colorWithWhite:1.0 alpha:0.0] CGColor], (id)[[UIColor colorWithWhite:1.0 alpha:0.75] CGColor], (id)[[UIColor colorWithWhite:1.0 alpha:1.0] CGColor]];
+        typingIndicatorBackgroundLayer.colors = @[(id)[UIColor colorWithWhite:1.0 alpha:0.0].CGColor, (id)[UIColor colorWithWhite:1.0 alpha:0.75].CGColor, (id)[UIColor colorWithWhite:1.0 alpha:1.0].CGColor];
         _backgroundGradientLayer = typingIndicatorBackgroundLayer;
         [self.layer addSublayer:typingIndicatorBackgroundLayer];
 
