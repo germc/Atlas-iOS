@@ -10,11 +10,6 @@
 
 @interface LYRUIMessageBubbleView ()
 
-@property (nonatomic) NSLayoutConstraint *contentWidthConstraint;
-@property (nonatomic) NSLayoutConstraint *contentHeightConstraint;
-@property (nonatomic) NSLayoutConstraint *contentCenterXConstraint;
-@property (nonatomic) NSLayoutConstraint *contentCenterYConstraint;
-
 @property (nonatomic) UIView *longPressMask;
 @property (nonatomic) MKMapSnapshotter *snapshotter;
 
