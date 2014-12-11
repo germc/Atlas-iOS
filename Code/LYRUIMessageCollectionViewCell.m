@@ -28,10 +28,10 @@
         self.bubbleView.translatesAutoresizingMaskIntoConstraints = NO;
         [self.contentView addSubview:self.bubbleView];
         
-        self.avatarImage = [[LYRUIAvatarImageView alloc] init];
-        self.avatarImage.backgroundColor = LSLighGrayColor();
-        self.avatarImage.translatesAutoresizingMaskIntoConstraints = NO;
-        [self.contentView addSubview:self.avatarImage];
+        self.avatarImageView = [[LYRUIAvatarImageView alloc] init];
+        self.avatarImageView.backgroundColor = LSLighGrayColor();
+        self.avatarImageView.translatesAutoresizingMaskIntoConstraints = NO;
+        [self.contentView addSubview:self.avatarImageView];
 
         [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleView
                                                                      attribute:NSLayoutAttributeHeight

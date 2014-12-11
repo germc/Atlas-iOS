@@ -34,6 +34,6 @@
 /**
  @abstract The optional avatar image view representing a user.
  */
-@property (nonatomic) LYRUIAvatarImageView *avatarImage;
+@property (nonatomic) LYRUIAvatarImageView *avatarImageView;
 
 @end
