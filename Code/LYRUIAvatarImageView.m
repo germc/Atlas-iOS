@@ -23,6 +23,8 @@
         _initialsLabel = [[UILabel alloc] init];
         _initialsLabel.translatesAutoresizingMaskIntoConstraints = NO;
         _initialsLabel.textAlignment = NSTextAlignmentCenter;
+        _initialsLabel.adjustsFontSizeToFitWidth = YES;
+        _initialsLabel.minimumScaleFactor = 0.75;
         [self addSubview:_initialsLabel];
     
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.initialsLabel attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1.0 constant:3]];
