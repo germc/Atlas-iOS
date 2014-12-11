@@ -301,9 +301,9 @@ static NSString *const LYRParticipantCellIdentifier = @"participantCellIdentifie
     [[LYRUIParticipantTableViewCell appearance] setTitleFont:[UIFont systemFontOfSize:14]];
     [[LYRUIParticipantTableViewCell appearance] setBoldTitleFont:[UIFont boldSystemFontOfSize:14]];
     
-    [[LYRUIAvatarImageView appearance] setInitialViewBackgroundColor:LSGrayColor()];
-    [[LYRUIAvatarImageView appearance] setInitialColor:[UIColor blackColor]];
-    [[LYRUIAvatarImageView appearance] setInitialFont:LSLightFont(14)];
+    [[LYRUIAvatarImageView appearance] setBackgroundColor:LSGrayColor()];
+    [[LYRUIAvatarImageView appearance] setInitialsColor:[UIColor blackColor]];
+    [[LYRUIAvatarImageView appearance] setInitialsFont:LSLightFont(14)];
 }
 
 @end

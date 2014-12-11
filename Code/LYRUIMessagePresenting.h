@@ -11,38 +11,38 @@
 #import <LayerKit/LayerKit.h>
 
 /**
- @abstract The `LYRUIMessagePresenting` protocol must be adopted by objects wishing to preset 
- layer message parts via a user interface
+ @abstract The `LYRUIMessagePresenting` protocol must be adopted by objects wishing to present
+ Layer message parts via a user interface.
  */
 @protocol LYRUIMessagePresenting <NSObject>
 
 /**
- @abstract Asks the reciever to display a message part
+ @abstract Tells the receiver to display a message part.
  */
 - (void)presentMessagePart:(LYRMessagePart *)messagePart;
 
 /**
- @abstract Asks the reciever to display a message part
+ @abstract Tells the receiver if the message has been sent.
  */
 - (void)updateWithMessageSentState:(BOOL)messageSentState;
 
 /**
- @abstract Tells the reciever how wide it's bubble view should be
+ @abstract Tells the receiver how wide its bubble view should be.
  */
 - (void)updateWithBubbleViewWidth:(CGFloat)bubbleViewWidth;
 
 /**
- @abstract Informs the reciever of its participant
+ @abstract Informs the receiver of its participant.
  */
 - (void)updateWithParticipant:(id<LYRUIParticipant>)participant;
 
 /**
- @abstract Tells the reciever if it should display an avatarImage
+ @abstract Tells the receiver if it should display an avatar image.
  */
 - (void)shouldDisplayAvatarImage:(BOOL)shouldDisplayAvatarImage;
 
 /**
- @abstract Tells the reciever if the cell is in a group conversation
+ @abstract Tells the receiver if the cell is in a group conversation.
  */
 - (void)isGroupConversation:(BOOL)isGroupConversation;
 

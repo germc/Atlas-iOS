@@ -8,44 +8,23 @@
 
 #import "LYRUIOutgoingMessageCollectionViewCell.h"
 
-@interface LYRUIOutgoingMessageCollectionViewCell ()
-
-@property (nonatomic) UIFont *font;
-@property (nonatomic) UIColor *color;
-
-@end
-
 @implementation LYRUIOutgoingMessageCollectionViewCell
 
 - (id)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
     if (self) {
-        
+        self.avatarImageView.hidden = YES;
+
+        [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleView
+                                                                     attribute:NSLayoutAttributeRight
+                                                                     relatedBy:NSLayoutRelationEqual
+                                                                        toItem:self.contentView
+                                                                     attribute:NSLayoutAttributeRight
+                                                                    multiplier:1.0
+                                                                      constant:-10]];
     }
     return self;
-}
-
-- (void)shouldDisplayAvatarImage:(BOOL)shouldDisplayAvatarImage
-{
-    self.avatarImage.alpha = 0.0;
-}
-
-- (void)updateWithParticipant:(id<LYRUIParticipant>)participant
-{
-    //
-}
-
-- (void)updateConstraints
-{
-    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleView
-                                                                 attribute:NSLayoutAttributeRight
-                                                                 relatedBy:NSLayoutRelationEqual
-                                                                    toItem:self.contentView
-                                                                 attribute:NSLayoutAttributeRight
-                                                                multiplier:1.0
-                                                                  constant:-10]];
-    [super updateConstraints];
 }
 
 @end

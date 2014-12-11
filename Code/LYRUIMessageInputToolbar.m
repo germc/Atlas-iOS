@@ -10,7 +10,6 @@
 #import "LYRUIConstants.h"
 #import "LYRUIMediaAttachment.h"
 #import "LYRUIMessagingUtilities.h"
-#import <CoreLocation/CoreLocation.h>
 
 @interface LYRUIMessageInputToolbar () <UITextViewDelegate>
 
@@ -161,28 +160,6 @@ static CGFloat const LYRUIButtonHeight = 28;
     }
     [self setNeedsLayout];
     [self configureSendButtonEnablement];
-}
-
-- (void)insertLocation:(CLLocation *)location
-{
-    MKMapSnapshotOptions *options = [[MKMapSnapshotOptions alloc] init];
-    MKCoordinateSpan span = MKCoordinateSpanMake(0.005, 0.005);
-    options.region = MKCoordinateRegionMake(location.coordinate, span);
-    options.scale = [UIScreen mainScreen].scale;
-    options.size = CGSizeMake(200, 200);
-    MKMapSnapshotter *snapshotter = [[MKMapSnapshotter alloc] initWithOptions:options];
-    [snapshotter startWithCompletionHandler:^(MKMapSnapshot *snapshot, NSError *error) {
-        UIImage *image = snapshot.image;
-        MKAnnotationView *pin = [[MKPinAnnotationView alloc] initWithAnnotation:nil reuseIdentifier:@""];
-        UIImage *pinImage = pin.image;
-        CGPoint pinPoint = CGPointMake(image.size.width/2, image.size.height/2);
-        UIGraphicsBeginImageContextWithOptions(image.size, YES, image.scale);
-        [image drawAtPoint:CGPointMake(0, 0)];
-        [pinImage drawAtPoint:pinPoint];
-        UIImage *finalImage = UIGraphicsGetImageFromCurrentImageContext();
-        UIGraphicsEndImageContext();
-        [self insertImage:finalImage];
-    }];
 }
 
 - (NSArray *)messageParts

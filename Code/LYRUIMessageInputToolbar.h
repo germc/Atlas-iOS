@@ -7,7 +7,6 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <MapKit/MapKit.h>
 #import "LYRUIMessageComposeTextView.h"
 
 /**
@@ -67,14 +66,6 @@
  property.
  */
 - (void)insertImage:(UIImage *)image;
-
-/**
- @abstract Displays an image representing a location in the textInputView.
- @discussion The view will automatically resize the image representing the location and itself to 
- comfortably fit the image content. The location object will also be cached and is accessible 
- via the messageParts property.
- */
-- (void)insertLocation:(CLLocation *)location;
 
 //-----------------------------
 // UI Customization

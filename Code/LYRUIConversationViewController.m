@@ -1079,15 +1079,14 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     [[LYRUIOutgoingMessageCollectionViewCell appearance] setMessageTextColor:[UIColor whiteColor]];
     [[LYRUIOutgoingMessageCollectionViewCell appearance] setMessageTextFont:LSMediumFont(14)];
     [[LYRUIOutgoingMessageCollectionViewCell appearance] setBubbleViewColor:LSBlueColor()];
-    [[LYRUIOutgoingMessageCollectionViewCell appearance] setPendingBubbleViewColor:LSBlueColor()];
     
     [[LYRUIIncomingMessageCollectionViewCell appearance] setMessageTextColor:[UIColor blackColor]];
     [[LYRUIIncomingMessageCollectionViewCell appearance] setMessageTextFont:LSMediumFont(14)];
     [[LYRUIIncomingMessageCollectionViewCell appearance] setBubbleViewColor:LSLighGrayColor()];
     
-    [[LYRUIAvatarImageView appearance] setInitialViewBackgroundColor:LSGrayColor()];
-    [[LYRUIAvatarImageView appearance] setInitialColor:[UIColor blackColor]];
-    [[LYRUIAvatarImageView appearance] setInitialFont:LSLightFont(14)];
+    [[LYRUIAvatarImageView appearance] setBackgroundColor:LSGrayColor()];
+    [[LYRUIAvatarImageView appearance] setInitialsColor:[UIColor blackColor]];
+    [[LYRUIAvatarImageView appearance] setInitialsFont:LSLightFont(14)];
 }
 
 #pragma mark - Auto Layout Configuration

@@ -22,8 +22,15 @@
     if (self) {
         _initialsLabel = [[UILabel alloc] init];
         _initialsLabel.translatesAutoresizingMaskIntoConstraints = NO;
+        _initialsLabel.textAlignment = NSTextAlignmentCenter;
+        _initialsLabel.adjustsFontSizeToFitWidth = YES;
+        _initialsLabel.minimumScaleFactor = 0.75;
         [self addSubview:_initialsLabel];
     
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.initialsLabel attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1.0 constant:3]];
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.initialsLabel attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeRight multiplier:1.0 constant:-3]];
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.initialsLabel attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1.0 constant:3]];
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.initialsLabel attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeBottom multiplier:1.0 constant:-3]];
     }
     return self;
 }
@@ -44,33 +51,19 @@
             }
         }
         self.initialsLabel.text = initials;
-        [self.initialsLabel sizeToFit];
     }
 }
 
-- (void)updateConstraints
+- (void)setInitialsColor:(UIColor *)initialsColor
 {
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:self.initialsLabel attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0]];
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:self.initialsLabel attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0]];
-    [super updateConstraints];
+    self.initialsLabel.textColor = initialsColor;
+    _initialsColor = initialsColor;
 }
 
-- (void)setInitialColor:(UIColor *)initialColor
+- (void)setInitialsFont:(UIFont *)initialsFont
 {
-    self.initialsLabel.textColor = initialColor;
-    _initialColor = initialColor;
-}
-
-- (void)setInitialFont:(UIFont *)initialFont
-{
-    self.initialsLabel.font = initialFont;
-    _initialFont = initialFont;
-}
-
-- (void)setInitialViewBackgroundColor:(UIColor *)initialViewBackgroundColor
-{
-    self.backgroundColor = initialViewBackgroundColor;
-    _initialViewBackgroundColor = initialViewBackgroundColor;
+    self.initialsLabel.font = initialsFont;
+    _initialsFont = initialsFont;
 }
 
 @end

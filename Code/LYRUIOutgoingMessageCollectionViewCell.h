@@ -9,7 +9,7 @@
 #import "LYRUIMessageCollectionViewCell.h"
 
 /**
- @abstract The `LYRUIMessageCollectionViewCell` class provides a lightweight, customizable collection
+ @abstract The `LYRUIOutgoingMessageCollectionViewCell` class provides a lightweight, customizable collection
  view cell for presenting outgoing Layer message objects.
  */
 @interface LYRUIOutgoingMessageCollectionViewCell : LYRUIMessageCollectionViewCell

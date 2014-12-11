@@ -33,7 +33,7 @@ static CGFloat const LSSelectionIndicatorSize = 30;
         self.backgroundColor = [UIColor whiteColor];
         
         self.avatarImageView = [[LYRUIAvatarImageView alloc] init];
-        [self.avatarImageView setInitialViewBackgroundColor:LSLighGrayColor()];
+        self.avatarImageView.backgroundColor = LSLighGrayColor();
         self.avatarImageView.layer.cornerRadius = LSSelectionIndicatorSize / 2;
         self.avatarImageView.translatesAutoresizingMaskIntoConstraints = NO;
         self.avatarImageView.alpha = 0.0f;

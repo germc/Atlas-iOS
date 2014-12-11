@@ -7,8 +7,6 @@
 //
 
 #import "LYRUIMessageBubbleView.h"
-#import "LYRUIIncomingMessageCollectionViewCell.h"
-#import "LYRUIOutgoingMessageCollectionViewCell.h"
 
 @interface LYRUIMessageBubbleView ()
 
@@ -17,9 +15,8 @@
 @property (nonatomic) NSLayoutConstraint *contentCenterXConstraint;
 @property (nonatomic) NSLayoutConstraint *contentCenterYConstraint;
 
-@property (nonatomic) UIFont *font;
-@property (nonatomic) UIColor *color;
 @property (nonatomic) UIView *longPressMask;
+@property (nonatomic) MKMapSnapshotter *snapshotter;
 
 @end
 
@@ -30,26 +27,28 @@
     self = [super initWithFrame:frame];
     if (self) {
         self.layer.cornerRadius = 12;
-       // self.clipsToBounds = TRUE;
-        
+        self.clipsToBounds = YES;
+
         self.bubbleViewLabel = [[UILabel alloc] init];
-        self.bubbleViewLabel.backgroundColor = [UIColor clearColor];
-        self.bubbleViewLabel.lineBreakMode = NSLineBreakByWordWrapping;
         self.bubbleViewLabel.numberOfLines = 0;
-        self.bubbleViewLabel.textColor = [UIColor greenColor];
-        self.bubbleViewLabel.userInteractionEnabled = YES;
         self.bubbleViewLabel.translatesAutoresizingMaskIntoConstraints = NO;
         [self addSubview:self.bubbleViewLabel];
-        [self updateConstraintsForTextView];
-        
+
         self.bubbleImageView = [[UIImageView alloc] init];
         self.bubbleImageView.translatesAutoresizingMaskIntoConstraints = NO;
         self.bubbleImageView.contentMode = UIViewContentModeScaleAspectFill;
-        self.bubbleImageView.layer.cornerRadius = 12;
-        self.bubbleImageView.clipsToBounds = TRUE;
         [self addSubview:self.bubbleImageView];
-        [self updateConstraintsForView:self.bubbleImageView];
-        
+
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleViewLabel attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeHeight multiplier:1.0 constant:0]];
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleViewLabel attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1.0 constant:12]];
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleViewLabel attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeRight multiplier:1.0 constant:-12]];
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleViewLabel attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1.0 constant:0]];
+
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleImageView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0]];
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleImageView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeHeight multiplier:1.0 constant:0]];
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleImageView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0]];
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleImageView attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0]];
+
         UILongPressGestureRecognizer *gestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
         [self addGestureRecognizer:gestureRecognizer];
     }
@@ -58,73 +57,68 @@
 
 - (void)updateWithText:(NSString *)text
 {
-    self.bubbleImageView.alpha = 0.0;
-    self.bubbleViewLabel.alpha = 1.0;
+    self.bubbleImageView.hidden = YES;
+    self.bubbleViewLabel.hidden = NO;
     self.bubbleViewLabel.text = text;
+    [self.snapshotter cancel];
 }
 
 - (void)updateWithImage:(UIImage *)image
 {
-    self.bubbleViewLabel.alpha = 0.0;
-    self.bubbleImageView.alpha = 1.0;
+    self.bubbleViewLabel.hidden = YES;
+    self.bubbleImageView.hidden = NO;
     self.bubbleImageView.image = image;
+    [self.snapshotter cancel];
 }
 
 - (void)updateWithLocation:(CLLocationCoordinate2D)location
 {
-    self.bubbleViewLabel.alpha = 0.0;
-    self.bubbleImageView.alpha = 0.0;
+    self.bubbleViewLabel.hidden = YES;
+    self.bubbleImageView.hidden = YES;
+    [self.snapshotter cancel];
     
     MKMapSnapshotOptions *options = [[MKMapSnapshotOptions alloc] init];
     MKCoordinateSpan span = MKCoordinateSpanMake(0.005, 0.005);
     options.region = MKCoordinateRegionMake(location, span);
     options.scale = [UIScreen mainScreen].scale;
     options.size = CGSizeMake(200, 200);
-    MKMapSnapshotter *snapshotter = [[MKMapSnapshotter alloc] initWithOptions:options];
-    [snapshotter startWithCompletionHandler:^(MKMapSnapshot *snapshot, NSError *error) {
+    self.snapshotter = [[MKMapSnapshotter alloc] initWithOptions:options];
+
+    __weak typeof(self) weakSelf = self;
+    [self.snapshotter startWithCompletionHandler:^(MKMapSnapshot *snapshot, NSError *error) {
+        if (error) {
+            NSLog(@"Error generating map snapshot: %@", error);
+            return;
+        }
+
+        typeof(self) strongSelf = weakSelf;
+        if (!strongSelf) return;
         
-        // Create a Pin Image
+        // Create a pin image.
         MKAnnotationView *pin = [[MKPinAnnotationView alloc] initWithAnnotation:nil reuseIdentifier:@""];
         UIImage *pinImage = pin.image;
         
-        //Draw The Image
+        // Draw the image.
         UIImage *image = snapshot.image;
         UIGraphicsBeginImageContextWithOptions(image.size, YES, image.scale);
         [image drawAtPoint:CGPointMake(0, 0)];
         
-        // Draw the Pin
+        // Draw the pin.
         CGPoint point = [snapshot pointForCoordinate:location];
         [pinImage drawAtPoint:CGPointMake(point.x, point.y - pinImage.size.height)];
         UIImage *finalImage = UIGraphicsGetImageFromCurrentImageContext();
         UIGraphicsEndImageContext();
         
-        // Set image
-        self.bubbleImageView.image = finalImage;
+        // Set image.
+        strongSelf.bubbleImageView.hidden = NO;
+        strongSelf.bubbleImageView.alpha = 0.0;
+        strongSelf.bubbleImageView.image = finalImage;
         
-        // Animate into view
+        // Animate into view.
         [UIView animateWithDuration:0.2 animations:^{
-            self.bubbleImageView.alpha = 1.0;
+            strongSelf.bubbleImageView.alpha = 1.0;
         }];
     }];
-}
-
-- (void)updateConstraintsForTextView
-{
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleViewLabel attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeWidth multiplier:1.0 constant:-24]];
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleViewLabel attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeHeight multiplier:1.0 constant:0]];
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleViewLabel attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1.0 constant:12]];
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleViewLabel attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeRight multiplier:1.0 constant:-12]];
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleViewLabel attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1.0 constant:0]];
-    [self updateConstraints];
-}
-
-- (void)updateConstraintsForView:(UIView *)view
-{
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0]];
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeHeight multiplier:1.0 constant:0]];
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0]];
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:view attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0]];
-    [self updateConstraints];
 }
 
 - (void)handleLongPress:(UILongPressGestureRecognizer *)recognizer
@@ -139,14 +133,15 @@
         [self becomeFirstResponder];
         
         self.longPressMask = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
+        self.longPressMask.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         self.longPressMask.backgroundColor = [UIColor blackColor];
         self.longPressMask.alpha = 0.1;
         [self addSubview:self.longPressMask];
         
         UIMenuController *menuController = [UIMenuController sharedMenuController];
         UIMenuItem *resetMenuItem = [[UIMenuItem alloc] initWithTitle:@"Copy" action:@selector(copyItem)];
-        [menuController setMenuItems:[NSArray arrayWithObject:resetMenuItem]];
-        [menuController setTargetRect:CGRectMake(self.frame.size.width / 2, 0.0f, 0.0f, 0.0f) inView:[recognizer view]];
+        [menuController setMenuItems:@[resetMenuItem]];
+        [menuController setTargetRect:CGRectMake(self.frame.size.width / 2, 0.0f, 0.0f, 0.0f) inView:self];
         [menuController setMenuVisible:YES animated:YES];
     }
 }
@@ -154,7 +149,7 @@
 - (void)copyItem
 {
     UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-    if (self.bubbleViewLabel.alpha == 1.0f) {
+    if (!self.bubbleViewLabel.isHidden) {
         pasteboard.string = self.bubbleViewLabel.text;
     } else {
         pasteboard.image = self.bubbleImageView.image;
@@ -177,7 +172,5 @@
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
-
-
 
 @end
