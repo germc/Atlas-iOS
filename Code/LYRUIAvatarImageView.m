@@ -54,16 +54,16 @@
     }
 }
 
-- (void)setInitialColor:(UIColor *)initialColor
+- (void)setInitialsColor:(UIColor *)initialsColor
 {
-    self.initialsLabel.textColor = initialColor;
-    _initialColor = initialColor;
+    self.initialsLabel.textColor = initialsColor;
+    _initialsColor = initialsColor;
 }
 
-- (void)setInitialFont:(UIFont *)initialFont
+- (void)setInitialsFont:(UIFont *)initialsFont
 {
-    self.initialsLabel.font = initialFont;
-    _initialFont = initialFont;
+    self.initialsLabel.font = initialsFont;
+    _initialsFont = initialsFont;
 }
 
 @end

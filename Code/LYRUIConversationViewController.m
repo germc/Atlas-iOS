@@ -1085,8 +1085,8 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     [[LYRUIIncomingMessageCollectionViewCell appearance] setBubbleViewColor:LSLighGrayColor()];
     
     [[LYRUIAvatarImageView appearance] setBackgroundColor:LSGrayColor()];
-    [[LYRUIAvatarImageView appearance] setInitialColor:[UIColor blackColor]];
-    [[LYRUIAvatarImageView appearance] setInitialFont:LSLightFont(14)];
+    [[LYRUIAvatarImageView appearance] setInitialsColor:[UIColor blackColor]];
+    [[LYRUIAvatarImageView appearance] setInitialsFont:LSLightFont(14)];
 }
 
 #pragma mark - Auto Layout Configuration

@@ -12,3 +12,5 @@
 * The `placeHolderText` property of `LYRUIMessageComposeTextView` is now `placeholder`.
 * The unused `pendingBubbleViewColor` property of `LYRUIMessageCollectionViewCell` has been removed.
 * The `initialViewBackgroundColor` property of `LYRUIAvatarImageView` has been removed. Use `backgroundColor` instead.
+* The `initialFont` property of `LYRUIAvatarImageView` is now `initialsFont`.
+* The `initialColor` property of `LYRUIAvatarImageView` is now `initialsColor`.
