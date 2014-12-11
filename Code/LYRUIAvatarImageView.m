@@ -66,10 +66,4 @@
     _initialFont = initialFont;
 }
 
-- (void)setInitialViewBackgroundColor:(UIColor *)initialViewBackgroundColor
-{
-    self.backgroundColor = initialViewBackgroundColor;
-    _initialViewBackgroundColor = initialViewBackgroundColor;
-}
-
 @end

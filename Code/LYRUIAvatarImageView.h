@@ -12,7 +12,6 @@
 
 @property (nonatomic) UIFont *initialFont UI_APPEARANCE_SELECTOR;
 @property (nonatomic) UIColor *initialColor UI_APPEARANCE_SELECTOR;
-@property (nonatomic) UIColor *initialViewBackgroundColor UI_APPEARANCE_SELECTOR;
 
 - (void)setInitialsForName:(NSString *)name;
 

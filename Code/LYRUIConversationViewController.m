@@ -1084,7 +1084,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     [[LYRUIIncomingMessageCollectionViewCell appearance] setMessageTextFont:LSMediumFont(14)];
     [[LYRUIIncomingMessageCollectionViewCell appearance] setBubbleViewColor:LSLighGrayColor()];
     
-    [[LYRUIAvatarImageView appearance] setInitialViewBackgroundColor:LSGrayColor()];
+    [[LYRUIAvatarImageView appearance] setBackgroundColor:LSGrayColor()];
     [[LYRUIAvatarImageView appearance] setInitialColor:[UIColor blackColor]];
     [[LYRUIAvatarImageView appearance] setInitialFont:LSLightFont(14)];
 }
