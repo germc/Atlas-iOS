@@ -27,11 +27,6 @@
 - (void)updateWithMessageSentState:(BOOL)messageSentState;
 
 /**
- @abstract Tells the receiver how wide its bubble view should be.
- */
-- (void)updateWithBubbleViewWidth:(CGFloat)bubbleViewWidth;
-
-/**
  @abstract Informs the receiver of its participant.
  */
 - (void)updateWithParticipant:(id<LYRUIParticipant>)participant;

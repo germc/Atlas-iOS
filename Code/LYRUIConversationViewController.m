@@ -367,7 +367,10 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 {
     [cell presentMessage:message];
     [cell updateWithMessageSentState:message.isSent];
-    [cell updateWithBubbleViewWidth:[self sizeForItemAtIndexPath:indexPath].width];
+    if ([cell isKindOfClass:[LYRUIMessageCollectionViewCell class]]) {
+        CGSize size = [self sizeForItemAtIndexPath:indexPath];
+        [(LYRUIMessageCollectionViewCell *)cell updateWithBubbleViewWidth:size.width];
+    }
     [cell shouldDisplayAvatarImage:self.shouldDisplayAvatarImage];
 
     if ([self shouldDisplayParticipantInfo:indexPath]) {

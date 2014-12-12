@@ -22,3 +22,4 @@
 * The `initialViewBackgroundColor` property of `LYRUIAvatarImageView` has been removed. Use `backgroundColor` instead.
 * The `initialFont` property of `LYRUIAvatarImageView` is now `initialsFont`.
 * The `initialColor` property of `LYRUIAvatarImageView` is now `initialsColor`.
+* The `updateWithBubbleViewWidth:` method has been moved from `<LYRUIMessagePresenting>` to `LYRUIMessageCollectionViewCell` since the method applies specifically to the default cell class, not all cells.
