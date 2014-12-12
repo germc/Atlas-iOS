@@ -85,11 +85,11 @@
 /**
  @abstract Asks the data source for an `NSString` object to be sent as the push notification alert text via Layer.
  @param conversationViewController The `LYRUIConversationViewController` requesting the string.
- @param message The `LYRMessage` object to be sent via Layer.
+ @param messagePart The `LYRMessagePart` object to be sent via Layer.
  @return a string representing the push notification text.
  @discussion If this method is not implemented, or it returns nil, Layer will deliver silent push notifications.
  */
-- (NSString *)conversationViewController:(LYRUIConversationViewController *)conversationViewController pushNotificationTextForMessageParts:(NSArray *)messageParts;
+- (NSString *)conversationViewController:(LYRUIConversationViewController *)conversationViewController pushNotificationTextForMessagePart:(LYRMessagePart *)messagePart;
 
 /**
  @abstract Asks the data source if the `LRYRecipientStatus` should be updated.

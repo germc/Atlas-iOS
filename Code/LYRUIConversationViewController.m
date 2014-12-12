@@ -313,14 +313,13 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 
 /**
  
- LAYER - The `LYRUIConversationViewController` component uses `LYRMessageParts` to represent rows.
+ LAYER - The `LYRUIConversationViewController` component uses one `LYRMessage` to represent each row.
  
  */
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    // MessageParts correspond to rows in a section
-    LYRMessage *message = [self.queryController objectAtIndexPath:[NSIndexPath indexPathForRow:section inSection:0]];
-    return message.parts.count;
+    // Each message is represented by one cell no matter how many parts it has.
+    return 1;
 }
 
 /**
@@ -363,8 +362,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
  */
 - (void)configureCell:(LYRUIMessageCollectionViewCell <LYRUIMessagePresenting> *)cell forMessage:(LYRMessage *)message indexPath:(NSIndexPath *)indexPath
 {
-    LYRMessagePart *messagePart = [message.parts objectAtIndex:indexPath.row];
-    [cell presentMessagePart:messagePart];
+    [cell presentMessage:message];
     [cell updateWithMessageSentState:message.isSent];
     [cell updateWithBubbleViewWidth:[self sizeForItemAtIndexPath:indexPath].width];
     [cell shouldDisplayAvatarImage:self.shouldDisplayAvatarImage];
@@ -556,7 +554,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 - (CGSize)sizeForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     LYRMessage *message = [self.queryController objectAtIndexPath:[NSIndexPath indexPathForRow:indexPath.section inSection:0]];
-    LYRMessagePart *part = [message.parts objectAtIndex:indexPath.row];
+    LYRMessagePart *part = message.parts.firstObject;
     
     CGSize size;
     if ([part.MIMEType isEqualToString:LYRUIMIMETypeTextPlain]) {
@@ -740,24 +738,23 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 {
     if (!self.conversation) return;
     if (messageInputToolbar.messageParts.count > 0) {
-        NSMutableArray *messagePartsToSend = [NSMutableArray new];
+        id<LYRUIParticipant> sender = [self participantForIdentifier:self.layerClient.authenticatedUserID];
         for (id part in messageInputToolbar.messageParts){
+            LYRMessagePart *messagePart;
             if ([part isKindOfClass:[NSString class]]) {
-                [messagePartsToSend addObject:LYRUIMessagePartWithText(part)];
+                messagePart = LYRUIMessagePartWithText(part);
+            } else if ([part isKindOfClass:[UIImage class]]) {
+                messagePart = LYRUIMessagePartWithJPEGImage(part);
+            } else if ([part isKindOfClass:[CLLocation class]]) {
+                messagePart = LYRUIMessagePartWithLocation(part);
+            } else {
+                continue;
             }
-            if ([part isKindOfClass:[UIImage class]]) {
-                [messagePartsToSend addObject:LYRUIMessagePartWithJPEGImage(part)];
-            }
-            if ([part isKindOfClass:[CLLocation class]]) {
-                [messagePartsToSend addObject:LYRUIMessagePartWithLocation(part)];
-            }
+            NSString *pushText = [self pushNotificationStringForMessagePart:messagePart];
+            NSString *text = [NSString stringWithFormat:@"%@: %@", [sender fullName], pushText];
+            LYRMessage *message = [self.layerClient newMessageWithParts:@[messagePart] options:@{LYRMessageOptionsPushNotificationAlertKey: text, LYRMessageOptionsPushNotificationSoundNameKey: @"default"} error:nil];
+            [self sendMessage:message];
         }
-        id<LYRUIParticipant>sender = [self participantForIdentifier:self.layerClient.authenticatedUserID];
-        NSString *pushText = [self pushNotificationStringForMessageParts:messagePartsToSend];
-        NSString *text = [NSString stringWithFormat:@"%@: %@", [sender fullName], pushText];
-        LYRMessage *message = [self.layerClient newMessageWithParts:messagePartsToSend options:@{LYRMessageOptionsPushNotificationAlertKey : text,
-                                                                                                 LYRMessageOptionsPushNotificationSoundNameKey : @"default"} error:nil];
-        [self sendMessage:message];
         if (self.addressBarController) [self.addressBarController setPermanent];
     }
 }
@@ -786,11 +783,11 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 
 #pragma mark - Message Send Methods
 
-- (NSString *)pushNotificationStringForMessageParts:(NSArray *)messageParts
+- (NSString *)pushNotificationStringForMessagePart:(LYRMessagePart *)messagePart
 {
     NSString *pushText;
-    if ( [self.dataSource respondsToSelector:@selector(conversationViewController:pushNotificationTextForMessageParts:)]) {
-        pushText = [self.dataSource conversationViewController:self pushNotificationTextForMessageParts:messageParts];
+    if ([self.dataSource respondsToSelector:@selector(conversationViewController:pushNotificationTextForMessagePart:)]) {
+        pushText = [self.dataSource conversationViewController:self pushNotificationTextForMessagePart:messagePart];
     } 
     return pushText;
 }
