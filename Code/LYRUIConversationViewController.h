@@ -14,6 +14,7 @@
 #import "LYRUIAddressBarViewController.h"
 
 @class LYRUIConversationViewController;
+@protocol LYRUIMessagePresenting;
 
 ///---------------------------------------
 /// @name Delegate
@@ -43,6 +44,15 @@
  @param message The `LYRMessage` object which that was tapped.
  */
 - (void)conversationViewController:(LYRUIConversationViewController *)viewController didSelectMessage:(LYRMessage *)message;
+
+/**
+ @abstract Asks the delegate for the height to use for a message's cell.
+ @param viewController The `LYRUIConversationViewController` where the message cell will appear.
+ @param message The `LYRMessage` object that will be displayed in the cell.
+ @param cellWidth The width of the message's cell.
+ @return The height needed for the message's cell.
+ */
+- (CGFloat)conversationViewController:(LYRUIConversationViewController *)viewController heightForMessage:(LYRMessage *)message withCellWidth:(CGFloat)cellWidth;
 
 @end
 
@@ -100,6 +110,14 @@
  */
 - (BOOL)conversationViewController:(LYRUIConversationViewController *)conversationViewController shouldUpdateRecipientStatusForMessage:(LYRMessage *)message;
 
+/**
+ @abstract Asks the data source for the collection view cell reuse identifier for a message.
+ @param viewController The `LYRUIConversationViewController` requesting the string.
+ @param message The `LYRMessage` object to display in the cell.
+ @return A string that will be used to dequeue a cell from the collection view.
+ */
+- (NSString *)conversationViewController:(LYRUIConversationViewController *)viewController reuseIdentifierForMessage:(LYRMessage *)message;
+
 @end
 
 /**
@@ -141,6 +159,12 @@
  dates will appear centered above a message only if the previous message was sent over 15 minutes ago.
  */
 @property (nonatomic) NSTimeInterval dateDisplayTimeInterval;
+
+/**
+ @abstract Register a class for use in creating message collection view cells.
+ @param reuseIdentifier The string to be associated with the class.
+ */
+- (void)registerClass:(Class<LYRUIMessagePresenting>)cellClass forMessageCellWithReuseIdentifier:(NSString *)reuseIdentifier;
 
 ///---------------------------------------
 /// @name Public Accessors

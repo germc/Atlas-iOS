@@ -343,14 +343,17 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     LYRMessage *message = [self.queryController objectAtIndexPath:[NSIndexPath indexPathForRow:indexPath.section inSection:0]];
-    LYRUIMessageCollectionViewCell <LYRUIMessagePresenting> *cell;
-    if ([self.layerClient.authenticatedUserID isEqualToString:message.sentByUserID]) {
+    NSString *reuseIdentifier;
+    if ([self.dataSource respondsToSelector:@selector(conversationViewController:reuseIdentifierForMessage:)]) {
+        reuseIdentifier = [self.dataSource conversationViewController:self reuseIdentifierForMessage:message];
+    } else if ([self.layerClient.authenticatedUserID isEqualToString:message.sentByUserID]) {
         // If the message was sent by the currently authenticated user, it is outgoing
-        cell =  [self.collectionView dequeueReusableCellWithReuseIdentifier:LYRUIOutgoingMessageCellIdentifier forIndexPath:indexPath];
+        reuseIdentifier = LYRUIOutgoingMessageCellIdentifier;
     } else {
         // If the message was sent by someone other than the currently authenticated user, it is incoming
-        cell = [self.collectionView dequeueReusableCellWithReuseIdentifier:LYRUIIncomingMessageCellIdentifier forIndexPath:indexPath];
+        reuseIdentifier = LYRUIIncomingMessageCellIdentifier;
     }
+    UICollectionViewCell<LYRUIMessagePresenting> *cell =  [self.collectionView dequeueReusableCellWithReuseIdentifier:reuseIdentifier forIndexPath:indexPath];
     [self configureCell:cell forMessage:message indexPath:indexPath];
     return cell;
 }
@@ -360,7 +363,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
  LAYER - Extracting the proper message part and analyzing its properties to determine the cell configuration.
  
  */
-- (void)configureCell:(LYRUIMessageCollectionViewCell <LYRUIMessagePresenting> *)cell forMessage:(LYRMessage *)message indexPath:(NSIndexPath *)indexPath
+- (void)configureCell:(UICollectionViewCell<LYRUIMessagePresenting> *)cell forMessage:(LYRMessage *)message indexPath:(NSIndexPath *)indexPath
 {
     [cell presentMessage:message];
     [cell updateWithMessageSentState:message.isSent];
@@ -392,7 +395,14 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     CGFloat width = self.collectionView.bounds.size.width;
-    CGFloat height = [self sizeForItemAtIndexPath:indexPath].height;
+    CGFloat height;
+    if ([self.delegate respondsToSelector:@selector(conversationViewController:heightForMessage:withCellWidth:)]) {
+        NSIndexPath *queryControllerIndexPath = [NSIndexPath indexPathForRow:indexPath.section inSection:0];
+        LYRMessage *message = [self.queryController objectAtIndexPath:queryControllerIndexPath];
+        height = [self.delegate conversationViewController:self heightForMessage:message withCellWidth:width];
+    } else {
+        height = [self sizeForItemAtIndexPath:indexPath].height;
+    }
     return CGSizeMake(width, height);
 }
 
@@ -549,6 +559,11 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
         }
     }
     return TRUE;
+}
+
+- (void)registerClass:(Class<LYRUIMessagePresenting>)cellClass forMessageCellWithReuseIdentifier:(NSString *)reuseIdentifier
+{
+    [self.collectionView registerClass:cellClass forCellWithReuseIdentifier:reuseIdentifier];
 }
 
 - (CGSize)sizeForItemAtIndexPath:(NSIndexPath *)indexPath
