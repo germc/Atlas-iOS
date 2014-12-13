@@ -192,15 +192,15 @@ static CGFloat const LSUnreadMessageCountLabelSize = 14.0f;
     if (!lastMessage.sentAt) return @"";
     
     NSString *dateLabel;
-    NSTimeInterval seconds = [[NSDate date] timeIntervalSinceDate:lastMessage.sentAt];
+    NSTimeInterval seconds = [[NSDate date] timeIntervalSinceDate:lastMessage.receivedAt];
     if (60*60*24 > seconds) {
-        dateLabel = [LYRUIHourDateFormatter() stringFromDate:lastMessage.sentAt];
+        dateLabel = [LYRUIHourDateFormatter() stringFromDate:lastMessage.receivedAt];
     } else if (60*60*24*2 > seconds) {
         dateLabel = @"Yesterday";
     } else if (60*60*24*7 > seconds && seconds > 60*60*24*2) {
-        dateLabel = [LYRUIDayDateFormatter() stringFromDate:lastMessage.sentAt];
+        dateLabel = [LYRUIDayDateFormatter() stringFromDate:lastMessage.receivedAt];
     } else {
-        dateLabel = [LYRUIMonthDateFormatter() stringFromDate:lastMessage.sentAt];
+        dateLabel = [LYRUIMonthDateFormatter() stringFromDate:lastMessage.receivedAt];
     }
     return dateLabel;
 }
