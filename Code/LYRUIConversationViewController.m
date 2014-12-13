@@ -902,12 +902,18 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     }
     [self.navigationController dismissViewControllerAnimated:YES completion:nil];
     [self.view becomeFirstResponder];
+
+    // Workaround for collection view not displayed on iOS 7.1.
+    [self.collectionView setNeedsLayout];
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker
 {
     [self.navigationController dismissViewControllerAnimated:YES completion:nil];
     [self.view becomeFirstResponder];
+
+    // Workaround for collection view not displayed on iOS 7.1.
+    [self.collectionView setNeedsLayout];
 }
 
 #pragma mark CollectionView Content Inset Methods
