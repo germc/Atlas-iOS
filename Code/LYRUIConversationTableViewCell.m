@@ -9,36 +9,37 @@
 #import "LYRUIConversationTableViewCell.h"
 #import "LYRUIConstants.h"
 
-static NSDateFormatter *LYRUIHourDateFormatter()
+static BOOL LYRUIIsDateInToday(NSDate *date)
 {
-    static NSDateFormatter *hourDateFormatter;
-    if (!hourDateFormatter) {
-        hourDateFormatter = [[NSDateFormatter alloc] init];
-        hourDateFormatter.dateFormat = @"hh:mm a";
-    }
-    return hourDateFormatter;
+    NSCalendarUnit dateUnits = NSEraCalendarUnit | NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit;
+    NSDateComponents *dateComponents = [[NSCalendar currentCalendar] components:dateUnits fromDate:date];
+    NSDateComponents *todayComponents = [[NSCalendar currentCalendar] components:dateUnits fromDate:[NSDate date]];
+    return ([dateComponents day] == [todayComponents day] &&
+            [dateComponents month] == [todayComponents month] &&
+            [dateComponents year] == [todayComponents year] &&
+            [dateComponents era] == [todayComponents era]);
 }
 
-static NSDateFormatter *LYRUIDayDateFormatter()
+static NSDateFormatter *LYRUIRelativeDateFormatter()
 {
-    static NSDateFormatter *dayDateFormatter;
-    if (!dayDateFormatter) {
-        dayDateFormatter = [[NSDateFormatter alloc] init];
-        dayDateFormatter.dateFormat = @"EEEE";
+    static NSDateFormatter *relativeDateFormatter;
+    if (!relativeDateFormatter) {
+        relativeDateFormatter = [[NSDateFormatter alloc] init];
+        relativeDateFormatter.dateStyle = NSDateFormatterShortStyle;
+        relativeDateFormatter.doesRelativeDateFormatting = YES;
     }
-    return dayDateFormatter;
+    return relativeDateFormatter;
 }
 
-static NSDateFormatter *LYRUIMonthDateFormatter()
+static NSDateFormatter *LYRUIShortTimeFormatter()
 {
-    static NSDateFormatter *dayDateFormatter;
-    if (!dayDateFormatter) {
-        dayDateFormatter = [[NSDateFormatter alloc] init];
-        dayDateFormatter.dateFormat = @"MMM dd";
+    static NSDateFormatter *shortTimeFormatter;
+    if (!shortTimeFormatter) {
+        shortTimeFormatter = [[NSDateFormatter alloc] init];
+        shortTimeFormatter.timeStyle = NSDateFormatterShortStyle;
     }
-    return dayDateFormatter;
+    return shortTimeFormatter;
 }
-
 
 @interface LYRUIConversationTableViewCell ()
 
@@ -191,18 +192,11 @@ static CGFloat const LSUnreadMessageCountLabelSize = 14.0f;
     if (!lastMessage) return @"";
     if (!lastMessage.sentAt) return @"";
     
-    NSString *dateLabel;
-    NSTimeInterval seconds = [[NSDate date] timeIntervalSinceDate:lastMessage.receivedAt];
-    if (60*60*24 > seconds) {
-        dateLabel = [LYRUIHourDateFormatter() stringFromDate:lastMessage.receivedAt];
-    } else if (60*60*24*2 > seconds) {
-        dateLabel = @"Yesterday";
-    } else if (60*60*24*7 > seconds && seconds > 60*60*24*2) {
-        dateLabel = [LYRUIDayDateFormatter() stringFromDate:lastMessage.receivedAt];
+    if (LYRUIIsDateInToday(lastMessage.receivedAt)) {
+        return [LYRUIShortTimeFormatter() stringFromDate:lastMessage.receivedAt];
     } else {
-        dateLabel = [LYRUIMonthDateFormatter() stringFromDate:lastMessage.receivedAt];
+        return [LYRUIRelativeDateFormatter() stringFromDate:lastMessage.receivedAt];
     }
-    return dateLabel;
 }
 
 - (void)configureLayoutConstraintsForLabels
