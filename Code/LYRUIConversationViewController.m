@@ -581,12 +581,22 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 
 - (void)messageInputToolbarDidChangeHeight:(NSNotification *)notification
 {
+    CGPoint existingOffset = self.collectionView.contentOffset;
+    CGPoint bottomOffset = [self bottomOffset];
+    CGFloat distanceToBottom = bottomOffset.y - existingOffset.y;
+    BOOL shouldScrollToBottom = distanceToBottom <= 50;
+
     CGRect toolbarFrame = [self.view convertRect:self.messageInputToolbar.frame fromView:self.messageInputToolbar.superview];
     CGFloat keyboardOnscreenHeight = CGRectGetHeight(self.view.frame) - CGRectGetMinY(toolbarFrame);
     if (keyboardOnscreenHeight == self.keyboardHeight) return;
     self.keyboardHeight = keyboardOnscreenHeight;
     [self updateCollectionViewInsets];
     self.typingIndicatorViewBottomConstraint.constant = -self.collectionView.scrollIndicatorInsets.bottom;
+
+    if (shouldScrollToBottom) {
+        self.collectionView.contentOffset = existingOffset;
+        [self scrollToBottomOfCollectionViewAnimated:YES];
+    }
 }
 
 - (void)keyboardWillShow:(NSNotification *)notification
