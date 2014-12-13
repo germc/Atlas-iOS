@@ -168,7 +168,7 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 - (void)setupConversationDataSource
 {
     LYRQuery *query = [LYRQuery queryWithClass:[LYRConversation class]];
-    query.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"messages.receivedAt" ascending:NO]];
+    query.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"lastMessage.receivedAt" ascending:NO]];
     
     self.queryController = [self.layerClient queryControllerWithQuery:query];
     self.queryController.delegate = self;
