@@ -190,7 +190,7 @@ static CGFloat const LSUnreadMessageCountLabelSize = 14.0f;
 - (NSString *)dateLabelForLastMessage:(LYRMessage *)lastMessage
 {
     if (!lastMessage) return @"";
-    if (!lastMessage.sentAt) return @"";
+    if (!lastMessage.receivedAt) return @"";
     
     if (LYRUIIsDateInToday(lastMessage.receivedAt)) {
         return [LYRUIShortTimeFormatter() stringFromDate:lastMessage.receivedAt];
