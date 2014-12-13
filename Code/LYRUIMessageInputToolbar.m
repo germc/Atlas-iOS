@@ -11,6 +11,8 @@
 #import "LYRUIMediaAttachment.h"
 #import "LYRUIMessagingUtilities.h"
 
+NSString *const LYRUIMessageInputToolbarDidChangeHeightNotification = @"LYRUIMessageInputToolbarDidChangeHeightNotification";
+
 @interface LYRUIMessageInputToolbar () <UITextViewDelegate>
 
 @property (nonatomic) NSArray *messageParts;
@@ -112,7 +114,14 @@ static CGFloat const LYRUIButtonHeight = 28;
     self.textInputView.frame = textViewFrame;
 
     // Setting one's own frame like this is a no-no but seems to be the lesser of evils when working around the layout issues mentioned above.
-    self.frame = frame;
+    CGRect existingFrame = self.frame;
+    if (!CGRectEqualToRect(frame, existingFrame)) {
+        self.frame = frame;
+        BOOL changedHeight = CGRectGetHeight(frame) != CGRectGetHeight(existingFrame);
+        if (changedHeight) {
+            [[NSNotificationCenter defaultCenter] postNotificationName:LYRUIMessageInputToolbarDidChangeHeightNotification object:self];
+        }
+    }
 }
 
 - (void)paste:(id)sender

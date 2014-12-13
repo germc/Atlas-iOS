@@ -19,6 +19,8 @@
  */
 @class LYRUIMessageInputToolbar;
 
+extern NSString *const LYRUIMessageInputToolbarDidChangeHeightNotification;
+
 //---------------------------------
 // Message Input Toolbar Delegate
 //---------------------------------

@@ -143,6 +143,8 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textViewTextDidBeginEditing:) name:UITextViewTextDidBeginEditingNotification object:self.messageInputToolbar.textInputView];
 
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageInputToolbarDidChangeHeight:) name:LYRUIMessageInputToolbarDidChangeHeightNotification object:self.messageInputToolbar];
+
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveTypingIndicator:) name:LYRConversationDidReceiveTypingIndicatorNotification object:self.conversation];
 }
 
@@ -576,6 +578,16 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 }
 
 #pragma mark - Notification Handlers
+
+- (void)messageInputToolbarDidChangeHeight:(NSNotification *)notification
+{
+    CGRect toolbarFrame = [self.view convertRect:self.messageInputToolbar.frame fromView:self.messageInputToolbar.superview];
+    CGFloat keyboardOnscreenHeight = CGRectGetHeight(self.view.frame) - CGRectGetMinY(toolbarFrame);
+    if (keyboardOnscreenHeight == self.keyboardHeight) return;
+    self.keyboardHeight = keyboardOnscreenHeight;
+    [self updateCollectionViewInsets];
+    self.typingIndicatorViewBottomConstraint.constant = -self.collectionView.scrollIndicatorInsets.bottom;
+}
 
 - (void)keyboardWillShow:(NSNotification *)notification
 {
