@@ -104,7 +104,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     [self.view addSubview:self.collectionView];
     
     // Set the accessoryView to be a Message Input Toolbar
-    self.messageInputToolbar =  [LYRUIMessageInputToolbar new];
+    self.messageInputToolbar = [LYRUIMessageInputToolbar new];
     self.messageInputToolbar.inputToolBarDelegate = self;
     // An apparent system bug causes a view controller to not be deallocated if the view controller's own inputAccessoryView property is used.
     self.view.inputAccessoryView = self.messageInputToolbar;
