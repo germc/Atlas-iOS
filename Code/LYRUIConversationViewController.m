@@ -267,11 +267,10 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
         self.title = @"New Message";
     } else if (otherParticipantIDs.count == 0) {
         self.title = @"Personal";
-    } else if (2 >= self.conversation.participants.count) {
+    } else if (otherParticipantIDs.count == 1) {
         self.shouldDisplayAvatarImage = NO;
-        NSMutableSet *participants = [self.conversation.participants mutableCopy];
-        [participants removeObject:self.layerClient.authenticatedUserID];
-        id<LYRUIParticipant> participant = [self participantForIdentifier:[[participants allObjects] lastObject]];
+        NSString *otherParticipantID = [otherParticipantIDs anyObject];
+        id<LYRUIParticipant> participant = [self participantForIdentifier:otherParticipantID];
         if (participant) {
             self.title = participant.firstName;
         } else {
