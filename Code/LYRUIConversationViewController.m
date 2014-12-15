@@ -143,6 +143,8 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textViewTextDidBeginEditing:) name:UITextViewTextDidBeginEditingNotification object:self.messageInputToolbar.textInputView];
 
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageInputToolbarDidChangeHeight:) name:LYRUIMessageInputToolbarDidChangeHeightNotification object:self.messageInputToolbar];
+
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveTypingIndicator:) name:LYRConversationDidReceiveTypingIndicatorNotification object:self.conversation];
 }
 
@@ -593,6 +595,26 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 
 #pragma mark - Notification Handlers
 
+- (void)messageInputToolbarDidChangeHeight:(NSNotification *)notification
+{
+    CGPoint existingOffset = self.collectionView.contentOffset;
+    CGPoint bottomOffset = [self bottomOffset];
+    CGFloat distanceToBottom = bottomOffset.y - existingOffset.y;
+    BOOL shouldScrollToBottom = distanceToBottom <= 50;
+
+    CGRect toolbarFrame = [self.view convertRect:self.messageInputToolbar.frame fromView:self.messageInputToolbar.superview];
+    CGFloat keyboardOnscreenHeight = CGRectGetHeight(self.view.frame) - CGRectGetMinY(toolbarFrame);
+    if (keyboardOnscreenHeight == self.keyboardHeight) return;
+    self.keyboardHeight = keyboardOnscreenHeight;
+    [self updateCollectionViewInsets];
+    self.typingIndicatorViewBottomConstraint.constant = -self.collectionView.scrollIndicatorInsets.bottom;
+
+    if (shouldScrollToBottom) {
+        self.collectionView.contentOffset = existingOffset;
+        [self scrollToBottomOfCollectionViewAnimated:YES];
+    }
+}
+
 - (void)keyboardWillShow:(NSNotification *)notification
 {
     CGRect keyboardFrame = [notification.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
@@ -905,12 +927,18 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     }
     [self.navigationController dismissViewControllerAnimated:YES completion:nil];
     [self.view becomeFirstResponder];
+
+    // Workaround for collection view not displayed on iOS 7.1.
+    [self.collectionView setNeedsLayout];
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker
 {
     [self.navigationController dismissViewControllerAnimated:YES completion:nil];
     [self.view becomeFirstResponder];
+
+    // Workaround for collection view not displayed on iOS 7.1.
+    [self.collectionView setNeedsLayout];
 }
 
 #pragma mark CollectionView Content Inset Methods
