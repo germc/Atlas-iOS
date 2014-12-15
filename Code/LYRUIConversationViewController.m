@@ -94,7 +94,6 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     self.collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero
                                              collectionViewLayout:[[UICollectionViewFlowLayout alloc] init]];
     self.collectionView.translatesAutoresizingMaskIntoConstraints = NO;
-    self.collectionView.scrollIndicatorInsets = self.collectionView.contentInset;
     self.collectionView.delegate = self;
     self.collectionView.dataSource = self;
     self.collectionView.backgroundColor = [UIColor whiteColor];
