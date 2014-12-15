@@ -166,8 +166,8 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
         [self fetchLayerMessages];
     }
 
-    // Collection View AutoLayout Config
     [self setConversationViewTitle];
+    [self configureAvatarImageDisplay];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -258,17 +258,31 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     }
 }
 
-- (void)setConversationViewTitle
+- (void)configureAvatarImageDisplay
 {
     NSMutableSet *otherParticipantIDs = [self.conversation.participants mutableCopy];
     [otherParticipantIDs removeObject:self.layerClient.authenticatedUserID];
+    self.shouldDisplayAvatarImage = otherParticipantIDs.count > 1;
+}
+
+- (void)setConversationViewTitle
+{
+    if (self.conversationTitle) {
+        self.title = self.conversationTitle;
+        return;
+    }
 
     if (!self.conversation) {
         self.title = @"New Message";
-    } else if (otherParticipantIDs.count == 0) {
+        return;
+    }
+
+    NSMutableSet *otherParticipantIDs = [self.conversation.participants mutableCopy];
+    [otherParticipantIDs removeObject:self.layerClient.authenticatedUserID];
+
+    if (otherParticipantIDs.count == 0) {
         self.title = @"Personal";
     } else if (otherParticipantIDs.count == 1) {
-        self.shouldDisplayAvatarImage = NO;
         NSString *otherParticipantID = [otherParticipantIDs anyObject];
         id<LYRUIParticipant> participant = [self participantForIdentifier:otherParticipantID];
         if (participant) {
@@ -277,10 +291,8 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
             self.title = @"Unknown";
         }
     } else {
-        self.shouldDisplayAvatarImage = YES;
         self.title = @"Group";
     }
-    self.title = self.conversationTitle ?: self.title;
 }
 
 #pragma mark - Conversation title
@@ -1073,9 +1085,9 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
         } else {
             self.conversation = [self.layerClient newConversationWithParticipants:participants options:nil error:nil];
         }
-        if (self.conversation.participants.count > 2) self.shouldDisplayAvatarImage = YES;
     }
     [self setConversationViewTitle];
+    [self configureAvatarImageDisplay];
     [self.collectionView.collectionViewLayout invalidateLayout];
     [self.collectionView reloadData];
     [self scrollToBottomOfCollectionViewAnimated:NO];
