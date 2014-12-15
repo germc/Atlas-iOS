@@ -25,6 +25,8 @@
     self = [super initWithFrame:frame];
     if (self) {
         
+        self.messageTextFont = [UIFont systemFontOfSize:14];
+        
         self.bubbleViewCornerRadius = 12;
         self.avatarImageViewCornerRadius = LYRUIAvatarImageDiameter;
         
@@ -105,6 +107,8 @@
         double lon = [dictionary[@"lon"] doubleValue];
         [self.bubbleView updateWithLocation:CLLocationCoordinate2DMake(lat, lon)];
     }
+    
+    [self setMessageTextFont:self.messageTextFont];
 }
 
 - (void)updateWithMessageSentState:(BOOL)messageSentState
@@ -146,4 +150,5 @@
     _avatarImageViewCornerRadius = avatarImageViewCornerRadius;
     self.avatarImageView.layer.cornerRadius = avatarImageViewCornerRadius;
 }
+	
 @end

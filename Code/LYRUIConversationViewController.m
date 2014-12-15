@@ -58,6 +58,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 {
     self = [super init];
     if (self) {
+        
          // Set properties from designated initializer
         _conversation = conversation;
         _layerClient = layerClient;
@@ -576,11 +577,11 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     if (!part.isDownloaded) {
         return CGSizeMake(48, 48);
     }
-    
+
     CGSize size;
     if ([part.MIMEType isEqualToString:LYRUIMIMETypeTextPlain]) {
         NSString *text = [[NSString alloc] initWithData:part.data encoding:NSUTF8StringEncoding];
-        size = LYRUITextPlainSize(text, [[LYRUIOutgoingMessageCollectionViewCell appearance] messageTextFont]);
+        size = LYRUITextPlainSize(text, [UIFont systemFontOfSize:14]);
         size.height = size.height + 16; // Adding 16 to account for default vertical padding for text in bubble view
     } else if ([part.MIMEType isEqualToString:LYRUIMIMETypeImageJPEG] || [part.MIMEType isEqualToString:LYRUIMIMETypeImagePNG]) {
         UIImage *image = [UIImage imageWithData:part.data];
