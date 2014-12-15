@@ -62,6 +62,8 @@
 - (void)displayDownloadActivityIndicator
 {
     self.activityIndicator.hidden = NO;
+    self.bubbleImageView.hidden = YES;
+    self.bubbleViewLabel.hidden = YES;
     [self.activityIndicator startAnimating];
 }
 

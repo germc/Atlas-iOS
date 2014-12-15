@@ -7,6 +7,11 @@
 
 ### Bug Fixes
 * Removed UIAppearance Proxy customization code from UIKit. All customization must handled by developers.
+* Fixed issue related to sending a push notification with (Null)text. 
+
+### Enhancements
+* Refactored internal UIConstants
+* Added UIActivitiyIndicator on UI Cells to demonstrate when external content is downloading. Cells will automatically reload with their content once it is downloaded. 
 
 
 ## x.x.x

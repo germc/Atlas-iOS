@@ -32,6 +32,7 @@
         
         self.bubbleView = [[LYRUIMessageBubbleView alloc] init];
         self.bubbleView.translatesAutoresizingMaskIntoConstraints = NO;
+        self.bubbleView.bubbleViewLabel.font = self.messageTextFont;
         [self.contentView addSubview:self.bubbleView];
         
         self.avatarImageView = [[LYRUIAvatarImageView alloc] init];
@@ -107,8 +108,6 @@
         double lon = [dictionary[@"lon"] doubleValue];
         [self.bubbleView updateWithLocation:CLLocationCoordinate2DMake(lat, lon)];
     }
-    
-    [self setMessageTextFont:self.messageTextFont];
 }
 
 - (void)updateWithMessageSentState:(BOOL)messageSentState
