@@ -66,6 +66,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
         _typingParticipantIDs = [NSMutableArray new];
         _sectionFooters = [NSHashTable weakObjectsHashTable];
         _firstAppearance = YES;
+        _objectChanges = [NSMutableArray new];
     }
     return self;
 }
@@ -101,6 +102,21 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     self.collectionView.bounces = YES;
     self.collectionView.keyboardDismissMode = UIScrollViewKeyboardDismissModeInteractive;
     self.collectionView.accessibilityLabel = @"Conversation Collection View";
+
+    [self.collectionView registerClass:[LYRUIIncomingMessageCollectionViewCell class]
+            forCellWithReuseIdentifier:LYRUIIncomingMessageCellIdentifier];
+
+    [self.collectionView registerClass:[LYRUIOutgoingMessageCollectionViewCell class]
+            forCellWithReuseIdentifier:LYRUIOutgoingMessageCellIdentifier];
+
+    [self.collectionView registerClass:[LYRUIConversationCollectionViewHeader class]
+            forSupplementaryViewOfKind:UICollectionElementKindSectionHeader
+                   withReuseIdentifier:LYRUIMessageCellHeaderIdentifier];
+
+    [self.collectionView registerClass:[LYRUIConversationCollectionViewFooter class]
+            forSupplementaryViewOfKind:UICollectionElementKindSectionFooter
+                   withReuseIdentifier:LYRUIMessageCellFooterIdentifier];
+
     [self.view addSubview:self.collectionView];
     
     // Set the accessoryView to be a Message Input Toolbar
@@ -149,23 +165,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     if (self.conversation) {
         [self fetchLayerMessages];
     }
-    self.objectChanges = [NSMutableArray new];
-    
-    // Register reusable collection view cells, header and footer
-    [self.collectionView registerClass:[LYRUIIncomingMessageCollectionViewCell class]
-            forCellWithReuseIdentifier:LYRUIIncomingMessageCellIdentifier];
-    
-    [self.collectionView registerClass:[LYRUIOutgoingMessageCollectionViewCell class]
-            forCellWithReuseIdentifier:LYRUIOutgoingMessageCellIdentifier];
-    
-    [self.collectionView registerClass:[LYRUIConversationCollectionViewHeader class]
-            forSupplementaryViewOfKind:UICollectionElementKindSectionHeader
-                   withReuseIdentifier:LYRUIMessageCellHeaderIdentifier];
-    
-    [self.collectionView registerClass:[LYRUIConversationCollectionViewFooter class]
-            forSupplementaryViewOfKind:UICollectionElementKindSectionFooter
-                   withReuseIdentifier:LYRUIMessageCellFooterIdentifier];
-    
+
     // Collection View AutoLayout Config
     [self setConversationViewTitle];
 }
