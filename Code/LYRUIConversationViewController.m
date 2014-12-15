@@ -68,9 +68,6 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
         _typingParticipantIDs = [NSMutableArray new];
         _sectionFooters = [NSHashTable weakObjectsHashTable];
         _firstAppearance = YES;
-        
-        // Configure default UIAppearance Proxy
-        [self configureMessageBubbleAppearance];
     }
     return self;
 }
@@ -1113,25 +1110,6 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 {
     if (!self.conversation) return NO;
     return YES;
-}
-
-#pragma mark Default Message Cell Appearance
-
-- (void)configureMessageBubbleAppearance
-{
-    [[LYRUIOutgoingMessageCollectionViewCell appearance] setMessageTextColor:[UIColor whiteColor]];
-    [[LYRUIOutgoingMessageCollectionViewCell appearance] setMessageTextFont:LSMediumFont(14)];
-    [[LYRUIOutgoingMessageCollectionViewCell appearance] setBubbleViewColor:LSBlueColor()];
-    
-    [[LYRUIIncomingMessageCollectionViewCell appearance] setMessageTextColor:[UIColor blackColor]];
-    [[LYRUIIncomingMessageCollectionViewCell appearance] setMessageTextFont:LSMediumFont(14)];
-    [[LYRUIIncomingMessageCollectionViewCell appearance] setBubbleViewColor:LSLighGrayColor()];
-    
-    [[LYRUIMessageCollectionViewCell appearance] setBubbleViewCornerRadius:0];
-    
-    [[LYRUIAvatarImageView appearance] setBackgroundColor:LSGrayColor()];
-    [[LYRUIAvatarImageView appearance] setInitialsColor:[UIColor blackColor]];
-    [[LYRUIAvatarImageView appearance] setInitialsFont:LSLightFont(14)];
 }
 
 #pragma mark - Auto Layout Configuration

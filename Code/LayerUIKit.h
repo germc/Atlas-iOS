@@ -13,6 +13,9 @@
 #import "LYRUIConversationViewController.h"
 #import "LYRUIMessageInputToolbar.h"
 #import "LYRUIParticipantPickerController.h"
+#import "LYRUIOutgoingMessageCollectionViewCell.h"
+#import "LYRUIIncomingMessageCollectionViewCell.h"
+#import "LYRUIConversationTableViewCell.h"
 
 /**
  @abstract Returns the version of the Layer UIKit as a string.

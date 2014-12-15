@@ -45,10 +45,6 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
         _displaysConversationImage = YES;
         _allowsEditing = YES;
         _rowHeight = 72.0f;
-        
-        // Configure default UIAppearance Proxy
-        [self configureTableViewCellAppearance];
-        
     }
     return self;
 }
@@ -392,22 +388,6 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 {
     NSLog(@"Number of Conversations %lu", (unsigned long)[self.queryController numberOfObjectsInSection:0]);
     [self.tableView endUpdates];
-}
-
-- (void)configureTableViewCellAppearance
-{
-    [[LYRUIConversationTableViewCell appearance] setConversationLabelFont:LSBoldFont(14)];
-    [[LYRUIConversationTableViewCell appearance] setConversationLableColor:[UIColor blackColor]];
-    
-    [[LYRUIConversationTableViewCell appearance] setLastMessageTextFont:LSLightFont(14)];
-    [[LYRUIConversationTableViewCell appearance] setLastMessageTextColor:[UIColor grayColor]];
-    
-    [[LYRUIConversationTableViewCell appearance] setDateLabelFont:LSMediumFont(14)];
-    [[LYRUIConversationTableViewCell appearance] setDateLabelColor:[UIColor grayColor]];
-    
-    [[LYRUIConversationTableViewCell appearance] setUnreadMessageIndicatorBackgroundColor:LSBlueColor()];
-    
-    [[LYRUIConversationTableViewCell appearance] setBackgroundColor:[UIColor whiteColor]];
 }
 
 @end

@@ -1,5 +1,14 @@
 # LayerUIKit Change Log
 
+## 0.2.2
+
+### Public API Changes
+* Added `bubbleViewCornerRadius` and `avatarImageViewConrnerRadius` properties to `LYRUIMessageCollectionViewCell`. These properties can be set via UIAppearance proxy.
+
+### Bug Fixes
+* Removed UIAppearance Proxy customization code from UIKit. All customization must handled by developers.
+
+
 ## x.x.x
 
 ### Backwards Incompatibility
