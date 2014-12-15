@@ -28,7 +28,6 @@
 @property (nonatomic) LYRUITypingIndicatorView *typingIndicatorView;
 @property (nonatomic) CGFloat keyboardHeight;
 @property (nonatomic) BOOL shouldDisplayAvatarImage;
-@property (nonatomic) CGRect addressBarRect;
 @property (nonatomic) NSLayoutConstraint *typingIndicatorViewBottomConstraint;
 @property (nonatomic) NSMutableArray *typingParticipantIDs;
 @property (nonatomic) LYRQueryController *queryController;
