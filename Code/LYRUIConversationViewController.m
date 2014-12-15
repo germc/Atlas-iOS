@@ -236,7 +236,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 {
     LYRQuery *query = [LYRQuery queryWithClass:[LYRMessage class]];
     query.predicate = [LYRPredicate predicateWithProperty:@"conversation" operator:LYRPredicateOperatorIsEqualTo value:self.conversation];
-    query.sortDescriptors = @[ [NSSortDescriptor sortDescriptorWithKey:@"index" ascending:YES]];
+    query.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"index" ascending:YES]];
     
     self.queryController = [self.layerClient queryControllerWithQuery:query];
     self.queryController.delegate = self;
