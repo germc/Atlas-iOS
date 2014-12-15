@@ -30,9 +30,9 @@ static CGFloat const LYRUILineSpacing = 6;
 {
     self = [super init];
     if (self) {
-        _addressBarFont = LSMediumFont(14);
+        _addressBarFont = LYRUIMediumFont(14);
         _addressBarTextColor = [UIColor blackColor];
-        _addressBarHighlightColor = LSBlueColor();
+        _addressBarHighlightColor = LYRUIBlueColor();
 
         self.backgroundColor = [UIColor clearColor];
         self.textContainerInset = UIEdgeInsetsMake(10, 0, 10, 0);
@@ -46,7 +46,7 @@ static CGFloat const LYRUILineSpacing = 6;
         self.toLabel = [UILabel new];
         self.toLabel.translatesAutoresizingMaskIntoConstraints = NO;
         self.toLabel.text = @"To:";
-        self.toLabel.textColor = LSGrayColor();
+        self.toLabel.textColor = LYRUIGrayColor();
         self.toLabel.font = self.addressBarFont;
         [self addSubview:self.toLabel];
         

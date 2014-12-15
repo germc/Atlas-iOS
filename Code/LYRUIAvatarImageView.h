@@ -8,6 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
+extern CGFloat const LYRUIAvatarImageDiameter;
+
 @interface LYRUIAvatarImageView : UIImageView
 
 @property (nonatomic) UIFont *initialsFont UI_APPEARANCE_SELECTOR;

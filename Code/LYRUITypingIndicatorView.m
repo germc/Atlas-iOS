@@ -35,7 +35,7 @@
 
         _label = [[UILabel alloc] init];
         _label.translatesAutoresizingMaskIntoConstraints = NO;
-        _label.font = LSMediumFont(12);
+        _label.font = LYRUIMediumFont(12);
         _label.textColor = [UIColor grayColor];
         _label.numberOfLines = 1;
         _label.textAlignment = NSTextAlignmentCenter;

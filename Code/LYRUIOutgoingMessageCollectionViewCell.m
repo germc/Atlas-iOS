@@ -14,8 +14,12 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
+        
         self.avatarImageView.hidden = YES;
-
+        self.messageTextColor = [UIColor whiteColor];
+        self.messageTextFont = [UIFont systemFontOfSize:14];
+        self.bubbleViewColor = LYRUIBlueColor();
+        
         [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleView
                                                                      attribute:NSLayoutAttributeRight
                                                                      relatedBy:NSLayoutRelationEqual

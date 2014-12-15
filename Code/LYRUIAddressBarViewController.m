@@ -38,7 +38,7 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
     
     self.addressBarView = [[LYRUIAddressBarView alloc] init];
     self.addressBarView.translatesAutoresizingMaskIntoConstraints = NO;
-    self.addressBarView.backgroundColor = LSAddressBarGray();
+    self.addressBarView.backgroundColor = LYRUIAddressBarGray();
     self.addressBarView.addressBarTextView.delegate = self;
     [self.addressBarView.addContactsButton addTarget:self action:@selector(contactButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:self.addressBarView];
@@ -82,7 +82,7 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
         [permanentText appendString:participant.fullName];
     }];
     self.addressBarView.addressBarTextView.text = permanentText;
-    self.addressBarView.addressBarTextView.textColor = LSGrayColor();
+    self.addressBarView.addressBarTextView.textColor = LYRUIGrayColor();
     self.addressBarView.addressBarTextView.userInteractionEnabled = NO;
     [self sizeAddressBarView];
 }
@@ -135,7 +135,7 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
     UITableViewCell *cell =[tableView dequeueReusableCellWithIdentifier:LSParticpantCellIdentifier];
     id<LYRUIParticipant> participant = self.participants[indexPath.row];
     cell.textLabel.text = participant.fullName;
-    cell.textLabel.font = LSMediumFont(14);
+    cell.textLabel.font = LYRUIMediumFont(14);
     return cell;
 }
 

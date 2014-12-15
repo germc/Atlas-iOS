@@ -24,12 +24,16 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
+        
+        self.bubbleViewCornerRadius = 12;
+        self.avatarImageViewCornerRadius = LYRUIAvatarImageDiameter;
+        
         self.bubbleView = [[LYRUIMessageBubbleView alloc] init];
         self.bubbleView.translatesAutoresizingMaskIntoConstraints = NO;
         [self.contentView addSubview:self.bubbleView];
         
         self.avatarImageView = [[LYRUIAvatarImageView alloc] init];
-        self.avatarImageView.backgroundColor = LSLighGrayColor();
+        self.avatarImageView.backgroundColor = LYRUILighGrayColor();
         self.avatarImageView.translatesAutoresizingMaskIntoConstraints = NO;
         [self.contentView addSubview:self.avatarImageView];
 
@@ -79,6 +83,12 @@
 - (void)presentMessage:(LYRMessage *)message
 {
     LYRMessagePart *messagePart = message.parts.firstObject;
+    
+    if (!messagePart.isDownloaded) {
+        [self.bubbleView displayDownloadActivityIndicator];
+        return;
+    }
+    
     if ([messagePart.MIMEType isEqualToString:LYRUIMIMETypeTextPlain]) {
         NSString *text = [[NSString alloc] initWithData:messagePart.data encoding:NSUTF8StringEncoding];
         [self.bubbleView updateWithText:text];

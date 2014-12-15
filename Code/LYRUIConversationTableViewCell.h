@@ -19,7 +19,7 @@
  @abstract Customization selectors for configuring cell appearance
  */
 @property (nonatomic) UIFont *conversationLabelFont UI_APPEARANCE_SELECTOR;
-@property (nonatomic) UIColor *conversationLableColor UI_APPEARANCE_SELECTOR;
+@property (nonatomic) UIColor *conversationLabelColor UI_APPEARANCE_SELECTOR;
 
 @property (nonatomic) UIFont *lastMessageTextFont UI_APPEARANCE_SELECTOR;
 @property (nonatomic) UIColor *lastMessageTextColor UI_APPEARANCE_SELECTOR;

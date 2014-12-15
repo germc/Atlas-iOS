@@ -139,7 +139,8 @@ LYRMessagePart *LYRUIMessagePartWithLocation(CLLocation *location)
 LYRMessagePart *LYRUIMessagePartWithJPEGImage(UIImage *image)
 {
     UIImage *adjustedImage = LYRUIAdjustOrientationForImage(image);
-    NSData *compressedImageData =  LYRUIJPEGDataForImageWithConstraint(adjustedImage, 300);
+    NSData *compressedImageData =  UIImageJPEGRepresentation(adjustedImage, 1.0);
+    //NSData *compressedImageData =  LYRUIJPEGDataForImageWithConstraint(adjustedImage, 300);
     return [LYRMessagePart messagePartWithMIMEType:LYRUIMIMETypeImageJPEG
                                               data:compressedImageData];
 }

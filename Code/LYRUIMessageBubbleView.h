@@ -17,6 +17,9 @@
  */
 @interface LYRUIMessageBubbleView : UIView <UIAppearanceContainer>
 
+
+- (void)displayDownloadActivityIndicator;
+
 /**
  @abstract Tells the bubble view to display a given string.
  */

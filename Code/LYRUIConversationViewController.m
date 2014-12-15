@@ -573,6 +573,10 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     LYRMessage *message = [self.queryController objectAtIndexPath:[NSIndexPath indexPathForRow:indexPath.section inSection:0]];
     LYRMessagePart *part = message.parts.firstObject;
     
+    if (!part.isDownloaded) {
+        return CGSizeMake(48, 48);
+    }
+    
     CGSize size;
     if ([part.MIMEType isEqualToString:LYRUIMIMETypeTextPlain]) {
         NSString *text = [[NSString alloc] initWithData:part.data encoding:NSUTF8StringEncoding];
@@ -789,7 +793,14 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
             }
             NSString *pushText = [self pushNotificationStringForMessagePart:messagePart];
             NSString *text = [NSString stringWithFormat:@"%@: %@", [sender fullName], pushText];
-            LYRMessage *message = [self.layerClient newMessageWithParts:@[messagePart] options:@{LYRMessageOptionsPushNotificationAlertKey: text, LYRMessageOptionsPushNotificationSoundNameKey: @"default"} error:nil];
+            NSDictionary *pushOptions = [NSDictionary new];
+            if (pushText) {
+                pushOptions =@{LYRMessageOptionsPushNotificationAlertKey: text,
+                               LYRMessageOptionsPushNotificationSoundNameKey: @"default"};
+            }
+            LYRMessage *message = [self.layerClient newMessageWithParts:@[messagePart]
+                                                                options:pushOptions
+                                                                  error:nil];
             [self sendMessage:message];
         }
         if (self.addressBarController) [self.addressBarController setPermanent];

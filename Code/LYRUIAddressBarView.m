@@ -30,12 +30,12 @@
         
         self.addContactsButton = [UIButton buttonWithType:UIButtonTypeContactAdd];
         self.addContactsButton.translatesAutoresizingMaskIntoConstraints = NO;
-        self.addContactsButton.tintColor = LSBlueColor();
+        self.addContactsButton.tintColor = LYRUIBlueColor();
         [self addSubview:self.addContactsButton];
         
         self.bottomBorder = [[UIView alloc] init];
         self.bottomBorder.translatesAutoresizingMaskIntoConstraints = NO;
-        self.bottomBorder.backgroundColor = LSGrayColor();
+        self.bottomBorder.backgroundColor = LYRUIGrayColor();
         [self addSubview:self.bottomBorder];
         
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.addressBarTextView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeWidth multiplier:1.0 constant:-40]];
