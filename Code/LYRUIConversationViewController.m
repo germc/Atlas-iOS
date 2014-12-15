@@ -174,9 +174,6 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 {
     [super viewDidAppear:animated];
     [self.addressBarController.addressBarView.addressBarTextView becomeFirstResponder];
-    
-    // Update typing indicator
-    [self updateTypingIndicatorOverlay:YES];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
