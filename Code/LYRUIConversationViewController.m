@@ -181,7 +181,6 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     [super viewWillDisappear:animated];
     
     self.queryController = nil;
-
 }
 
 - (void)viewDidLayoutSubviews
