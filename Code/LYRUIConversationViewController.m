@@ -41,10 +41,10 @@
 
 @implementation LYRUIConversationViewController
 
-static NSString *const LYRUIIncomingMessageCellIdentifier = @"incomingMessageCellIdentifier";
-static NSString *const LYRUIOutgoingMessageCellIdentifier = @"outgoingMessageCellIdentifier";
-static NSString *const LYRUIMessageCellHeaderIdentifier = @"messageCellHeaderIdentifier";
-static NSString *const LYRUIMessageCellFooterIdentifier = @"messageCellFooterIdentifier";
+static NSString *const LYRUIIncomingMessageCellIdentifier = @"LYRUIIncomingMessageCellIdentifier";
+static NSString *const LYRUIOutgoingMessageCellIdentifier = @"LYRUIOutgoingMessageCellIdentifier";
+static NSString *const LYRUIMessageCellHeaderIdentifier = @"LYRUIMessageCellHeaderIdentifier";
+static NSString *const LYRUIMessageCellFooterIdentifier = @"LYUIMessageCellFooterIdentifier";
 
 static CGFloat const LYRUITypingIndicatorHeight = 20;
 
