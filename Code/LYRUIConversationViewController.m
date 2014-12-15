@@ -97,8 +97,8 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     self.collectionView.delegate = self;
     self.collectionView.dataSource = self;
     self.collectionView.backgroundColor = [UIColor whiteColor];
-    self.collectionView.alwaysBounceVertical = TRUE;
-    self.collectionView.bounces = TRUE;
+    self.collectionView.alwaysBounceVertical = YES;
+    self.collectionView.bounces = YES;
     self.collectionView.keyboardDismissMode = UIScrollViewKeyboardDismissModeInteractive;
     self.collectionView.accessibilityLabel = @"Conversation Collection View";
     [self.view addSubview:self.collectionView];
@@ -554,10 +554,10 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
         LYRMessage *nextMessage = [self.queryController objectAtIndexPath:[NSIndexPath indexPathForRow:indexPath.section + 1 inSection:0]];
         // If the next message is sent by the same user, no
         if ([nextMessage.sentByUserID isEqualToString:message.sentByUserID]) {
-            return FALSE;
+            return NO;
         }
     }
-    return TRUE;
+    return YES;
 }
 
 - (void)registerClass:(Class<LYRUIMessagePresenting>)cellClass forMessageCellWithReuseIdentifier:(NSString *)reuseIdentifier
