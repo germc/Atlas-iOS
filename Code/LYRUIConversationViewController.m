@@ -313,14 +313,13 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 
 /**
  
- LAYER - The `LYRUIConversationViewController` component uses `LYRMessageParts` to represent rows.
+ LAYER - The `LYRUIConversationViewController` component uses one `LYRMessage` to represent each row.
  
  */
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    // MessageParts correspond to rows in a section
-    LYRMessage *message = [self.queryController objectAtIndexPath:[NSIndexPath indexPathForRow:section inSection:0]];
-    return message.parts.count;
+    // Each message is represented by one cell no matter how many parts it has.
+    return 1;
 }
 
 /**
@@ -344,14 +343,17 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     LYRMessage *message = [self.queryController objectAtIndexPath:[NSIndexPath indexPathForRow:indexPath.section inSection:0]];
-    LYRUIMessageCollectionViewCell <LYRUIMessagePresenting> *cell;
-    if ([self.layerClient.authenticatedUserID isEqualToString:message.sentByUserID]) {
+    NSString *reuseIdentifier;
+    if ([self.dataSource respondsToSelector:@selector(conversationViewController:reuseIdentifierForMessage:)]) {
+        reuseIdentifier = [self.dataSource conversationViewController:self reuseIdentifierForMessage:message];
+    } else if ([self.layerClient.authenticatedUserID isEqualToString:message.sentByUserID]) {
         // If the message was sent by the currently authenticated user, it is outgoing
-        cell =  [self.collectionView dequeueReusableCellWithReuseIdentifier:LYRUIOutgoingMessageCellIdentifier forIndexPath:indexPath];
+        reuseIdentifier = LYRUIOutgoingMessageCellIdentifier;
     } else {
         // If the message was sent by someone other than the currently authenticated user, it is incoming
-        cell = [self.collectionView dequeueReusableCellWithReuseIdentifier:LYRUIIncomingMessageCellIdentifier forIndexPath:indexPath];
+        reuseIdentifier = LYRUIIncomingMessageCellIdentifier;
     }
+    UICollectionViewCell<LYRUIMessagePresenting> *cell =  [self.collectionView dequeueReusableCellWithReuseIdentifier:reuseIdentifier forIndexPath:indexPath];
     [self configureCell:cell forMessage:message indexPath:indexPath];
     return cell;
 }
@@ -361,12 +363,14 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
  LAYER - Extracting the proper message part and analyzing its properties to determine the cell configuration.
  
  */
-- (void)configureCell:(LYRUIMessageCollectionViewCell <LYRUIMessagePresenting> *)cell forMessage:(LYRMessage *)message indexPath:(NSIndexPath *)indexPath
+- (void)configureCell:(UICollectionViewCell<LYRUIMessagePresenting> *)cell forMessage:(LYRMessage *)message indexPath:(NSIndexPath *)indexPath
 {
-    LYRMessagePart *messagePart = [message.parts objectAtIndex:indexPath.row];
-    [cell presentMessagePart:messagePart];
+    [cell presentMessage:message];
     [cell updateWithMessageSentState:message.isSent];
-    [cell updateWithBubbleViewWidth:[self sizeForItemAtIndexPath:indexPath].width];
+    if ([cell isKindOfClass:[LYRUIMessageCollectionViewCell class]]) {
+        CGSize size = [self sizeForItemAtIndexPath:indexPath];
+        [(LYRUIMessageCollectionViewCell *)cell updateWithBubbleViewWidth:size.width];
+    }
     [cell shouldDisplayAvatarImage:self.shouldDisplayAvatarImage];
 
     if ([self shouldDisplayParticipantInfo:indexPath]) {
@@ -394,7 +398,14 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     CGFloat width = self.collectionView.bounds.size.width;
-    CGFloat height = [self sizeForItemAtIndexPath:indexPath].height;
+    CGFloat height;
+    if ([self.delegate respondsToSelector:@selector(conversationViewController:heightForMessage:withCellWidth:)]) {
+        NSIndexPath *queryControllerIndexPath = [NSIndexPath indexPathForRow:indexPath.section inSection:0];
+        LYRMessage *message = [self.queryController objectAtIndexPath:queryControllerIndexPath];
+        height = [self.delegate conversationViewController:self heightForMessage:message withCellWidth:width];
+    } else {
+        height = [self sizeForItemAtIndexPath:indexPath].height;
+    }
     return CGSizeMake(width, height);
 }
 
@@ -553,10 +564,15 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     return TRUE;
 }
 
+- (void)registerClass:(Class<LYRUIMessagePresenting>)cellClass forMessageCellWithReuseIdentifier:(NSString *)reuseIdentifier
+{
+    [self.collectionView registerClass:cellClass forCellWithReuseIdentifier:reuseIdentifier];
+}
+
 - (CGSize)sizeForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     LYRMessage *message = [self.queryController objectAtIndexPath:[NSIndexPath indexPathForRow:indexPath.section inSection:0]];
-    LYRMessagePart *part = [message.parts objectAtIndex:indexPath.row];
+    LYRMessagePart *part = message.parts.firstObject;
     
     CGSize size;
     if ([part.MIMEType isEqualToString:LYRUIMIMETypeTextPlain]) {
@@ -740,24 +756,23 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 {
     if (!self.conversation) return;
     if (messageInputToolbar.messageParts.count > 0) {
-        NSMutableArray *messagePartsToSend = [NSMutableArray new];
+        id<LYRUIParticipant> sender = [self participantForIdentifier:self.layerClient.authenticatedUserID];
         for (id part in messageInputToolbar.messageParts){
+            LYRMessagePart *messagePart;
             if ([part isKindOfClass:[NSString class]]) {
-                [messagePartsToSend addObject:LYRUIMessagePartWithText(part)];
+                messagePart = LYRUIMessagePartWithText(part);
+            } else if ([part isKindOfClass:[UIImage class]]) {
+                messagePart = LYRUIMessagePartWithJPEGImage(part);
+            } else if ([part isKindOfClass:[CLLocation class]]) {
+                messagePart = LYRUIMessagePartWithLocation(part);
+            } else {
+                continue;
             }
-            if ([part isKindOfClass:[UIImage class]]) {
-                [messagePartsToSend addObject:LYRUIMessagePartWithJPEGImage(part)];
-            }
-            if ([part isKindOfClass:[CLLocation class]]) {
-                [messagePartsToSend addObject:LYRUIMessagePartWithLocation(part)];
-            }
+            NSString *pushText = [self pushNotificationStringForMessagePart:messagePart];
+            NSString *text = [NSString stringWithFormat:@"%@: %@", [sender fullName], pushText];
+            LYRMessage *message = [self.layerClient newMessageWithParts:@[messagePart] options:@{LYRMessageOptionsPushNotificationAlertKey: text, LYRMessageOptionsPushNotificationSoundNameKey: @"default"} error:nil];
+            [self sendMessage:message];
         }
-        id<LYRUIParticipant>sender = [self participantForIdentifier:self.layerClient.authenticatedUserID];
-        NSString *pushText = [self pushNotificationStringForMessageParts:messagePartsToSend];
-        NSString *text = [NSString stringWithFormat:@"%@: %@", [sender fullName], pushText];
-        LYRMessage *message = [self.layerClient newMessageWithParts:messagePartsToSend options:@{LYRMessageOptionsPushNotificationAlertKey : text,
-                                                                                                 LYRMessageOptionsPushNotificationSoundNameKey : @"default"} error:nil];
-        [self sendMessage:message];
         if (self.addressBarController) [self.addressBarController setPermanent];
     }
 }
@@ -786,11 +801,11 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 
 #pragma mark - Message Send Methods
 
-- (NSString *)pushNotificationStringForMessageParts:(NSArray *)messageParts
+- (NSString *)pushNotificationStringForMessagePart:(LYRMessagePart *)messagePart
 {
     NSString *pushText;
-    if ( [self.dataSource respondsToSelector:@selector(conversationViewController:pushNotificationTextForMessageParts:)]) {
-        pushText = [self.dataSource conversationViewController:self pushNotificationTextForMessageParts:messageParts];
+    if ([self.dataSource respondsToSelector:@selector(conversationViewController:pushNotificationTextForMessagePart:)]) {
+        pushText = [self.dataSource conversationViewController:self pushNotificationTextForMessagePart:messagePart];
     } 
     return pushText;
 }

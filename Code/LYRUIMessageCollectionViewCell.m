@@ -76,8 +76,9 @@
 
 }
 
-- (void)presentMessagePart:(LYRMessagePart *)messagePart
+- (void)presentMessage:(LYRMessage *)message
 {
+    LYRMessagePart *messagePart = message.parts.firstObject;
     if ([messagePart.MIMEType isEqualToString:LYRUIMIMETypeTextPlain]) {
         NSString *text = [[NSString alloc] initWithData:messagePart.data encoding:NSUTF8StringEncoding];
         [self.bubbleView updateWithText:text];

@@ -17,19 +17,14 @@
 @protocol LYRUIMessagePresenting <NSObject>
 
 /**
- @abstract Tells the receiver to display a message part.
+ @abstract Tells the receiver to display a message.
  */
-- (void)presentMessagePart:(LYRMessagePart *)messagePart;
+- (void)presentMessage:(LYRMessage *)message;
 
 /**
  @abstract Tells the receiver if the message has been sent.
  */
 - (void)updateWithMessageSentState:(BOOL)messageSentState;
-
-/**
- @abstract Tells the receiver how wide its bubble view should be.
- */
-- (void)updateWithBubbleViewWidth:(CGFloat)bubbleViewWidth;
 
 /**
  @abstract Informs the receiver of its participant.

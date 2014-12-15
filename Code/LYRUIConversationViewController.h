@@ -14,6 +14,7 @@
 #import "LYRUIAddressBarViewController.h"
 
 @class LYRUIConversationViewController;
+@protocol LYRUIMessagePresenting;
 
 ///---------------------------------------
 /// @name Delegate
@@ -43,6 +44,15 @@
  @param message The `LYRMessage` object which that was tapped.
  */
 - (void)conversationViewController:(LYRUIConversationViewController *)viewController didSelectMessage:(LYRMessage *)message;
+
+/**
+ @abstract Asks the delegate for the height to use for a message's cell.
+ @param viewController The `LYRUIConversationViewController` where the message cell will appear.
+ @param message The `LYRMessage` object that will be displayed in the cell.
+ @param cellWidth The width of the message's cell.
+ @return The height needed for the message's cell.
+ */
+- (CGFloat)conversationViewController:(LYRUIConversationViewController *)viewController heightForMessage:(LYRMessage *)message withCellWidth:(CGFloat)cellWidth;
 
 @end
 
@@ -85,11 +95,11 @@
 /**
  @abstract Asks the data source for an `NSString` object to be sent as the push notification alert text via Layer.
  @param conversationViewController The `LYRUIConversationViewController` requesting the string.
- @param message The `LYRMessage` object to be sent via Layer.
+ @param messagePart The `LYRMessagePart` object to be sent via Layer.
  @return a string representing the push notification text.
  @discussion If this method is not implemented, or it returns nil, Layer will deliver silent push notifications.
  */
-- (NSString *)conversationViewController:(LYRUIConversationViewController *)conversationViewController pushNotificationTextForMessageParts:(NSArray *)messageParts;
+- (NSString *)conversationViewController:(LYRUIConversationViewController *)conversationViewController pushNotificationTextForMessagePart:(LYRMessagePart *)messagePart;
 
 /**
  @abstract Asks the data source if the `LRYRecipientStatus` should be updated.
@@ -99,6 +109,14 @@
  @discussion If the method returns true, the controller will mark the message as read
  */
 - (BOOL)conversationViewController:(LYRUIConversationViewController *)conversationViewController shouldUpdateRecipientStatusForMessage:(LYRMessage *)message;
+
+/**
+ @abstract Asks the data source for the collection view cell reuse identifier for a message.
+ @param viewController The `LYRUIConversationViewController` requesting the string.
+ @param message The `LYRMessage` object to display in the cell.
+ @return A string that will be used to dequeue a cell from the collection view.
+ */
+- (NSString *)conversationViewController:(LYRUIConversationViewController *)viewController reuseIdentifierForMessage:(LYRMessage *)message;
 
 @end
 
@@ -141,6 +159,12 @@
  dates will appear centered above a message only if the previous message was sent over 15 minutes ago.
  */
 @property (nonatomic) NSTimeInterval dateDisplayTimeInterval;
+
+/**
+ @abstract Register a class for use in creating message collection view cells.
+ @param reuseIdentifier The string to be associated with the class.
+ */
+- (void)registerClass:(Class<LYRUIMessagePresenting>)cellClass forMessageCellWithReuseIdentifier:(NSString *)reuseIdentifier;
 
 ///---------------------------------------
 /// @name Public Accessors
