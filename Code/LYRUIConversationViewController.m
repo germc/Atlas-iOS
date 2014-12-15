@@ -31,7 +31,7 @@
 @property (nonatomic) NSLayoutConstraint *typingIndicatorViewBottomConstraint;
 @property (nonatomic) NSMutableArray *typingParticipantIDs;
 @property (nonatomic) LYRQueryController *queryController;
-@property (nonatomic) NSMutableArray *objectChages;
+@property (nonatomic) NSMutableArray *objectChanges;
 @property (nonatomic) NSHashTable *sectionFooters;
 @property (nonatomic, getter=isFirstAppearance) BOOL firstAppearance;
 
@@ -150,7 +150,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     if (self.conversation) {
         [self fetchLayerMessages];
     }
-    self.objectChages = [NSMutableArray new];
+    self.objectChanges = [NSMutableArray new];
     
     // Register reusable collection view cells, header and footer
     [self.collectionView registerClass:[LYRUIIncomingMessageCollectionViewCell class]
@@ -980,7 +980,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
           forChangeType:(LYRQueryControllerChangeType)type
            newIndexPath:(NSIndexPath *)newIndexPath
 {
-    [self.objectChages addObject:[LYRUIDataSourceChange changeObjectWithType:type newIndex:newIndexPath.row currentIndex:indexPath.row]];
+    [self.objectChanges addObject:[LYRUIDataSourceChange changeObjectWithType:type newIndex:newIndexPath.row currentIndex:indexPath.row]];
 }
 
 - (void)queryControllerDidChangeContent:(LYRQueryController *)queryController
@@ -990,7 +990,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     BOOL shouldScrollToBottom = distanceToBottom <= 50 && !self.collectionView.isTracking && !self.collectionView.isDragging && !self.collectionView.isDecelerating;
 
     [self.collectionView performBatchUpdates:^{
-        for (LYRUIDataSourceChange *change in self.objectChages) {
+        for (LYRUIDataSourceChange *change in self.objectChanges) {
             switch (change.type) {
                 case LYRQueryControllerChangeTypeInsert:
                     [self.collectionView insertSections:[NSIndexSet indexSetWithIndex:change.newIndex]];
@@ -1012,7 +1012,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
                     break;
             }
         }
-        [self.objectChages removeAllObjects];
+        [self.objectChanges removeAllObjects];
     } completion:nil];
 
     // Since each section's footer content depends on the existence of other messages, we need to update footers even when the corresponding message to a footer has not changed.
