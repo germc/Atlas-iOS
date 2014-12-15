@@ -125,10 +125,10 @@
     self.bubbleView.backgroundColor = bubbleViewColor;
 }
 
-- (void)setBubbleViewConrnerRadius:(NSUInteger)bubbleViewConrnerRadius
+- (void)setBubbleViewCornerRadius:(NSUInteger)bubbleViewCornerRadius
 {
-    _bubbleViewConrnerRadius = bubbleViewConrnerRadius;
-    self.bubbleView.layer.cornerRadius = bubbleViewConrnerRadius;
+    _bubbleViewCornerRadius = bubbleViewCornerRadius;
+    self.bubbleView.layer.cornerRadius = bubbleViewCornerRadius;
 }
 
 - (void)setAvatarImageViewCornerRadius:(NSUInteger)avatarImageViewCornerRadius
