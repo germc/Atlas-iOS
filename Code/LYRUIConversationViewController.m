@@ -260,9 +260,12 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 
 - (void)setConversationViewTitle
 {
+    NSMutableSet *otherParticipantIDs = [self.conversation.participants mutableCopy];
+    [otherParticipantIDs removeObject:self.layerClient.authenticatedUserID];
+
     if (!self.conversation) {
         self.title = @"New Message";
-    } else if (1 >= self.conversation.participants.count) {
+    } else if (otherParticipantIDs.count == 0) {
         self.title = @"Personal";
     } else if (2 >= self.conversation.participants.count) {
         self.shouldDisplayAvatarImage = NO;
