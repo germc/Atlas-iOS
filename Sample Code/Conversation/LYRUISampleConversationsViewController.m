@@ -7,7 +7,6 @@
 //
 
 #import "LYRUISampleConversationsViewController.h"
-#import <LayerUIKit/LYRUIConversationDataSource.h>
 #import "LYRClientMock.h"
 #import "LYRClientMockFactory.h"
 #import "LYRUIParticipant.h"
