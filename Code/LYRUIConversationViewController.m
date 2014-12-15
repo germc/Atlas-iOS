@@ -27,7 +27,6 @@
 @property (nonatomic) UILabel *typingIndicatorLabel;
 @property (nonatomic) LYRUITypingIndicatorView *typingIndicatorView;
 @property (nonatomic) CGFloat keyboardHeight;
-@property (nonatomic) BOOL shouldScrollToBottom;
 @property (nonatomic) BOOL shouldDisplayAvatarImage;
 @property (nonatomic) CGRect addressBarRect;
 @property (nonatomic) NSLayoutConstraint *typingIndicatorViewBottomConstraint;
@@ -837,8 +836,6 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 
 - (void)sendMessage:(LYRMessage *)message
 {
-    self.shouldScrollToBottom = TRUE;
-
     NSError *error;
     BOOL success = [self.conversation sendMessage:message error:&error];
     if (success) {
