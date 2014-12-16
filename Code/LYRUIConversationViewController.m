@@ -78,7 +78,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     return nil;
 }
 
-#pragma mark - VC Lifecycle Methods
+#pragma mark - Lifecycle
 
 - (void)loadView
 {
@@ -231,7 +231,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-#pragma mark - Conversation Setup Methods
+#pragma mark - Conversation Setup
 
 - (void)fetchLayerMessages
 {
@@ -296,7 +296,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     }
 }
 
-#pragma mark - Conversation title
+#pragma mark - Conversation Title
 
 - (void)setConversationTitle:(NSString *)conversationTitle
 {
@@ -316,7 +316,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     [self.view setNeedsUpdateConstraints];
 }
 
-# pragma mark - Collection View Data Source
+# pragma mark - UICollectionViewDataSource
 
 /**
  
@@ -392,7 +392,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     }
 }
 
-#pragma mark - UICollectionViewDelegateFlowLayout Methods
+#pragma mark - UICollectionViewDelegateFlowLayout
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -484,7 +484,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     return CGSizeMake(CGRectGetWidth(collectionView.frame), 6);
 }
 
-#pragma mark - Recipient Status Methods
+#pragma mark - Recipient Status
 
 - (void)updateRecipientStatusForMessage:(LYRMessage *)message
 {
@@ -502,7 +502,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     }
 }
 
-#pragma mark - UI Configuration Methods
+#pragma mark - UI Configuration
 
 - (BOOL)shouldDisplayDateLabelForSection:(NSUInteger)section
 {
@@ -764,7 +764,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     return fittedSize.width <= CGRectGetWidth(label.frame);
 }
 
-#pragma mark - LYRUIMessageInputToolbar Delegate Methods
+#pragma mark - LYRUIMessageInputToolbarDelegate
 
 - (void)messageInputToolbar:(LYRUIMessageInputToolbar *)messageInputToolbar didTapLeftAccessoryButton:(UIButton *)leftAccessoryButton
 {
@@ -837,7 +837,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     [self.conversation sendTypingIndicator:LYRTypingDidFinish];
 }
 
-#pragma mark - Message Send Methods
+#pragma mark - Message Sending
 
 - (NSString *)pushNotificationStringForMessagePart:(LYRMessagePart *)messagePart
 {
@@ -863,7 +863,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     }
 }
 
-#pragma mark UIActionSheetDelegate Methods
+#pragma mark - UIActionSheetDelegate
 
 - (void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex
 {
@@ -885,7 +885,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     }
 }
 
-#pragma mark UIImagePicker Methods
+#pragma mark - Image Picking
 
 - (void)displayImagePickerWithSourceType:(UIImagePickerControllerSourceType)sourceType;
 {
@@ -930,7 +930,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     } failureBlock:nil];
 }
 
-#pragma mark UIImagePickerController Delegate
+#pragma mark - UIImagePickerControllerDelegate
 
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
@@ -955,7 +955,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     [self.collectionView setNeedsLayout];
 }
 
-#pragma mark CollectionView Content Inset Methods
+#pragma mark - Collection View Content Inset
 
 - (void)updateCollectionViewInsets
 {
@@ -978,16 +978,15 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     return offset;
 }
 
-#pragma mark Handle Device Rotation
+#pragma mark - Device Rotation
 
 -(void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
                                duration:(NSTimeInterval)duration
 {
     [self.collectionView.collectionViewLayout invalidateLayout];
-    
 }
 
-#pragma mark Notification Observer Delegate Methods
+#pragma mark - LYRQueryControllerDelegate
 
 - (void)queryController:(LYRQueryController *)controller
         didChangeObject:(id)object
@@ -1048,21 +1047,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     }
 }
 
-- (void)scrollToBottomOfCollectionViewAnimated:(BOOL)animated
-{
-    [self.collectionView setContentOffset:[self bottomOffset] animated:animated];
-}
-
-- (id<LYRUIParticipant>)participantForIdentifier:(NSString *)identifier
-{
-    if ([self.dataSource respondsToSelector:@selector(conversationViewController:participantForIdentifier:)]) {
-        return [self.dataSource conversationViewController:self participantForIdentifier:identifier];
-    } else {
-        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"LYRUIConversationViewControllerDelegate must return a particpant for an identifier" userInfo:nil];
-    }
-}
-
-#pragma mark - Address Bar View Controller Delegate Methods
+#pragma mark - LYRUIAddressBarViewControllerDelegate
 
 - (void)addressBarViewControllerDidBeginSearching:(LYRUIAddressBarViewController *)addressBarViewController
 {
@@ -1084,34 +1069,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     [self configureConversationWithAddressBar:addressBarViewController];
 }
 
-- (void)configureConversationWithAddressBar:(LYRUIAddressBarViewController *)addressBarViewController
-{
-    NSSet *participants = [addressBarViewController.selectedParticipants valueForKey:@"participantIdentifier"];
-    LYRConversation *conversation;
-    if (participants.count > 0) {
-        conversation = [self conversationWithParticipants:participants];
-        if (!conversation) {
-            conversation = [self.layerClient newConversationWithParticipants:participants options:nil error:nil];
-        }
-    }
-    if (conversation == self.conversation) return;
-    self.conversation = conversation;
-    [self setConversationViewTitle];
-    [self configureAvatarImageDisplay];
-    [self scrollToBottomOfCollectionViewAnimated:NO];
-}
-
-- (LYRConversation *)conversationWithParticipants:(NSSet *)participants
-{
-    NSMutableSet *set = [participants mutableCopy];
-    [set addObject:self.layerClient.authenticatedUserID];
-    LYRQuery *query = [LYRQuery queryWithClass:[LYRConversation class]];
-    query.predicate = [LYRPredicate predicateWithProperty:@"participants" operator:LYRPredicateOperatorIsEqualTo value:set];
-    query.limit = 1;
-    return [self.layerClient executeQuery:query error:nil].lastObject;
-}
-
-#pragma mark Send Button Enablement
+#pragma mark - Send Button Enablement
 
 - (void)configureSendButtonEnablement
 {
@@ -1197,6 +1155,47 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 }
 
 #pragma mark - Helpers
+
+- (void)scrollToBottomOfCollectionViewAnimated:(BOOL)animated
+{
+    [self.collectionView setContentOffset:[self bottomOffset] animated:animated];
+}
+
+- (id<LYRUIParticipant>)participantForIdentifier:(NSString *)identifier
+{
+    if ([self.dataSource respondsToSelector:@selector(conversationViewController:participantForIdentifier:)]) {
+        return [self.dataSource conversationViewController:self participantForIdentifier:identifier];
+    } else {
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"LYRUIConversationViewControllerDelegate must return a participant for an identifier" userInfo:nil];
+    }
+}
+
+- (void)configureConversationWithAddressBar:(LYRUIAddressBarViewController *)addressBarViewController
+{
+    NSSet *participants = [addressBarViewController.selectedParticipants valueForKey:@"participantIdentifier"];
+    LYRConversation *conversation;
+    if (participants.count > 0) {
+        conversation = [self conversationWithParticipants:participants];
+        if (!conversation) {
+            conversation = [self.layerClient newConversationWithParticipants:participants options:nil error:nil];
+        }
+    }
+    if (conversation == self.conversation) return;
+    self.conversation = conversation;
+    [self setConversationViewTitle];
+    [self configureAvatarImageDisplay];
+    [self scrollToBottomOfCollectionViewAnimated:NO];
+}
+
+- (LYRConversation *)conversationWithParticipants:(NSSet *)participants
+{
+    NSMutableSet *set = [participants mutableCopy];
+    [set addObject:self.layerClient.authenticatedUserID];
+    LYRQuery *query = [LYRQuery queryWithClass:[LYRConversation class]];
+    query.predicate = [LYRPredicate predicateWithProperty:@"participants" operator:LYRPredicateOperatorIsEqualTo value:set];
+    query.limit = 1;
+    return [self.layerClient executeQuery:query error:nil].lastObject;
+}
 
 - (void)configureFooter:(LYRUIConversationCollectionViewFooter *)footer atIndexPath:(NSIndexPath *)indexPath
 {
