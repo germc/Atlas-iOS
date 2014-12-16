@@ -523,7 +523,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 - (BOOL)shouldDisplaySenderLabelForSection:(NSUInteger)section
 {
     // 1. If the conversation only has 2 participants, don't show sender label
-    if (!(self.conversation.participants.count > 2)) {
+    if (self.conversation.participants.count <= 2) {
         return NO;
     }
     
