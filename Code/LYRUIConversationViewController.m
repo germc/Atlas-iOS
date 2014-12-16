@@ -934,9 +934,9 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
-    NSString *mediaType = [info objectForKey:UIImagePickerControllerMediaType];
+    NSString *mediaType = info[UIImagePickerControllerMediaType];
     if ([mediaType isEqualToString:(__bridge NSString *)kUTTypeImage]) {
-        UIImage *selectedImage = (UIImage *)[info objectForKey:UIImagePickerControllerOriginalImage];
+        UIImage *selectedImage = (UIImage *)info[UIImagePickerControllerOriginalImage];
         [self.messageInputToolbar insertImage:selectedImage];
     }
     [self.navigationController dismissViewControllerAnimated:YES completion:nil];
