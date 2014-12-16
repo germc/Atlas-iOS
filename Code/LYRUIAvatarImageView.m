@@ -22,7 +22,6 @@ CGFloat const LYRUIAvatarImageDiameter = 30;
 {
     self = [super init];
     if (self) {
-        
         self.backgroundColor = [UIColor colorWithRed:200.0/255.0 green:200.0/255.0 blue:200.0/255.0 alpha:1.0];
         
         _initialsLabel = [[UILabel alloc] init];

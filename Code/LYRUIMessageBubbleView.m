@@ -23,7 +23,6 @@
     self = [super initWithFrame:frame];
     if (self) {
         self.clipsToBounds = YES;
-
         self.bubbleViewLabel = [[UILabel alloc] init];
         self.bubbleViewLabel.numberOfLines = 0;
         self.bubbleViewLabel.translatesAutoresizingMaskIntoConstraints = NO;
