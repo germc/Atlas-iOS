@@ -25,6 +25,8 @@
 @property (nonatomic) UIFont *messageTextFont UI_APPEARANCE_SELECTOR;
 @property (nonatomic) UIColor *messageTextColor UI_APPEARANCE_SELECTOR;
 @property (nonatomic) UIColor *bubbleViewColor UI_APPEARANCE_SELECTOR;
+@property (nonatomic) CGFloat bubbleViewCornerRadius UI_APPEARANCE_SELECTOR;
+@property (nonatomic) CGFloat avatarImageViewCornerRadius UI_APPEARANCE_SELECTOR;
 
 /**
  @abstract The view that handles displaying the cell content.

@@ -21,7 +21,7 @@
 {
     self = [super init];
     if (self) {
-        self.backgroundColor = LSLighGrayColor();
+        self.backgroundColor = LYRUILightGrayColor();
         
         self.keyLabel = [[UILabel alloc] init];
         self.keyLabel.translatesAutoresizingMaskIntoConstraints = NO;

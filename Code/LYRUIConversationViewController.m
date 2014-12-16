@@ -68,9 +68,6 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
         _typingParticipantIDs = [NSMutableArray new];
         _sectionFooters = [NSHashTable weakObjectsHashTable];
         _firstAppearance = YES;
-        
-        // Configure default UIAppearance Proxy
-        [self configureMessageBubbleAppearance];
     }
     return self;
 }
@@ -252,7 +249,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     self.queryController.delegate = self;
     NSError *error = nil;
     BOOL success = [self.queryController execute:&error];
-    if (!success) NSLog(@"LayerKit failed to execute query");
+    if (!success) NSLog(@"LayerKit failed to execute query with error: %@", error);
     [self.collectionView reloadData];
 }
 
@@ -575,11 +572,10 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 {
     LYRMessage *message = [self.queryController objectAtIndexPath:[NSIndexPath indexPathForRow:indexPath.section inSection:0]];
     LYRMessagePart *part = message.parts.firstObject;
-    
     CGSize size;
     if ([part.MIMEType isEqualToString:LYRUIMIMETypeTextPlain]) {
         NSString *text = [[NSString alloc] initWithData:part.data encoding:NSUTF8StringEncoding];
-        size = LYRUITextPlainSize(text, [[LYRUIOutgoingMessageCollectionViewCell appearance] messageTextFont]);
+        size = LYRUITextPlainSize(text, [UIFont systemFontOfSize:14]);
         size.height = size.height + 16; // Adding 16 to account for default vertical padding for text in bubble view
     } else if ([part.MIMEType isEqualToString:LYRUIMIMETypeImageJPEG] || [part.MIMEType isEqualToString:LYRUIMIMETypeImagePNG]) {
         UIImage *image = [UIImage imageWithData:part.data];
@@ -792,7 +788,14 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
             }
             NSString *pushText = [self pushNotificationStringForMessagePart:messagePart];
             NSString *text = [NSString stringWithFormat:@"%@: %@", [sender fullName], pushText];
-            LYRMessage *message = [self.layerClient newMessageWithParts:@[messagePart] options:@{LYRMessageOptionsPushNotificationAlertKey: text, LYRMessageOptionsPushNotificationSoundNameKey: @"default"} error:nil];
+            NSDictionary *pushOptions;
+            if (pushText) {
+                pushOptions = @{LYRMessageOptionsPushNotificationAlertKey: text,
+                               LYRMessageOptionsPushNotificationSoundNameKey: @"default"};
+            }
+            LYRMessage *message = [self.layerClient newMessageWithParts:@[messagePart]
+                                                                options:pushOptions
+                                                                  error:nil];
             [self sendMessage:message];
         }
         if (self.addressBarController) [self.addressBarController setPermanent];
@@ -975,11 +978,6 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 
 #pragma mark Notification Observer Delegate Methods
 
-- (void)queryControllerWillChangeContent:(LYRQueryController *)queryController
-{
-   NSLog(@"Changes Began");
-}
-
 - (void)queryController:(LYRQueryController *)controller
         didChangeObject:(id)object
             atIndexPath:(NSIndexPath *)indexPath
@@ -1113,23 +1111,6 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 {
     if (!self.conversation) return NO;
     return YES;
-}
-
-#pragma mark Default Message Cell Appearance
-
-- (void)configureMessageBubbleAppearance
-{
-    [[LYRUIOutgoingMessageCollectionViewCell appearance] setMessageTextColor:[UIColor whiteColor]];
-    [[LYRUIOutgoingMessageCollectionViewCell appearance] setMessageTextFont:LSMediumFont(14)];
-    [[LYRUIOutgoingMessageCollectionViewCell appearance] setBubbleViewColor:LSBlueColor()];
-    
-    [[LYRUIIncomingMessageCollectionViewCell appearance] setMessageTextColor:[UIColor blackColor]];
-    [[LYRUIIncomingMessageCollectionViewCell appearance] setMessageTextFont:LSMediumFont(14)];
-    [[LYRUIIncomingMessageCollectionViewCell appearance] setBubbleViewColor:LSLighGrayColor()];
-    
-    [[LYRUIAvatarImageView appearance] setBackgroundColor:LSGrayColor()];
-    [[LYRUIAvatarImageView appearance] setInitialsColor:[UIColor blackColor]];
-    [[LYRUIAvatarImageView appearance] setInitialsFont:LSLightFont(14)];
 }
 
 #pragma mark - Auto Layout Configuration

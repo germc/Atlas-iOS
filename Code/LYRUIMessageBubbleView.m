@@ -10,6 +10,7 @@
 
 @interface LYRUIMessageBubbleView ()
 
+@property (nonatomic) UIActivityIndicatorView *activityIndicator;
 @property (nonatomic) UIView *longPressMask;
 @property (nonatomic) MKMapSnapshotter *snapshotter;
 
@@ -21,9 +22,7 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-        self.layer.cornerRadius = 12;
         self.clipsToBounds = YES;
-
         self.bubbleViewLabel = [[UILabel alloc] init];
         self.bubbleViewLabel.numberOfLines = 0;
         self.bubbleViewLabel.translatesAutoresizingMaskIntoConstraints = NO;
@@ -34,6 +33,11 @@
         self.bubbleImageView.contentMode = UIViewContentModeScaleAspectFill;
         [self addSubview:self.bubbleImageView];
 
+        self.activityIndicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+        self.activityIndicator.color = [UIColor grayColor];
+        self.activityIndicator.translatesAutoresizingMaskIntoConstraints = NO;
+        [self addSubview:self.activityIndicator];
+        
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleViewLabel attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeHeight multiplier:1.0 constant:0]];
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleViewLabel attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1.0 constant:12]];
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleViewLabel attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeRight multiplier:1.0 constant:-12]];
@@ -43,6 +47,9 @@
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleImageView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeHeight multiplier:1.0 constant:0]];
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleImageView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0]];
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleImageView attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0]];
+        
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.activityIndicator attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0]];
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.activityIndicator attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0]];
 
         UILongPressGestureRecognizer *gestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
         [self addGestureRecognizer:gestureRecognizer];
@@ -50,8 +57,17 @@
     return self;
 }
 
+- (void)displayDownloadActivityIndicator
+{
+    self.activityIndicator.hidden = NO;
+    self.bubbleImageView.hidden = YES;
+    self.bubbleViewLabel.hidden = YES;
+    [self.activityIndicator startAnimating];
+}
+
 - (void)updateWithText:(NSString *)text
 {
+    self.activityIndicator.hidden = YES;
     self.bubbleImageView.hidden = YES;
     self.bubbleViewLabel.hidden = NO;
     self.bubbleViewLabel.text = text;
@@ -60,6 +76,7 @@
 
 - (void)updateWithImage:(UIImage *)image
 {
+    self.activityIndicator.hidden = YES;
     self.bubbleViewLabel.hidden = YES;
     self.bubbleImageView.hidden = NO;
     self.bubbleImageView.image = image;
@@ -68,6 +85,7 @@
 
 - (void)updateWithLocation:(CLLocationCoordinate2D)location
 {
+    self.activityIndicator.hidden = YES;
     self.bubbleViewLabel.hidden = YES;
     self.bubbleImageView.hidden = YES;
     [self.snapshotter cancel];

@@ -8,4 +8,4 @@
 
 #import "LayerUIKit.h"
 
-NSString *const LYRUIKitVersionString = @"0.2.1";
+NSString *const LYRUIKitVersionString = @"0.2.2";

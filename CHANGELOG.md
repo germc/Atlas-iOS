@@ -1,5 +1,22 @@
 # LayerUIKit Change Log
 
+## 0.2.2
+
+### Public API Changes
+* Added `bubbleViewCornerRadius` property to `LYRUIMessageCollectionViewCell`.  
+* Added `avatarImageViewCornerRadius` property to `LYRUIMessageCollectionViewCell`.
+* Changed `backgroundColor` property to `cellBackgroundColor` on `LYRUIConversationTableViewCell`.
+
+### Bug Fixes
+* Fixed possibility of customizations via `UIAppearance` being overridden.
+* Fixed issue related to sending a push notification with `(null)` text.
+* Fixed typo for property `conversationLabelColor` on `LYRUIConversationTableViewCell`.
+* Fixed typo in C function signature `LYRUILightGrayColor()`.
+
+### Enhancements
+* Refactored internal constants.
+* Added support for external content.
+
 ## x.x.x
 
 ### Backwards Incompatibility

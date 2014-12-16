@@ -24,14 +24,25 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-        self.bubbleView = [[LYRUIMessageBubbleView alloc] init];
-        self.bubbleView.translatesAutoresizingMaskIntoConstraints = NO;
-        [self.contentView addSubview:self.bubbleView];
+        // UIAppearance Defaults
+        _bubbleViewCornerRadius = 12;
+        _avatarImageViewCornerRadius = LYRUIAvatarImageDiameter / 2;
+        _messageTextFont = [UIFont systemFontOfSize:14];
         
-        self.avatarImageView = [[LYRUIAvatarImageView alloc] init];
-        self.avatarImageView.backgroundColor = LSLighGrayColor();
-        self.avatarImageView.translatesAutoresizingMaskIntoConstraints = NO;
-        [self.contentView addSubview:self.avatarImageView];
+        _bubbleView.layer.cornerRadius = _bubbleViewCornerRadius;
+        _avatarImageView.layer.cornerRadius = _avatarImageViewCornerRadius;
+        
+        _bubbleView = [[LYRUIMessageBubbleView alloc] init];
+        _bubbleView.translatesAutoresizingMaskIntoConstraints = NO;
+        _bubbleView.bubbleViewLabel.font = _messageTextFont;
+        _bubbleView.layer.cornerRadius = _bubbleViewCornerRadius;
+        [self.contentView addSubview:_bubbleView];
+        
+        _avatarImageView = [[LYRUIAvatarImageView alloc] init];
+        _avatarImageView.backgroundColor = LYRUILightGrayColor();
+        _avatarImageView.translatesAutoresizingMaskIntoConstraints = NO;
+        _avatarImageView.layer.cornerRadius = _avatarImageViewCornerRadius;
+        [self.contentView addSubview:_avatarImageView];
 
         [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleView
                                                                      attribute:NSLayoutAttributeHeight
@@ -125,4 +136,16 @@
     self.bubbleView.backgroundColor = bubbleViewColor;
 }
 
+- (void)setBubbleViewCornerRadius:(CGFloat)bubbleViewCornerRadius
+{
+    _bubbleViewCornerRadius = bubbleViewCornerRadius;
+    self.bubbleView.layer.cornerRadius = bubbleViewCornerRadius;
+}
+
+- (void)setAvatarImageViewCornerRadius:(CGFloat)avatarImageViewCornerRadius
+{
+    _avatarImageViewCornerRadius = avatarImageViewCornerRadius;
+    self.avatarImageView.layer.cornerRadius = avatarImageViewCornerRadius;
+}
+	
 @end

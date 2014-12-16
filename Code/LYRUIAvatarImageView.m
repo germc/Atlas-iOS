@@ -7,7 +7,7 @@
 //
 
 #import "LYRUIAvatarImageView.h"
-
+#import "LYRUIConstants.h"
 @interface LYRUIAvatarImageView ()
 
 @property (nonatomic) UILabel *initialsLabel;
@@ -16,15 +16,22 @@
 
 @implementation LYRUIAvatarImageView
 
+CGFloat const LYRUIAvatarImageDiameter = 30;
+
 - (id)init
 {
     self = [super init];
     if (self) {
+        self.backgroundColor = [UIColor colorWithRed:200.0/255.0 green:200.0/255.0 blue:200.0/255.0 alpha:1.0];
+        
         _initialsLabel = [[UILabel alloc] init];
         _initialsLabel.translatesAutoresizingMaskIntoConstraints = NO;
         _initialsLabel.textAlignment = NSTextAlignmentCenter;
         _initialsLabel.adjustsFontSizeToFitWidth = YES;
         _initialsLabel.minimumScaleFactor = 0.75;
+        _initialsLabel.textColor = [UIColor blackColor];
+        _initialsLabel.font = LYRUILightFont(14);
+        
         [self addSubview:_initialsLabel];
     
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.initialsLabel attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1.0 constant:3]];
@@ -37,7 +44,7 @@
 
 - (CGSize)intrinsicContentSize
 {
-    return CGSizeMake(30, 30);
+    return CGSizeMake(LYRUIAvatarImageDiameter, LYRUIAvatarImageDiameter);
 }
 
 - (void)setInitialsForName:(NSString *)name

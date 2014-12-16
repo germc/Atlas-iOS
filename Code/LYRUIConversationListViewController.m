@@ -45,10 +45,6 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
         _displaysConversationImage = YES;
         _allowsEditing = YES;
         _rowHeight = 72.0f;
-        
-        // Configure default UIAppearance Proxy
-        [self configureTableViewCellAppearance];
-        
     }
     return self;
 }
@@ -174,7 +170,7 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
     self.queryController.delegate = self;
     NSError *error = nil;
     BOOL success = [self.queryController execute:&error];
-    if (!success) NSLog(@"LayerKit failed to execute query");
+    if (!success) NSLog(@"LayerKit failed to execute query with error: %@", error);
     [self.tableView reloadData];
 }
 
@@ -352,7 +348,6 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 - (void)queryControllerWillChangeContent:(LYRQueryController *)queryController
 {
     [self.tableView beginUpdates];
-    NSLog(@"Number of Conversations %lu", (unsigned long)[self.queryController numberOfObjectsInSection:0]);
 }
 
 
@@ -362,8 +357,6 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
           forChangeType:(LYRQueryControllerChangeType)type
            newIndexPath:(NSIndexPath *)newIndexPath
 {
-    NSLog(@"Update");
-    
     switch (type) {
         case LYRQueryControllerChangeTypeInsert:
             [self.tableView insertRowsAtIndexPaths:@[newIndexPath]
@@ -390,24 +383,7 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 
 - (void)queryControllerDidChangeContent:(LYRQueryController *)queryController
 {
-    NSLog(@"Number of Conversations %lu", (unsigned long)[self.queryController numberOfObjectsInSection:0]);
     [self.tableView endUpdates];
-}
-
-- (void)configureTableViewCellAppearance
-{
-    [[LYRUIConversationTableViewCell appearance] setConversationLabelFont:LSBoldFont(14)];
-    [[LYRUIConversationTableViewCell appearance] setConversationLableColor:[UIColor blackColor]];
-    
-    [[LYRUIConversationTableViewCell appearance] setLastMessageTextFont:LSLightFont(14)];
-    [[LYRUIConversationTableViewCell appearance] setLastMessageTextColor:[UIColor grayColor]];
-    
-    [[LYRUIConversationTableViewCell appearance] setDateLabelFont:LSMediumFont(14)];
-    [[LYRUIConversationTableViewCell appearance] setDateLabelColor:[UIColor grayColor]];
-    
-    [[LYRUIConversationTableViewCell appearance] setUnreadMessageIndicatorBackgroundColor:LSBlueColor()];
-    
-    [[LYRUIConversationTableViewCell appearance] setBackgroundColor:[UIColor whiteColor]];
 }
 
 @end

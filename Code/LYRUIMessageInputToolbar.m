@@ -40,7 +40,7 @@ static CGFloat const LYRUIButtonHeight = 28;
         self.accessibilityLabel = @"Message Input Toolbar";
         self.translatesAutoresizingMaskIntoConstraints = NO;
         self.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-        self.backgroundColor =  LSLighGrayColor();
+        self.backgroundColor =  LYRUILightGrayColor();
         self.canEnableSendButton = YES;
 
         self.leftAccessoryButton = [[UIButton alloc] init];
@@ -62,7 +62,7 @@ static CGFloat const LYRUIButtonHeight = 28;
         self.rightAccessoryButton.titleLabel.font = [UIFont systemFontOfSize:16];
         [self.rightAccessoryButton setTitle:@"SEND" forState:UIControlStateNormal];
         [self.rightAccessoryButton setTitleColor:[UIColor grayColor] forState:UIControlStateDisabled];
-        [self.rightAccessoryButton setTitleColor:LSBlueColor() forState:UIControlStateNormal];
+        [self.rightAccessoryButton setTitleColor:LYRUIBlueColor() forState:UIControlStateNormal];
         [self.rightAccessoryButton addTarget:self action:@selector(rightAccessoryButtonTapped) forControlEvents:UIControlEventTouchUpInside];
         [self configureSendButtonEnablement];
         [self addSubview:self.rightAccessoryButton];

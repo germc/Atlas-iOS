@@ -1,9 +1,9 @@
 PODS:
   - Expecta (0.3.1)
-  - KIF (3.0.8):
-    - KIF/XCTest
-  - KIF/XCTest (3.0.8)
-  - LayerKit (0.8.8)
+  - KIF (3.1.0):
+    - KIF/XCTest (= 3.1.0)
+  - KIF/XCTest (3.1.0)
+  - LayerKit (0.9.1)
   - LayerUIKit (0.2.0)
   - OCMock (3.1.1)
 
@@ -20,9 +20,9 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Expecta: 03aabd0a89d8dea843baecb19a7fd7466a69a31d
-  KIF: 2db5e8cf59136dd1267d49cca0d55883389b09d3
-  LayerKit: e0fc3be7fc4601786fcb8b386bac8c683bc85c75
-  LayerUIKit: 2b3fc474b4f20c52a57272a8159a960fd7d0244e
+  KIF: de7c7f4aea08179c65d963a3c5ec438ee6408e8c
+  LayerKit: 8a7840cc9cd7d1ce10bd25ea977b4d806edfc75d
+  LayerUIKit: 4427ee3109ae0935e71cb0585409b83ff96704d9
   OCMock: f6cb8c162ab9d5620dddf411282c7b2c0ee78854
 
-COCOAPODS: 0.34.4
+COCOAPODS: 0.35.0

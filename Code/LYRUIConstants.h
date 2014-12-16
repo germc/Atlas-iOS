@@ -1,5 +1,5 @@
 //
-//  LSUIConstants.h
+//  LYRUIConstants.h
 //  LayerSample
 //
 //  Created by Kevin Coleman on 6/17/14.
@@ -8,20 +8,20 @@
 
 #import <Foundation/Foundation.h>
 
-UIColor *LSBlueColor();
+UIColor *LYRUIBlueColor();
 
-UIColor *LSDarkGrayColor();
+UIColor *LYRUIDarkGrayColor();
 
-UIColor *LSGrayColor();
+UIColor *LYRUIGrayColor();
 
-UIColor *LSLighGrayColor();
+UIColor *LYRUILightGrayColor();
 
-UIColor *LSAddressBarGray();
+UIColor *LYRUIAddressBarGray();
 
-UIColor *LSRedColor();
+UIColor *LYRUIRedColor();
 
-UIFont *LSLightFont(CGFloat size);
+UIFont *LYRUILightFont(CGFloat size);
 
-UIFont *LSMediumFont(CGFloat size);
+UIFont *LYRUIMediumFont(CGFloat size);
 
-UIFont *LSBoldFont(CGFloat size);
+UIFont *LYRUIBoldFont(CGFloat size);

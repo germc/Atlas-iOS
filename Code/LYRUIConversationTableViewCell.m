@@ -93,10 +93,20 @@ static CGFloat const LSUnreadMessageCountLabelSize = 14.0f;
 {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
+        //UIAppearance Proxy Defaults
+        _conversationLabelFont = LYRUIBoldFont(14);
+        _conversationLabelColor = [UIColor blackColor];
+        _lastMessageTextFont = LYRUILightFont(14);
+        _lastMessageTextColor = [UIColor grayColor];
+        _dateLabelFont = LYRUIMediumFont(14);
+        _dateLabelColor = [UIColor grayColor];
+        _unreadMessageIndicatorBackgroundColor = LYRUIBlueColor();
+        _cellBackgroundColor = [UIColor whiteColor];
+        
         // Initialize Avatar Image
         self.conversationImageView = [[UIImageView alloc] init];
         self.conversationImageView.translatesAutoresizingMaskIntoConstraints = NO;
-        self.conversationImageView.backgroundColor = LSGrayColor();
+        self.conversationImageView.backgroundColor = LYRUIGrayColor();
         [self.contentView addSubview:self.conversationImageView];
         
         // Initialiaze Sender Image
@@ -203,7 +213,7 @@ static CGFloat const LSUnreadMessageCountLabelSize = 14.0f;
 {
     // Configure per UI Appearance Proxy
     self.conversationLabel.font = self.conversationLabelFont;
-    self.conversationLabel.textColor = self.conversationLableColor;
+    self.conversationLabel.textColor = self.conversationLabelColor;
     
     self.lastMessageTextView.font = self.lastMessageTextFont;
     self.lastMessageTextView.textColor = self.lastMessageTextColor;
@@ -211,7 +221,7 @@ static CGFloat const LSUnreadMessageCountLabelSize = 14.0f;
     self.dateLabel.font = self.dateLabelFont;
     self.dateLabel.textColor = self.dateLabelColor;
     
-    self.backgroundColor = [UIColor whiteColor];
+    self.backgroundColor = self.cellBackgroundColor;
     
     [self.conversationLabel sizeToFit];
     [self.dateLabel sizeToFit];
