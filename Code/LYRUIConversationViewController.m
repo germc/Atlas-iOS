@@ -348,7 +348,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
  */
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    LYRMessage *message = [self.queryController objectAtIndexPath:[NSIndexPath indexPathForRow:indexPath.section inSection:0]];
+    LYRMessage *message = [self messageAtCollectionViewIndexPath:indexPath];
     NSString *reuseIdentifier;
     if ([self.dataSource respondsToSelector:@selector(conversationViewController:reuseIdentifierForMessage:)]) {
         reuseIdentifier = [self.dataSource conversationViewController:self reuseIdentifierForMessage:message];
@@ -396,7 +396,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
     if ([self.delegate respondsToSelector:@selector(conversationViewController:didSelectMessage:)]) {
-        LYRMessage *message = [self.queryController objectAtIndexPath:[NSIndexPath indexPathForRow:indexPath.section inSection:0]];
+        LYRMessage *message = [self messageAtCollectionViewIndexPath:indexPath];
         [self.delegate conversationViewController:self didSelectMessage:message];
     }
 }
@@ -406,8 +406,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     CGFloat width = self.collectionView.bounds.size.width;
     CGFloat height;
     if ([self.delegate respondsToSelector:@selector(conversationViewController:heightForMessage:withCellWidth:)]) {
-        NSIndexPath *queryControllerIndexPath = [NSIndexPath indexPathForRow:indexPath.section inSection:0];
-        LYRMessage *message = [self.queryController objectAtIndexPath:queryControllerIndexPath];
+        LYRMessage *message = [self messageAtCollectionViewIndexPath:indexPath];
         height = [self.delegate conversationViewController:self heightForMessage:message withCellWidth:width];
     } else {
         height = [self sizeForItemAtIndexPath:indexPath].height;
@@ -417,7 +416,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
 {
-    LYRMessage *message = [self.queryController objectAtIndexPath:[NSIndexPath indexPathForRow:indexPath.section inSection:0]];
+    LYRMessage *message = [self messageAtCollectionViewIndexPath:indexPath];
     if (kind == UICollectionElementKindSectionHeader ) {
         LYRUIConversationCollectionViewHeader *header = [self.collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:LYRUIMessageCellHeaderIdentifier forIndexPath:indexPath];
         // Should we display a sender label?
@@ -456,10 +455,10 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section
 {
     CGFloat height = 0;
-    LYRMessage *message = [self.queryController objectAtIndexPath:[NSIndexPath indexPathForRow:section inSection:0]];
+    LYRMessage *message = [self messageAtCollectionViewSection:section];
     if (section > 0) {
         // 1. If previous message was sent by a different user, add 10px
-        LYRMessage *previousMessage = [self.queryController objectAtIndexPath:[NSIndexPath indexPathForRow:section - 1 inSection:0]];;
+        LYRMessage *previousMessage = [self messageAtCollectionViewSection:section - 1];
         if (![message.sentByUserID isEqualToString:previousMessage.sentByUserID]) {
             height += 10;
         }
@@ -507,9 +506,9 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 {
     // Always show date label for the first section
     if (section == 0) return YES;
-    LYRMessage *message = [self.queryController objectAtIndexPath:[NSIndexPath indexPathForRow:section inSection:0]];
+    LYRMessage *message = [self messageAtCollectionViewSection:section];
     if (section > 0) {
-        LYRMessage *previousMessage = [self.queryController objectAtIndexPath:[NSIndexPath indexPathForRow:section - 1 inSection:0]];
+        LYRMessage *previousMessage = [self messageAtCollectionViewSection:section - 1];
         NSTimeInterval interval = [message.receivedAt timeIntervalSinceDate:previousMessage.receivedAt];
         // If it has been 60min since last message, show date label
         if (interval > self.dateDisplayTimeInterval) {
@@ -528,14 +527,14 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     }
     
     // 2. If the message if from current user, don't show sender label
-    LYRMessage *message = [self.queryController objectAtIndexPath:[NSIndexPath indexPathForRow:section inSection:0]];
+    LYRMessage *message = [self messageAtCollectionViewSection:section];
     if ([message.sentByUserID isEqualToString:self.layerClient.authenticatedUserID]) {
         return NO;
     }
 
     // 3. If the previous message was send by the same user, don't show label
     if (section > 0) {
-        LYRMessage *previousMessage = [self.queryController objectAtIndexPath:[NSIndexPath indexPathForRow:section - 1 inSection:0]];
+        LYRMessage *previousMessage = [self messageAtCollectionViewSection:section - 1];
         if ([previousMessage.sentByUserID isEqualToString:message.sentByUserID]) {
             return NO;
         }
@@ -546,7 +545,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 - (BOOL)shouldDisplayReadReceiptForSection:(NSUInteger)section
 {
     // Only show read receipt if last message was send by currently authenticated user
-    LYRMessage *message = [self.queryController objectAtIndexPath:[NSIndexPath indexPathForRow:section inSection:0]];
+    LYRMessage *message = [self messageAtCollectionViewSection:section];
     if ((section == ([self.queryController numberOfObjectsInSection:0] - 1)) && [message.sentByUserID isEqualToString:self.layerClient.authenticatedUserID]) {
         return YES;
     }
@@ -556,12 +555,12 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 - (BOOL)shouldDisplayParticipantInfo:(NSIndexPath *)indexPath
 {
     if (!self.shouldDisplayAvatarImage) return NO;
-    LYRMessage *message = [self.queryController objectAtIndexPath:[NSIndexPath indexPathForRow:indexPath.section inSection:0]];
+    LYRMessage *message = [self messageAtCollectionViewIndexPath:indexPath];
     if ([message.sentByUserID isEqualToString:self.layerClient.authenticatedUserID]) {
         return NO;
     }
     if (indexPath.section < self.collectionView.numberOfSections - 1) {
-        LYRMessage *nextMessage = [self.queryController objectAtIndexPath:[NSIndexPath indexPathForRow:indexPath.section + 1 inSection:0]];
+        LYRMessage *nextMessage = [self messageAtCollectionViewSection:indexPath.section + 1];
         // If the next message is sent by the same user, no
         if ([nextMessage.sentByUserID isEqualToString:message.sentByUserID]) {
             return NO;
@@ -577,7 +576,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 
 - (CGSize)sizeForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    LYRMessage *message = [self.queryController objectAtIndexPath:[NSIndexPath indexPathForRow:indexPath.section inSection:0]];
+    LYRMessage *message = [self messageAtCollectionViewIndexPath:indexPath];
     LYRMessagePart *part = message.parts.firstObject;
     CGSize size;
     if ([part.MIMEType isEqualToString:LYRUIMIMETypeTextPlain]) {
@@ -1028,7 +1027,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     for (LYRUIConversationCollectionViewFooter *footer in self.sectionFooters) {
         NSIndexPath *queryControllerIndexPath = [self.queryController indexPathForObject:footer.message];
         if (!queryControllerIndexPath) continue;
-        NSIndexPath *collectionViewIndexPath = [NSIndexPath indexPathForItem:0 inSection:queryControllerIndexPath.row];
+        NSIndexPath *collectionViewIndexPath = [self collectionViewIndexPathForQueryControllerIndexPath:queryControllerIndexPath];
         [self configureFooter:footer atIndexPath:collectionViewIndexPath];
     }
 
@@ -1194,8 +1193,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 
 - (void)configureFooter:(LYRUIConversationCollectionViewFooter *)footer atIndexPath:(NSIndexPath *)indexPath
 {
-    NSIndexPath *queryControllerIndexPath = [NSIndexPath indexPathForRow:indexPath.section inSection:0];
-    LYRMessage *message = [self.queryController objectAtIndexPath:queryControllerIndexPath];
+    LYRMessage *message = [self messageAtCollectionViewIndexPath:indexPath];
     footer.message = message;
     if ([self shouldDisplayReadReceiptForSection:indexPath.section]) {
         if ([self.dataSource respondsToSelector:@selector(conversationViewController:attributedStringForDisplayOfRecipientStatus:)]) {
@@ -1208,6 +1206,44 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     } else {
         [footer updateWithAttributedStringForRecipientStatus:nil];
     }
+}
+
+#pragma mark - Query Controller
+
+- (NSIndexPath *)queryControllerIndexPathForCollectionViewIndexPath:(NSIndexPath *)collectionViewIndexPath
+{
+    return [self queryControllerIndexPathForCollectionViewSection:collectionViewIndexPath.section];
+}
+
+- (NSIndexPath *)queryControllerIndexPathForCollectionViewSection:(NSInteger)collectionViewSection
+{
+    NSIndexPath *queryControllerIndexPath = [NSIndexPath indexPathForRow:collectionViewSection inSection:0];
+    return queryControllerIndexPath;
+}
+
+- (NSIndexPath *)collectionViewIndexPathForQueryControllerIndexPath:(NSIndexPath *)queryControllerIndexPath
+{
+    return [self collectionViewIndexPathForQueryControllerRow:queryControllerIndexPath.row];
+}
+
+- (NSIndexPath *)collectionViewIndexPathForQueryControllerRow:(NSInteger)queryControllerRow
+{
+    NSIndexPath *collectionViewIndexPath = [NSIndexPath indexPathForRow:0 inSection:queryControllerRow];
+    return collectionViewIndexPath;
+}
+
+- (LYRMessage *)messageAtCollectionViewIndexPath:(NSIndexPath *)collectionViewIndexPath
+{
+    NSIndexPath *queryControllerIndexPath = [self queryControllerIndexPathForCollectionViewIndexPath:collectionViewIndexPath];
+    LYRMessage *message = [self.queryController objectAtIndexPath:queryControllerIndexPath];
+    return message;
+}
+
+- (LYRMessage *)messageAtCollectionViewSection:(NSInteger)collectionViewSection
+{
+    NSIndexPath *queryControllerIndexPath = [self queryControllerIndexPathForCollectionViewSection:collectionViewSection];
+    LYRMessage *message = [self.queryController objectAtIndexPath:queryControllerIndexPath];
+    return message;
 }
 
 @end
