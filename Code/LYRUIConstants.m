@@ -1,5 +1,5 @@
 //
-//  LYRUIUIConstants.m
+//  LYRUIConstants.m
 //  LayerSample
 //
 //  Created by Kevin Coleman on 6/17/14.
@@ -21,7 +21,7 @@ UIColor *LYRUIGrayColor()
     return [UIColor colorWithRed:200.0/255.0 green:200.0/255.0 blue:200.0/255.0 alpha:1.0];
 }
 
-UIColor *LYRUILighGrayColor()
+UIColor *LYRUILightGrayColor()
 {
     return [UIColor colorWithRed:240.0f/255.0f green:240.0f/255.0f blue:240.0f/255.0f alpha:1.0];
 }

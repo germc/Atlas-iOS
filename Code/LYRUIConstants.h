@@ -1,5 +1,5 @@
 //
-//  LYRUIUIConstants.h
+//  LYRUIConstants.h
 //  LayerSample
 //
 //  Created by Kevin Coleman on 6/17/14.
@@ -14,7 +14,7 @@ UIColor *LYRUIDarkGrayColor();
 
 UIColor *LYRUIGrayColor();
 
-UIColor *LYRUILighGrayColor();
+UIColor *LYRUILightGrayColor();
 
 UIColor *LYRUIAddressBarGray();
 
