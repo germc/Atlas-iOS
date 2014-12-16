@@ -488,8 +488,9 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 - (void)updateRecipientStatusForMessage:(LYRMessage *)message
 {
     if (!message) return;
-    NSNumber *recipientStatus = [message.recipientStatusByUserID objectForKey:self.layerClient.authenticatedUserID];
-    if (![recipientStatus isEqualToNumber:[NSNumber numberWithInteger:LYRRecipientStatusRead]] ) {
+    NSNumber *recipientStatusNumber = [message.recipientStatusByUserID objectForKey:self.layerClient.authenticatedUserID];
+    LYRRecipientStatus recipientStatus = [recipientStatusNumber integerValue];
+    if (recipientStatus != LYRRecipientStatusRead) {
         NSError *error;
         BOOL success = [message markAsRead:&error];
         if (success) {
