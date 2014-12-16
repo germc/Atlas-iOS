@@ -25,8 +25,8 @@
     self = [super initWithFrame:frame];
     if (self) {
         _messageTextFont = [UIFont systemFontOfSize:14];
-        _bubbleViewCornerRadius = 12;
-        _avatarImageViewCornerRadius = LYRUIAvatarImageDiameter / 2;
+        _bubbleView.layer.cornerRadius = 12;
+        _avatarImageView.layer.cornerRadius = LYRUIAvatarImageDiameter / 2;
         
         _bubbleView = [[LYRUIMessageBubbleView alloc] init];
         _bubbleView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -35,7 +35,7 @@
         [self.contentView addSubview:_bubbleView];
         
         _avatarImageView = [[LYRUIAvatarImageView alloc] init];
-        _avatarImageView.backgroundColor = LYRUILighGrayColor();
+        _avatarImageView.backgroundColor = LYRUILightGrayColor();
         _avatarImageView.translatesAutoresizingMaskIntoConstraints = NO;
         _avatarImageView.layer.cornerRadius = _avatarImageViewCornerRadius;
         [self.contentView addSubview:_avatarImageView];
