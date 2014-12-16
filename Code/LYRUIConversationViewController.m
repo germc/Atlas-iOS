@@ -471,16 +471,16 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     if ([self shouldDisplaySenderLabelForSection:section]) {
         height += 30;
     }
-    return CGSizeMake([[UIScreen mainScreen] bounds].size.width, height);
+    return CGSizeMake(CGRectGetWidth(collectionView.frame), height);
 }
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForFooterInSection:(NSInteger)section
 {
     // If we display a read receipt...
     if ([self shouldDisplayReadReceiptForSection:section]) {
-        return CGSizeMake([[UIScreen mainScreen] bounds].size.width, 28);
+        return CGSizeMake(CGRectGetWidth(collectionView.frame), 28);
     }
-    return CGSizeMake([[UIScreen mainScreen] bounds].size.width, 6);
+    return CGSizeMake(CGRectGetWidth(collectionView.frame), 6);
 }
 
 #pragma mark - Recipient Status Methods
