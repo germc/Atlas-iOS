@@ -31,11 +31,13 @@
         _bubbleView = [[LYRUIMessageBubbleView alloc] init];
         _bubbleView.translatesAutoresizingMaskIntoConstraints = NO;
         _bubbleView.bubbleViewLabel.font = _messageTextFont;
+        _bubbleView.layer.cornerRadius = _bubbleViewCornerRadius;
         [self.contentView addSubview:_bubbleView];
         
         _avatarImageView = [[LYRUIAvatarImageView alloc] init];
         _avatarImageView.backgroundColor = LYRUILighGrayColor();
         _avatarImageView.translatesAutoresizingMaskIntoConstraints = NO;
+        _avatarImageView.layer.cornerRadius = _avatarImageViewCornerRadius;
         [self.contentView addSubview:_avatarImageView];
 
         [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleView
