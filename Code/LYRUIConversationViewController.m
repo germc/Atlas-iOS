@@ -401,7 +401,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     }
 }
 
-- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     CGFloat width = self.collectionView.bounds.size.width;
     CGFloat height;
@@ -417,12 +417,12 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
 {
     LYRMessage *message = [self messageAtCollectionViewIndexPath:indexPath];
-    if (kind == UICollectionElementKindSectionHeader ) {
+    if (kind == UICollectionElementKindSectionHeader) {
         LYRUIConversationCollectionViewHeader *header = [self.collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:LYRUIMessageCellHeaderIdentifier forIndexPath:indexPath];
         // Should we display a sender label?
         if ([self shouldDisplaySenderLabelForSection:indexPath.section]) {
-            id<LYRUIParticipant>participant = [self participantForIdentifier:message.sentByUserID];
-            if(participant) {
+            id<LYRUIParticipant> participant = [self participantForIdentifier:message.sentByUserID];
+            if (participant) {
                 [header updateWithAttributedStringForParticipantName:[[NSAttributedString alloc] initWithString:participant.fullName]];
             } else {
                 [header updateWithAttributedStringForParticipantName:[[NSAttributedString alloc] initWithString:@"No Matching Participant"]];
@@ -452,7 +452,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     }
 }
 
-- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section
 {
     CGFloat height = 0;
     LYRMessage *message = [self messageAtCollectionViewSection:section];
@@ -474,7 +474,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     return CGSizeMake([[UIScreen mainScreen] bounds].size.width, height);
 }
 
-- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout referenceSizeForFooterInSection:(NSInteger)section
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForFooterInSection:(NSInteger)section
 {
     // If we display a read receipt...
     if ([self shouldDisplayReadReceiptForSection:section]) {
@@ -539,6 +539,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
             return NO;
         }
     }
+
     return YES;
 }
 
