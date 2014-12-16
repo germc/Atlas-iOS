@@ -572,9 +572,6 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 {
     LYRMessage *message = [self.queryController objectAtIndexPath:[NSIndexPath indexPathForRow:indexPath.section inSection:0]];
     LYRMessagePart *part = message.parts.firstObject;
-    if (!part.isDownloaded) {
-        return CGSizeMake(48, 48);
-    }
     CGSize size;
     if ([part.MIMEType isEqualToString:LYRUIMIMETypeTextPlain]) {
         NSString *text = [[NSString alloc] initWithData:part.data encoding:NSUTF8StringEncoding];

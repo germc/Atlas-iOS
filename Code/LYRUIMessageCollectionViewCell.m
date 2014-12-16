@@ -90,10 +90,6 @@
 - (void)presentMessage:(LYRMessage *)message
 {
     LYRMessagePart *messagePart = message.parts.firstObject;
-    if (!messagePart.isDownloaded) {
-        [self.bubbleView displayDownloadActivityIndicator];
-        return;
-    }
     if ([messagePart.MIMEType isEqualToString:LYRUIMIMETypeTextPlain]) {
         NSString *text = [[NSString alloc] initWithData:messagePart.data encoding:NSUTF8StringEncoding];
         [self.bubbleView updateWithText:text];
