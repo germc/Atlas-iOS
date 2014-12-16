@@ -249,7 +249,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     self.queryController.delegate = self;
     NSError *error = nil;
     BOOL success = [self.queryController execute:&error];
-    if (!success) NSLog(@"LayerKit failed to execute query");
+    if (!success) NSLog(@"LayerKit failed to execute query with error: %@", error);
     [self.collectionView reloadData];
 }
 
@@ -981,11 +981,6 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 
 #pragma mark Notification Observer Delegate Methods
 
-- (void)queryControllerWillChangeContent:(LYRQueryController *)queryController
-{
-   NSLog(@"Changes Began");
-}
-
 - (void)queryController:(LYRQueryController *)controller
         didChangeObject:(id)object
             atIndexPath:(NSIndexPath *)indexPath
@@ -997,7 +992,6 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 
 - (void)queryControllerDidChangeContent:(LYRQueryController *)queryController
 {
-    NSLog(@"Content Changed");
     CGPoint bottomOffset = [self bottomOffset];
     CGFloat distanceToBottom = bottomOffset.y - self.collectionView.contentOffset.y;
     BOOL shouldScrollToBottom = distanceToBottom <= 50 && !self.collectionView.isTracking && !self.collectionView.isDragging && !self.collectionView.isDecelerating;
