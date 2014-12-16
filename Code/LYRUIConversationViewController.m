@@ -1096,9 +1096,6 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     [self.collectionView.collectionViewLayout invalidateLayout];
     [self.collectionView reloadData];
     [self scrollToBottomOfCollectionViewAnimated:NO];
-    [UIView animateWithDuration:0.5 animations:^{
-        self.collectionView.alpha = 1.0f;
-    }];
 }
 
 - (LYRConversation *)conversationWithParticipants:(NSSet *)participants
