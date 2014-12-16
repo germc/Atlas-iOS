@@ -22,7 +22,6 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-        self.layer.cornerRadius = 12;
         self.clipsToBounds = YES;
 
         self.bubbleViewLabel = [[UILabel alloc] init];

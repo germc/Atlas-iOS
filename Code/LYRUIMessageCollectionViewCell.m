@@ -24,21 +24,19 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
+        _messageTextFont = [UIFont systemFontOfSize:14];
+        _bubbleViewCornerRadius = 12;
+        _avatarImageViewCornerRadius = LYRUIAvatarImageDiameter / 2;
         
-        self.messageTextFont = [UIFont systemFontOfSize:14];
+        _bubbleView = [[LYRUIMessageBubbleView alloc] init];
+        _bubbleView.translatesAutoresizingMaskIntoConstraints = NO;
+        _bubbleView.bubbleViewLabel.font = _messageTextFont;
+        [self.contentView addSubview:_bubbleView];
         
-        self.bubbleViewCornerRadius = 12;
-        self.avatarImageViewCornerRadius = LYRUIAvatarImageDiameter;
-        
-        self.bubbleView = [[LYRUIMessageBubbleView alloc] init];
-        self.bubbleView.translatesAutoresizingMaskIntoConstraints = NO;
-        self.bubbleView.bubbleViewLabel.font = self.messageTextFont;
-        [self.contentView addSubview:self.bubbleView];
-        
-        self.avatarImageView = [[LYRUIAvatarImageView alloc] init];
-        self.avatarImageView.backgroundColor = LYRUILighGrayColor();
-        self.avatarImageView.translatesAutoresizingMaskIntoConstraints = NO;
-        [self.contentView addSubview:self.avatarImageView];
+        _avatarImageView = [[LYRUIAvatarImageView alloc] init];
+        _avatarImageView.backgroundColor = LYRUILighGrayColor();
+        _avatarImageView.translatesAutoresizingMaskIntoConstraints = NO;
+        [self.contentView addSubview:_avatarImageView];
 
         [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleView
                                                                      attribute:NSLayoutAttributeHeight

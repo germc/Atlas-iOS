@@ -794,9 +794,9 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
             }
             NSString *pushText = [self pushNotificationStringForMessagePart:messagePart];
             NSString *text = [NSString stringWithFormat:@"%@: %@", [sender fullName], pushText];
-            NSDictionary *pushOptions = [NSDictionary new];
+            NSDictionary *pushOptions;
             if (pushText) {
-                pushOptions =@{LYRMessageOptionsPushNotificationAlertKey: text,
+                pushOptions = @{LYRMessageOptionsPushNotificationAlertKey: text,
                                LYRMessageOptionsPushNotificationSoundNameKey: @"default"};
             }
             LYRMessage *message = [self.layerClient newMessageWithParts:@[messagePart]
