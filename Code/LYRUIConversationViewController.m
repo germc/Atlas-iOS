@@ -547,8 +547,11 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 - (BOOL)shouldDisplayReadReceiptForSection:(NSUInteger)section
 {
     // Only show read receipt if last message was sent by currently authenticated user
+    NSInteger lastSection = [self.queryController numberOfObjectsInSection:0] - 1;
+    if (section != lastSection) return NO;
+
     LYRMessage *message = [self messageAtCollectionViewSection:section];
-    if ((section == ([self.queryController numberOfObjectsInSection:0] - 1)) && [message.sentByUserID isEqualToString:self.layerClient.authenticatedUserID]) {
+    if ([message.sentByUserID isEqualToString:self.layerClient.authenticatedUserID]) {
         return YES;
     }
     return NO;
