@@ -101,7 +101,7 @@ static CGFloat const LSUnreadMessageCountLabelSize = 14.0f;
         _dateLabelFont = LYRUIMediumFont(14);
         _dateLabelColor = [UIColor grayColor];
         _unreadMessageIndicatorBackgroundColor = LYRUIBlueColor();
-        _backgroundColor = [UIColor whiteColor];
+        _cellBackgroundColor = [UIColor whiteColor];
         
         // Initialize Avatar Image
         self.conversationImageView = [[UIImageView alloc] init];
@@ -221,7 +221,7 @@ static CGFloat const LSUnreadMessageCountLabelSize = 14.0f;
     self.dateLabel.font = self.dateLabelFont;
     self.dateLabel.textColor = self.dateLabelColor;
     
-    self.backgroundColor = [UIColor whiteColor];
+    self.backgroundColor = self.cellBackgroundColor;
     
     [self.conversationLabel sizeToFit];
     [self.dateLabel sizeToFit];

@@ -29,6 +29,6 @@
 
 @property (nonatomic) UIColor *unreadMessageIndicatorBackgroundColor UI_APPEARANCE_SELECTOR;
 
-@property (nonatomic) UIColor *backgroundColor UI_APPEARANCE_SELECTOR;
+@property (nonatomic) UIColor *cellBackgroundColor UI_APPEARANCE_SELECTOR;
 
 @end
