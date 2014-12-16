@@ -1030,7 +1030,12 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
         [self.objectChanges removeAllObjects];
     } completion:nil];
 
-    // Since each section's footer content depends on the existence of other messages, we need to update footers even when the corresponding message to a footer has not changed.
+    // Since each section's content depends on other messages, we need to update each visible section even when a section's corresponding message has not changed.
+    for (UICollectionViewCell<LYRUIMessagePresenting> *cell in [self.collectionView visibleCells]) {
+        NSIndexPath *indexPath = [self.collectionView indexPathForCell:cell];
+        LYRMessage *message = [self messageAtCollectionViewIndexPath:indexPath];
+        [self configureCell:cell forMessage:message indexPath:indexPath];
+    }
     for (LYRUIConversationCollectionViewFooter *footer in self.sectionFooters) {
         NSIndexPath *queryControllerIndexPath = [self.queryController indexPathForObject:footer.message];
         if (!queryControllerIndexPath) continue;
