@@ -391,7 +391,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     }
 }
 
-#pragma mark – UICollectionViewDelegateFlowLayout Methods
+#pragma mark - UICollectionViewDelegateFlowLayout Methods
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
