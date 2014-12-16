@@ -1082,16 +1082,15 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 - (void)configureConversationWithAddressBar:(LYRUIAddressBarViewController *)addressBarViewController
 {
     NSSet *participants = [addressBarViewController.selectedParticipants valueForKey:@"participantIdentifier"];
-    if (!participants.count) {
-        self.conversation = nil;
-    } else {
-        LYRConversation *conversation = [self conversationWithParticipants:participants];
-        if (conversation) {
-            self.conversation = conversation;
-        } else {
-            self.conversation = [self.layerClient newConversationWithParticipants:participants options:nil error:nil];
+    LYRConversation *conversation;
+    if (participants.count > 0) {
+        conversation = [self conversationWithParticipants:participants];
+        if (!conversation) {
+            conversation = [self.layerClient newConversationWithParticipants:participants options:nil error:nil];
         }
     }
+    if (conversation == self.conversation) return;
+    self.conversation = conversation;
     [self setConversationViewTitle];
     [self configureAvatarImageDisplay];
     [self.collectionView.collectionViewLayout invalidateLayout];
