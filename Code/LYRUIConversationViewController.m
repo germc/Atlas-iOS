@@ -1102,6 +1102,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     [set addObject:self.layerClient.authenticatedUserID];
     LYRQuery *query = [LYRQuery queryWithClass:[LYRConversation class]];
     query.predicate = [LYRPredicate predicateWithProperty:@"participants" operator:LYRPredicateOperatorIsEqualTo value:set];
+    query.limit = 1;
     return [[self.layerClient executeQuery:query error:nil] lastObject];
 }
 
