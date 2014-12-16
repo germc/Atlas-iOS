@@ -1103,7 +1103,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     LYRQuery *query = [LYRQuery queryWithClass:[LYRConversation class]];
     query.predicate = [LYRPredicate predicateWithProperty:@"participants" operator:LYRPredicateOperatorIsEqualTo value:set];
     query.limit = 1;
-    return [[self.layerClient executeQuery:query error:nil] lastObject];
+    return [self.layerClient executeQuery:query error:nil].lastObject;
 }
 
 #pragma mark Send Button Enablement
