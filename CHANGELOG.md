@@ -9,10 +9,11 @@
 ### Bug Fixes
 * Fixed possibility of customizations via `UIAppearance` being overridden.
 * Fixed issue related to sending a push notification with `(null)` text. 
+* Fixed typo for property `conversationLabelColor` on `LYRUIConversationTableViewCell`.
 
 ### Enhancements
-* Refactored internal constants
-* Added support for external content
+* Refactored internal constants.
+* Added support for external content.
 
 ## x.x.x
 

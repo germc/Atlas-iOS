@@ -93,15 +93,15 @@ static CGFloat const LSUnreadMessageCountLabelSize = 14.0f;
 {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
-        
-        self.conversationLabelFont = LYRUIBoldFont(14);
-        self.conversationLabelColor = [UIColor blackColor];
-        self.lastMessageTextFont = LYRUILightFont(14);
-        self.lastMessageTextColor = [UIColor grayColor];
-        self.dateLabelFont = LYRUIMediumFont(14);
-        self.dateLabelColor = [UIColor grayColor];
-        self.unreadMessageIndicatorBackgroundColor = LYRUIBlueColor();
-        self.backgroundColor = [UIColor whiteColor];
+        //UIAppearance Proxy Defaults
+        _conversationLabelFont = LYRUIBoldFont(14);
+        _conversationLabelColor = [UIColor blackColor];
+        _lastMessageTextFont = LYRUILightFont(14);
+        _lastMessageTextColor = [UIColor grayColor];
+        _dateLabelFont = LYRUIMediumFont(14);
+        _dateLabelColor = [UIColor grayColor];
+        _unreadMessageIndicatorBackgroundColor = LYRUIBlueColor();
+        _backgroundColor = [UIColor whiteColor];
         
         // Initialize Avatar Image
         self.conversationImageView = [[UIImageView alloc] init];
