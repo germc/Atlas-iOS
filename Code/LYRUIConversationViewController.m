@@ -564,7 +564,8 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     if ([message.sentByUserID isEqualToString:self.layerClient.authenticatedUserID]) {
         return NO;
     }
-    if (indexPath.section < self.collectionView.numberOfSections - 1) {
+    NSInteger lastSection = [self.queryController numberOfObjectsInSection:0] - 1;
+    if (indexPath.section < lastSection) {
         LYRMessage *nextMessage = [self messageAtCollectionViewSection:indexPath.section + 1];
         // If the next message is sent by the same user, no
         if ([nextMessage.sentByUserID isEqualToString:message.sentByUserID]) {
