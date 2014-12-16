@@ -7,7 +7,7 @@
 //
 
 #import "LYRUIAvatarImageView.h"
-
+#import "LYRUIConstants.h"
 @interface LYRUIAvatarImageView ()
 
 @property (nonatomic) UILabel *initialsLabel;
@@ -30,7 +30,7 @@ CGFloat const LYRUIAvatarImageDiameter = 30;
         _initialsLabel.adjustsFontSizeToFitWidth = YES;
         _initialsLabel.minimumScaleFactor = 0.75;
         _initialsLabel.textColor = [UIColor blackColor];
-        _initialsLabel.font = [UIFont fontWithName:@"HelveticaNeue-Light" size:14];
+        _initialsLabel.font = LYRUILightFont(14);
         
         [self addSubview:_initialsLabel];
     

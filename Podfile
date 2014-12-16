@@ -5,7 +5,8 @@ source 'https://github.com/CocoaPods/Specs.git'
 
 def import_common_pods
   pod 'LayerUIKit', path: '.'
-  pod 'LayerKit'
+  #pod 'LayerKit'
+  pod 'LayerKit', git: 'git@github.com:layerhq/LayerKit.git', branch: 'feature/APPS-774-External-Content'
 end
 
 def import_testing_pods

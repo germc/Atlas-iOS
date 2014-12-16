@@ -24,6 +24,7 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
+        // UIAppearance Defaults
         _messageTextFont = [UIFont systemFontOfSize:14];
         _bubbleView.layer.cornerRadius = 12;
         _avatarImageView.layer.cornerRadius = LYRUIAvatarImageDiameter / 2;

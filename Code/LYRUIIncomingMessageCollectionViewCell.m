@@ -25,7 +25,7 @@ static CGFloat const LYRAvatarImageDiameter = 30.0f;
     if (self) {
         self.avatarImageView.clipsToBounds = YES;
         self.messageTextColor = [UIColor blackColor];
-        self.bubbleViewColor = LYRUILighGrayColor();
+        self.bubbleViewColor = LYRUILightGrayColor();
         
         [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.avatarImageView
                                                                      attribute:NSLayoutAttributeWidth

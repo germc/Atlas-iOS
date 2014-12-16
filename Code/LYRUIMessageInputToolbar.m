@@ -40,7 +40,7 @@ static CGFloat const LYRUIButtonHeight = 28;
         self.accessibilityLabel = @"Message Input Toolbar";
         self.translatesAutoresizingMaskIntoConstraints = NO;
         self.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-        self.backgroundColor =  LYRUILighGrayColor();
+        self.backgroundColor =  LYRUILightGrayColor();
         self.canEnableSendButton = YES;
 
         self.leftAccessoryButton = [[UIButton alloc] init];

@@ -28,12 +28,19 @@ static CGFloat const LSSelectionIndicatorSize = 30;
 {
     self = [super initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:reuseIdentifier];
     if (self) {
+        // UIAppearance Defaults
+        _boldTitleFont = [UIFont boldSystemFontOfSize:14];
+        _titleFont = [UIFont systemFontOfSize:14];
+        _titleColor =[UIColor blackColor];
+        _subtitleFont = [UIFont systemFontOfSize:12];
+        _subtitleColor = [UIColor grayColor];
+        
         self.textLabel.textAlignment = NSTextAlignmentCenter;
         self.selectionStyle = UITableViewCellSelectionStyleNone;
         self.backgroundColor = [UIColor whiteColor];
         
         self.avatarImageView = [[LYRUIAvatarImageView alloc] init];
-        self.avatarImageView.backgroundColor = LYRUILighGrayColor();
+        self.avatarImageView.backgroundColor = LYRUILightGrayColor();
         self.avatarImageView.layer.cornerRadius = LSSelectionIndicatorSize / 2;
         self.avatarImageView.translatesAutoresizingMaskIntoConstraints = NO;
         self.avatarImageView.alpha = 0.0f;
