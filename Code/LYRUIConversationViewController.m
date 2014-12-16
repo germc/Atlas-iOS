@@ -522,18 +522,18 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 
 - (BOOL)shouldDisplaySenderLabelForSection:(NSUInteger)section
 {
-    // 1. If conversation only has 2 participnat, don't show sender label
+    // 1. If the conversation only has 2 participants, don't show sender label
     if (!(self.conversation.participants.count > 2)) {
         return NO;
     }
     
-    // 2. If the message if from current user, don't show sender label
+    // 2. If the message is from the current user, don't show sender label
     LYRMessage *message = [self messageAtCollectionViewSection:section];
     if ([message.sentByUserID isEqualToString:self.layerClient.authenticatedUserID]) {
         return NO;
     }
 
-    // 3. If the previous message was send by the same user, don't show label
+    // 3. If the previous message was sent by the same user, don't show label
     if (section > 0) {
         LYRMessage *previousMessage = [self messageAtCollectionViewSection:section - 1];
         if ([previousMessage.sentByUserID isEqualToString:message.sentByUserID]) {
@@ -546,7 +546,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 
 - (BOOL)shouldDisplayReadReceiptForSection:(NSUInteger)section
 {
-    // Only show read receipt if last message was send by currently authenticated user
+    // Only show read receipt if last message was sent by currently authenticated user
     LYRMessage *message = [self messageAtCollectionViewSection:section];
     if ((section == ([self.queryController numberOfObjectsInSection:0] - 1)) && [message.sentByUserID isEqualToString:self.layerClient.authenticatedUserID]) {
         return YES;
