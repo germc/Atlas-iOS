@@ -379,7 +379,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     }
     [cell shouldDisplayAvatarImage:self.shouldDisplayAvatarImage];
 
-    if ([self shouldDisplayParticipantInfo:indexPath]) {
+    if ([self shouldDisplayParticipantInfoAtIndexPath:indexPath]) {
         [cell updateWithParticipant:[self participantForIdentifier:message.sentByUserID]];
     } else {
         [cell updateWithParticipant:nil];
@@ -552,7 +552,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     return NO;
 }
 
-- (BOOL)shouldDisplayParticipantInfo:(NSIndexPath *)indexPath
+- (BOOL)shouldDisplayParticipantInfoAtIndexPath:(NSIndexPath *)indexPath
 {
     if (!self.shouldDisplayAvatarImage) return NO;
     LYRMessage *message = [self messageAtCollectionViewIndexPath:indexPath];
