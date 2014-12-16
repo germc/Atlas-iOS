@@ -1000,6 +1000,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 
 - (void)queryControllerDidChangeContent:(LYRQueryController *)queryController
 {
+    NSLog(@"Content Changed");
     CGPoint bottomOffset = [self bottomOffset];
     CGFloat distanceToBottom = bottomOffset.y - self.collectionView.contentOffset.y;
     BOOL shouldScrollToBottom = distanceToBottom <= 50 && !self.collectionView.isTracking && !self.collectionView.isDragging && !self.collectionView.isDecelerating;

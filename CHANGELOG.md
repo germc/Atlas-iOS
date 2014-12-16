@@ -3,16 +3,16 @@
 ## 0.2.2
 
 ### Public API Changes
-* Added `bubbleViewCornerRadius` and `avatarImageViewConrnerRadius` properties to `LYRUIMessageCollectionViewCell`. These properties can be set via UIAppearance proxy.
+* Added `bubbleViewCornerRadius` property to `LYRUIMessageCollectionViewCell`.  
+* Added `avatarImageViewCornerRadius` property to `LYRUIMessageCollectionViewCell`.
 
 ### Bug Fixes
-* Removed UIAppearance Proxy customization code from UIKit. All customization must handled by developers.
-* Fixed issue related to sending a push notification with (Null)text. 
+* Fixed possibility of customizations via `UIAppearance` being overridden.
+* Fixed issue related to sending a push notification with `(null)` text. 
 
 ### Enhancements
-* Refactored internal UIConstants
-* Added UIActivitiyIndicator on UI Cells to demonstrate when external content is downloading. Cells will automatically reload with their content once it is downloaded. 
-
+* Refactored internal constants
+* Added support for external content
 
 ## x.x.x
 
