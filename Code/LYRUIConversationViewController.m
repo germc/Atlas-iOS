@@ -1093,8 +1093,6 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     self.conversation = conversation;
     [self setConversationViewTitle];
     [self configureAvatarImageDisplay];
-    [self.collectionView.collectionViewLayout invalidateLayout];
-    [self.collectionView reloadData];
     [self scrollToBottomOfCollectionViewAnimated:NO];
 }
 
