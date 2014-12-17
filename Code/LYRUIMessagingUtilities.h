@@ -28,17 +28,8 @@ CGRect LYRUIImageRectConstrainedToSize(CGSize imageSize, CGSize maxSize);
 
 UIImage *LYRUIAdjustOrientationForImage(UIImage *originalImage);
 
-NSData *LYRUIJPEGDataForImageWithConstraint(UIImage *image, CGFloat constraint);
-
-NSDictionary *LYRUIComponetsForDate(NSDate *date);
-
 LYRMessagePart *LYRUIMessagePartWithLocation(CLLocation *location);
 
 LYRMessagePart *LYRUIMessagePartWithText(NSString *text);
 
 LYRMessagePart *LYRUIMessagePartWithJPEGImage(UIImage *image);
-
-LYRMessagePart *LYRUIMessagePartWithPNGImage(UIImage *image);
-
-LYRMessagePart *LYRUIMessagePartWithDate(NSDate *date);
-
