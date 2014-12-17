@@ -77,8 +77,8 @@ LYRMessagePart *LYRUIMessagePartWithText(NSString *text)
 
 LYRMessagePart *LYRUIMessagePartWithLocation(CLLocation *location)
 {
-    NSNumber *lat = [NSNumber numberWithDouble:location.coordinate.latitude];
-    NSNumber *lon = [NSNumber numberWithDouble:location.coordinate.longitude];
+    NSNumber *lat = @(location.coordinate.latitude);
+    NSNumber *lon = @(location.coordinate.longitude);
     return [LYRMessagePart messagePartWithMIMEType:LYRUIMIMETypeLocation
                                               data:[NSJSONSerialization dataWithJSONObject: @{@"lat" : lat, @"lon" : lon} options:0 error:nil]];
 }
