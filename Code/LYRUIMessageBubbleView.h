@@ -9,6 +9,9 @@
 #import <UIKit/UIKit.h>
 #import <MapKit/MapKit.h>
 
+extern CGFloat const LYRUIMessageBubbleLabelHorizontalPadding;
+extern CGFloat const LYRUIMessageBubbleLabelVerticalPadding;
+
 /**
  @abstract The `LYRUIMessageBubbleView` class provides a lightweight, customizable view that 
  handles displaying the actual message content within a collection view cell.
