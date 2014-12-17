@@ -38,9 +38,4 @@
  */
 @property (nonatomic) LYRUIAvatarImageView *avatarImageView;
 
-/**
- @abstract Tells the receiver how wide its bubble view should be.
- */
-- (void)updateWithBubbleViewWidth:(CGFloat)bubbleViewWidth;
-
 @end

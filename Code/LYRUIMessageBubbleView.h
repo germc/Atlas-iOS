@@ -11,6 +11,8 @@
 
 extern CGFloat const LYRUIMessageBubbleLabelHorizontalPadding;
 extern CGFloat const LYRUIMessageBubbleLabelVerticalPadding;
+extern CGFloat const LYRUIMessageBubbleMapWidth;
+extern CGFloat const LYRUIMessageBubbleMapHeight;
 
 /**
  @abstract The `LYRUIMessageBubbleView` class provides a lightweight, customizable view that 

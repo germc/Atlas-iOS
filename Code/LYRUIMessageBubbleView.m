@@ -10,12 +10,17 @@
 
 CGFloat const LYRUIMessageBubbleLabelHorizontalPadding = 12;
 CGFloat const LYRUIMessageBubbleLabelVerticalPadding = 8;
+CGFloat const LYRUIMessageBubbleMapWidth = 200;
+CGFloat const LYRUIMessageBubbleMapHeight = 200;
 
 @interface LYRUIMessageBubbleView ()
 
 @property (nonatomic) UIActivityIndicatorView *activityIndicator;
 @property (nonatomic) UIView *longPressMask;
 @property (nonatomic) MKMapSnapshotter *snapshotter;
+
+@property (nonatomic) NSLayoutConstraint *mapWidthConstraint;
+@property (nonatomic) NSLayoutConstraint *imageWidthConstraint;
 
 @end
 
@@ -29,6 +34,7 @@ CGFloat const LYRUIMessageBubbleLabelVerticalPadding = 8;
         self.bubbleViewLabel = [[UILabel alloc] init];
         self.bubbleViewLabel.numberOfLines = 0;
         self.bubbleViewLabel.translatesAutoresizingMaskIntoConstraints = NO;
+        [self.bubbleViewLabel setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh + 1 forAxis:UILayoutConstraintAxisHorizontal];
         [self addSubview:self.bubbleViewLabel];
 
         self.bubbleImageView = [[UIImageView alloc] init];
@@ -54,6 +60,8 @@ CGFloat const LYRUIMessageBubbleLabelVerticalPadding = 8;
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.activityIndicator attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0]];
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.activityIndicator attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0]];
 
+        self.mapWidthConstraint = [NSLayoutConstraint constraintWithItem:self.bubbleImageView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:LYRUIMessageBubbleMapWidth];
+
         UILongPressGestureRecognizer *gestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
         [self addGestureRecognizer:gestureRecognizer];
     }
@@ -74,7 +82,12 @@ CGFloat const LYRUIMessageBubbleLabelVerticalPadding = 8;
     self.bubbleImageView.hidden = YES;
     self.bubbleViewLabel.hidden = NO;
     self.bubbleViewLabel.text = text;
+    self.bubbleImageView.image = nil;
     [self.snapshotter cancel];
+
+    [self removeConstraint:self.mapWidthConstraint];
+    [self removeConstraint:self.imageWidthConstraint];
+    [self setNeedsUpdateConstraints];
 }
 
 - (void)updateWithImage:(UIImage *)image
@@ -83,7 +96,18 @@ CGFloat const LYRUIMessageBubbleLabelVerticalPadding = 8;
     self.bubbleViewLabel.hidden = YES;
     self.bubbleImageView.hidden = NO;
     self.bubbleImageView.image = image;
+    self.bubbleViewLabel.text = nil;
     [self.snapshotter cancel];
+
+    [self removeConstraint:self.mapWidthConstraint];
+    [self removeConstraint:self.imageWidthConstraint];
+
+    CGFloat imageAspectRatio = image.size.width/image.size.height;
+    self.imageWidthConstraint = [NSLayoutConstraint constraintWithItem:self.bubbleImageView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.bubbleImageView attribute:NSLayoutAttributeHeight multiplier:imageAspectRatio constant:0];
+    // When the cell is being reused and configured again, it might temporarily still be the size for its prior content. So we need a less than required priority.
+    self.imageWidthConstraint.priority = UILayoutPriorityDefaultHigh;
+    [self addConstraint:self.imageWidthConstraint];
+    [self setNeedsUpdateConstraints];
 }
 
 - (void)updateWithLocation:(CLLocationCoordinate2D)location
@@ -91,7 +115,13 @@ CGFloat const LYRUIMessageBubbleLabelVerticalPadding = 8;
     self.activityIndicator.hidden = YES;
     self.bubbleViewLabel.hidden = YES;
     self.bubbleImageView.hidden = YES;
+    self.bubbleViewLabel.text = nil;
+    self.bubbleImageView.image = nil;
     [self.snapshotter cancel];
+
+    [self removeConstraint:self.imageWidthConstraint];
+    [self addConstraint:self.mapWidthConstraint];
+    [self setNeedsUpdateConstraints];
     
     MKMapSnapshotOptions *options = [[MKMapSnapshotOptions alloc] init];
     MKCoordinateSpan span = MKCoordinateSpanMake(0.005, 0.005);
