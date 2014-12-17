@@ -63,7 +63,7 @@
 - (void)updateWithAttributedStringForParticipantName:(NSAttributedString *)participantName
 {
     if (participantName.length) {
-        self.participantLabel.text = participantName.string;
+        self.participantLabel.attributedText = participantName;
     } else {
         self.participantLabel.text = @"Unknown User";
     }
