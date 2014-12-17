@@ -115,7 +115,7 @@
 
 - (void)updateWithBubbleViewWidth:(CGFloat)bubbleViewWidth
 {
-    self.bubbleViewWidthConstraint.constant = bubbleViewWidth + 26; // Adding 24px for bubble view horizontal padding + 2px for extra coverage.
+    self.bubbleViewWidthConstraint.constant = bubbleViewWidth + LYRUIMessageBubbleLabelHorizontalPadding * 2;
 }
 
 - (void)setMessageTextFont:(UIFont *)messageTextFont

@@ -598,6 +598,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     } else {
         size = CGSizeMake(320, 10);
     }
+    size.width = ceil(size.width);
     size.height = ceil(size.height);
     return size;
 }
