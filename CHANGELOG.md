@@ -6,6 +6,7 @@
 * Added `bubbleViewCornerRadius` property to `LYRUIMessageCollectionViewCell`.  
 * Added `avatarImageViewCornerRadius` property to `LYRUIMessageCollectionViewCell`.
 * Changed `backgroundColor` property to `cellBackgroundColor` on `LYRUIConversationTableViewCell`.
+* Removed `updateWithBubbleViewWidth:` from `LYRUIMessageCollectionViewCell`.
 
 ### Bug Fixes
 * Fixed possibility of customizations via `UIAppearance` being overridden.

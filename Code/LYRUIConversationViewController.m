@@ -376,10 +376,6 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 {
     [cell presentMessage:message];
     [cell updateWithMessageSentState:message.isSent];
-    if ([cell isKindOfClass:[LYRUIMessageCollectionViewCell class]]) {
-        CGSize size = [self sizeForItemAtIndexPath:indexPath];
-        [(LYRUIMessageCollectionViewCell *)cell updateWithBubbleViewWidth:size.width];
-    }
     [cell shouldDisplayAvatarImage:self.shouldDisplayAvatarImage];
 
     if ([self shouldDisplayParticipantInfoAtIndexPath:indexPath]) {
@@ -597,7 +593,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
         UIImage *image = [UIImage imageWithData:part.data];
         size = LYRUIImageSize(image);
     } else if ([part.MIMEType isEqualToString:LYRUIMIMETypeLocation]) {
-        size = CGSizeMake(200, 200);
+        size = CGSizeMake(LYRUIMessageBubbleMapWidth, LYRUIMessageBubbleMapHeight);
     } else {
         size = CGSizeMake(320, 10);
     }

@@ -14,7 +14,6 @@
 @interface LYRUIMessageCollectionViewCell ()
 
 @property (nonatomic) BOOL messageSentState;
-@property (nonatomic) NSLayoutConstraint *bubbleViewWidthConstraint;
 
 @end
 
@@ -59,6 +58,15 @@
                                                                      attribute:NSLayoutAttributeTop
                                                                     multiplier:1.0
                                                                       constant:0]];
+
+        CGFloat maxBubbleWidth = LYRUIMaxCellWidth() + LYRUIMessageBubbleLabelHorizontalPadding * 2;
+        [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleView
+                                                                     attribute:NSLayoutAttributeWidth
+                                                                     relatedBy:NSLayoutRelationLessThanOrEqual
+                                                                        toItem:nil
+                                                                     attribute:NSLayoutAttributeNotAnAttribute
+                                                                    multiplier:1.0
+                                                                      constant:maxBubbleWidth]];
     }
     return self;
 }
@@ -102,25 +110,6 @@
 - (void)updateWithMessageSentState:(BOOL)messageSentState
 {
     self.messageSentState = messageSentState;
-}
-
-- (void)updateWithBubbleViewWidth:(CGFloat)bubbleViewWidth
-{
-    CGFloat constraintWidth = bubbleViewWidth + LYRUIMessageBubbleLabelHorizontalPadding * 2;
-
-    if (!self.bubbleViewWidthConstraint) {
-        // We don't want to add the constraint until we've been given a width.
-        self.bubbleViewWidthConstraint = [NSLayoutConstraint constraintWithItem:self.bubbleView
-                                                                      attribute:NSLayoutAttributeWidth
-                                                                      relatedBy:NSLayoutRelationEqual
-                                                                         toItem:nil
-                                                                      attribute:NSLayoutAttributeNotAnAttribute
-                                                                     multiplier:1.0
-                                                                       constant:constraintWidth];
-        [self.contentView addConstraint:self.bubbleViewWidthConstraint];
-    } else {
-        self.bubbleViewWidthConstraint.constant = constraintWidth;
-    }
 }
 
 - (void)setMessageTextFont:(UIFont *)messageTextFont
