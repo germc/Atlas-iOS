@@ -17,13 +17,13 @@
 @interface LYRUIConversationCollectionViewFooter : UICollectionReusableView
 
 /**
- @abstract Displays a string of text representing the read status of a message
- @param recipientStatus the string representing the status
+ @abstract Displays a string of text representing the read status of a message.
+ @param recipientStatus The string representing the status.
  */
 - (void)updateWithAttributedStringForRecipientStatus:(NSAttributedString *)recipientStatus;
 
 /**
- @abstract The message associated with the footer
+ @abstract The message associated with the footer.
  */
 @property (nonatomic) LYRMessage *message;
 
