@@ -35,6 +35,8 @@
 @property (nonatomic) NSMutableArray *objectChanges;
 @property (nonatomic) NSHashTable *sectionFooters;
 @property (nonatomic, getter=isFirstAppearance) BOOL firstAppearance;
+@property (nonatomic) LYRUIIncomingMessageCollectionViewCell *sizingIncomingMessageCell;
+@property (nonatomic) LYRUIOutgoingMessageCollectionViewCell *sizingOutgoingMessageCell;
 
 @end
 
@@ -588,7 +590,8 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     CGSize size;
     if ([part.MIMEType isEqualToString:LYRUIMIMETypeTextPlain]) {
         NSString *text = [[NSString alloc] initWithData:part.data encoding:NSUTF8StringEncoding];
-        size = LYRUITextPlainSize(text, [UIFont systemFontOfSize:14]);
+        UIFont *font = [self messageCellFontForMessage:message];
+        size = LYRUITextPlainSize(text, font);
         size.height = size.height + LYRUIMessageBubbleLabelVerticalPadding * 2;
     } else if ([part.MIMEType isEqualToString:LYRUIMIMETypeImageJPEG] || [part.MIMEType isEqualToString:LYRUIMIMETypeImagePNG]) {
         UIImage *image = [UIImage imageWithData:part.data];
@@ -601,6 +604,31 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     size.width = ceil(size.width);
     size.height = ceil(size.height);
     return size;
+}
+
+- (UIFont *)messageCellFontForMessage:(LYRMessage *)message
+{
+    // The font is customizable via UIAppearance and the system doesn't set the custom value until a view is added to the hierarchy. So we create dummy cells and add them to the hierarchy temporarily. We only add them once (not on every use) assuming that the font won't be changed later.
+    LYRUIMessageCollectionViewCell<LYRUIMessagePresenting> *cell;
+    BOOL firstUse = NO;
+    if ([self.layerClient.authenticatedUserID isEqualToString:message.sentByUserID]) {
+        if (!self.sizingOutgoingMessageCell) {
+            self.sizingOutgoingMessageCell = [LYRUIOutgoingMessageCollectionViewCell new];
+            firstUse = YES;
+        }
+        cell = self.sizingOutgoingMessageCell;
+    } else {
+        if (!self.sizingIncomingMessageCell) {
+            self.sizingIncomingMessageCell = [LYRUIIncomingMessageCollectionViewCell new];
+            firstUse = YES;
+        }
+        cell = self.sizingIncomingMessageCell;
+    }
+    if (firstUse) {
+        [self.view addSubview:cell];
+        [cell removeFromSuperview];
+    }
+    return cell.messageTextFont;
 }
 
 #pragma mark - Notification Handlers
