@@ -27,11 +27,10 @@ CGFloat LYRUIMaxCellHeight()
 
 CGSize LYRUITextPlainSize(NSString *text, UIFont *font)
 {
-    NSAttributedString *attributedText = [[NSAttributedString alloc] initWithString:text
-                                                                         attributes:@{NSFontAttributeName: font}];
-    CGRect rect = [attributedText boundingRectWithSize:(CGSize){LYRUIMaxCellWidth(), CGFLOAT_MAX}
-                                               options:NSStringDrawingUsesLineFragmentOrigin
-                                               context:nil];
+    CGRect rect = [text boundingRectWithSize:CGSizeMake(LYRUIMaxCellWidth(), CGFLOAT_MAX)
+                                     options:NSStringDrawingUsesLineFragmentOrigin
+                                  attributes:@{NSFontAttributeName: font}
+                                     context:nil];
     return rect.size;
 }
 
