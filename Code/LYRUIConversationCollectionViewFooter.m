@@ -27,8 +27,13 @@
         self.recipientStatusLabel = [[UILabel alloc] init];
         self.recipientStatusLabel.font = [UIFont boldSystemFontOfSize:12];
         self.recipientStatusLabel.textColor = [UIColor grayColor];
+        self.recipientStatusLabel.textAlignment = NSTextAlignmentRight;
         self.recipientStatusLabel.translatesAutoresizingMaskIntoConstraints = NO;
         [self addSubview:self.recipientStatusLabel];
+
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.recipientStatusLabel attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1.0 constant:2]];
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.recipientStatusLabel attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1.0 constant:20]];
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.recipientStatusLabel attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeRight multiplier:1.0 constant:-20]];
     }
     return self;
 }
@@ -42,21 +47,6 @@
 - (void)updateWithAttributedStringForRecipientStatus:(NSAttributedString *)recipientStatus
 {
     self.recipientStatusLabel.attributedText = recipientStatus;
-    [self.recipientStatusLabel sizeToFit];
-    // Remove constraints if they exist
-    if ([self.constraints containsObject:self.recipientStatusLabelWidthConstraint]) {
-        [self removeConstraint:self.recipientStatusLabelWidthConstraint];
-    }
-    if ([self.constraints containsObject:self.recipientStatusLabelHeightConstraint]) {
-        [self removeConstraint:self.recipientStatusLabelHeightConstraint];
-    }
-    // Add constraints
-    self.recipientStatusLabelWidthConstraint = [NSLayoutConstraint constraintWithItem:self.recipientStatusLabel attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:self.recipientStatusLabel.frame.size.width];
-    self.recipientStatusLabelHeightConstraint = [NSLayoutConstraint constraintWithItem:self.recipientStatusLabel attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:self.recipientStatusLabel.frame.size.height];
-    [self addConstraint:self.recipientStatusLabelWidthConstraint];
-    [self addConstraint:self.recipientStatusLabelHeightConstraint];
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:self.recipientStatusLabel attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeRight multiplier:1.0 constant:-20]];
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:self.recipientStatusLabel attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1.0 constant:2]];
 }
 
 @end
