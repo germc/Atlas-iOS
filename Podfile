@@ -9,6 +9,8 @@ def import_common_pods
 end
 
 def import_testing_pods
+  pod 'KIFViewControllerActions', git: 'git@github.com:blakewatters/KIFViewControllerActions.git'
+  pod 'LYRCountDownLatch', git: 'git@github.com:layerhq/LYRCountDownLatch.git'
   pod 'KIF'
   pod 'Expecta'
   pod 'OCMock'

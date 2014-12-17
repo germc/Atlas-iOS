@@ -10,6 +10,11 @@
 #import "LayerKitMock.h"
 #import "LYRUISampleConversationListViewController.h"
 
+static BOOL LYRIsRunningTests()
+{
+    return (NSClassFromString(@"XCTestCase") || [[[NSProcessInfo processInfo] environment] valueForKey:@"XCInjectBundle"]);
+}
+
 @interface LYRUIAppDelegate ()
 
 @end
@@ -22,15 +27,23 @@
 {
     LYRUserMock *mockUser = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameRussell];
     LYRClientMock *layerClient = [LYRClientMock layerClientMockWithAuthenticatedUserID:mockUser.participantIdentifier];
-    
-    LYRUISampleConversationListViewController *controller = [LYRUISampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)layerClient];
-    UINavigationController *rootViewController = [[UINavigationController alloc] initWithRootViewController:controller];
-    
-    // Add the navigation controller to the main window and make it visible
-    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    self.window.rootViewController = rootViewController;
-    [self.window makeKeyAndVisible];
-    
+
+    if (!LYRIsRunningTests()) {
+        LYRUISampleConversationListViewController *controller = [LYRUISampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)layerClient];
+        UINavigationController *rootViewController = [[UINavigationController alloc] initWithRootViewController:controller];
+        
+        // Add the navigation controller to the main window and make it visible
+        self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+        self.window.rootViewController = rootViewController;
+        [self.window makeKeyAndVisible];
+    } else {
+//        UIViewController *controller = [[UIViewController alloc] init];
+//        // Add the navigation controller to the main window and make it visible
+//        self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+//        self.window.rootViewController = rootViewController;
+//        [self.window makeKeyAndVisible];
+    }
+
     return YES;
 }
 
