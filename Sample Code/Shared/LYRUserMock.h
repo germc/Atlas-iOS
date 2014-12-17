@@ -34,4 +34,6 @@ typedef NS_ENUM(NSUInteger, LYRClientMockUserName){
 
 + (instancetype)randomUser;
 
++ (NSSet *)participantsForIdentifiers:(NSSet *)identifiers;
+
 @end

@@ -42,13 +42,24 @@
 - (void)hydrateConversationsForAuthenticatedUserID:(NSString *)authenticatedUserID count:(NSUInteger)count
 {
     self.authenticatedUserID = authenticatedUserID;
-    
     for (int i = 0; i < count; i++) {
-        LYRUserMock *user = [LYRUserMock randomUser];
-        LYRConversationMock *conversation = [LYRConversationMock newConversationWithParticipants:[NSSet setWithObjects:user.participantIdentifier, self.authenticatedUserID, nil] options:nil];
-        [self hydrateMessagesForConversation:conversation];
+        [self hydrateConversationForAuthenticatedUserID:authenticatedUserID];
     }
-    [self broadCastChanges];
+}
+
+- (void)hydrateConversationForAuthenticatedUserID:(NSString *)authenticatedUserID
+{
+    self.authenticatedUserID = authenticatedUserID;
+    LYRUserMock *user = [LYRUserMock randomUser];
+    LYRConversationMock *conversation = [LYRConversationMock newConversationWithParticipants:[NSSet setWithObjects:user.participantIdentifier, self.authenticatedUserID, nil] options:nil];
+    [self hydrateMessagesForConversation:conversation];
+}
+
+- (void)resetContentStore
+{
+    [self.conversations removeAllObjects];
+    [self.messages removeAllObjects];
+    [self.mockObjectChanges removeAllObjects];
 }
 
 - (void)hydrateMessagesForConversation:(LYRConversationMock *)conversation
@@ -84,7 +95,8 @@
     [self.conversations addObject:conversation];
     NSDictionary *mockChangeObject = @{LYRMockObjectChangeObjectKey : conversation,
                                        LYRMockObjectChangeChangeTypeKey : [NSNumber numberWithInt:LYRObjectChangeTypeCreate]};
-     [self.mockObjectChanges addObject:mockChangeObject];
+    [self.mockObjectChanges addObject:mockChangeObject];
+    [self broadCastChanges];
     
 }
 
@@ -93,6 +105,7 @@
     NSDictionary *mockChangeObject = @{LYRMockObjectChangeObjectKey : conversation,
                                        LYRMockObjectChangeChangeTypeKey : [NSNumber numberWithInt:LYRObjectChangeTypeUpdate]};
     [self.mockObjectChanges addObject:mockChangeObject];
+    [self broadCastChanges];
 }
 
 - (void)deleteConversation:(LYRConversation *)conversation
@@ -101,6 +114,7 @@
     NSDictionary *mockChangeObject = @{LYRMockObjectChangeObjectKey : conversation,
                                        LYRMockObjectChangeChangeTypeKey : [NSNumber numberWithInt:LYRObjectChangeTypeDelete]};
     [self.mockObjectChanges addObject:mockChangeObject];
+    [self broadCastChanges];
 }
 
 - (LYRConversationMock *)conversationForIdentifier:(NSURL *)identifier

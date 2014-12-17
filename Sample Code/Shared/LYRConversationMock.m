@@ -130,7 +130,7 @@
 - (BOOL)delete:(LYRDeletionMode)deletionMode error:(NSError **)error
 {
     self.isDeleted = YES;
-    [[LYRMockContentStore sharedStore] broadCastChanges];
+    [[LYRMockContentStore sharedStore] deleteConversation:self];
     return YES;
 }
 

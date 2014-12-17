@@ -11,6 +11,7 @@
 @interface LYRQueryControllerMock ()
 
 @property (nonatomic) NSOrderedSet *objects;
+@property (nonatomic) NSOrderedSet *oldObjects;
 
 @end
 
@@ -26,6 +27,8 @@
     self = [super init];
     if (self) {
         _query = query;
+        _objects = [NSOrderedSet new];
+        _objects = [NSOrderedSet new];
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(mockObjectsDidChange:)
                                                      name:LYRMockObjectsDidChangeNotification
@@ -68,11 +71,12 @@
 - (void)mockObjectsDidChange:(NSNotification *)notification
 {
     NSLog(@"Changes %@", notification);
+    self.oldObjects = [self.objects copy];
     [self execute:nil];
     [self.delegate queryControllerWillChangeContent:self];
     for (NSDictionary *change in notification.object) {
         if ([[change valueForKey:LYRMockObjectChangeObjectKey] isKindOfClass:[LYRConversationMock class]]) {
-            if (self.query.queryableClass == [LYRConversation class]) {
+            if ([(Class)self.query.queryableClass isEqual:[LYRConversation class]]) {
                 [self broadcastChange:change];
             }
         } else {
@@ -89,17 +93,18 @@
     id objectMock = [mockObjectChange valueForKey:LYRMockObjectChangeObjectKey];
     LYRObjectChangeType changeType = [[mockObjectChange valueForKey:LYRMockObjectChangeChangeTypeKey] integerValue];
     
-    NSUInteger index = [self.objects indexOfObject:objectMock];
+    NSUInteger newIndex = [self.objects indexOfObject:objectMock];
+    NSUInteger oldIndex = [self.oldObjects indexOfObject:objectMock];
     
     switch (changeType) {
         case LYRObjectChangeTypeCreate:
-            [self.delegate queryController:self didChangeObject:objectMock atIndexPath:nil forChangeType:LYRQueryControllerChangeTypeInsert newIndexPath:[NSIndexPath indexPathForRow:index inSection:0]];
+            [self.delegate queryController:self didChangeObject:objectMock atIndexPath:nil forChangeType:LYRQueryControllerChangeTypeInsert newIndexPath:[NSIndexPath indexPathForRow:newIndex inSection:0]];
             break;
         case LYRObjectChangeTypeUpdate:
-            [self.delegate queryController:self didChangeObject:objectMock atIndexPath:[NSIndexPath indexPathForRow:index inSection:0] forChangeType:LYRQueryControllerChangeTypeUpdate newIndexPath:nil];
+            [self.delegate queryController:self didChangeObject:objectMock atIndexPath:[NSIndexPath indexPathForRow:newIndex inSection:0] forChangeType:LYRQueryControllerChangeTypeUpdate newIndexPath:nil];
             break;
         case LYRObjectChangeTypeDelete:
-            [self.delegate queryController:self didChangeObject:objectMock atIndexPath:[NSIndexPath indexPathForRow:index inSection:0] forChangeType:LYRQueryControllerChangeTypeDelete newIndexPath:nil];
+            [self.delegate queryController:self didChangeObject:objectMock atIndexPath:[NSIndexPath indexPathForRow:oldIndex inSection:0] forChangeType:LYRQueryControllerChangeTypeDelete newIndexPath:nil];
             break;
         default:
             break;

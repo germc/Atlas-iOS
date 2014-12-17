@@ -89,6 +89,15 @@ NSString *const LYRMockUserIDDoug = @"0000000007";
     return nil;
 }
 
++ (NSSet *)participantsForIdentifiers:(NSSet *)identifiers
+{
+    NSMutableArray *users = [NSMutableArray new];
+    for (NSString *identifier in [identifiers allObjects]) {
+        [users addObject:[self mockUserForIdentifier:identifier]];
+    }
+    return [NSSet setWithArray:users];
+}
+
 + (instancetype)randomUser
 {
     int randomUserName = arc4random_uniform(6);
