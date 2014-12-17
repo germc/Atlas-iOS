@@ -22,6 +22,8 @@ CGSize LYRUITextPlainSize(NSString *string, UIFont *font);
 
 CGSize LYRUIImageSize(UIImage *image);
 
+CGSize LYRUISizeProportionallyConstrainedToSize(CGSize nativeSize, CGSize maxSize);
+
 CGRect LYRUIImageRectConstrainedToSize(CGSize imageSize, CGSize maxSize);
 
 UIImage *LYRUIAdjustOrientationForImage(UIImage *originalImage);

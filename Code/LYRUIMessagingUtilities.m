@@ -36,32 +36,28 @@ CGSize LYRUITextPlainSize(NSString *text, UIFont *font)
 
 CGSize LYRUIImageSize(UIImage *image)
 {
+    CGSize maxSize = CGSizeMake(LYRUIMaxCellWidth(), LYRUIMaxCellHeight());
+    CGSize itemSize = LYRUISizeProportionallyConstrainedToSize(image.size, maxSize);
+    return itemSize;
+}
+
+CGSize LYRUISizeProportionallyConstrainedToSize(CGSize nativeSize, CGSize maxSize)
+{
     CGSize itemSize;
-    
-    CGFloat widthScale = LYRUIMaxCellWidth() / image.size.width;
-    CGFloat heightScale = LYRUIMaxCellHeight() / image.size.height;
+    CGFloat widthScale = maxSize.width / nativeSize.width;
+    CGFloat heightScale = maxSize.height / nativeSize.height;
     if (heightScale < widthScale) {
-        itemSize = CGSizeMake(image.size.width * heightScale, LYRUIMaxCellHeight());
+        itemSize = CGSizeMake(nativeSize.width * heightScale, maxSize.height);
     } else {
-        itemSize = CGSizeMake(LYRUIMaxCellWidth(), image.size.height * widthScale);
+        itemSize = CGSizeMake(maxSize.width, nativeSize.height * widthScale);
     }
     return itemSize;
 }
 
 CGRect LYRUIImageRectConstrainedToSize(CGSize imageSize, CGSize maxSize)
 {
-    CGRect thumbRect;
-    
-    if (imageSize.width > imageSize.height) {
-        double ratio = maxSize.width/imageSize.width;
-        double height = imageSize.height * ratio;
-        thumbRect = CGRectMake(0, 0, maxSize.width, height);
-    } else {
-        double ratio = maxSize.height/imageSize.height;
-        double width = imageSize.width * ratio;
-        thumbRect = CGRectMake(0, 0, width, maxSize.height);
-    }
-    
+    CGSize itemSize = LYRUISizeProportionallyConstrainedToSize(imageSize, maxSize);
+    CGRect thumbRect = {0, 0, itemSize};
     return thumbRect;
 }
 
