@@ -10,11 +10,11 @@
 #import <LayerKit/LayerKit.h>
 #import <MapKit/MapKit.h>
 
-extern NSString * const LYRUIMIMETypeTextPlain; /// text/plain
-extern NSString * const LYRUIMIMETypeImagePNG;  /// image/png
-extern NSString * const LYRUIMIMETypeImageJPEG; /// image/jpeg
-extern NSString * const LYRUIMIMETypeLocation;  /// location/coordinate
-extern NSString * const LYRUIMIMETypeDate; // text/date
+extern NSString *const LYRUIMIMETypeTextPlain; /// text/plain
+extern NSString *const LYRUIMIMETypeImagePNG;  /// image/png
+extern NSString *const LYRUIMIMETypeImageJPEG; /// image/jpeg
+extern NSString *const LYRUIMIMETypeLocation;  /// location/coordinate
+extern NSString *const LYRUIMIMETypeDate; // text/date
 
 CGFloat LYRUIMaxCellWidth();
 

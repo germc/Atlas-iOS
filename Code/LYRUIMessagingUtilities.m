@@ -8,12 +8,12 @@
 
 #import "LYRUIMessagingUtilities.h"
 
-NSString * const LYRUIMIMETypeTextPlain = @"text/plain";
-NSString * const LYRUIMIMETypeTextHTML = @"text/HTML";
-NSString * const LYRUIMIMETypeImagePNG = @"image/png";
-NSString * const LYRUIMIMETypeImageJPEG = @"image/jpeg";
-NSString * const LYRUIMIMETypeLocation = @"location/coordinate";
-NSString * const LYRUIMIMETypeDate = @"text/date";
+NSString *const LYRUIMIMETypeTextPlain = @"text/plain";
+NSString *const LYRUIMIMETypeTextHTML = @"text/HTML";
+NSString *const LYRUIMIMETypeImagePNG = @"image/png";
+NSString *const LYRUIMIMETypeImageJPEG = @"image/jpeg";
+NSString *const LYRUIMIMETypeLocation = @"location/coordinate";
+NSString *const LYRUIMIMETypeDate = @"text/date";
 
 CGFloat LYRUIMaxCellWidth()
 {
