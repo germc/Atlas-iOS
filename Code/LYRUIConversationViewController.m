@@ -589,7 +589,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     if ([part.MIMEType isEqualToString:LYRUIMIMETypeTextPlain]) {
         NSString *text = [[NSString alloc] initWithData:part.data encoding:NSUTF8StringEncoding];
         size = LYRUITextPlainSize(text, [UIFont systemFontOfSize:14]);
-        size.height = size.height + 16; // Adding 16 to account for default vertical padding for text in bubble view
+        size.height = size.height + LYRUIMessageBubbleLabelVerticalPadding * 2;
     } else if ([part.MIMEType isEqualToString:LYRUIMIMETypeImageJPEG] || [part.MIMEType isEqualToString:LYRUIMIMETypeImagePNG]) {
         UIImage *image = [UIImage imageWithData:part.data];
         size = LYRUIImageSize(image);
