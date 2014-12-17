@@ -79,8 +79,8 @@ LYRMessagePart *LYRUIMessagePartWithLocation(CLLocation *location)
 {
     NSNumber *lat = @(location.coordinate.latitude);
     NSNumber *lon = @(location.coordinate.longitude);
-    return [LYRMessagePart messagePartWithMIMEType:LYRUIMIMETypeLocation
-                                              data:[NSJSONSerialization dataWithJSONObject: @{@"lat" : lat, @"lon" : lon} options:0 error:nil]];
+    NSData *data = [NSJSONSerialization dataWithJSONObject:@{@"lat": lat, @"lon": lon} options:0 error:nil];
+    return [LYRMessagePart messagePartWithMIMEType:LYRUIMIMETypeLocation data:data];
 }
 
 LYRMessagePart *LYRUIMessagePartWithJPEGImage(UIImage *image)
