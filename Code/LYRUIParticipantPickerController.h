@@ -26,9 +26,9 @@
 - (void)participantSelectionViewControllerDidCancel:(LYRUIParticipantPickerController *)participantSelectionViewController;
 
 /**
- @abstract Tells the receiver that the user has selected a set of participants from a participant selection view.
+ @abstract Tells the receiver that the user has selected a participant from a participant selection view.
  @param participantSelectionViewController The participant selection view in which the selection was made.
- @param participants The set of participants that was selected.
+ @param participant The participant who was selected.
  */
 - (void)participantSelectionViewController:(LYRUIParticipantPickerController *)participantSelectionViewController didSelectParticipant:(id<LYRUIParticipant>)participant;
 
@@ -56,7 +56,7 @@
 @end
 
 /**
- @abstract Displays a list of participants in a navigation controller and allows for searching of participants
+ @abstract Displays a list of participants in a navigation controller and allows for searching of participants.
  */
 @interface LYRUIParticipantPickerController : UINavigationController
 
@@ -95,7 +95,7 @@
 ///---------------------------------
 
 /**
- @abstract A Boolean value that determines whether multiple participants can be selected at once.
+ @abstract A boolean value that determines whether multiple participants can be selected at once.
  @discussion The defauly value of this property is `YES`.
  */
 @property (nonatomic, assign) BOOL allowsMultipleSelection;
