@@ -408,7 +408,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
         LYRMessage *message = [self messageAtCollectionViewIndexPath:indexPath];
         height = [self.delegate conversationViewController:self heightForMessage:message withCellWidth:width];
     } else {
-        height = [self sizeForItemAtIndexPath:indexPath].height;
+        height = [self cellHeightForItemAtIndexPath:indexPath];
     }
     return CGSizeMake(width, height);
 }
@@ -579,27 +579,27 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     [self.collectionView registerClass:cellClass forCellWithReuseIdentifier:reuseIdentifier];
 }
 
-- (CGSize)sizeForItemAtIndexPath:(NSIndexPath *)indexPath
+- (CGFloat)cellHeightForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     LYRMessage *message = [self messageAtCollectionViewIndexPath:indexPath];
     LYRMessagePart *part = message.parts.firstObject;
-    CGSize size;
+    CGFloat height;
     if ([part.MIMEType isEqualToString:LYRUIMIMETypeTextPlain]) {
         NSString *text = [[NSString alloc] initWithData:part.data encoding:NSUTF8StringEncoding];
         UIFont *font = [self messageCellFontForMessage:message];
-        size = LYRUITextPlainSize(text, font);
-        size.height = size.height + LYRUIMessageBubbleLabelVerticalPadding * 2;
+        CGSize size = LYRUITextPlainSize(text, font);
+        height = size.height + LYRUIMessageBubbleLabelVerticalPadding * 2;
     } else if ([part.MIMEType isEqualToString:LYRUIMIMETypeImageJPEG] || [part.MIMEType isEqualToString:LYRUIMIMETypeImagePNG]) {
         UIImage *image = [UIImage imageWithData:part.data];
-        size = LYRUIImageSize(image);
+        CGSize size = LYRUIImageSize(image);
+        height = size.height;
     } else if ([part.MIMEType isEqualToString:LYRUIMIMETypeLocation]) {
-        size = CGSizeMake(LYRUIMessageBubbleMapWidth, LYRUIMessageBubbleMapHeight);
+        height = LYRUIMessageBubbleMapHeight;
     } else {
-        size = CGSizeMake(320, 10);
+        height = 10;
     }
-    size.width = ceil(size.width);
-    size.height = ceil(size.height);
-    return size;
+    height = ceil(height);
+    return height;
 }
 
 - (UIFont *)messageCellFontForMessage:(LYRMessage *)message
