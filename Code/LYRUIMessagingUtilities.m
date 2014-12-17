@@ -38,13 +38,12 @@ CGSize LYRUIImageSize(UIImage *image)
 {
     CGSize itemSize;
     
-    UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
-    if (imageView.frame.size.height > imageView.frame.size.width) {
-        CGFloat ratio = (LYRUIMaxCellHeight() / imageView.frame.size.height);
-        itemSize = CGSizeMake(imageView.frame.size.width * ratio, LYRUIMaxCellHeight());
+    if (image.size.height > image.size.width) {
+        CGFloat ratio = LYRUIMaxCellHeight() / image.size.height;
+        itemSize = CGSizeMake(image.size.width * ratio, LYRUIMaxCellHeight());
     } else {
-        CGFloat ratio = (LYRUIMaxCellWidth() / imageView.frame.size.width);
-        itemSize = CGSizeMake(LYRUIMaxCellWidth(), imageView.frame.size.height * ratio);
+        CGFloat ratio = LYRUIMaxCellWidth() / image.size.width;
+        itemSize = CGSizeMake(LYRUIMaxCellWidth(), image.size.height * ratio);
     }
     return itemSize;
 }
