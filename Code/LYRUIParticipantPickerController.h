@@ -66,9 +66,9 @@
 
 /**
  @abstract Creates and returns a participant picker initialized with the given set of participants.
- @param participants The set of participants to display in the picker. Each object in the given set must conform to the `LYRUIParticipant` protocol.
- @returns A new participant picker initialized with the given set of participants.
- @raises NSInvalidArgumentException Raised if any object in the given set of participants does not conform to the `LYRUIParticipant` protocol.
+ @param dataSource The object to acts as the picker's data source.
+ @param sortType The sort type to use for the participants.
+ @returns A new participant picker initialized with the given data source and sort type.
  */
 + (instancetype)participantPickerWithDataSource:(id<LYRUIParticipantPickerDataSource>)dataSource sortType:(LYRUIParticipantPickerSortType)sortType;
 
