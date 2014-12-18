@@ -43,7 +43,6 @@ static NSString *const LYRParticipantCellIdentifier = @"participantCellIdentifie
     [super viewDidLoad];
 
     self.tableView.allowsMultipleSelection = self.allowsMultipleSelection;
-    self.tableView.sectionFooterHeight = 0.0;
     self.tableView.accessibilityIdentifier = @"Participant TableView Controller";
     
     self.searchBar = [[UISearchBar alloc] initWithFrame:CGRectZero];
