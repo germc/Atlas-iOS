@@ -76,7 +76,7 @@
 - (void)setAllowsMultipleSelection:(BOOL)allowsMultipleSelection
 {
     if (self.hasAppeared) {
-        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Cannot change multiple selection mode after view has been loaded" userInfo:nil];
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Cannot change multiple selection mode after view has been presented" userInfo:nil];
     }
     _allowsMultipleSelection = allowsMultipleSelection;
 }
@@ -84,7 +84,7 @@
 - (void)setCellClass:(Class<LYRUIParticipantPresenting>)cellClass
 {
     if (self.hasAppeared) {
-        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Cannot change cell class after view has been loaded" userInfo:nil];
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Cannot change cell class after view has been presented" userInfo:nil];
     }
     _cellClass = cellClass;
 }
@@ -92,7 +92,7 @@
 - (void)setRowHeight:(CGFloat)rowHeight
 {
     if (self.hasAppeared) {
-        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Cannot change row height after view has been loaded" userInfo:nil];
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Cannot change row height after view has been presented" userInfo:nil];
     }
     _rowHeight = rowHeight;
 }
@@ -100,7 +100,7 @@
 - (void)setParticipantPickerSortType:(LYRUIParticipantPickerSortType)participantPickerSortType
 {
     if (self.hasAppeared) {
-        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Cannot change sort type after view has been loaded" userInfo:nil];
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Cannot change sort type after view has been presented" userInfo:nil];
     }
     _sortType = participantPickerSortType;
 }
