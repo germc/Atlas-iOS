@@ -152,11 +152,6 @@ static NSString *const LYRParticipantCellIdentifier = @"participantCellIdentifie
     return [dataSet.sectionTitles indexOfObject:title];
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    return self.rowHeight;
-}
-
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
     LYRUIParticipantTableDataSet *dataSet = [self dataSetForTableView:tableView];
