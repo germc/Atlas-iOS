@@ -32,7 +32,6 @@ static NSString *const LYRParticipantCellIdentifier = @"participantCellIdentifie
     self = [super initWithStyle:style];
     if (self) {
         _selectedParticipants = [[NSMutableSet alloc] init];
-        [self configureAppearance];
     }
     return self;
 }
@@ -293,17 +292,6 @@ static NSString *const LYRParticipantCellIdentifier = @"participantCellIdentifie
         [dict setObject:letterList forKey:firstLetter];
     }
     return dict;
-}
-
-- (void)configureAppearance
-{
-    [[LYRUIParticipantTableViewCell appearance] setTitleColor:[UIColor blackColor]];
-    [[LYRUIParticipantTableViewCell appearance] setTitleFont:[UIFont systemFontOfSize:14]];
-    [[LYRUIParticipantTableViewCell appearance] setBoldTitleFont:[UIFont boldSystemFontOfSize:14]];
-    
-    [[LYRUIAvatarImageView appearance] setBackgroundColor:LYRUIGrayColor()];
-    [[LYRUIAvatarImageView appearance] setInitialsColor:[UIColor blackColor]];
-    [[LYRUIAvatarImageView appearance] setInitialsFont:LYRUILightFont(14)];
 }
 
 @end
