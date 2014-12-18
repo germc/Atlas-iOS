@@ -47,7 +47,7 @@
     return nil;
 }
 
-#pragma mark - VC Lifecycle Methods
+#pragma mark - Lifecycle
 
 - (void)viewDidLoad
 {
@@ -77,7 +77,7 @@
     self.isOnScreen = NO;
 }
 
-#pragma mark Public Picker Configuration Options
+#pragma mark - Public Picker Configuration Options
 
 - (void)setAllowsMultipleSelection:(BOOL)allowsMultipleSelection
 {
@@ -111,7 +111,7 @@
     _sortType = participantPickerSortType;
 }
 
-#pragma mark - Participant Table View Controller Delegate Methods
+#pragma mark - LYRUIParticipantTableViewControllerDelegate
 
 - (void)participantTableViewController:(LYRUIParticipantTableViewController *)participantTableViewController didSelectParticipant:(id<LYRUIParticipant>)participant
 {
