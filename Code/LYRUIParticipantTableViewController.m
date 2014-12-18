@@ -98,12 +98,13 @@ static NSString *const LYRParticipantCellIdentifier = @"participantCellIdentifie
     [tableView registerClass:self.participantCellClass forCellReuseIdentifier:LYRParticipantCellIdentifier];
 }
 
-- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
+- (BOOL)searchDisplayController:(UISearchDisplayController *)controller shouldReloadTableForSearchString:(NSString *)searchString
 {
-    [self.delegate participantTableViewController:self didSearchWithString:searchText completion:^(NSSet *filteredParticipants) {
+    [self.delegate participantTableViewController:self didSearchWithString:searchString completion:^(NSSet *filteredParticipants) {
         self.filteredDataSet = [LYRUIParticipantTableDataSet dataSetWithParticipants:filteredParticipants sortType:self.sortType];
-        [self.searchDisplayController.searchResultsTableView reloadData];
+        [controller.searchResultsTableView reloadData];
     }];
+    return NO;
 }
 
 #pragma mark - Table View Data Source
