@@ -32,6 +32,7 @@ static NSString *const LYRParticipantCellIdentifier = @"participantCellIdentifie
 {
     self = [super initWithStyle:style];
     if (self) {
+        _rowHeight = 48;
         _selectedParticipants = [[NSMutableSet alloc] init];
     }
     return self;
