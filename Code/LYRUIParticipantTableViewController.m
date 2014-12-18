@@ -44,6 +44,7 @@ static NSString *const LYRParticipantCellIdentifier = @"participantCellIdentifie
 
     self.tableView.allowsMultipleSelection = self.allowsMultipleSelection;
     self.tableView.accessibilityIdentifier = @"Participant TableView Controller";
+    self.tableView.sectionHeaderHeight = 20;
     
     self.searchBar = [[UISearchBar alloc] initWithFrame:CGRectZero];
     [self.searchBar sizeToFit];
@@ -124,6 +125,7 @@ static NSString *const LYRParticipantCellIdentifier = @"participantCellIdentifie
 - (void)searchDisplayController:(UISearchDisplayController *)controller didLoadSearchResultsTableView:(UITableView *)tableView
 {
     tableView.allowsMultipleSelection = self.allowsMultipleSelection;
+    tableView.sectionHeaderHeight = self.tableView.sectionHeaderHeight;
     tableView.rowHeight = self.rowHeight;
     [tableView registerClass:self.participantCellClass forCellReuseIdentifier:LYRParticipantCellIdentifier];
 }
@@ -194,11 +196,6 @@ static NSString *const LYRParticipantCellIdentifier = @"participantCellIdentifie
     LYRUIParticipantTableDataSet *dataSet = [self dataSetForTableView:tableView];
     NSString *sectionName = dataSet.sectionTitles[section];
     return [[LYRUIPaticipantSectionHeaderView alloc] initWithKey:sectionName];
-}
-
-- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
-{
-    return 20;
 }
 
 - (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath
