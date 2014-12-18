@@ -26,6 +26,8 @@
 * Removed `initialViewBackgroundColor` property of `LYRUIAvatarImageView`. Use `backgroundColor` instead.
 * Changed `initialFont` property of `LYRUIAvatarImageView` to `initialsFont`.
 * Changed `initialColor` property of `LYRUIAvatarImageView` to `initialsColor`.
+* Changed `-[<LYRUIParticipantPickerControllerDelegate> participantSelectionViewControllerDidCancel:]` to `participantPickerControllerDidCancel:`.
+* Changed `-[<LYRUIParticipantPickerControllerDelegate> participantSelectionViewController:didSelectParticipant:]` to `participantPickerController:didSelectParticipant:`.
 
 ### Bug Fixes
 

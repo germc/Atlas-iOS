@@ -117,7 +117,7 @@
 
 - (void)participantTableViewController:(LYRUIParticipantTableViewController *)participantTableViewController didSelectParticipant:(id<LYRUIParticipant>)participant
 {
-    [self.participantPickerDelegate participantSelectionViewController:self didSelectParticipant:participant];
+    [self.participantPickerDelegate participantPickerController:self didSelectParticipant:participant];
 }
 
 - (void)participantTableViewController:(LYRUIParticipantTableViewController *)participantTableViewController didSearchWithString:(NSString *)searchText completion:(void (^)(NSSet *))completion
@@ -129,7 +129,7 @@
 
 - (void)participantTableViewControllerDidSelectCancelButton
 {
-    [self.participantPickerDelegate participantSelectionViewControllerDidCancel:self];
+    [self.participantPickerDelegate participantPickerControllerDidCancel:self];
 }
 
 @end

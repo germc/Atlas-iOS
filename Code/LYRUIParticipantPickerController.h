@@ -20,17 +20,17 @@
 @protocol LYRUIParticipantPickerControllerDelegate <NSObject>
 
 /**
- @abstract Tells the receiver that the participant selection view was dismissed without making a selection.
- @param participantSelectionViewController The participant selection view that was dismissed.
+ @abstract Tells the receiver that the participant picker was dismissed without making a selection.
+ @param participantPickerController The participant picker that was dismissed.
  */
-- (void)participantSelectionViewControllerDidCancel:(LYRUIParticipantPickerController *)participantSelectionViewController;
+- (void)participantPickerControllerDidCancel:(LYRUIParticipantPickerController *)participantPickerController;
 
 /**
- @abstract Tells the receiver that the user has selected a participant from a participant selection view.
- @param participantSelectionViewController The participant selection view in which the selection was made.
+ @abstract Tells the receiver that the user has selected a participant from a participant picker.
+ @param participantPickerController The participant picker in which the selection was made.
  @param participant The participant who was selected.
  */
-- (void)participantSelectionViewController:(LYRUIParticipantPickerController *)participantSelectionViewController didSelectParticipant:(id<LYRUIParticipant>)participant;
+- (void)participantPickerController:(LYRUIParticipantPickerController *)participantPickerController didSelectParticipant:(id<LYRUIParticipant>)participant;
 
 @end
 
