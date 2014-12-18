@@ -122,7 +122,7 @@
 
 - (void)participantTableViewController:(LYRUIParticipantTableViewController *)participantTableViewController didSearchWithString:(NSString *)searchText completion:(void (^)(NSSet *))completion
 {
-    [self.dataSource searchForParticipantsMatchingText:searchText completion:^(NSSet *participants) {
+    [self.dataSource participantPickerController:self searchForParticipantsMatchingText:searchText completion:^(NSSet *participants) {
         completion (participants);
     }];
 }

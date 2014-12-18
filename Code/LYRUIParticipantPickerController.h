@@ -51,7 +51,7 @@
  to perform the search, build a set of matching participants, and then call the completion block. The controller will section
  the participants using the value returned by the `sectionText` property and present them in alphabetical order.
  */
-- (void)searchForParticipantsMatchingText:(NSString *)searchText completion:(void (^)(NSSet *participants))completion;
+- (void)participantPickerController:(LYRUIParticipantPickerController *)participantPickerController searchForParticipantsMatchingText:(NSString *)searchText completion:(void (^)(NSSet *participants))completion;
 
 @end
 
