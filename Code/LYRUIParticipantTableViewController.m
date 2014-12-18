@@ -75,9 +75,6 @@ static NSString *const LYRParticipantCellIdentifier = @"participantCellIdentifie
     
     self.tableView.rowHeight = self.rowHeight;
     [self.tableView registerClass:self.participantCellClass forCellReuseIdentifier:LYRParticipantCellIdentifier];
-    
-    self.searchController.searchResultsTableView.rowHeight = self.rowHeight;
-    [self.searchController.searchResultsTableView registerClass:self.participantCellClass forCellReuseIdentifier:LYRParticipantCellIdentifier];
 }
 
 - (void)setParticipants:(NSSet *)participants
@@ -90,10 +87,16 @@ static NSString *const LYRParticipantCellIdentifier = @"participantCellIdentifie
 {
     _allowsMultipleSelection = allowsMultipleSelection;
     self.tableView.allowsMultipleSelection = allowsMultipleSelection;
-    self.searchDisplayController.searchResultsTableView.allowsMultipleSelection = TRUE;
 }
 
 #pragma mark - UISearchDisplayDelegate Methods
+
+- (void)searchDisplayController:(UISearchDisplayController *)controller didLoadSearchResultsTableView:(UITableView *)tableView
+{
+    tableView.allowsMultipleSelection = self.allowsMultipleSelection;
+    tableView.rowHeight = self.rowHeight;
+    [tableView registerClass:self.participantCellClass forCellReuseIdentifier:LYRParticipantCellIdentifier];
+}
 
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
