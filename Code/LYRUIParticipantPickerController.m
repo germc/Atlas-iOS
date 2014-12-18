@@ -10,7 +10,6 @@
 
 @interface LYRUIParticipantPickerController () <LYRUIParticipantTableViewControllerDelegate>
 
-@property (nonatomic) NSDictionary *sortedParticipants;
 @property (nonatomic) LYRUIParticipantTableViewController *participantTableViewController;
 @property (nonatomic) BOOL isOnScreen;
 
