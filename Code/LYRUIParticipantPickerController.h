@@ -41,7 +41,7 @@
 
 /**
  @abstract The set of participants to be presented in the picker. Each object in the returned collection must conform to the `LYRUIParticipant` protocol.
- @discussion The picker presents the returned participants in alphabetical order sectioned by the value returned by the `sectionText` property.
+ @discussion The picker presents the returned participants in alphabetical order according to `sortType` and sectioned by the corresponding first initial.
  */
 - (NSSet *)participantsForParticipantPickerController:(LYRUIParticipantPickerController *)participantPickerController;
 
@@ -49,7 +49,7 @@
  @abstract Asynchronously searches for participants that match the given search text.
  @discussion Invoked by the participant picker controller when the user inputs text into the search bar. The receiver is
  to perform the search, build a set of matching participants, and then call the completion block. The controller will section
- the participants using the value returned by the `sectionText` property and present them in alphabetical order.
+ the participants and present them in alphabetical order according to the value returned by the `sortType` property.
  */
 - (void)participantPickerController:(LYRUIParticipantPickerController *)participantPickerController searchForParticipantsMatchingText:(NSString *)searchText completion:(void (^)(NSSet *participants))completion;
 
