@@ -16,7 +16,6 @@
 @property (nonatomic) UIControl *selectionIndicator;
 @property (nonatomic) LYRUIAvatarImageView *avatarImageView;
 @property (nonatomic) LYRUIParticipantPickerSortType sortType;
-@property (nonatomic) BOOL isSelected;
 
 @end
 
