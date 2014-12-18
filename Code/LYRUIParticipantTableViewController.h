@@ -70,13 +70,6 @@
 @property (nonatomic, assign) LYRUIParticipantPickerSortType sortType;
 
 /**
- @abstract The selection indicator used to indicate a contact has been selected. It should be configured for both highlighted and non-highlighted state.
- @default `LYRUISelectionIndicator`
- @raises NSInternalInconsistencyException Raised if the value is mutated after the receiver has been presented.
- */
-@property (nonatomic) UIControl *selectionIndicator;
-
-/**
  @abstract Sets the height for cells within the receiver.
  @default `48.0`
  @raises NSInternalInconsistencyException Raised if the value is mutated after the receiver has been presented.
