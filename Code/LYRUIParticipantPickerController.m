@@ -10,7 +10,6 @@
 
 @interface LYRUIParticipantPickerController () <LYRUIParticipantTableViewControllerDelegate>
 
-@property (nonatomic) NSSet *participants;
 @property (nonatomic) NSDictionary *sortedParticipants;
 @property (nonatomic) LYRUIParticipantTableViewController *participantTableViewController;
 @property (nonatomic) BOOL isOnScreen;
@@ -34,7 +33,7 @@
     if (self) {
         controller.delegate = self;
         controller.sortType = sortType;
-        controller.participants = [dataSource participants];
+        controller.participants = [dataSource participantsForParticipantPickerController:self];
         
         _sortType = sortType;
         _participantTableViewController = controller;

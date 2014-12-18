@@ -43,7 +43,7 @@
  @abstract The set of participants to be presented in the picker. Each object in the returned collection must conform to the `LYRUIParticipant` protocol.
  @discussion The picker presents the returned participants in alphabetical order sectioned by the value returned by the `sectionText` property.
  */
-@property (nonatomic) NSSet *participants;
+- (NSSet *)participantsForParticipantPickerController:(LYRUIParticipantPickerController *)participantPickerController;
 
 /**
  @abstract Asynchronously searches for participants that match the given search text.
