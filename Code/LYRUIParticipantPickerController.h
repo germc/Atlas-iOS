@@ -109,7 +109,7 @@
 
 /**
  @abstract Configures the height of each row in the receiver.
- @default 44.0f
+ @default 40.0f
  @raises NSInternalInconsistencyException Raised if the value is mutated after the receiver has been presented.
  */
 @property (nonatomic, assign) CGFloat rowHeight;
