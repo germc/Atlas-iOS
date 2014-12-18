@@ -58,10 +58,7 @@ static NSString *const LYRParticipantCellIdentifier = @"participantCellIdentifie
 
     self.title = @"Participants";
     
-    UIBarButtonItem *cancelButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Cancel"
-                                                                         style:UIBarButtonItemStylePlain
-                                                                        target:self
-                                                                        action:@selector(cancelButtonTapped)];
+    UIBarButtonItem *cancelButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancelButtonTapped)];
     cancelButtonItem.accessibilityLabel = @"Cancel";
     self.navigationItem.rightBarButtonItem = cancelButtonItem;
 }
