@@ -132,6 +132,7 @@ static NSString *const LYRParticipantCellIdentifier = @"participantCellIdentifie
 - (BOOL)searchDisplayController:(UISearchDisplayController *)controller shouldReloadTableForSearchString:(NSString *)searchString
 {
     [self.delegate participantTableViewController:self didSearchWithString:searchString completion:^(NSSet *filteredParticipants) {
+        if (![searchString isEqualToString:controller.searchBar.text]) return;
         self.filteredDataSet = [LYRUIParticipantTableDataSet dataSetWithParticipants:filteredParticipants sortType:self.sortType];
         [controller.searchResultsTableView reloadData];
     }];
