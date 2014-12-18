@@ -17,8 +17,6 @@
 
 @implementation LYRUIParticipantPickerController
 
-@synthesize allowsMultipleSelection = _allowsMultipleSelection;
-
 + (instancetype)participantPickerWithDataSource:(id<LYRUIParticipantPickerDataSource>)dataSource sortType:(LYRUIParticipantPickerSortType)sortType
 {
     NSAssert(dataSource, @"Data Source cannot be nil");
