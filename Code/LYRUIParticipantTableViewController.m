@@ -135,7 +135,13 @@ static NSString *const LYRParticipantCellIdentifier = @"participantCellIdentifie
     [self.delegate participantTableViewController:self didSearchWithString:searchString completion:^(NSSet *filteredParticipants) {
         if (![searchString isEqualToString:controller.searchBar.text]) return;
         self.filteredDataSet = [LYRUIParticipantTableDataSet dataSetWithParticipants:filteredParticipants sortType:self.sortType];
-        [controller.searchResultsTableView reloadData];
+        UITableView *tableView = controller.searchResultsTableView;
+        [tableView reloadData];
+        for (id<LYRUIParticipant> participant in self.selectedParticipants) {
+            NSIndexPath *indexPath = [self indexPathForParticipant:participant inTableView:tableView];
+            if (!indexPath) continue;
+            [tableView selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
+        }
     }];
     return NO;
 }
@@ -183,14 +189,6 @@ static NSString *const LYRParticipantCellIdentifier = @"participantCellIdentifie
 
 #pragma mark - Table View Delegate Methods
 
-- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    id<LYRUIParticipant> participant = [self participantForTableView:tableView atIndexPath:indexPath];
-    if ([self.selectedParticipants containsObject:participant]) {
-        [tableView selectRowAtIndexPath:indexPath animated:TRUE scrollPosition:UITableViewScrollPositionNone];
-    }
-}
-
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
     LYRUIParticipantTableDataSet *dataSet = [self dataSetForTableView:tableView];
@@ -198,25 +196,25 @@ static NSString *const LYRParticipantCellIdentifier = @"participantCellIdentifie
     return [[LYRUIPaticipantSectionHeaderView alloc] initWithKey:sectionName];
 }
 
-- (NSIndexPath *)tableView:(UITableView *)tableView willSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    id<LYRUIParticipant> participant = [self participantForTableView:tableView atIndexPath:indexPath];
-    if ([[tableView indexPathsForSelectedRows] containsObject:indexPath]) {
-        [tableView deselectRowAtIndexPath:indexPath animated:TRUE];
-        if ([self.selectedParticipants containsObject:participant]) {
-            [self.selectedParticipants removeObject:participant];
-        }
-    } else {
-        return indexPath;
-    }
-    return nil;
-}
-
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     id<LYRUIParticipant> participant = [self participantForTableView:tableView atIndexPath:indexPath];
     [self.selectedParticipants addObject:participant];
+    if (tableView != self.tableView) {
+        NSIndexPath *unfilteredIndexPath = [self indexPathForParticipant:participant inTableView:self.tableView];
+        [self.tableView selectRowAtIndexPath:unfilteredIndexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
+    }
     [self.delegate participantTableViewController:self didSelectParticipant:participant];
+}
+
+- (void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    id<LYRUIParticipant> participant = [self participantForTableView:tableView atIndexPath:indexPath];
+    [self.selectedParticipants removeObject:participant];
+    if (tableView != self.tableView) {
+        NSIndexPath *unfilteredIndexPath = [self indexPathForParticipant:participant inTableView:self.tableView];
+        [self.tableView deselectRowAtIndexPath:unfilteredIndexPath animated:NO];
+    }
 }
 
 #pragma mark - UIBarButtonItem implementation methods
