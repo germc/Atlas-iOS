@@ -58,12 +58,14 @@
 
 /**
  @abstract The participants to display.
+ @raises NSInternalInconsistencyException Raised if the value is mutated after the receiver has been presented.
  */
 @property (nonatomic) NSSet *participants;
 
 /**
  @abstract Defines the sort ordering of the participant list. The view controller will sort and group
  participants by the order you specify.
+ @raises NSInternalInconsistencyException Raised if the value is mutated after the receiver has been presented.
  */
 @property (nonatomic, assign) LYRUIParticipantPickerSortType sortType;
 
@@ -85,6 +87,7 @@
  @abstract A boolean value that determines whether multiple participants can be selected at once.
  @defaul YES
  @discussion The defauly value of this property is `YES`.
+ @raises NSInternalInconsistencyException Raised if the value is mutated after the receiver has been presented.
  */
 @property (nonatomic, assign) BOOL allowsMultipleSelection;
 

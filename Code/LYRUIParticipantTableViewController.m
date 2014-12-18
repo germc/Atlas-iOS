@@ -68,25 +68,55 @@ static NSString *const LYRParticipantCellIdentifier = @"participantCellIdentifie
 {
     if (!self.hasAppeared) {
         self.unfilteredDataSet = [LYRUIParticipantTableDataSet dataSetWithParticipants:self.participants sortType:self.sortType];
+        self.tableView.rowHeight = self.rowHeight;
+        self.tableView.allowsMultipleSelection = self.allowsMultipleSelection;
+        [self.tableView registerClass:self.participantCellClass forCellReuseIdentifier:LYRParticipantCellIdentifier];
         self.hasAppeared = YES;
     }
 
     [super viewWillAppear:animated];
-    
-    self.tableView.rowHeight = self.rowHeight;
-    [self.tableView registerClass:self.participantCellClass forCellReuseIdentifier:LYRParticipantCellIdentifier];
 }
+
+#pragma mark - Public Configuration
 
 - (void)setParticipants:(NSSet *)participants
 {
+    if (self.hasAppeared) {
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Cannot change participants after view has been presented" userInfo:nil];
+    }
     _participants = participants;
 }
 
-#pragma mark public Boolean configurations
 - (void)setAllowsMultipleSelection:(BOOL)allowsMultipleSelection
 {
+    if (self.hasAppeared) {
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Cannot change multiple selection mode after view has been presented" userInfo:nil];
+    }
     _allowsMultipleSelection = allowsMultipleSelection;
-    self.tableView.allowsMultipleSelection = allowsMultipleSelection;
+}
+
+- (void)setParticipantCellClass:(Class<LYRUIParticipantPresenting>)participantCellClass
+{
+    if (self.hasAppeared) {
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Cannot change cell class after view has been presented" userInfo:nil];
+    }
+    _participantCellClass = participantCellClass;
+}
+
+- (void)setRowHeight:(CGFloat)rowHeight
+{
+    if (self.hasAppeared) {
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Cannot change row height after view has been presented" userInfo:nil];
+    }
+    _rowHeight = rowHeight;
+}
+
+- (void)setSortType:(LYRUIParticipantPickerSortType)sortType
+{
+    if (self.hasAppeared) {
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Cannot change sort type after view has been presented" userInfo:nil];
+    }
+    _sortType = sortType;
 }
 
 #pragma mark - UISearchDisplayDelegate Methods
