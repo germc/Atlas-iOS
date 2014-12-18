@@ -11,7 +11,7 @@
 @interface LYRUIParticipantPickerController () <LYRUIParticipantTableViewControllerDelegate>
 
 @property (nonatomic) LYRUIParticipantTableViewController *participantTableViewController;
-@property (nonatomic) BOOL isOnScreen;
+@property (nonatomic) BOOL hasAppeared;
 
 @end
 
@@ -68,20 +68,14 @@
     self.participantTableViewController.participantCellClass = self.cellClass;
     self.participantTableViewController.rowHeight = self.rowHeight;
     self.participantTableViewController.sortType = self.sortType;
-    self.isOnScreen = YES;
-}
-
-- (void)viewWillDisappear:(BOOL)animated
-{
-    [super viewWillDisappear:animated];
-    self.isOnScreen = NO;
+    self.hasAppeared = YES;
 }
 
 #pragma mark - Public Picker Configuration Options
 
 - (void)setAllowsMultipleSelection:(BOOL)allowsMultipleSelection
 {
-    if (self.isOnScreen) {
+    if (self.hasAppeared) {
         @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Cannot change multiple selection mode after view has been loaded" userInfo:nil];
     }
     _allowsMultipleSelection = allowsMultipleSelection;
@@ -89,7 +83,7 @@
 
 - (void)setCellClass:(Class<LYRUIParticipantPresenting>)cellClass
 {
-    if (self.isOnScreen) {
+    if (self.hasAppeared) {
         @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Cannot change cell class after view has been loaded" userInfo:nil];
     }
     _cellClass = cellClass;
@@ -97,7 +91,7 @@
 
 - (void)setRowHeight:(CGFloat)rowHeight
 {
-    if (self.isOnScreen) {
+    if (self.hasAppeared) {
         @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Cannot change row height after view has been loaded" userInfo:nil];
     }
     _rowHeight = rowHeight;
@@ -105,7 +99,7 @@
 
 - (void)setParticipantPickerSortType:(LYRUIParticipantPickerSortType)participantPickerSortType
 {
-    if (self.isOnScreen) {
+    if (self.hasAppeared) {
         @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Cannot change sort type after view has been loaded" userInfo:nil];
     }
     _sortType = participantPickerSortType;
