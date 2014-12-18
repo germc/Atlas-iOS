@@ -37,6 +37,15 @@
  */
 - (void)participantTableViewControllerDidCancel:(LYRUIParticipantTableViewController *)participantTableViewController;
 
+@optional
+
+/**
+ @abstract Tells the receiver that the user has deselected a participant.
+ @param participantTableViewController The participant table view controller in which the deselection was made.
+ @param participant The participant who was deselected.
+ */
+- (void)participantTableViewController:(LYRUIParticipantTableViewController *)participantTableViewController didDeselectParticipant:(id<LYRUIParticipant>)participant;
+
 @end
 
 /**

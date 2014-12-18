@@ -217,6 +217,9 @@ static NSString *const LYRParticipantCellIdentifier = @"participantCellIdentifie
         NSIndexPath *unfilteredIndexPath = [self indexPathForParticipant:participant inTableView:self.tableView];
         [self.tableView deselectRowAtIndexPath:unfilteredIndexPath animated:NO];
     }
+    if ([self.delegate respondsToSelector:@selector(participantTableViewController:didDeselectParticipant:)]) {
+        [self.delegate participantTableViewController:self didDeselectParticipant:participant];
+    }
 }
 
 #pragma mark - Actions

@@ -110,6 +110,13 @@
     [self.participantPickerDelegate participantPickerController:self didSelectParticipant:participant];
 }
 
+- (void)participantTableViewController:(LYRUIParticipantTableViewController *)participantTableViewController didDeselectParticipant:(id<LYRUIParticipant>)participant
+{
+    if ([self.participantPickerDelegate respondsToSelector:@selector(participantPickerController:didDeselectParticipant:)]) {
+        [self.participantPickerDelegate participantPickerController:self didDeselectParticipant:participant];
+    }
+}
+
 - (void)participantTableViewController:(LYRUIParticipantTableViewController *)participantTableViewController didSearchWithString:(NSString *)searchText completion:(void (^)(NSSet *))completion
 {
     [self.dataSource participantPickerController:self searchForParticipantsMatchingText:searchText completion:^(NSSet *participants) {

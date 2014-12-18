@@ -32,6 +32,15 @@
  */
 - (void)participantPickerController:(LYRUIParticipantPickerController *)participantPickerController didSelectParticipant:(id<LYRUIParticipant>)participant;
 
+@optional
+
+/**
+ @abstract Tells the receiver that the user has deselected a participant from a participant picker.
+ @param participantPickerController The participant picker in which the deselection was made.
+ @param participant The participant who was deselected.
+ */
+- (void)participantPickerController:(LYRUIParticipantPickerController *)participantPickerController didDeselectParticipant:(id<LYRUIParticipant>)participant;
+
 @end
 
 /**
