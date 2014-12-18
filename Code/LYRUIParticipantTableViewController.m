@@ -120,7 +120,7 @@ static NSString *const LYRParticipantCellIdentifier = @"participantCellIdentifie
     _sortType = sortType;
 }
 
-#pragma mark - UISearchDisplayDelegate Methods
+#pragma mark - UISearchDisplayDelegate
 
 - (void)searchDisplayController:(UISearchDisplayController *)controller didLoadSearchResultsTableView:(UITableView *)tableView
 {
@@ -146,7 +146,7 @@ static NSString *const LYRParticipantCellIdentifier = @"participantCellIdentifie
     return NO;
 }
 
-#pragma mark - Table View Data Source
+#pragma mark - UITableViewDataSource
 
 - (NSArray *)sectionIndexTitlesForTableView:(UITableView *)tableView
 {
@@ -179,6 +179,8 @@ static NSString *const LYRParticipantCellIdentifier = @"participantCellIdentifie
     return participantCell;
 }
 
+#pragma mark - Cell Configuration
+
 - (void)configureCell:(UITableViewCell<LYRUIParticipantPresenting> *)cell atIndexPath:(NSIndexPath *)indexPath forTableView:(UITableView *)tableView
 {
     id<LYRUIParticipant> participant = [self participantForTableView:tableView atIndexPath:indexPath];
@@ -187,7 +189,7 @@ static NSString *const LYRParticipantCellIdentifier = @"participantCellIdentifie
     [cell shouldShowAvatarImage:YES];
 }
 
-#pragma mark - Table View Delegate Methods
+#pragma mark - UITableViewDelegate
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
@@ -217,12 +219,14 @@ static NSString *const LYRParticipantCellIdentifier = @"participantCellIdentifie
     }
 }
 
-#pragma mark - UIBarButtonItem implementation methods
+#pragma mark - Actions
 
 - (void)cancelButtonTapped
 {
     [self.delegate participantTableViewControllerDidCancel:self];
 }
+
+#pragma mark - Helpers
 
 - (LYRUIParticipantTableDataSet *)dataSetForTableView:(UITableView *)tableView
 {
