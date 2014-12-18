@@ -39,12 +39,11 @@ static NSString *const LYRParticipantCellIdentifier = @"participantCellIdentifie
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    // Configure TableView
+
     self.tableView.allowsMultipleSelection = self.allowsMultipleSelection;
     self.tableView.sectionFooterHeight = 0.0;
     self.tableView.accessibilityIdentifier = @"Participant TableView Controller";
     
-    // Configure Search Bar
     self.searchBar = [[UISearchBar alloc] initWithFrame:CGRectZero];
     [self.searchBar sizeToFit];
     self.searchBar.translucent = NO;
@@ -57,10 +56,8 @@ static NSString *const LYRParticipantCellIdentifier = @"participantCellIdentifie
     self.searchController.searchResultsDelegate = self;
     self.searchController.searchResultsDataSource = self;
 
-    //Configure title
     self.title = @"Participants";
     
-    // Left bar button item is the text Cancel
     UIBarButtonItem *cancelButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Cancel"
                                                                          style:UIBarButtonItemStylePlain
                                                                         target:self
