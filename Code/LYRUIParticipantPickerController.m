@@ -125,7 +125,7 @@
     }];
 }
 
-- (void)participantTableViewControllerDidSelectCancelButton
+- (void)participantTableViewControllerDidCancel:(LYRUIParticipantTableViewController *)participantTableViewController
 {
     [self.participantPickerDelegate participantPickerControllerDidCancel:self];
 }

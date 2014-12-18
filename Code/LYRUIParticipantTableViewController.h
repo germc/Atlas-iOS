@@ -35,7 +35,7 @@
 /**
  @abstract Informs the delegate that the user tapped the cancel button.
  */
-- (void)participantTableViewControllerDidSelectCancelButton;
+- (void)participantTableViewControllerDidCancel:(LYRUIParticipantTableViewController *)participantTableViewController;
 
 @end
 
