@@ -68,13 +68,13 @@
     self.participantTableViewController.participantCellClass = self.cellClass;
     self.participantTableViewController.rowHeight = self.rowHeight;
     self.participantTableViewController.sortType = self.sortType;
-    self.isOnScreen = TRUE;
+    self.isOnScreen = YES;
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
-    self.isOnScreen = FALSE;
+    self.isOnScreen = NO;
 }
 
 #pragma mark Public Picker Configuration Options
