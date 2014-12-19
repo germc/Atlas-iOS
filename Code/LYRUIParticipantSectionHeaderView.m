@@ -9,12 +9,6 @@
 #import "LYRUIParticipantSectionHeaderView.h"
 #import "LYRUIConstants.h"
 
-@interface LYRUIParticipantSectionHeaderView ()
-
-@property (nonatomic) UIView *bottomBar;
-
-@end
-
 @implementation LYRUIParticipantSectionHeaderView
 
 - (id)initWithReuseIdentifier:(NSString *)reuseIdentifier
