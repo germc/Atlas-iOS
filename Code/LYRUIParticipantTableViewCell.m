@@ -84,16 +84,19 @@ static CGFloat const LSSelectionIndicatorSize = 30;
 - (void)setTitleFont:(UIFont *)titleFont
 {
     _titleFont = titleFont;
+    [self configureNameLabel];
 }
 
 - (void)setBoldTitleFont:(UIFont *)boldTitleFont
 {
     _boldTitleFont = boldTitleFont;
+    [self configureNameLabel];
 }
 
 - (void)setTitleColor:(UIColor *)titleColor
 {
     _titleColor = titleColor;
+    [self configureNameLabel];
 }
 
 - (void)configureNameLabel
