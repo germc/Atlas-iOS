@@ -110,18 +110,15 @@ static CGFloat const LSSelectionIndicatorSize = 30;
 
     NSRange rangeToBold = NSMakeRange(NSNotFound, 0);
     switch (self.sortType) {
-        case LYRUIParticipantPickerControllerSortTypeFirst: {
-            NSRange rangeOfString = [self.participant.fullName rangeOfString:@" "];
-            NSString *regularString = [self.participant.fullName substringFromIndex:rangeOfString.location];
-            rangeToBold = NSMakeRange(0, rangeOfString.location);
-        }
+        case LYRUIParticipantPickerControllerSortTypeFirst:
+            if (self.participant.firstName.length != 0) {
+                rangeToBold = [self.participant.fullName rangeOfString:self.participant.firstName];
+            }
             break;
-
-        case LYRUIParticipantPickerControllerSortTypeLast: {
-            NSRange rangeOfString = [self.participant.fullName rangeOfString:@" "];
-            NSString *stringToBold = [self.participant.fullName substringFromIndex:rangeOfString.location];
-            rangeToBold = NSMakeRange(rangeOfString.location, stringToBold.length);
-        }
+        case LYRUIParticipantPickerControllerSortTypeLast:
+            if (self.participant.lastName.length != 0) {
+                rangeToBold = [self.participant.fullName rangeOfString:self.participant.lastName options:NSBackwardsSearch];
+            }
             break;
     }
     if (rangeToBold.location != NSNotFound) {
