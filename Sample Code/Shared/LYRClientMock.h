@@ -34,21 +34,6 @@ extern NSString *const LYRMockObjectChangeChangeTypeKey;
 - (NSUInteger)countForQuery:(LYRQuery *)query error:(NSError **)error;
 - (LYRQueryControllerMock *)queryControllerWithQuery:(LYRQuery *)query;
 
-///------------------------------------------
-/// @name LYRClient Mocking incoming changes
-///------------------------------------------
-
-- (void)receiveMessage:(LYRMessageMock *)receivedMessage;
-- (void)receiveMessages:(NSArray *)receivedMessages;
-- (void)receiveMessageRecipientStatusChangeForMessage:(LYRMessageMock *)message recipientStatus:(LYRRecipientStatus)recipientStatus userID:(NSString *)userID;
-- (void)receiveMessageMetadataChangeForMessage:(LYRMessageMock *)message metadata:(NSDictionary *)metadata;
-- (void)receiveMessageDeletion:(LYRMessageMock *)message;
-- (void)receiveConversationParticipantsAdded:(NSSet *)participantsAdded toConversation:(LYRConversationMock *)conversation;
-- (void)receiveConversationParticipantsRemoved:(NSSet *)participantsRemoved fromConversation:(LYRConversationMock *)conversation;
-- (void)receiveConversationMetadataChangeForMessage:(LYRConversationMock *)conversation metadata:(NSDictionary *)metadata;
-- (void)receiveConversationDeletion:(LYRConversationMock *)conversation;
-- (void)receiveTypingIndicator:(LYRTypingIndicator)typingIndicator fromParticipant:(NSString *)userID conversation:(LYRConversationMock *)conversation;
-
 @end
 
 

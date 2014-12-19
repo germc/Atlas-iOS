@@ -171,32 +171,32 @@
 ///---------------------------------------
 
 /**
- @abstract The `LYRClient` object used to initailize the controller
+ @abstract The `LYRClient` object used to initailize the controller.
  */
 @property (nonatomic) LYRClient *layerClient;
 
 /**
- @abstract The `LYRConversation` object used to initailize the controller
+ @abstract The `LYRConversation` object used to initailize the controller.
  */
 @property (nonatomic) LYRConversation *conversation;
 
 /**
- @abstract The `LYRUIAddressBarViewController` displayed for addressing new conversations
+ @abstract The `LYRUIAddressBarViewController` displayed for addressing new conversations.
  */
 @property (nonatomic) LYRUIAddressBarViewController *addressBarController;
 
 /**
- @abstract The `LYRUIMessageInputToolbar` displayed for user input
+ @abstract The `LYRUIMessageInputToolbar` displayed for user input.
  */
 @property (nonatomic) LYRUIMessageInputToolbar *messageInputToolbar;
 
 /**
- @abstract The `UICollectionView` for the controller
+ @abstract The `UICollectionView` for the controller.
  */
 @property (nonatomic) UICollectionView *collectionView;
 
 /**
- @abstract The `LYRQueryController` that manages the messaging content displayed in the controller.
+ @abstract The `LYRQueryController` that manages messaging content displayed in the controller.
  */
 @property (nonatomic) LYRQueryController *queryController;
 
@@ -207,7 +207,7 @@
 @property (nonatomic) BOOL showsAddressBar;
 
 /**
- @abstract If set, places the text in the navigation bar, otherwise UI will place the names of the participants
+ @abstract If set, places the text in the navigation bar, otherwise UI will place the names of the participants.
  */
 @property (nonatomic) NSString *conversationTitle;
 
