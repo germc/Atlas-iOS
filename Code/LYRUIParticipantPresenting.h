@@ -15,8 +15,7 @@
 typedef enum : NSUInteger {
     LYRUIParticipantPickerControllerSortTypeFirst,
     LYRUIParticipantPickerControllerSortTypeLast,
-}LYRUIParticipantPickerSortType;
-
+} LYRUIParticipantPickerSortType;
 
 /**
  @abstract The `LYRUIParticipantPresenting` protocol must be adopted by objects that wish to present Layer
@@ -31,6 +30,5 @@ typedef enum : NSUInteger {
 - (void)presentParticipant:(id<LYRUIParticipant>)participant
               withSortType:(LYRUIParticipantPickerSortType)sortType
      shouldShowAvatarImage:(BOOL)shouldShowAvatarImage;
-
 
 @end
