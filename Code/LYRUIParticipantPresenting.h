@@ -12,10 +12,10 @@
 /**
  @abstract The `LYRUIParticipantPickerSortType` allows for configuration of the sorting order of participants.
  */
-typedef enum : NSUInteger {
+typedef NS_ENUM(NSUInteger, LYRUIParticipantPickerSortType) {
     LYRUIParticipantPickerSortTypeFirstName,
     LYRUIParticipantPickerSortTypeLastName,
-} LYRUIParticipantPickerSortType;
+};
 
 /**
  @abstract The `LYRUIParticipantPresenting` protocol must be adopted by objects that wish to present Layer
