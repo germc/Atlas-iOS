@@ -27,7 +27,6 @@
         self.keyLabel.translatesAutoresizingMaskIntoConstraints = NO;
         self.keyLabel.font = [UIFont boldSystemFontOfSize:14];
         self.keyLabel.text = key;
-        self.keyLabel.textColor = [UIColor blackColor];
         [self addSubview:self.keyLabel];
         
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.keyLabel attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0]];
