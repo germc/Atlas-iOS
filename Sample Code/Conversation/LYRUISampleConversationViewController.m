@@ -6,17 +6,17 @@
 //  Copyright (c) 2014 Layer. All rights reserved.
 //
 
-#import "LYRUISampleConversationsViewController.h"
+#import "LYRUISampleConversationViewController.h"
 #import "LYRClientMock.h"
 #import "LYRUIParticipant.h"
 
-@interface LYRUISampleConversationsViewController () <LYRUIConversationViewControllerDataSource>
+@interface LYRUISampleConversationViewController () <LYRUIConversationViewControllerDataSource>
 
 @property (nonatomic) NSDateFormatter *dateFormatter;
 
 @end
 
-@implementation LYRUISampleConversationsViewController
+@implementation LYRUISampleConversationViewController
 
 - (void)viewDidLoad
 {

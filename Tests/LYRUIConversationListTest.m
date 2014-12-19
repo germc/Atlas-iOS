@@ -24,7 +24,6 @@
 - (void)setUp
 {
     [super setUp];
-    [[LYRMockContentStore sharedStore] resetContentStore];
     LYRUserMock *mockUser = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameRussell];
     LYRClientMock *layerClient = [LYRClientMock layerClientMockWithAuthenticatedUserID:mockUser.participantIdentifier];
     self.testInterface = [LYRUITestInterface testIntefaceWithLayerClient:layerClient];
@@ -33,6 +32,8 @@
 - (void)tearDown
 {
     [super tearDown];
+    [[LYRMockContentStore sharedStore] resetContentStore];
+    [[UIApplication sharedApplication] delegate].window.rootViewController = nil;
     self.testInterface = nil;
 }
 

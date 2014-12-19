@@ -17,6 +17,7 @@
 #import "KIFTestCase.h"
 #import <KIF/KIF.h>
 #import "KIFSystemTestActor+ViewControllerActions.h"
+#import <LayerUIKit/LayerUIKit.h>
 
 @interface LYRUITestInterface : NSObject
 
