@@ -10,7 +10,7 @@
 #import "LYRUIParticipant.h"
 
 /**
- @abstract The `LYRUIParticipantPickerSortType` allows for configuration of sorting order of the participant list
+ @abstract The `LYRUIParticipantPickerSortType` allows for configuration of the sorting order of participants.
  */
 typedef enum : NSUInteger {
     LYRUIParticipantPickerSortTypeFirstName,
