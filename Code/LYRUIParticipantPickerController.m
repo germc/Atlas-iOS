@@ -28,10 +28,6 @@
     LYRUIParticipantTableViewController *controller = [[LYRUIParticipantTableViewController alloc] initWithStyle:UITableViewStylePlain];
     self = [super initWithRootViewController:controller];
     if (self) {
-        controller.delegate = self;
-        controller.sortType = sortType;
-        controller.participants = [dataSource participantsForParticipantPickerController:self];
-        
         _sortType = sortType;
         _participantTableViewController = controller;
         _dataSource = dataSource;
@@ -61,12 +57,17 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    // Configure ParticipantTableViewController Appearance
-    self.participantTableViewController.allowsMultipleSelection = self.allowsMultipleSelection;
-    self.participantTableViewController.participantCellClass = self.cellClass;
-    self.participantTableViewController.rowHeight = self.rowHeight;
-    self.participantTableViewController.sortType = self.sortType;
-    self.hasAppeared = YES;
+
+    if (!self.hasAppeared) {
+        self.participantTableViewController.delegate = self;
+        self.participantTableViewController.sortType = self.sortType;
+        self.participantTableViewController.participants = [self.dataSource participantsForParticipantPickerController:self];
+        self.participantTableViewController.allowsMultipleSelection = self.allowsMultipleSelection;
+        self.participantTableViewController.participantCellClass = self.cellClass;
+        self.participantTableViewController.rowHeight = self.rowHeight;
+        self.participantTableViewController.sortType = self.sortType;
+        self.hasAppeared = YES;
+    }
 }
 
 #pragma mark - Public Picker Configuration Options
