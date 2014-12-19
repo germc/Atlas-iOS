@@ -24,6 +24,7 @@
 - (void)setUp
 {
     [super setUp];
+    [[LYRMockContentStore sharedStore] resetContentStore];
     LYRUserMock *mockUser = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameRussell];
     LYRClientMock *layerClient = [LYRClientMock layerClientMockWithAuthenticatedUserID:mockUser.participantIdentifier];
     self.testInterface = [LYRUITestInterface testIntefaceWithLayerClient:layerClient];
@@ -31,10 +32,10 @@
 
 - (void)tearDown
 {
-    [super tearDown];
     [[LYRMockContentStore sharedStore] resetContentStore];
     [[UIApplication sharedApplication] delegate].window.rootViewController = nil;
     self.testInterface = nil;
+    [super tearDown];
 }
 
 - (void)testToVerifyConversationListBaseUI
@@ -279,10 +280,7 @@
 
 - (void)setRootViewController:(UIViewController *)controller
 {
-    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
-    [[UIApplication sharedApplication] delegate].window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    [[[[UIApplication sharedApplication] delegate] window] setRootViewController:navigationController];
-    [[[[UIApplication sharedApplication] delegate] window] makeKeyAndVisible];
+    [self.testInterface setRootViewController:controller];
     [tester waitForTimeInterval:1];
 }
 

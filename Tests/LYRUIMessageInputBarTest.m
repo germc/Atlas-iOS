@@ -28,6 +28,8 @@ static NSString *const LSCameraButtonLabel = @"Camera Button";
 - (void)setUp
 {
     [super setUp];
+    [[UIApplication sharedApplication] delegate].window.rootViewController = nil;
+    [[LYRMockContentStore sharedStore] resetContentStore];
     LYRUserMock *mockUser = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameRussell];
     LYRClientMock *layerClient = [LYRClientMock layerClientMockWithAuthenticatedUserID:mockUser.participantIdentifier];
     self.testInterface = [LYRUITestInterface testIntefaceWithLayerClient:layerClient];
@@ -41,10 +43,10 @@ static NSString *const LSCameraButtonLabel = @"Camera Button";
 
 - (void)tearDown
 {
-    [super tearDown];
     [[LYRMockContentStore sharedStore] resetContentStore];
     [[UIApplication sharedApplication] delegate].window.rootViewController = nil;
     self.testInterface = nil;
+    [super tearDown];
 }
 
 - (void)testToVerifyMessageEnteredIsConsitentWithMessageToBeSent
@@ -205,10 +207,7 @@ static NSString *const LSCameraButtonLabel = @"Camera Button";
 
 - (void)setRootViewController:(UIViewController *)controller
 {
-    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
-    [[UIApplication sharedApplication] delegate].window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    [[[[UIApplication sharedApplication] delegate] window] setRootViewController:navigationController];
-    [[[[UIApplication sharedApplication] delegate] window] makeKeyAndVisible];
+    [self.testInterface setRootViewController:controller];
     [tester waitForTimeInterval:1];
 }
 
