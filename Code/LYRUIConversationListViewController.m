@@ -186,11 +186,6 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
     }
 }
 
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    return YES;
-}
-
 - (NSArray *)tableView:(UITableView *)tableView editActionsForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     UITableViewRowAction *localDeleteAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDefault title:@"Local" handler:^(UITableViewRowAction *action, NSIndexPath *indexPath) {
