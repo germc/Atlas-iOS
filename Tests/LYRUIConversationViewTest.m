@@ -116,27 +116,27 @@
     [self sendMessageWithText:@"This is a test"];
     [delegateMock verify];
 }
-
-//- (id<LYRUIParticipant>)conversationViewController:(LYRUIConversationViewController *)conversationViewController participantForIdentifier:(NSString *)participantIdentifier;
-- (void)testToVerityControllerShowCorrectParticipantSuppliedByTheDataSource
-{
-     [OCMockObject partialMockForObject:anObject]
-    id delegateMock = OCMProtocolMock(@protocol(LYRUIConversationViewControllerDataSource));
-    self.viewController.dataSource = delegateMock;
-    
-    [[[delegateMock expect] andDo:^(NSInvocation *invocation) {
-        LYRUserMock *mock = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameBobby];
-        [invocation setReturnValue:&mock];
-    }] conversationViewController:[OCMArg any] participantForIdentifier:[OCMArg any]];
-    
-    [[[delegateMock expect] andDo:^(NSInvocation *invocation) {
-        LYRUserMock *mock = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameBobby];
-        [invocation setReturnValue:&mock];
-    }] conversationViewController:[OCMArg any] participantForIdentifier:[OCMArg any]];
-    
-    [self sendMessageWithText:@"This is a test"];
-    [delegateMock verify];
-}
+//
+////- (id<LYRUIParticipant>)conversationViewController:(LYRUIConversationViewController *)conversationViewController participantForIdentifier:(NSString *)participantIdentifier;
+//- (void)testToVerityControllerShowCorrectParticipantSuppliedByTheDataSource
+//{
+//     [OCMockObject partialMockForObject:anObject]
+//    id delegateMock = OCMProtocolMock(@protocol(LYRUIConversationViewControllerDataSource));
+//    self.viewController.dataSource = delegateMock;
+//    
+//    [[[delegateMock expect] andDo:^(NSInvocation *invocation) {
+//        LYRUserMock *mock = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameBobby];
+//        [invocation setReturnValue:&mock];
+//    }] conversationViewController:[OCMArg any] participantForIdentifier:[OCMArg any]];
+//    
+//    [[[delegateMock expect] andDo:^(NSInvocation *invocation) {
+//        LYRUserMock *mock = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameBobby];
+//        [invocation setReturnValue:&mock];
+//    }] conversationViewController:[OCMArg any] participantForIdentifier:[OCMArg any]];
+//    
+//    [self sendMessageWithText:@"This is a test"];
+//    [delegateMock verify];
+//}
 
 //- (NSAttributedString *)conversationViewController:(LYRUIConversationViewController *)conversationViewController attributedStringForDisplayOfDate:(NSDate *)date;
 //- (NSAttributedString *)conversationViewController:(LYRUIConversationViewController *)conversationViewController attributedStringForDisplayOfRecipientStatus:(NSDictionary *)recipientStatus;
