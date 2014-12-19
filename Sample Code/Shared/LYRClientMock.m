@@ -49,6 +49,8 @@ NSString *const LYRMockObjectChangeChangeTypeKey = @"mockObjectChangeChangeTypeK
     @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"Failed to call designated initializer, use +%@", NSStringFromSelector(@selector(layerClientMockWithAuthenticatedUserID:))]  userInfo:nil];
 }
 
+
+
 #pragma mark Public API
 
 - (LYRConversationMock *)newConversationWithParticipants:(NSSet *)participants options:(NSDictionary *)options error:(NSError *__autoreleasing *)error
