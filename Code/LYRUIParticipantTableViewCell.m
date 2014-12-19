@@ -123,12 +123,12 @@ static CGFloat const LSSelectionIndicatorSize = 30;
 
     NSRange rangeToBold = NSMakeRange(NSNotFound, 0);
     switch (self.sortType) {
-        case LYRUIParticipantPickerControllerSortTypeFirst:
+        case LYRUIParticipantPickerSortTypeFirstName:
             if (self.participant.firstName.length != 0) {
                 rangeToBold = [self.participant.fullName rangeOfString:self.participant.firstName];
             }
             break;
-        case LYRUIParticipantPickerControllerSortTypeLast:
+        case LYRUIParticipantPickerSortTypeLastName:
             if (self.participant.lastName.length != 0) {
                 rangeToBold = [self.participant.fullName rangeOfString:self.participant.lastName options:NSBackwardsSearch];
             }

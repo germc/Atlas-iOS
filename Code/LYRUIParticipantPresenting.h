@@ -13,8 +13,8 @@
  @abstract The `LYRUIParticipantPickerSortType` allows for configuration of sorting order of the participant list
  */
 typedef enum : NSUInteger {
-    LYRUIParticipantPickerControllerSortTypeFirst,
-    LYRUIParticipantPickerControllerSortTypeLast,
+    LYRUIParticipantPickerSortTypeFirstName,
+    LYRUIParticipantPickerSortTypeLastName,
 } LYRUIParticipantPickerSortType;
 
 /**

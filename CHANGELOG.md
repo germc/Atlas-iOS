@@ -35,6 +35,8 @@
 * Added `participantPickerController:didDeselectParticipant:` to `LYRUIParticipantPickerControllerDelegate`.
 * Added `participantTableViewController:didDeselectParticipant:` to `LYRUIParticipantTableViewControllerDelegate`.
 * Replaced `presentParticipant:`, `updateWithSortType:` and `shouldShowAvatarImage:` on `LYRUIParticipantPresenting` with `presentParticipant:withSortType:shouldShowAvatarImage:`.
+* Changed `LYRUIParticipantPickerControllerSortTypeFirst` to `LYRUIParticipantPickerSortTypeFirstName`.
+* Changed `LYRUIParticipantPickerControllerSortTypeLast` to `LYRUIParticipantPickerSortTypeLastName`.
 
 ### Bug Fixes
 

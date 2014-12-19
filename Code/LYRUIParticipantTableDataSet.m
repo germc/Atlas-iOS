@@ -32,10 +32,10 @@
 {
     NSSortDescriptor *sortDescriptor;
     switch (sortType) {
-        case LYRUIParticipantPickerControllerSortTypeFirst:
+        case LYRUIParticipantPickerSortTypeFirstName:
             sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"firstName" ascending:YES];
             break;
-        case LYRUIParticipantPickerControllerSortTypeLast:
+        case LYRUIParticipantPickerSortTypeLastName:
             sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"lastName" ascending:YES];
             break;
     }
@@ -48,10 +48,10 @@
     for (id<LYRUIParticipant> participant in sortedParticipants) {
         NSString *name;
         switch (sortType) {
-            case LYRUIParticipantPickerControllerSortTypeFirst:
+            case LYRUIParticipantPickerSortTypeFirstName:
                 name = participant.firstName;
                 break;
-            case LYRUIParticipantPickerControllerSortTypeLast:
+            case LYRUIParticipantPickerSortTypeLastName:
                 name = participant.lastName;
                 break;
         }

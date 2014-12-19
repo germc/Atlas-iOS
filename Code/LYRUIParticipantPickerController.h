@@ -126,7 +126,7 @@
 
 /**
  @abstract Configures the sort type of the receiver.
- @default LYRUIParticipantPickerControllerSortTypeFirst
+ @default LYRUIParticipantPickerSortTypeFirstName
  @raises NSInternalInconsistencyException Raised if the value is mutated after the receiver has been presented.
  */
 @property (nonatomic, assign) LYRUIParticipantPickerSortType participantPickerSortType;
