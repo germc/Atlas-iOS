@@ -106,32 +106,29 @@ static CGFloat const LSSelectionIndicatorSize = 30;
         return;
     }
 
-    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:self.participant.fullName];
+    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:self.participant.fullName attributes:@{NSFontAttributeName: self.titleFont}];
 
+    NSRange rangeToBold = NSMakeRange(NSNotFound, 0);
     switch (self.sortType) {
-
         case LYRUIParticipantPickerControllerSortTypeFirst: {
             NSRange rangeOfString = [self.participant.fullName rangeOfString:@" "];
             NSString *regularString = [self.participant.fullName substringFromIndex:rangeOfString.location];
-            NSRange rangeToBold = NSMakeRange(0, rangeOfString.location);
-            [attributedString addAttributes:@{NSFontAttributeName: self.boldTitleFont} range:rangeToBold];
-            [attributedString addAttributes:@{NSFontAttributeName: self.titleFont} range:NSMakeRange(rangeOfString.location, regularString.length)];
-            self.nameLabel.attributedText = attributedString;
+            rangeToBold = NSMakeRange(0, rangeOfString.location);
         }
             break;
 
         case LYRUIParticipantPickerControllerSortTypeLast: {
             NSRange rangeOfString = [self.participant.fullName rangeOfString:@" "];
             NSString *stringToBold = [self.participant.fullName substringFromIndex:rangeOfString.location];
-            NSRange rangeToBold = NSMakeRange(rangeOfString.location, stringToBold.length);
-            [attributedString addAttributes:@{NSFontAttributeName: self.titleFont} range:NSMakeRange(0, rangeOfString.location)];
-            [attributedString addAttributes:@{NSFontAttributeName: self.boldTitleFont} range:rangeToBold];
-            self.nameLabel.attributedText = attributedString;
+            rangeToBold = NSMakeRange(rangeOfString.location, stringToBold.length);
         }
             break;
-        default:
-            break;
     }
+    if (rangeToBold.location != NSNotFound) {
+        [attributedString addAttributes:@{NSFontAttributeName: self.boldTitleFont} range:rangeToBold];
+    }
+
+    self.nameLabel.attributedText = attributedString;
     self.nameLabel.textColor = self.titleColor;
 }
 
