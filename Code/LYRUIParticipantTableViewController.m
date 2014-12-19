@@ -28,7 +28,7 @@ static NSString *const LYRUIParticipantTableSectionHeaderIdentifier = @"LYRUIPar
 
 @implementation LYRUIParticipantTableViewController
 
-static NSString *const LYRParticipantCellIdentifier = @"participantCellIdentifier";
+static NSString *const LYRUIParticipantCellIdentifier = @"participantCellIdentifier";
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -74,7 +74,7 @@ static NSString *const LYRParticipantCellIdentifier = @"participantCellIdentifie
         self.unfilteredDataSet = [LYRUIParticipantTableDataSet dataSetWithParticipants:self.participants sortType:self.sortType];
         self.tableView.rowHeight = self.rowHeight;
         self.tableView.allowsMultipleSelection = self.allowsMultipleSelection;
-        [self.tableView registerClass:self.participantCellClass forCellReuseIdentifier:LYRParticipantCellIdentifier];
+        [self.tableView registerClass:self.participantCellClass forCellReuseIdentifier:LYRUIParticipantCellIdentifier];
         self.hasAppeared = YES;
     }
 
@@ -130,7 +130,7 @@ static NSString *const LYRParticipantCellIdentifier = @"participantCellIdentifie
     tableView.allowsMultipleSelection = self.allowsMultipleSelection;
     tableView.sectionHeaderHeight = self.tableView.sectionHeaderHeight;
     tableView.rowHeight = self.rowHeight;
-    [tableView registerClass:self.participantCellClass forCellReuseIdentifier:LYRParticipantCellIdentifier];
+    [tableView registerClass:self.participantCellClass forCellReuseIdentifier:LYRUIParticipantCellIdentifier];
     [tableView registerClass:[LYRUIParticipantSectionHeaderView class] forHeaderFooterViewReuseIdentifier:LYRUIParticipantTableSectionHeaderIdentifier];
 }
 
@@ -178,7 +178,7 @@ static NSString *const LYRParticipantCellIdentifier = @"participantCellIdentifie
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell <LYRUIParticipantPresenting> *participantCell = [tableView dequeueReusableCellWithIdentifier:LYRParticipantCellIdentifier];
+    UITableViewCell <LYRUIParticipantPresenting> *participantCell = [tableView dequeueReusableCellWithIdentifier:LYRUIParticipantCellIdentifier];
     [self configureCell:participantCell atIndexPath:indexPath forTableView:tableView];
     return participantCell;
 }
