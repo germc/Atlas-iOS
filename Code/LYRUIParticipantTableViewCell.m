@@ -95,6 +95,11 @@ static CGFloat const LSSelectionIndicatorSize = 30;
 
 - (void)configureNameLabel
 {
+    if (self.participant.fullName.length == 0) {
+        self.nameLabel.text = nil;
+        return;
+    }
+
     NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:self.participant.fullName];
 
     switch (self.sortType) {
