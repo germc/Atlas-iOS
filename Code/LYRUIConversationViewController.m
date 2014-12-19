@@ -353,12 +353,15 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     NSString *reuseIdentifier;
     if ([self.dataSource respondsToSelector:@selector(conversationViewController:reuseIdentifierForMessage:)]) {
         reuseIdentifier = [self.dataSource conversationViewController:self reuseIdentifierForMessage:message];
-    } else if ([self.layerClient.authenticatedUserID isEqualToString:message.sentByUserID]) {
-        // If the message was sent by the currently authenticated user, it is outgoing
-        reuseIdentifier = LYRUIOutgoingMessageCellIdentifier;
-    } else {
-        // If the message was sent by someone other than the currently authenticated user, it is incoming
-        reuseIdentifier = LYRUIIncomingMessageCellIdentifier;
+    }
+    if (!reuseIdentifier) {
+        if ([self.layerClient.authenticatedUserID isEqualToString:message.sentByUserID]) {
+            // If the message was sent by the currently authenticated user, it is outgoing
+            reuseIdentifier = LYRUIOutgoingMessageCellIdentifier;
+        } else {
+            // If the message was sent by someone other than the currently authenticated user, it is incoming
+            reuseIdentifier = LYRUIIncomingMessageCellIdentifier;
+        }
     }
     UICollectionViewCell<LYRUIMessagePresenting> *cell =  [self.collectionView dequeueReusableCellWithReuseIdentifier:reuseIdentifier forIndexPath:indexPath];
     [self configureCell:cell forMessage:message indexPath:indexPath];
@@ -405,11 +408,12 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     CGFloat width = self.collectionView.bounds.size.width;
-    CGFloat height;
+    CGFloat height = 0;
     if ([self.delegate respondsToSelector:@selector(conversationViewController:heightForMessage:withCellWidth:)]) {
         LYRMessage *message = [self messageAtCollectionViewIndexPath:indexPath];
         height = [self.delegate conversationViewController:self heightForMessage:message withCellWidth:width];
-    } else {
+    }
+    if (!height) {
         height = [self sizeForItemAtIndexPath:indexPath].height;
     }
     return CGSizeMake(width, height);
