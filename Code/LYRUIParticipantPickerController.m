@@ -31,6 +31,12 @@
         _sortType = sortType;
         _participantTableViewController = controller;
         _dataSource = dataSource;
+        _allowsMultipleSelection = YES;
+        _cellClass = [LYRUIParticipantTableViewCell class];
+        _rowHeight = 40;
+
+        self.title = @"Participants";
+        self.accessibilityLabel = @"Participants";
     }
     return self;
 }
@@ -42,17 +48,6 @@
 }
 
 #pragma mark - Lifecycle
-
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
-    // Configure default picker configuration
-    self.allowsMultipleSelection = YES;
-    self.cellClass = [LYRUIParticipantTableViewCell class];
-    self.rowHeight = 40;
-    self.title = @"Participants";
-    self.accessibilityLabel = @"Participants";
-}
 
 - (void)viewWillAppear:(BOOL)animated
 {
