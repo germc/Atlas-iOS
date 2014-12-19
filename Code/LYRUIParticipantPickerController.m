@@ -10,16 +10,12 @@
 
 @interface LYRUIParticipantPickerController () <LYRUIParticipantTableViewControllerDelegate>
 
-@property (nonatomic) NSSet *participants;
-@property (nonatomic) NSDictionary *sortedParticipants;
 @property (nonatomic) LYRUIParticipantTableViewController *participantTableViewController;
-@property (nonatomic) BOOL isOnScreen;
+@property (nonatomic) BOOL hasAppeared;
 
 @end
 
 @implementation LYRUIParticipantPickerController
-
-@synthesize allowsMultipleSelection = _allowsMultipleSelection;
 
 + (instancetype)participantPickerWithDataSource:(id<LYRUIParticipantPickerDataSource>)dataSource sortType:(LYRUIParticipantPickerSortType)sortType
 {
@@ -29,16 +25,18 @@
 
 - (id)initWithDataSource:(id<LYRUIParticipantPickerDataSource>)dataSource sortType:(LYRUIParticipantPickerSortType)sortType
 {
-    LYRUIParticipantTableViewController *controller = [[LYRUIParticipantTableViewController alloc] initWithStyle:UITableViewStyleGrouped];
+    LYRUIParticipantTableViewController *controller = [[LYRUIParticipantTableViewController alloc] initWithStyle:UITableViewStylePlain];
     self = [super initWithRootViewController:controller];
     if (self) {
-        controller.delegate = self;
-        controller.sortType = sortType;
-        controller.participants = [dataSource participants];
-        
         _sortType = sortType;
         _participantTableViewController = controller;
         _dataSource = dataSource;
+        _allowsMultipleSelection = YES;
+        _cellClass = [LYRUIParticipantTableViewCell class];
+        _rowHeight = 40;
+
+        self.title = @"Participants";
+        self.accessibilityLabel = @"Participants";
     }
     return self;
 }
@@ -49,87 +47,82 @@
     return nil;
 }
 
-#pragma mark - VC Lifecycle Methods
-
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
-    // Configure default picker configuration
-    self.allowsMultipleSelection = YES;
-    self.cellClass = [LYRUIParticipantTableViewCell class];
-    self.rowHeight = 40;
-    self.title = @"Participants";
-    self.accessibilityLabel = @"Participants";
-}
+#pragma mark - Lifecycle
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    // Configure ParticipantTableViewController Appearance
-    self.participantTableViewController.allowsMultipleSelection = self.allowsMultipleSelection;
-    self.participantTableViewController.participantCellClass = self.cellClass;
-    self.participantTableViewController.rowHeight = self.rowHeight;
-    self.participantTableViewController.sortType = self.sortType;
-    self.isOnScreen = TRUE;
+
+    if (!self.hasAppeared) {
+        self.participantTableViewController.delegate = self;
+        self.participantTableViewController.sortType = self.sortType;
+        self.participantTableViewController.participants = [self.dataSource participantsForParticipantPickerController:self];
+        self.participantTableViewController.allowsMultipleSelection = self.allowsMultipleSelection;
+        self.participantTableViewController.participantCellClass = self.cellClass;
+        self.participantTableViewController.rowHeight = self.rowHeight;
+        self.participantTableViewController.sortType = self.sortType;
+        self.hasAppeared = YES;
+    }
 }
 
-- (void)viewWillDisappear:(BOOL)animated
-{
-    [super viewWillDisappear:animated];
-    self.isOnScreen = FALSE;
-}
-
-#pragma mark Public Picker Configuration Options
+#pragma mark - Public Picker Configuration Options
 
 - (void)setAllowsMultipleSelection:(BOOL)allowsMultipleSelection
 {
-    if (self.isOnScreen) {
-        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Cannot change multiple selection mode after view has been loaded" userInfo:nil];
+    if (self.hasAppeared) {
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Cannot change multiple selection mode after view has been presented" userInfo:nil];
     }
     _allowsMultipleSelection = allowsMultipleSelection;
 }
 
 - (void)setCellClass:(Class<LYRUIParticipantPresenting>)cellClass
 {
-    if (self.isOnScreen) {
-        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Cannot change cell class after view has been loaded" userInfo:nil];
+    if (self.hasAppeared) {
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Cannot change cell class after view has been presented" userInfo:nil];
     }
     _cellClass = cellClass;
 }
 
 - (void)setRowHeight:(CGFloat)rowHeight
 {
-    if (self.isOnScreen) {
-        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Cannot change row height after view has been loaded" userInfo:nil];
+    if (self.hasAppeared) {
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Cannot change row height after view has been presented" userInfo:nil];
     }
     _rowHeight = rowHeight;
 }
 
 - (void)setParticipantPickerSortType:(LYRUIParticipantPickerSortType)participantPickerSortType
 {
-    if (self.isOnScreen) {
-        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Cannot change sort type after view has been loaded" userInfo:nil];
+    if (self.hasAppeared) {
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Cannot change sort type after view has been presented" userInfo:nil];
     }
     _sortType = participantPickerSortType;
 }
 
-#pragma mark - Participant Table View Controller Delegate Methods
+#pragma mark - LYRUIParticipantTableViewControllerDelegate
 
 - (void)participantTableViewController:(LYRUIParticipantTableViewController *)participantTableViewController didSelectParticipant:(id<LYRUIParticipant>)participant
 {
-    [self.participantPickerDelegate participantSelectionViewController:self didSelectParticipant:participant];
+    [self.participantPickerDelegate participantPickerController:self didSelectParticipant:participant];
+}
+
+- (void)participantTableViewController:(LYRUIParticipantTableViewController *)participantTableViewController didDeselectParticipant:(id<LYRUIParticipant>)participant
+{
+    if ([self.participantPickerDelegate respondsToSelector:@selector(participantPickerController:didDeselectParticipant:)]) {
+        [self.participantPickerDelegate participantPickerController:self didDeselectParticipant:participant];
+    }
 }
 
 - (void)participantTableViewController:(LYRUIParticipantTableViewController *)participantTableViewController didSearchWithString:(NSString *)searchText completion:(void (^)(NSSet *))completion
 {
-    [self.dataSource searchForParticipantsMatchingText:searchText completion:^(NSSet *participants) {
-        completion (participants);
+    [self.dataSource participantPickerController:self searchForParticipantsMatchingText:searchText completion:^(NSSet *participants) {
+        completion(participants);
     }];
 }
 
-- (void)participantTableViewControllerDidSelectCancelButton
+- (void)participantTableViewControllerDidCancel:(LYRUIParticipantTableViewController *)participantTableViewController
 {
-    [self.participantPickerDelegate participantSelectionViewControllerDidCancel:self];
+    [self.participantPickerDelegate participantPickerControllerDidCancel:self];
 }
 
 @end

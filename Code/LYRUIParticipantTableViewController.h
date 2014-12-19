@@ -18,29 +18,38 @@
 @protocol LYRUIParticipantTableViewControllerDelegate <NSObject>
 
 /**
- @abstract Tells the receiver that the user has selected a participants from a participant selection view.
- @param participantSelectionViewController The participant selection view in which the selection was made.
- @param participant The participants that was selected.
+ @abstract Tells the receiver that the user has selected a participant.
+ @param participantTableViewController The participant table view controller in which the selection was made.
+ @param participant The participant who was selected.
  */
 - (void)participantTableViewController:(LYRUIParticipantTableViewController *)participantTableViewController didSelectParticipant:(id<LYRUIParticipant>)participant;
 
 /**
- @abstract  Informs the delegate that a search has been made with the following search string. After the completion block is called, the `contactListViewController:presenterForContactAtIndex:` method will be called for each search result.
- @param contactListViewController An object representing the contact list view controller.
+ @abstract Informs the delegate that a search has been made with the following search string.
+ @param participantTableViewController The participant table view controller in which the search was made.
  @param searchString The search string that was just used for search.
  @param completion The completion block that should be called when the results are fetched from the search.
  */
 - (void)participantTableViewController:(LYRUIParticipantTableViewController *)participantTableViewController didSearchWithString:(NSString *)searchText completion:(void (^)(NSSet *filteredParticipants))completion;
 
 /**
- @abstract Informst the delegate that the user tapped the `cancel` button
+ @abstract Informs the delegate that the user tapped the cancel button.
  */
-- (void)participantTableViewControllerDidSelectCancelButton;
+- (void)participantTableViewControllerDidCancel:(LYRUIParticipantTableViewController *)participantTableViewController;
+
+@optional
+
+/**
+ @abstract Tells the receiver that the user has deselected a participant.
+ @param participantTableViewController The participant table view controller in which the deselection was made.
+ @param participant The participant who was deselected.
+ */
+- (void)participantTableViewController:(LYRUIParticipantTableViewController *)participantTableViewController didDeselectParticipant:(id<LYRUIParticipant>)participant;
 
 @end
 
 /**
- @abstract The `LYRUIParticipantTableViewController` sorts, groups, and displayes a list of participants. It provides search capability.
+ @abstract The `LYRUIParticipantTableViewController` sorts, groups, and displays a list of participants. It provides search capability.
  */
 @interface LYRUIParticipantTableViewController : UITableViewController
 
@@ -52,28 +61,22 @@
 @property (nonatomic) Class<LYRUIParticipantPresenting> participantCellClass;
 
 /**
- @abstract The delegate for the participantTableViewController
+ @abstract The delegate for the participant table view controller.
  */
-@property (nonatomic, weak) id<LYRUIParticipantTableViewControllerDelegate>delegate;
+@property (nonatomic, weak) id<LYRUIParticipantTableViewControllerDelegate> delegate;
 
 /**
- @abstract A dictionary containing a set of dictionaries each cooresponding to a unique letter in the alphabet
+ @abstract The participants to display.
+ @raises NSInternalInconsistencyException Raised if the value is mutated after the receiver has been presented.
  */
 @property (nonatomic) NSSet *participants;
 
 /**
- @abstract Defines the sort ordering of the participant list. If set, the view controller will sort and group
- participants by the order you specify. If `LYRUIParticipantPickerControllerSortTypeNone`, the view controller 
- will not perform sorting or grouping.
- */
-@property (nonatomic, assign) LYRUIParticipantPickerSortType sortType;
-
-/**
- @abstract The seclection indicator used to indicate a contact has been selected. Should have views configured for both highlighted and non highlighted state
- @default `LYRUISelectionIndicator`
+ @abstract Defines the sort ordering of the participant list. The view controller will sort and group
+ participants by the order you specify.
  @raises NSInternalInconsistencyException Raised if the value is mutated after the receiver has been presented.
  */
-@property (nonatomic) UIControl *selectionIndicator;
+@property (nonatomic, assign) LYRUIParticipantPickerSortType sortType;
 
 /**
  @abstract Sets the height for cells within the receiver.
@@ -83,9 +86,10 @@
 @property (nonatomic, assign) CGFloat rowHeight;
 
 /**
- @abstract A Boolean value that determines whether multiple participants can be selected at once.
- @defaul Yes
+ @abstract A boolean value that determines whether multiple participants can be selected at once.
+ @default YES
  @discussion The defauly value of this property is `YES`.
+ @raises NSInternalInconsistencyException Raised if the value is mutated after the receiver has been presented.
  */
 @property (nonatomic, assign) BOOL allowsMultipleSelection;
 

@@ -10,13 +10,12 @@
 #import "LYRUIParticipant.h"
 
 /**
- @abstract The `LYRUIParticipantPickerSortType` allows for configuration of sorting order of the participant list
+ @abstract The `LYRUIParticipantPickerSortType` allows for configuration of the sorting order of participants.
  */
-typedef enum : NSUInteger {
-    LYRUIParticipantPickerControllerSortTypeFirst,
-    LYRUIParticipantPickerControllerSortTypeLast,
-}LYRUIParticipantPickerSortType;
-
+typedef NS_ENUM(NSUInteger, LYRUIParticipantPickerSortType) {
+    LYRUIParticipantPickerSortTypeFirstName,
+    LYRUIParticipantPickerSortTypeLastName,
+};
 
 /**
  @abstract The `LYRUIParticipantPresenting` protocol must be adopted by objects that wish to present Layer
@@ -27,12 +26,11 @@ typedef enum : NSUInteger {
 /**
  @abstract Tells the receiver to present an interface for the given participant.
  @param participant The participant to present.
+ @param sortType The type of sorting currently used.
+ @param shouldShowAvatarImage Whether or not the receiver should display the participant's avatar.
  */
-- (void)presentParticipant:(id<LYRUIParticipant>)participant;
-
-- (void)updateWithSortType:(LYRUIParticipantPickerSortType)sortType;
-
-- (void)shouldShowAvatarImage:(BOOL)shouldShowAvatarImage;
-
+- (void)presentParticipant:(id<LYRUIParticipant>)participant
+              withSortType:(LYRUIParticipantPickerSortType)sortType
+     shouldShowAvatarImage:(BOOL)shouldShowAvatarImage;
 
 @end
