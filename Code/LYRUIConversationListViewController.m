@@ -85,7 +85,7 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 - (void)setAllowsEditing:(BOOL)allowsEditing
 {
     if (self.hasAppeared) {
-        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Cannot set editing mode after the view has been loaded" userInfo:nil];
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Cannot change editing mode after the view has been presented" userInfo:nil];
     }
     _allowsEditing = allowsEditing;
 
@@ -97,11 +97,11 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 - (void)setCellClass:(Class<LYRUIConversationPresenting>)cellClass
 {
     if (self.hasAppeared) {
-        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Cannot set cellClass after the view has been loaded" userInfo:nil];
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Cannot change cell class after the view has been presented" userInfo:nil];
     }
     
     if (!class_conformsToProtocol(cellClass, @protocol(LYRUIConversationPresenting))) {
-        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Cell class cellClass must conform to LYRUIConversationPresenting Protocol" userInfo:nil];
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Cell class must conform to LYRUIConversationPresenting" userInfo:nil];
 
     }
     _cellClass = cellClass;
@@ -110,7 +110,7 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 - (void)setRowHeight:(CGFloat)rowHeight
 {
     if (self.hasAppeared) {
-        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Cannot set rowHeight after the view has been loaded" userInfo:nil];
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Cannot change row height after the view has been presented" userInfo:nil];
     }
     _rowHeight = rowHeight;
 }
@@ -118,7 +118,7 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 - (void)setDisplaysConversationImage:(BOOL)displaysConversationImage
 {
     if (self.hasAppeared) {
-        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Cannot set displaysConversationImage after the view has been loaded" userInfo:nil];
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Cannot change conversation image display after the view has been presented" userInfo:nil];
     }
     _displaysConversationImage = displaysConversationImage;
 }
