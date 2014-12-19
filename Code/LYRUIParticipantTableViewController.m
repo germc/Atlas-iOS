@@ -14,6 +14,7 @@
 #import "LYRUIAvatarImageView.h"
 
 static NSString *const LYRUIParticipantTableSectionHeaderIdentifier = @"LYRUIParticipantTableSectionHeaderIdentifier";
+static NSString *const LYRUIParticipantCellIdentifier = @"LYRUIParticipantCellIdentifier";
 
 @interface LYRUIParticipantTableViewController () <UISearchBarDelegate, UISearchDisplayDelegate>
 
@@ -27,8 +28,6 @@ static NSString *const LYRUIParticipantTableSectionHeaderIdentifier = @"LYRUIPar
 @end
 
 @implementation LYRUIParticipantTableViewController
-
-static NSString *const LYRUIParticipantCellIdentifier = @"LYRUIParticipantCellIdentifier";
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
