@@ -37,7 +37,6 @@ static CGFloat const LSSelectionIndicatorSize = 30;
         _subtitleFont = [UIFont systemFontOfSize:12];
         _subtitleColor = [UIColor grayColor];
         
-        self.selectionStyle = UITableViewCellSelectionStyleNone;
         self.backgroundColor = [UIColor whiteColor];
         
         self.nameLabel = [UILabel new];
@@ -61,6 +60,22 @@ static CGFloat const LSSelectionIndicatorSize = 30;
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.avatarImageView attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0]];
     }
     return self;
+}
+
+- (void)setHighlighted:(BOOL)highlighted animated:(BOOL)animated
+{
+    // We don't want the default behavior that changes image view backgrounds to transparent while highlighted.
+    UIColor *preservedAvatarBackgroundColor = self.avatarImageView.backgroundColor;
+    [super setHighlighted:highlighted animated:animated];
+    self.avatarImageView.backgroundColor = preservedAvatarBackgroundColor;
+}
+
+- (void)setSelected:(BOOL)selected animated:(BOOL)animated
+{
+    // We don't want the default behavior that changes image view backgrounds to transparent while selected.
+    UIColor *preservedAvatarBackgroundColor = self.avatarImageView.backgroundColor;
+    [super setSelected:selected animated:animated];
+    self.avatarImageView.backgroundColor = preservedAvatarBackgroundColor;
 }
 
 - (void)presentParticipant:(id<LYRUIParticipant>)participant withSortType:(LYRUIParticipantPickerSortType)sortType shouldShowAvatarImage:(BOOL)shouldShowAvatarImage
