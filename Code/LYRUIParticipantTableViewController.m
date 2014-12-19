@@ -198,7 +198,7 @@ static NSString *const LYRParticipantCellIdentifier = @"participantCellIdentifie
     LYRUIParticipantTableDataSet *dataSet = [self dataSetForTableView:tableView];
     NSString *sectionName = dataSet.sectionTitles[section];
     LYRUIParticipantSectionHeaderView *headerView = [tableView dequeueReusableHeaderFooterViewWithIdentifier:LYRUIParticipantTableSectionHeaderIdentifier];
-    headerView.keyLabel.text = sectionName;
+    headerView.nameLabel.text = sectionName;
     return headerView;
 }
 

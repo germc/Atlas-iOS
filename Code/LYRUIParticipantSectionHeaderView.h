@@ -17,6 +17,6 @@
 /**
  @abstract The label representing the section of the participant picker.
  */
-@property (nonatomic) UILabel *keyLabel;
+@property (nonatomic) UILabel *nameLabel;
 
 @end
