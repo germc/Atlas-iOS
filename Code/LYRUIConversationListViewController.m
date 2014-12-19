@@ -76,8 +76,6 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
         }
         self.hasAppeared = YES;
     }
-
-    [self.tableView reloadData];
 }
 
 #pragma mark - Public setters
@@ -138,7 +136,6 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
     NSError *error = nil;
     BOOL success = [self.queryController execute:&error];
     if (!success) NSLog(@"LayerKit failed to execute query with error: %@", error);
-    [self.tableView reloadData];
 }
 
 #pragma mark - Table view data source methods
