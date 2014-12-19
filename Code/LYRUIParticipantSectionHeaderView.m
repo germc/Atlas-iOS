@@ -1,21 +1,21 @@
 //
-//  LYRUIPaticipantSectionHeaderView.m
+//  LYRUIParticipantSectionHeaderView.m
 //  Pods
 //
 //  Created by Kevin Coleman on 8/31/14.
 //
 //
 
-#import "LYRUIPaticipantSectionHeaderView.h"
+#import "LYRUIParticipantSectionHeaderView.h"
 #import "LYRUIConstants.h"
 
-@interface LYRUIPaticipantSectionHeaderView ()
+@interface LYRUIParticipantSectionHeaderView ()
 
 @property (nonatomic) UIView *bottomBar;
 
 @end
 
-@implementation LYRUIPaticipantSectionHeaderView
+@implementation LYRUIParticipantSectionHeaderView
 
 - (id)initWithKey:(NSString *)key
 {

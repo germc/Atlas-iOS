@@ -8,7 +8,7 @@
 
 #import "LYRUIParticipantTableViewController.h"
 #import "LYRUIParticipantTableDataSet.h"
-#import "LYRUIPaticipantSectionHeaderView.h"
+#import "LYRUIParticipantSectionHeaderView.h"
 #import "LYRUIConstants.h"
 #import "LYRUIParticipantPickerController.h"
 #import "LYRUIAvatarImageView.h"
@@ -193,7 +193,7 @@ static NSString *const LYRParticipantCellIdentifier = @"participantCellIdentifie
 {
     LYRUIParticipantTableDataSet *dataSet = [self dataSetForTableView:tableView];
     NSString *sectionName = dataSet.sectionTitles[section];
-    return [[LYRUIPaticipantSectionHeaderView alloc] initWithKey:sectionName];
+    return [[LYRUIParticipantSectionHeaderView alloc] initWithKey:sectionName];
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
