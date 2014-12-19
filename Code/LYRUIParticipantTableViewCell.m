@@ -17,6 +17,9 @@
 @property (nonatomic) id<LYRUIParticipant> participant;
 @property (nonatomic) LYRUIParticipantPickerSortType sortType;
 
+@property (nonatomic) NSLayoutConstraint *nameWithAvatarLeftConstraint;
+@property (nonatomic) NSLayoutConstraint *nameWithoutAvatarLeftConstraint;
+
 @end
 
 @implementation LYRUIParticipantTableViewCell
@@ -25,7 +28,7 @@ static CGFloat const LSSelectionIndicatorSize = 30;
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
-    self = [super initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:reuseIdentifier];
+    self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
         // UIAppearance Defaults
         _boldTitleFont = [UIFont boldSystemFontOfSize:14];
@@ -34,10 +37,13 @@ static CGFloat const LSSelectionIndicatorSize = 30;
         _subtitleFont = [UIFont systemFontOfSize:12];
         _subtitleColor = [UIColor grayColor];
         
-        self.textLabel.textAlignment = NSTextAlignmentCenter;
         self.selectionStyle = UITableViewCellSelectionStyleNone;
         self.backgroundColor = [UIColor whiteColor];
         
+        self.nameLabel = [UILabel new];
+        self.nameLabel.translatesAutoresizingMaskIntoConstraints = NO;
+        [self.contentView addSubview:self.nameLabel];
+
         self.avatarImageView = [[LYRUIAvatarImageView alloc] init];
         self.avatarImageView.backgroundColor = LYRUILightGrayColor();
         self.avatarImageView.layer.cornerRadius = LSSelectionIndicatorSize / 2;
@@ -45,8 +51,15 @@ static CGFloat const LSSelectionIndicatorSize = 30;
         self.avatarImageView.alpha = 0.0f;
         [self.contentView addSubview:self.avatarImageView];
 
-        [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.avatarImageView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self.imageView attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0]];
-        [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.avatarImageView attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self.imageView attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0]];
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.nameLabel attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:self.contentView attribute:NSLayoutAttributeTop multiplier:1.0 constant:8]];
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.nameLabel attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationLessThanOrEqual toItem:self.contentView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:-8]];
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.nameLabel attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0]];
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.nameLabel attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationLessThanOrEqual toItem:self.contentView attribute:NSLayoutAttributeRight multiplier:1.0 constant:-10]];
+        self.nameWithAvatarLeftConstraint = [NSLayoutConstraint constraintWithItem:self.nameLabel attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.avatarImageView attribute:NSLayoutAttributeRight multiplier:1.0 constant:15];
+        self.nameWithoutAvatarLeftConstraint = [NSLayoutConstraint constraintWithItem:self.nameLabel attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeLeft multiplier:1.0 constant:15];
+
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.avatarImageView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeLeft multiplier:1.0 constant:15]];
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.avatarImageView attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0]];
     }
     return self;
 }
@@ -57,8 +70,8 @@ static CGFloat const LSSelectionIndicatorSize = 30;
     self.participant = participant;
     self.sortType = sortType;
     if (shouldShowAvatarImage) {
-        self.imageView.backgroundColor = [UIColor redColor];
-        self.imageView.image = [self imageWithColor:[UIColor whiteColor]];
+        [self removeConstraint:self.nameWithoutAvatarLeftConstraint];
+        [self addConstraint:self.nameWithAvatarLeftConstraint];
         self.avatarImageView.alpha = 1.0f;
     }
     [self.avatarImageView setInitialsForName:participant.fullName];
@@ -80,23 +93,6 @@ static CGFloat const LSSelectionIndicatorSize = 30;
     _titleColor = titleColor;
 }
 
-- (UIImage *)imageWithColor:(UIColor *)color {
-    CGRect rect = CGRectMake(0, 0, 30, 30);
-    UIGraphicsBeginImageContextWithOptions(rect.size, NO, 0);
-    [color setFill];
-    UIRectFill(rect);   // Fill it with your color
-    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    return image;
-}
-
-- (void)layoutSubviews
-{
-    [super layoutSubviews];
-
-    [self.contentView bringSubviewToFront:self.avatarImageView];
-}
-
 - (void)configureNameLabel
 {
     NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:self.participant.fullName];
@@ -109,7 +105,7 @@ static CGFloat const LSSelectionIndicatorSize = 30;
             NSRange rangeToBold = NSMakeRange(0, rangeOfString.location);
             [attributedString addAttributes:@{NSFontAttributeName: self.boldTitleFont} range:rangeToBold];
             [attributedString addAttributes:@{NSFontAttributeName: self.titleFont} range:NSMakeRange(rangeOfString.location, regularString.length)];
-            self.textLabel.attributedText = attributedString;
+            self.nameLabel.attributedText = attributedString;
         }
             break;
 
@@ -119,13 +115,13 @@ static CGFloat const LSSelectionIndicatorSize = 30;
             NSRange rangeToBold = NSMakeRange(rangeOfString.location, stringToBold.length);
             [attributedString addAttributes:@{NSFontAttributeName: self.titleFont} range:NSMakeRange(0, rangeOfString.location)];
             [attributedString addAttributes:@{NSFontAttributeName: self.boldTitleFont} range:rangeToBold];
-            self.textLabel.attributedText = attributedString;
+            self.nameLabel.attributedText = attributedString;
         }
             break;
         default:
             break;
     }
-    self.textLabel.textColor = self.titleColor;
+    self.nameLabel.textColor = self.titleColor;
 }
 
 @end
