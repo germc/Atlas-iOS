@@ -11,10 +11,11 @@
 #import "LYRUIDataSourceChange.h"
 #import "LYRUIConstants.h"
 
-@interface LYRUIConversationListViewController () <LYRQueryControllerDelegate>
+@interface LYRUIConversationListViewController () <UIActionSheetDelegate, LYRQueryControllerDelegate>
 
 @property (nonatomic) LYRQueryController *queryController;
 @property (nonatomic) BOOL hasAppeared;
+@property (nonatomic) LYRConversation *conversationToDelete;
 
 @end
 
@@ -209,6 +210,11 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 - (void)deleteConversationAtIndexPath:(NSIndexPath *)indexPath withDeletionMode:(LYRDeletionMode)deletionMode
 {
     LYRConversation *conversation = [self.queryController objectAtIndexPath:indexPath];
+    [self deleteConversation:conversation withDeletionMode:deletionMode];
+}
+
+- (void)deleteConversation:(LYRConversation *)conversation withDeletionMode:(LYRDeletionMode)deletionMode
+{
     NSError *error;
     BOOL success = [conversation delete:deletionMode error:&error];
     if (!success) {
@@ -224,7 +230,9 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    // Not implemented
+    self.conversationToDelete = [self.queryController objectAtIndexPath:indexPath];
+    UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Global" otherButtonTitles:@"Local", nil];
+    [actionSheet showInView:self.view];
 }
 
 #pragma mark - Table view delegate methods
@@ -240,6 +248,20 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     return self.rowHeight;
+}
+
+#pragma mark - UIActionSheetDelegate
+
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    if (buttonIndex == actionSheet.destructiveButtonIndex) {
+        [self deleteConversation:self.conversationToDelete withDeletionMode:LYRDeletionModeAllParticipants];
+    } else if (buttonIndex == actionSheet.firstOtherButtonIndex) {
+        [self deleteConversation:self.conversationToDelete withDeletionMode:LYRDeletionModeLocal];
+    } else if (buttonIndex == actionSheet.cancelButtonIndex) {
+        [self setEditing:NO animated:YES];
+    }
+    self.conversationToDelete = nil;
 }
 
 #pragma mark - Conversation Editing Methods
