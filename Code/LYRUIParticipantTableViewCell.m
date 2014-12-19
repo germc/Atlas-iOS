@@ -48,7 +48,6 @@ static CGFloat const LSSelectionIndicatorSize = 30;
         self.avatarImageView.backgroundColor = LYRUILightGrayColor();
         self.avatarImageView.layer.cornerRadius = LSSelectionIndicatorSize / 2;
         self.avatarImageView.translatesAutoresizingMaskIntoConstraints = NO;
-        self.avatarImageView.alpha = 0.0f;
         [self.contentView addSubview:self.avatarImageView];
 
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.nameLabel attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:self.contentView attribute:NSLayoutAttributeTop multiplier:1.0 constant:8]];
@@ -72,7 +71,11 @@ static CGFloat const LSSelectionIndicatorSize = 30;
     if (shouldShowAvatarImage) {
         [self removeConstraint:self.nameWithoutAvatarLeftConstraint];
         [self addConstraint:self.nameWithAvatarLeftConstraint];
-        self.avatarImageView.alpha = 1.0f;
+        self.avatarImageView.hidden = NO;
+    } else {
+        [self removeConstraint:self.nameWithAvatarLeftConstraint];
+        [self addConstraint:self.nameWithoutAvatarLeftConstraint];
+        self.avatarImageView.hidden = YES;
     }
     [self.avatarImageView setInitialsForName:participant.fullName];
     [self configureNameLabel];
