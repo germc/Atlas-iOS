@@ -14,7 +14,7 @@
 @interface LYRUIConversationListViewController () <LYRQueryControllerDelegate>
 
 @property (nonatomic) LYRQueryController *queryController;
-@property (nonatomic) BOOL isOnScreen;
+@property (nonatomic) BOOL hasAppeared;
 
 @end
 
@@ -66,11 +66,13 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    self.isOnScreen = TRUE;
-    
-    // Set public configuration properties once view has loaded
-    [self.tableView registerClass:self.cellClass forCellReuseIdentifier:LYRUIConversationCellReuseIdentifier];
-    self.tableView.rowHeight = self.rowHeight;
+
+    if (!self.hasAppeared) {
+        // Set public configuration properties once view has loaded
+        [self.tableView registerClass:self.cellClass forCellReuseIdentifier:LYRUIConversationCellReuseIdentifier];
+        self.tableView.rowHeight = self.rowHeight;
+        self.hasAppeared = YES;
+    }
 
     if (self.allowsEditing) {
         [self addEditButton];
@@ -78,17 +80,11 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
     [self.tableView reloadData];
 }
 
-- (void)viewDidDisappear:(BOOL)animated
-{
-    [super viewDidDisappear:animated];
-    self.isOnScreen = NO;
-}
-
 #pragma mark - Public setters
 
 - (void)setAllowsEditing:(BOOL)allowsEditing
 {
-    if (self.isOnScreen) {
+    if (self.hasAppeared) {
         @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Cannot set editing mode after the view has been loaded" userInfo:nil];
     }
     _allowsEditing = allowsEditing;
@@ -100,7 +96,7 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 
 - (void)setCellClass:(Class<LYRUIConversationPresenting>)cellClass
 {
-    if (self.isOnScreen) {
+    if (self.hasAppeared) {
         @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Cannot set cellClass after the view has been loaded" userInfo:nil];
     }
     
@@ -113,7 +109,7 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 
 - (void)setRowHeight:(CGFloat)rowHeight
 {
-    if (self.isOnScreen) {
+    if (self.hasAppeared) {
         @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Cannot set rowHeight after the view has been loaded" userInfo:nil];
     }
     _rowHeight = rowHeight;
@@ -121,7 +117,7 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 
 - (void)setDisplaysConversationImage:(BOOL)displaysConversationImage
 {
-    if (self.isOnScreen) {
+    if (self.hasAppeared) {
         @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Cannot set displaysConversationImage after the view has been loaded" userInfo:nil];
     }
     _displaysConversationImage = displaysConversationImage;
