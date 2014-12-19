@@ -184,9 +184,7 @@ static NSString *const LYRParticipantCellIdentifier = @"participantCellIdentifie
 - (void)configureCell:(UITableViewCell<LYRUIParticipantPresenting> *)cell atIndexPath:(NSIndexPath *)indexPath forTableView:(UITableView *)tableView
 {
     id<LYRUIParticipant> participant = [self participantForTableView:tableView atIndexPath:indexPath];
-    [cell presentParticipant:participant];
-    [cell updateWithSortType:self.sortType];
-    [cell shouldShowAvatarImage:YES];
+    [cell presentParticipant:participant withSortType:self.sortType shouldShowAvatarImage:YES];
 }
 
 #pragma mark - UITableViewDelegate

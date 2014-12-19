@@ -28,11 +28,9 @@ typedef enum : NSUInteger {
  @abstract Tells the receiver to present an interface for the given participant.
  @param participant The participant to present.
  */
-- (void)presentParticipant:(id<LYRUIParticipant>)participant;
-
-- (void)updateWithSortType:(LYRUIParticipantPickerSortType)sortType;
-
-- (void)shouldShowAvatarImage:(BOOL)shouldShowAvatarImage;
+- (void)presentParticipant:(id<LYRUIParticipant>)participant
+              withSortType:(LYRUIParticipantPickerSortType)sortType
+     shouldShowAvatarImage:(BOOL)shouldShowAvatarImage;
 
 
 @end

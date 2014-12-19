@@ -14,6 +14,7 @@
 
 @property (nonatomic) UILabel *nameLabel;
 @property (nonatomic) LYRUIAvatarImageView *avatarImageView;
+@property (nonatomic) id<LYRUIParticipant> participant;
 @property (nonatomic) LYRUIParticipantPickerSortType sortType;
 
 @end
@@ -50,25 +51,18 @@ static CGFloat const LSSelectionIndicatorSize = 30;
     return self;
 }
 
-- (void)presentParticipant:(id<LYRUIParticipant>)participant
+- (void)presentParticipant:(id<LYRUIParticipant>)participant withSortType:(LYRUIParticipantPickerSortType)sortType shouldShowAvatarImage:(BOOL)shouldShowAvatarImage
 {
     self.accessibilityLabel = [participant fullName];
-    self.textLabel.text = participant.fullName;
-    [self.avatarImageView setInitialsForName:participant.fullName];
-}
-
-- (void)updateWithSortType:(LYRUIParticipantPickerSortType)sortType
-{
-    _sortType = sortType;
-}
-
-- (void)shouldShowAvatarImage:(BOOL)shouldShowAvatarImage
-{
+    self.participant = participant;
+    self.sortType = sortType;
     if (shouldShowAvatarImage) {
         self.imageView.backgroundColor = [UIColor redColor];
         self.imageView.image = [self imageWithColor:[UIColor whiteColor]];
         self.avatarImageView.alpha = 1.0f;
     }
+    [self.avatarImageView setInitialsForName:participant.fullName];
+    [self configureNameLabel];
 }
 
 - (void)setTitleFont:(UIFont *)titleFont
@@ -101,28 +95,27 @@ static CGFloat const LSSelectionIndicatorSize = 30;
     [super layoutSubviews];
 
     [self.contentView bringSubviewToFront:self.avatarImageView];
-    
-    if (!self.titleFont) {
-        return;
-    }
-    
+}
+
+- (void)configureNameLabel
+{
+    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:self.participant.fullName];
+
     switch (self.sortType) {
-            
+
         case LYRUIParticipantPickerControllerSortTypeFirst: {
-            NSMutableAttributedString *attributedString = [self.textLabel.attributedText mutableCopy];
-            NSRange rangeOfString = [self.textLabel.text rangeOfString:@" "];
-            NSString *regularString = [self.textLabel.text substringFromIndex:rangeOfString.location];
+            NSRange rangeOfString = [self.participant.fullName rangeOfString:@" "];
+            NSString *regularString = [self.participant.fullName substringFromIndex:rangeOfString.location];
             NSRange rangeToBold = NSMakeRange(0, rangeOfString.location);
             [attributedString addAttributes:@{NSFontAttributeName: self.boldTitleFont} range:rangeToBold];
             [attributedString addAttributes:@{NSFontAttributeName: self.titleFont} range:NSMakeRange(rangeOfString.location, regularString.length)];
             self.textLabel.attributedText = attributedString;
         }
             break;
-            
+
         case LYRUIParticipantPickerControllerSortTypeLast: {
-            NSMutableAttributedString *attributedString = [self.textLabel.attributedText mutableCopy];
-            NSRange rangeOfString = [self.textLabel.text rangeOfString:@" "];
-            NSString *stringToBold = [self.textLabel.text substringFromIndex:rangeOfString.location];
+            NSRange rangeOfString = [self.participant.fullName rangeOfString:@" "];
+            NSString *stringToBold = [self.participant.fullName substringFromIndex:rangeOfString.location];
             NSRange rangeToBold = NSMakeRange(rangeOfString.location, stringToBold.length);
             [attributedString addAttributes:@{NSFontAttributeName: self.titleFont} range:NSMakeRange(0, rangeOfString.location)];
             [attributedString addAttributes:@{NSFontAttributeName: self.boldTitleFont} range:rangeToBold];
@@ -133,7 +126,6 @@ static CGFloat const LSSelectionIndicatorSize = 30;
             break;
     }
     self.textLabel.textColor = self.titleColor;
-    [self.textLabel sizeToFit];
 }
 
 @end
