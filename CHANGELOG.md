@@ -38,6 +38,7 @@
 * Changed `LYRUIParticipantPickerControllerSortTypeFirst` to `LYRUIParticipantPickerSortTypeFirstName`.
 * Changed `LYRUIParticipantPickerControllerSortTypeLast` to `LYRUIParticipantPickerSortTypeLastName`.
 * Changed `LYRUIPaticipantSectionHeaderView` to `LYRUIParticipantSectionHeaderView`.
+* Removed `initWithKey:` from `LYRUIParticipantSectionHeaderView`.
 
 ### Bug Fixes
 

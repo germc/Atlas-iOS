@@ -13,6 +13,8 @@
 #import "LYRUIParticipantPickerController.h"
 #import "LYRUIAvatarImageView.h"
 
+static NSString *const LYRUIParticipantTableSectionHeaderIdentifier = @"LYRUIParticipantTableSectionHeaderIdentifier";
+
 @interface LYRUIParticipantTableViewController () <UISearchBarDelegate, UISearchDisplayDelegate>
 
 @property (nonatomic) LYRUIParticipantTableDataSet *unfilteredDataSet;
@@ -45,6 +47,7 @@ static NSString *const LYRParticipantCellIdentifier = @"participantCellIdentifie
     self.tableView.allowsMultipleSelection = self.allowsMultipleSelection;
     self.tableView.accessibilityIdentifier = @"Participant TableView Controller";
     self.tableView.sectionHeaderHeight = 20;
+    [self.tableView registerClass:[LYRUIParticipantSectionHeaderView class] forHeaderFooterViewReuseIdentifier:LYRUIParticipantTableSectionHeaderIdentifier];
     
     self.searchBar = [[UISearchBar alloc] initWithFrame:CGRectZero];
     [self.searchBar sizeToFit];
@@ -128,6 +131,7 @@ static NSString *const LYRParticipantCellIdentifier = @"participantCellIdentifie
     tableView.sectionHeaderHeight = self.tableView.sectionHeaderHeight;
     tableView.rowHeight = self.rowHeight;
     [tableView registerClass:self.participantCellClass forCellReuseIdentifier:LYRParticipantCellIdentifier];
+    [tableView registerClass:[LYRUIParticipantSectionHeaderView class] forHeaderFooterViewReuseIdentifier:LYRUIParticipantTableSectionHeaderIdentifier];
 }
 
 - (BOOL)searchDisplayController:(UISearchDisplayController *)controller shouldReloadTableForSearchString:(NSString *)searchString
@@ -193,7 +197,9 @@ static NSString *const LYRParticipantCellIdentifier = @"participantCellIdentifie
 {
     LYRUIParticipantTableDataSet *dataSet = [self dataSetForTableView:tableView];
     NSString *sectionName = dataSet.sectionTitles[section];
-    return [[LYRUIParticipantSectionHeaderView alloc] initWithKey:sectionName];
+    LYRUIParticipantSectionHeaderView *headerView = [tableView dequeueReusableHeaderFooterViewWithIdentifier:LYRUIParticipantTableSectionHeaderIdentifier];
+    headerView.keyLabel.text = sectionName;
+    return headerView;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
