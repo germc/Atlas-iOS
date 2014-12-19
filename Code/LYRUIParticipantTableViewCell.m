@@ -67,7 +67,6 @@ static CGFloat const LSSelectionIndicatorSize = 30;
     if (shouldShowAvatarImage) {
         self.imageView.backgroundColor = [UIColor redColor];
         self.imageView.image = [self imageWithColor:[UIColor whiteColor]];
-        [self.imageView addSubview:self.avatarImageView];
         self.avatarImageView.alpha = 1.0f;
     }
 }
@@ -100,6 +99,8 @@ static CGFloat const LSSelectionIndicatorSize = 30;
 - (void)layoutSubviews
 {
     [super layoutSubviews];
+
+    [self.contentView bringSubviewToFront:self.avatarImageView];
     
     if (!self.titleFont) {
         return;
