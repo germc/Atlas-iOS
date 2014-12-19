@@ -818,7 +818,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 {
     if (!self.conversation) return;
     if (messageInputToolbar.messageParts.count > 0) {
-        id<LYRUIParticipant> sender = [self participantForIdentifier:self.layerClient.authenticatedUserID];
+        id<LYRUIParticipant> sender = (id<LYRUIParticipant>)[self participantForIdentifier:self.layerClient.authenticatedUserID];
         for (id part in messageInputToolbar.messageParts){
             LYRMessagePart *messagePart;
             if ([part isKindOfClass:[NSString class]]) {

@@ -33,9 +33,11 @@
 - (LYRConversationMock *)conversationWithParticipants:(NSSet *)participants lastMessageText:(NSString *)lastMessageText
 {
     LYRConversationMock *conversation = [self.layerClient newConversationWithParticipants:participants options:nil error:nil];
-    LYRMessagePart *part = [LYRMessagePart messagePartWithText:lastMessageText];
-    LYRMessageMock *message = [self.layerClient newMessageWithParts:@[part] options:nil error:nil];
-    [conversation sendMessage:message error:nil];
+    if (lastMessageText) {
+        LYRMessagePart *part = [LYRMessagePart messagePartWithText:lastMessageText];
+        LYRMessageMock *message = [self.layerClient newMessageWithParts:@[part] options:nil error:nil];
+        [conversation sendMessage:message error:nil];
+    }
     return conversation;
 }
 
@@ -76,6 +78,20 @@
         conversationLabel = [NSString stringWithFormat:@"%@, %@", conversationLabel, user.fullName];
     }
     return conversationLabel;
+}
+
+- (void)setRootViewController:(UIViewController *)controller
+{
+    LYRUIAppDelegate *delegate = [[UIApplication sharedApplication] delegate];
+    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
+    if (!delegate.window) {
+        delegate.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+        [delegate.window makeKeyAndVisible];
+    }
+    if (delegate.window.rootViewController) {
+        delegate.window.rootViewController = nil;
+    }
+    [delegate.window setRootViewController:navigationController];
 }
 
 @end

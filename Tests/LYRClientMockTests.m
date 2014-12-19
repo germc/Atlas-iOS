@@ -22,6 +22,17 @@
 
 @implementation LYRClientMockTests
 
+- (void)setUp
+{
+    [super setUp];
+}
+
+- (void)tearDown
+{
+    [[LYRMockContentStore sharedStore] resetContentStore];
+    [super tearDown];
+}
+
 - (void)testAddMessages
 {
     LYRUserMock *user = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameCam];
@@ -60,12 +71,12 @@
     LYRMessageMock *message2 = [client newMessageWithParts:@[messagePart2] options:nil error:nil];
     [conversation sendMessage:message2 error:nil];
     
-    LYRQuery *query = [LYRQuery queryWithClass:[LYRConversation class]];
+    LYRQuery *query = [LYRQuery queryWithClass:[LYRMessage class]];
     query.predicate = [LYRPredicate predicateWithProperty:@"conversation" operator:LYRPredicateOperatorIsEqualTo value:conversation];
     NSOrderedSet *messages = [client executeQuery:query error:nil];
     expect(messages.count).to.equal(2);
-    expect([messages[0] index]).to.equal(1);
-    expect([messages[1] index]).to.equal(2);
+    expect([messages[0] index]).to.equal(0);
+    expect([messages[1] index]).to.equal(1);
     expect(conversation.lastMessage).to.equal(message2);
 }
 
@@ -87,7 +98,7 @@
     
     [[LYRMockContentStore sharedStore] deleteMessage:message1];
     
-    LYRQuery *query = [LYRQuery queryWithClass:[LYRConversation class]];
+    LYRQuery *query = [LYRQuery queryWithClass:[LYRMessage class]];
     query.predicate = [LYRPredicate predicateWithProperty:@"conversation" operator:LYRPredicateOperatorIsEqualTo value:conversation];
     NSOrderedSet *messages = [client executeQuery:query error:nil];
     expect(messages.count).to.equal(1);

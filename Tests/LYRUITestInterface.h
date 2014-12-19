@@ -18,6 +18,7 @@
 #import <KIF/KIF.h>
 #import "KIFSystemTestActor+ViewControllerActions.h"
 #import <LayerUIKit/LayerUIKit.h>
+#import "LYRUIAppDelegate.h"
 
 @interface LYRUITestInterface : NSObject
 
@@ -28,5 +29,7 @@
 - (LYRConversationMock *)conversationWithParticipants:(NSSet *)participants lastMessageText:(NSString *)lastMessageText;
 
 - (NSString *)conversationLabelForConversation:(LYRConversationMock *)conversation;
+
+- (void)setRootViewController:(UIViewController *)controller;
 
 @end
