@@ -56,15 +56,6 @@
  */
 - (UIImage *)conversationListViewController:(LYRUIConversationListViewController *)conversationListViewController imageForConversation:(LYRConversation *)conversation;
 
-/**
- @abstract Informs the data source that a search has requested with the given search string.
- @param conversationListViewController The `LYRConversationListViewController` in which the search did occur.
- @param searchString The search string that was just used for search.
- @param completion The completion block that should be called when the results are fetched from the search.
- @discussion After the completion block is called, the tableView will reload with the given set of `LYRConversation` objects.
- */
-- (void)conversationListViewController:(LYRUIConversationListViewController *)conversationListViewController didSearchWithString:(NSString *)searchString completion:(void (^)(NSSet *conversations))completion;
-
 @end
 
 /**
