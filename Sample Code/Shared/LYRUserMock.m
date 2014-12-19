@@ -100,7 +100,7 @@ NSString *const LYRMockUserIDDoug = @"0000000007";
 
 - (NSString *)fullName
 {
-    return self.fullName;
+    return _fullName;
 }
 
 @end
