@@ -127,12 +127,8 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 
 - (void)addEditButton
 {
-    UIBarButtonItem *editButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Edit"
-                                                                       style:UIBarButtonItemStylePlain
-                                                                      target:self
-                                                                      action:@selector(editButtonTapped)];
-    editButtonItem.accessibilityLabel = @"Edit Button";
-    self.navigationItem.leftBarButtonItem = editButtonItem;
+    self.editButtonItem.accessibilityLabel = @"Edit Button";
+    self.navigationItem.leftBarButtonItem = self.editButtonItem;
 }
 
 
@@ -259,24 +255,6 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 }
 
 #pragma mark - Conversation Editing Methods
-
-// Set table view into editing mode and change left bar buttong to a done button
-- (void)editButtonTapped
-{
-    [self.tableView setEditing:TRUE animated:TRUE];
-    UIBarButtonItem *doneButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Done"
-                                                                       style:UIBarButtonItemStylePlain
-                                                                      target:self
-                                                                      action:@selector(doneButtonTapped)];
-    doneButtonItem.accessibilityLabel = @"Done";
-    self.navigationItem.leftBarButtonItem = doneButtonItem;
-}
-
-- (void)doneButtonTapped
-{
-    [self.tableView setEditing:NO animated:YES];
-    [self addEditButton];
-}
 
 - (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath
 {
