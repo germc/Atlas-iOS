@@ -71,12 +71,12 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
         // Set public configuration properties once view has loaded
         [self.tableView registerClass:self.cellClass forCellReuseIdentifier:LYRUIConversationCellReuseIdentifier];
         self.tableView.rowHeight = self.rowHeight;
+        if (self.allowsEditing) {
+            [self addEditButton];
+        }
         self.hasAppeared = YES;
     }
 
-    if (self.allowsEditing) {
-        [self addEditButton];
-    }
     [self.tableView reloadData];
 }
 
@@ -88,10 +88,6 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
         @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Cannot change editing mode after the view has been presented" userInfo:nil];
     }
     _allowsEditing = allowsEditing;
-
-    if (self.navigationItem.leftBarButtonItem && !allowsEditing) {
-        self.navigationItem.leftBarButtonItem = nil;
-    }
 }
 
 - (void)setCellClass:(Class<LYRUIConversationPresenting>)cellClass
