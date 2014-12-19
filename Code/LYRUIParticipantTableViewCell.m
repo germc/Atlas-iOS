@@ -43,17 +43,11 @@ static CGFloat const LSSelectionIndicatorSize = 30;
         self.avatarImageView.translatesAutoresizingMaskIntoConstraints = NO;
         self.avatarImageView.alpha = 0.0f;
         [self.contentView addSubview:self.avatarImageView];
-        [self updateConstraints];
-        
+
+        [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.avatarImageView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self.imageView attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0]];
+        [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.avatarImageView attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self.imageView attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0]];
     }
     return self;
-}
-
-- (void)updateConstraints
-{
-    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.avatarImageView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self.imageView attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0]];
-    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.avatarImageView attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self.imageView attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0]];
-    [super updateConstraints];
 }
 
 - (void)presentParticipant:(id<LYRUIParticipant>)participant
