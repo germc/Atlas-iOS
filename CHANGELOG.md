@@ -47,6 +47,9 @@
 * Fixed issue related to sending a push notification with `(null)` text.
 * Fixed typo for property `conversationLabelColor` on `LYRUIConversationTableViewCell`.
 * Fixed typo in C function signature `LYRUILightGrayColor()`.
+* Added logic to inspect reuse identifier returned from LYRUIConversationViewController` delegate and falling back to default if nil.
+* Added logic to inspect height returned from `LYRUIConversationViewController` delegate and falling back to default if nil.
+* Added logic to guard against messages with external content in applications using LayerKit v0.9.2 and previous.
 
 ### Enhancements
 
