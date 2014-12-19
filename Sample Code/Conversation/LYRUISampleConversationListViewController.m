@@ -7,7 +7,7 @@
 //
 
 #import "LYRUISampleConversationListViewController.h"
-#import "LYRUISampleConversationsViewController.h"
+#import "LYRUISampleConversationViewController.h"
 #import "LYRClientMock.h"
 #import "LYRUIParticipant.h"
 
@@ -41,7 +41,7 @@
 
 - (void)conversationListViewController:(LYRUIConversationListViewController *)conversationListViewController didSelectConversation:(LYRConversation *)conversation
 {
-    LYRUISampleConversationsViewController *controller = [LYRUISampleConversationsViewController conversationViewControllerWithConversation:conversation layerClient:self.layerClient];
+    LYRUISampleConversationViewController *controller = [LYRUISampleConversationViewController conversationViewControllerWithConversation:conversation layerClient:self.layerClient];
     [self.navigationController pushViewController:controller animated:YES];
 }
 

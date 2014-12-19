@@ -18,12 +18,6 @@ NSString *const LYRMockUserIDDoug = @"0000000007";
 
 @interface LYRUserMock ()
 
-@property (nonatomic, readwrite) NSString *firstName;
-@property (nonatomic, readwrite) NSString *lastName;
-@property (nonatomic, readwrite) NSString *fullName;
-@property (nonatomic, readwrite) UIImage *avatarImage;
-@property (nonatomic, readwrite) NSString *participantIdentifier;
-
 @end
 
 @implementation LYRUserMock
@@ -102,6 +96,11 @@ NSString *const LYRMockUserIDDoug = @"0000000007";
 {
     int randomUserName = arc4random_uniform(6);
     return  [self userWithMockUserName:randomUserName];
+}
+
+- (NSString *)fullName
+{
+    return self.fullName;
 }
 
 @end

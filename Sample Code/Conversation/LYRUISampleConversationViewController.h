@@ -9,6 +9,6 @@
 #import <Foundation/Foundation.h>
 #import <LayerUIKit/LYRUIConversationViewController.h>
 
-@interface LYRUISampleConversationsViewController : LYRUIConversationViewController
+@interface LYRUISampleConversationViewController : LYRUIConversationViewController
 
 @end

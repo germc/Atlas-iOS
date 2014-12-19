@@ -24,14 +24,12 @@
 @interface LYRUIConversationViewController () <UICollectionViewDataSource, UICollectionViewDelegate, LYRUIMessageInputToolbarDelegate, UIActionSheetDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIGestureRecognizerDelegate, LYRQueryControllerDelegate>
 
 @property (nonatomic) LYRUIConversationView *view;
-@property (nonatomic) UICollectionView *collectionView;
 @property (nonatomic) UILabel *typingIndicatorLabel;
 @property (nonatomic) LYRUITypingIndicatorView *typingIndicatorView;
 @property (nonatomic) CGFloat keyboardHeight;
 @property (nonatomic) BOOL shouldDisplayAvatarImage;
 @property (nonatomic) NSLayoutConstraint *typingIndicatorViewBottomConstraint;
 @property (nonatomic) NSMutableArray *typingParticipantIDs;
-@property (nonatomic) LYRQueryController *queryController;
 @property (nonatomic) NSMutableArray *objectChanges;
 @property (nonatomic) NSHashTable *sectionFooters;
 @property (nonatomic, getter=isFirstAppearance) BOOL firstAppearance;
@@ -1020,6 +1018,11 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 }
 
 #pragma mark - LYRQueryControllerDelegate
+
+- (void)queryControllerWillChangeContent:(LYRQueryController *)queryController
+{
+    
+}
 
 - (void)queryController:(LYRQueryController *)controller
         didChangeObject:(id)object
