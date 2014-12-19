@@ -28,7 +28,7 @@ static NSString *const LYRUIParticipantTableSectionHeaderIdentifier = @"LYRUIPar
 
 @implementation LYRUIParticipantTableViewController
 
-static NSString *const LYRUIParticipantCellIdentifier = @"participantCellIdentifier";
+static NSString *const LYRUIParticipantCellIdentifier = @"LYRUIParticipantCellIdentifier";
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
