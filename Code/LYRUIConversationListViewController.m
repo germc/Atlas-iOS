@@ -117,6 +117,7 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 
 - (void)addEditButton
 {
+    if (self.navigationItem.leftBarButtonItem) return;
     self.editButtonItem.accessibilityLabel = @"Edit Button";
     self.navigationItem.leftBarButtonItem = self.editButtonItem;
 }
