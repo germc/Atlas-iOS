@@ -49,8 +49,8 @@
 		D0D778D31A02EB83000A5F51 /* Unit Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Unit Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D0D778D61A02EB83000A5F51 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D0D778DE1A02EBDE000A5F51 /* LYRUIConversationDataSourceTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIConversationDataSourceTests.m; sourceTree = "<group>"; };
-		D0E7294A1A02F1C700B76672 /* LYRUIAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUIAppDelegate.h; sourceTree = "<group>"; };
-		D0E7294B1A02F1C700B76672 /* LYRUIAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIAppDelegate.m; sourceTree = "<group>"; };
+		D0E7294A1A02F1C700B76672 /* LYRUIAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LYRUIAppDelegate.h; path = "Sample Code/Shared/LYRUIAppDelegate.h"; sourceTree = "<group>"; };
+		D0E7294B1A02F1C700B76672 /* LYRUIAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LYRUIAppDelegate.m; path = "Sample Code/Shared/LYRUIAppDelegate.m"; sourceTree = "<group>"; };
 		D0E7294D1A02FDB900B76672 /* LYRClientMock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRClientMock.h; sourceTree = "<group>"; };
 		D0E7294E1A02FDB900B76672 /* LYRClientMock.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRClientMock.m; sourceTree = "<group>"; };
 		D0E729501A03202700B76672 /* LYRClientMockTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRClientMockTests.m; sourceTree = "<group>"; };
@@ -104,7 +104,7 @@
 		D0D778881A02E2B2000A5F51 = {
 			isa = PBXGroup;
 			children = (
-				D0D778BA1A02EAD8000A5F51 /* Sample Code */,
+				D0D778BA1A02EAD8000A5F51 /* Code */,
 				D0D778D41A02EB83000A5F51 /* Tests */,
 				D0D778941A02EAA9000A5F51 /* Products */,
 				62DAD57DC0987BFBA6E8516D /* Pods */,
@@ -121,16 +121,18 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		D0D778BA1A02EAD8000A5F51 /* Sample Code */ = {
+		D0D778BA1A02EAD8000A5F51 /* Code */ = {
 			isa = PBXGroup;
 			children = (
-				D0D778BC1A02EAEE000A5F51 /* Conversation */,
-				D0E729491A02F1C700B76672 /* Shared */,
+				D0E7294A1A02F1C700B76672 /* LYRUIAppDelegate.h */,
+				D0E7294B1A02F1C700B76672 /* LYRUIAppDelegate.m */,
+				D0D778BC1A02EAEE000A5F51 /* Sample App */,
+				D0E729491A02F1C700B76672 /* Mocks */,
 			);
-			name = "Sample Code";
+			name = Code;
 			sourceTree = "<group>";
 		};
-		D0D778BC1A02EAEE000A5F51 /* Conversation */ = {
+		D0D778BC1A02EAEE000A5F51 /* Sample App */ = {
 			isa = PBXGroup;
 			children = (
 				D0D778BD1A02EAEE000A5F51 /* LaunchScreen.xib */,
@@ -141,7 +143,7 @@
 				D0AF56BF1A08383F0093D5A5 /* LYRUISampleConversationsViewController.h */,
 				D0AF56C01A08383F0093D5A5 /* LYRUISampleConversationsViewController.m */,
 			);
-			name = Conversation;
+			name = "Sample App";
 			path = "Sample Code/Conversation";
 			sourceTree = "<group>";
 		};
@@ -163,12 +165,10 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		D0E729491A02F1C700B76672 /* Shared */ = {
+		D0E729491A02F1C700B76672 /* Mocks */ = {
 			isa = PBXGroup;
 			children = (
 				D0D778C51A02EAEE000A5F51 /* main.m */,
-				D0E7294A1A02F1C700B76672 /* LYRUIAppDelegate.h */,
-				D0E7294B1A02F1C700B76672 /* LYRUIAppDelegate.m */,
 				D0E7294D1A02FDB900B76672 /* LYRClientMock.h */,
 				D0E7294E1A02FDB900B76672 /* LYRClientMock.m */,
 				D0E729521A04306F00B76672 /* LYRClientMockFactory.h */,
@@ -176,7 +176,7 @@
 				D0E729581A04413D00B76672 /* LYRUserMock.h */,
 				D0E729591A04413D00B76672 /* LYRUserMock.m */,
 			);
-			name = Shared;
+			name = Mocks;
 			path = "Sample Code/Shared";
 			sourceTree = "<group>";
 		};
