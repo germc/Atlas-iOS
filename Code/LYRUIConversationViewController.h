@@ -77,7 +77,7 @@
  @param conversationViewController The `LYRUIConversationViewController` requesting the string.
  @param date The `NSDate` object to be displayed as a string.
  @retrun an `NSAttributedString` representing the given date.
- @discussion The date string will be displayed above message cells in section headers. The date represents the `sentAt` date of a message object. 
+ @discussion The date string will be displayed above message cells in section headers. The date represents the `sentAt` date of a message object.
  The string can be customized to appear in whichever fromat your application requires.
  */
 - (NSAttributedString *)conversationViewController:(LYRUIConversationViewController *)conversationViewController attributedStringForDisplayOfDate:(NSDate *)date;
@@ -88,7 +88,7 @@
  @param recipientStatus The `LYRRecipientStatus` object to be displayed as aquestion
  string.
  @return an `NSAttributedString` representing the give recipient status
- @discussion The recipient status string will be displayed below message the most recent message sent by the authenticated user. 
+ @discussion The recipient status string will be displayed below message the most recent message sent by the authenticated user.
  */
 - (NSAttributedString *)conversationViewController:(LYRUIConversationViewController *)conversationViewController attributedStringForDisplayOfRecipientStatus:(NSDictionary *)recipientStatus;
 
@@ -118,7 +118,7 @@
  @param message The `LYRMessage` object to display in the cell.
  @return A string that will be used to dequeue a cell from the collection view.
  @discussion Applications that wish to use custom cells in the `LYRUIConversationViewController` must first register a reuse identifier for their custom cell class.
- This can be done via a call to `registerClass:forMessageCellWithReuseIdentifier:. Applications should then return the registered reuse identifier only when necessary.
+ This can be done via a call to `registerClass:forMessageCellWithReuseIdentifier:`. Applications should then return the registered reuse identifier only when necessary.
  If `nil` is returned, the collection view will default to internal values for reuse identifiers.
  */
 - (NSString *)conversationViewController:(LYRUIConversationViewController *)viewController reuseIdentifierForMessage:(LYRMessage *)message;
@@ -126,7 +126,7 @@
 @end
 
 /**
- @abstract The `LYRUIConversationViewController` class presents an interface that provides for displaying 
+ @abstract The `LYRUIConversationViewController` class presents an interface that provides for displaying
  a Layer conversation and the ability to send messages. The controller's design and functionality closely correlates with
  the conversation view controller in iMessage.
 */
