@@ -8,8 +8,6 @@
 
 #import <objc/runtime.h>
 #import "LYRUIConversationListViewController.h"
-#import "LYRUIDataSourceChange.h"
-#import "LYRUIConstants.h"
 
 @interface LYRUIConversationListViewController () <UIActionSheetDelegate, LYRQueryControllerDelegate>
 
