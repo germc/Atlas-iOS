@@ -111,7 +111,7 @@
 /**
  @abstract A boolean value that determines if editing is enabled.
  @discussion When `YES`, an Edit button item will be displayed on the left hand side of the receiver's navigation 
- item which toggles the editing state of the receiver.
+ item which toggles the editing state of the receiver and swiping to delete cells will be enabled.
  @default `YES`
  @raises NSInternalInconsistencyException Raised if the value is mutated after the receiver has been presented.
  */
