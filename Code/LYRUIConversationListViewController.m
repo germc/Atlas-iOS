@@ -45,16 +45,18 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
     return self;
 }
 
-- (id) init
+- (id)init
 {
     [NSException raise:NSInternalInconsistencyException format:@"Failed to call designated initializer"];
     return nil;
 }
 
 #pragma mark - VC Lifecycle Methods
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+
     // Accessibility
     self.title = @"Messages";
     self.accessibilityLabel = @"Messages";
@@ -94,7 +96,6 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
     if (self.hasAppeared) {
         @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Cannot change cell class after the view has been presented" userInfo:nil];
     }
-    
     if (!class_conformsToProtocol(cellClass, @protocol(LYRUIConversationPresenting))) {
         @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Cell class must conform to LYRUIConversationPresenting" userInfo:nil];
 
@@ -125,7 +126,6 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
     self.editButtonItem.accessibilityLabel = @"Edit Button";
     self.navigationItem.leftBarButtonItem = self.editButtonItem;
 }
-
 
 - (void)setupConversationDataSource
 {
@@ -265,7 +265,6 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 {
     [self.tableView beginUpdates];
 }
-
 
 - (void)queryController:(LYRQueryController *)controller
         didChangeObject:(id)object
