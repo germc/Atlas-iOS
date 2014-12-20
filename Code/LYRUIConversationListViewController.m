@@ -20,7 +20,7 @@
 
 @implementation LYRUIConversationListViewController
 
-static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCellReuseIdentifier";
+static NSString *const LYRUIConversationCellReuseIdentifier = @"LYRUIConversationCellReuseIdentifier";
 
 + (instancetype)conversationListViewControllerWithLayerClient:(LYRClient *)layerClient
 {
