@@ -134,7 +134,7 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
     
     self.queryController = [self.layerClient queryControllerWithQuery:query];
     self.queryController.delegate = self;
-    NSError *error = nil;
+    NSError *error;
     BOOL success = [self.queryController execute:&error];
     if (!success) NSLog(@"LayerKit failed to execute query with error: %@", error);
 }
