@@ -239,8 +239,8 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    LYRConversation *conversation = [self.queryController objectAtIndexPath:indexPath];
     if ([self.delegate respondsToSelector:@selector(conversationListViewController:didSelectConversation:)]){
+        LYRConversation *conversation = [self.queryController objectAtIndexPath:indexPath];
         [self.delegate conversationListViewController:self didSelectConversation:conversation];
     }
 }
