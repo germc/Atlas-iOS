@@ -259,13 +259,6 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
     self.conversationToDelete = nil;
 }
 
-#pragma mark - Conversation Editing Methods
-
-- (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    return UITableViewCellEditingStyleDelete;
-}
-
 #pragma mark - Conversation Query Controller 
 
 - (void)queryControllerWillChangeContent:(LYRQueryController *)queryController
