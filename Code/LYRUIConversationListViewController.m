@@ -51,7 +51,7 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
     return nil;
 }
 
-#pragma mark - VC Lifecycle Methods
+#pragma mark - Lifecycle
 
 - (void)viewDidLoad
 {
@@ -81,7 +81,7 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
     }
 }
 
-#pragma mark - Public setters
+#pragma mark - Public Setters
 
 - (void)setAllowsEditing:(BOOL)allowsEditing
 {
@@ -119,7 +119,7 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
     _displaysConversationImage = displaysConversationImage;
 }
 
-#pragma mark - Navigation Bar Edit Button
+#pragma mark - Set Up
 
 - (void)addEditButton
 {
@@ -139,7 +139,7 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
     if (!success) NSLog(@"LayerKit failed to execute query with error: %@", error);
 }
 
-#pragma mark - Table view data source methods
+#pragma mark - UITableViewDataSource
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
@@ -153,11 +153,8 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
     return conversationCell;
 }
 
-/**
- 
- LAYER - Extracting content from an LYRConversation object so that it can be displayed in a tableViewCell.
- 
- */
+#pragma mark - Cell Configuration
+
 - (void)configureCell:(UITableViewCell<LYRUIConversationPresenting> *)conversationCell atIndexPath:(NSIndexPath *)indexPath
 {
     // Present Conversation
@@ -187,6 +184,8 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
     }
 }
 
+#pragma mark - UITableViewDelegate
+
 - (NSArray *)tableView:(UITableView *)tableView editActionsForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     UITableViewRowAction *localDeleteAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDefault title:@"Local" handler:^(UITableViewRowAction *action, NSIndexPath *indexPath) {
@@ -202,40 +201,12 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
     return @[globalDeleteAction, localDeleteAction];
 }
 
-/**
- 
- LAYER - Deleting a Layer Conversation
- 
- */
-- (void)deleteConversationAtIndexPath:(NSIndexPath *)indexPath withDeletionMode:(LYRDeletionMode)deletionMode
-{
-    LYRConversation *conversation = [self.queryController objectAtIndexPath:indexPath];
-    [self deleteConversation:conversation withDeletionMode:deletionMode];
-}
-
-- (void)deleteConversation:(LYRConversation *)conversation withDeletionMode:(LYRDeletionMode)deletionMode
-{
-    NSError *error;
-    BOOL success = [conversation delete:deletionMode error:&error];
-    if (!success) {
-        if ([self.delegate respondsToSelector:@selector(conversationListViewController:didFailDeletingConversation:deletionMode:error:)]) {
-            [self.delegate conversationListViewController:self didFailDeletingConversation:conversation deletionMode:deletionMode error:error];
-        }
-    } else {
-        if ([self.delegate respondsToSelector:@selector(conversationListViewController:didDeleteConversation:deletionMode:)]) {
-            [self.delegate conversationListViewController:self didDeleteConversation:conversation deletionMode:deletionMode];
-        }
-    }
-}
-
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
     self.conversationToDelete = [self.queryController objectAtIndexPath:indexPath];
     UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Global" otherButtonTitles:@"Local", nil];
     [actionSheet showInView:self.view];
 }
-
-#pragma mark - Table view delegate methods
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -259,7 +230,7 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
     self.conversationToDelete = nil;
 }
 
-#pragma mark - Conversation Query Controller 
+#pragma mark - LYRQueryControllerDelegate
 
 - (void)queryControllerWillChangeContent:(LYRQueryController *)queryController
 {
@@ -299,6 +270,29 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 - (void)queryControllerDidChangeContent:(LYRQueryController *)queryController
 {
     [self.tableView endUpdates];
+}
+
+#pragma mark - Helpers
+
+- (void)deleteConversationAtIndexPath:(NSIndexPath *)indexPath withDeletionMode:(LYRDeletionMode)deletionMode
+{
+    LYRConversation *conversation = [self.queryController objectAtIndexPath:indexPath];
+    [self deleteConversation:conversation withDeletionMode:deletionMode];
+}
+
+- (void)deleteConversation:(LYRConversation *)conversation withDeletionMode:(LYRDeletionMode)deletionMode
+{
+    NSError *error;
+    BOOL success = [conversation delete:deletionMode error:&error];
+    if (!success) {
+        if ([self.delegate respondsToSelector:@selector(conversationListViewController:didFailDeletingConversation:deletionMode:error:)]) {
+            [self.delegate conversationListViewController:self didFailDeletingConversation:conversation deletionMode:deletionMode error:error];
+        }
+    } else {
+        if ([self.delegate respondsToSelector:@selector(conversationListViewController:didDeleteConversation:deletionMode:)]) {
+            [self.delegate conversationListViewController:self didDeleteConversation:conversation deletionMode:deletionMode];
+        }
+    }
 }
 
 @end
