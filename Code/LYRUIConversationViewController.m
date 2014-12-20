@@ -588,12 +588,6 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     LYRMessage *message = [self messageAtCollectionViewIndexPath:indexPath];
     LYRMessagePart *part = message.parts.firstObject;
     // Guarding against external content in old SDKs
-    SEL selector = NSSelectorFromString(@"isDownloaded");
-    if ([part respondsToSelector:selector]) {
-        if (![part performSelector:selector]) {
-            return 48;
-        }
-    }
     if (!part.data.length) {
         return 48;
     }

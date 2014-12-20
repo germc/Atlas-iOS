@@ -89,13 +89,6 @@
 - (void)presentMessage:(LYRMessage *)message
 {
     LYRMessagePart *messagePart = message.parts.firstObject;
-    SEL selector = NSSelectorFromString(@"isDownloaded");
-    if ([messagePart respondsToSelector:selector]) {
-        if (![messagePart performSelector:selector]) {
-            [self.bubbleView displayDownloadActivityIndicator];
-            return;
-        }
-    }
     if (!messagePart.data.length) {
         [self.bubbleView displayDownloadActivityIndicator];
         return;
