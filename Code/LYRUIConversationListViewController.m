@@ -11,6 +11,7 @@
 
 @interface LYRUIConversationListViewController () <UIActionSheetDelegate, LYRQueryControllerDelegate>
 
+@property (nonatomic) LYRClient *layerClient;
 @property (nonatomic) LYRQueryController *queryController;
 @property (nonatomic) BOOL hasAppeared;
 @property (nonatomic) LYRConversation *conversationToDelete;

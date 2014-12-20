@@ -131,6 +131,6 @@
 /**
  @abstract The `LYRClient` object used to initailize the controller
  */
-@property (nonatomic) LYRClient *layerClient;
+@property (nonatomic, readonly) LYRClient *layerClient;
 
 @end

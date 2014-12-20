@@ -41,6 +41,7 @@
 * Removed `initWithKey:` from `LYRUIParticipantSectionHeaderView`.
 * Changed `keyLabel` property to `nameLabel` on `LYRUIParticipantSectionHeaderView`.
 * Removed `conversationListViewController:didSearchWithString:completion:` from `LYRUIConversationListViewControllerDataSource`.
+* Changed `layerClient` property on `LYRUIConversationListViewController` from `readwrite` to `readonly`.
 
 ### Bug Fixes
 
