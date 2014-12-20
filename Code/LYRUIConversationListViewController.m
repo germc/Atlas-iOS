@@ -33,10 +33,7 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 {
     self = [super initWithStyle:UITableViewStylePlain];
     if (self)  {
-        // Set property from designated initializer
         _layerClient = layerClient;
-        
-        // Set default configuration for public configuration properties
         _cellClass = [LYRUIConversationTableViewCell class];
         _displaysConversationImage = YES;
         _allowsEditing = YES;
@@ -57,12 +54,10 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 {
     [super viewDidLoad];
 
-    // Accessibility
     self.title = @"Messages";
     self.accessibilityLabel = @"Messages";
     self.tableView.accessibilityLabel = @"Conversation List";
 
-    // DataSoure
     [self setupConversationDataSource];
 }
 
@@ -157,11 +152,9 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
 
 - (void)configureCell:(UITableViewCell<LYRUIConversationPresenting> *)conversationCell atIndexPath:(NSIndexPath *)indexPath
 {
-    // Present Conversation
     LYRConversation *conversation = [self.queryController objectAtIndexPath:indexPath];
     [conversationCell presentConversation:conversation];
     
-    // Update cell with image if needed
     if (self.displaysConversationImage) {
         if ([self.dataSource respondsToSelector:@selector(conversationListViewController:imageForConversation:)]) {
             UIImage *conversationImage = [self.dataSource conversationListViewController:self imageForConversation:conversation];
@@ -171,11 +164,9 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"conversationCell
         }
     }
     
-    // Update Cell with unread message count
     LYRRecipientStatus status = [[conversation.lastMessage.recipientStatusByUserID objectForKey:self.layerClient.authenticatedUserID] integerValue];
     [conversationCell updateWithLastMessageRecipientStatus:status];
     
-    // Update Cell with Label
     if ([self.dataSource respondsToSelector:@selector(conversationListViewController:labelForConversation:)]) {
         NSString *conversationLabel = [self.dataSource conversationListViewController:self labelForConversation:conversation];
         [conversationCell updateWithConversationLabel:conversationLabel];
