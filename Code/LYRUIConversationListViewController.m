@@ -9,6 +9,8 @@
 #import <objc/runtime.h>
 #import "LYRUIConversationListViewController.h"
 
+static NSString *const LYRUIConversationCellReuseIdentifier = @"LYRUIConversationCellReuseIdentifier";
+
 @interface LYRUIConversationListViewController () <UIActionSheetDelegate, LYRQueryControllerDelegate>
 
 @property (nonatomic) LYRClient *layerClient;
@@ -19,8 +21,6 @@
 @end
 
 @implementation LYRUIConversationListViewController
-
-static NSString *const LYRUIConversationCellReuseIdentifier = @"LYRUIConversationCellReuseIdentifier";
 
 + (instancetype)conversationListViewControllerWithLayerClient:(LYRClient *)layerClient
 {
