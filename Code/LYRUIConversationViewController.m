@@ -1052,7 +1052,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
                     break;
                     
                 case LYRQueryControllerChangeTypeUpdate:
-                    [self.collectionView reloadSections:[NSIndexSet indexSetWithIndex:change.currentIndex]];
+                    // If we call reloadSections: for a section that is already being animated due to another move (e.g. moving section 17 to 16 causes section 16 to be moved/animated to 17 and then we also reload section 16), UICollectionView will throw an exception. But since all onscreen sections will be reconfigured (see below) we don't need to reload the sections here anyway.
                     break;
                     
                 default:
@@ -1062,7 +1062,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
         [self.objectChanges removeAllObjects];
     } completion:nil];
 
-    // Since each section's content depends on other messages, we need to update each visible section even when a section's corresponding message has not changed.
+    // Since each section's content depends on other messages, we need to update each visible section even when a section's corresponding message has not changed. This also solves the issue with LYRQueryControllerChangeTypeUpdate (see above).
     for (UICollectionViewCell<LYRUIMessagePresenting> *cell in [self.collectionView visibleCells]) {
         NSIndexPath *indexPath = [self.collectionView indexPathForCell:cell];
         LYRMessage *message = [self messageAtCollectionViewIndexPath:indexPath];
