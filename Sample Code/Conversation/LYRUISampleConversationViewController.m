@@ -21,7 +21,6 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
     // Setup the datasource as self, since we're going to
     // handle it in this implementation file.
     self.dataSource = self;
@@ -54,7 +53,6 @@
         if ([participant isEqualToString:self.layerClient.authenticatedUserID]) {
             return;
         }
-    
         NSString *participantNameWithCheckmark = [NSString stringWithFormat:@"%@✔︎ ", [LYRUserMock mockUserForIdentifier:participant].firstName];
         UIColor *textColor = [UIColor lightGrayColor];
         if (status == LYRRecipientStatusSent) {

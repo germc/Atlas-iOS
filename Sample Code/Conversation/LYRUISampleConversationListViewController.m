@@ -47,22 +47,18 @@
 
 - (void)conversationListViewController:(LYRUIConversationListViewController *)conversationListViewController didDeleteConversation:(LYRConversation *)conversation deletionMode:(LYRDeletionMode)deletionMode
 {
-    
+    NSLog(@"Conversation deleted");
 }
 
 - (void)conversationListViewController:(LYRUIConversationListViewController *)conversationListViewController didFailDeletingConversation:(LYRConversation *)conversation deletionMode:(LYRDeletionMode)deletionMode error:(NSError *)error
 {
-    
+    NSLog(@"Failed to delete conversation with error: %@", error);
 }
 
 #pragma mark - Conversation List View Controller Data Source Methods
 
 - (NSString *)conversationListViewController:(LYRUIConversationListViewController *)conversationListViewController labelForConversation:(LYRConversation *)conversation
 {
-//    if ([conversation.metadata valueForKey:LYRUIConversationNameTag]) {
-//        return [conversation.metadata valueForKey:LYRUIConversationNameTag];
-//    }
-    
     if (!self.layerClient.authenticatedUserID) return @"Not auth'd";
     NSMutableSet *participantIdentifiers = [conversation.participants mutableCopy];
     [participantIdentifiers minusSet:[NSSet setWithObject:self.layerClient.authenticatedUserID]];

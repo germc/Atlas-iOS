@@ -35,7 +35,6 @@
 
 - (NSOrderedSet *)allConversations;
 
-
 //-------------------------
 // Messages
 //-------------------------
@@ -47,7 +46,6 @@
 - (void)deleteMessage:(LYRMessageMock *)message;
 
 - (LYRMessageMock *)messageForIdentifier:(NSURL *)identifier;
-
 
 //-------------------------
 // Querying

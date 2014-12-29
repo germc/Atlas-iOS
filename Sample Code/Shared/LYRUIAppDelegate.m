@@ -28,6 +28,7 @@ static BOOL LYRIsRunningTests()
     if (!LYRIsRunningTests()) {
         LYRUserMock *mockUser = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameRussell];
         LYRClientMock *layerClient = [LYRClientMock layerClientMockWithAuthenticatedUserID:mockUser.participantIdentifier];
+        
         LYRUISampleConversationListViewController *controller = [LYRUISampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)layerClient];
         UINavigationController *rootViewController = [[UINavigationController alloc] initWithRootViewController:controller];
         
@@ -38,14 +39,5 @@ static BOOL LYRIsRunningTests()
     }
     return YES;
 }
-
-
-//// Get app info from Info.plist
-//NSBundle *mainBundle = [NSBundle mainBundle];
-//NSString *viewControllerClassName = [mainBundle objectForInfoDictionaryKey:@"LYRUILaunchViewControllerClass"];
-//
-//// Setup the initial view controller
-//UIViewController *firstViewController = [[NSClassFromString(viewControllerClassName) alloc] init];
-//firstViewController.title = [(NSString *)[mainBundle objectForInfoDictionaryKey:@"CFBundleName"] stringByAppendingString:@" sample"];
 
 @end
