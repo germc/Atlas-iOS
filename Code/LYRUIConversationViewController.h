@@ -196,6 +196,16 @@
 @property (nonatomic) LYRUIMessageInputToolbar *messageInputToolbar;
 
 /**
+ @abstract The `UICollectionView` for the controller
+ */
+@property (nonatomic) UICollectionView *collectionView;
+
+/**
+ @abstract The `LYRQueryController` that manages the messaging content displayed in the controller.
+ */
+@property (nonatomic) LYRQueryController *queryController;
+
+/**
  @abstract Informs the receiver if it should display a `LYRUIAddressBarController`. If yes, your application must implement
  `LYRUIAddressBarControllerDelegate` and `LYRUIAddressBarControllerDataSource`. Default is no.
  */
