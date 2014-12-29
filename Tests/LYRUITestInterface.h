@@ -18,8 +18,14 @@
 #import <KIF/KIF.h>
 #import "KIFSystemTestActor+ViewControllerActions.h"
 
-@interface LYRUITestUtilities : NSObject
+@interface LYRUITestInterface : NSObject
 
-+ (LYRClientMock *)layerClientMock;
+@property (nonatomic)LYRClientMock *layerClient;
+
++ (instancetype)testIntefaceWithLayerClient:(LYRClientMock *)layerClient;
+
+- (LYRConversationMock *)conversationWithParticipants:(NSSet *)participants lastMessageText:(NSString *)lastMessageText;
+
+- (NSString *)conversationLabelForConversation:(LYRConversationMock *)conversation;
 
 @end

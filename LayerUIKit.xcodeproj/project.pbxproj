@@ -19,12 +19,15 @@
 		D667D0641A36561300D63546 /* LYRConversationMock.m in Sources */ = {isa = PBXBuildFile; fileRef = D667D0631A36561300D63546 /* LYRConversationMock.m */; };
 		D667D0671A36561F00D63546 /* LYRMessageMock.m in Sources */ = {isa = PBXBuildFile; fileRef = D667D0661A36561F00D63546 /* LYRMessageMock.m */; };
 		D667D0731A3658A800D63546 /* LYRQueryControllerMock.m in Sources */ = {isa = PBXBuildFile; fileRef = D667D0721A3658A800D63546 /* LYRQueryControllerMock.m */; };
-		D667F8D11A40F87700D44699 /* LYRUITestUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = D667F8CF1A40F63000D44699 /* LYRUITestUtilities.m */; };
+		D667F8D11A40F87700D44699 /* LYRUITestInterface.m in Sources */ = {isa = PBXBuildFile; fileRef = D667F8CF1A40F63000D44699 /* LYRUITestInterface.m */; };
 		D667F8D21A40F87F00D44699 /* Kevin.m in Sources */ = {isa = PBXBuildFile; fileRef = D667F8C61A40F5DB00D44699 /* Kevin.m */; };
 		D667F8D31A40F88500D44699 /* LYRUIMessageInputBarTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D667F8C41A40F5DB00D44699 /* LYRUIMessageInputBarTest.m */; };
 		D667F8D41A40F88900D44699 /* LYRUIConversationViewTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D667F8C51A40F5DB00D44699 /* LYRUIConversationViewTest.m */; };
 		D667F8D51A40F88E00D44699 /* LYRUIParticipantPickerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D667F8C71A40F5DB00D44699 /* LYRUIParticipantPickerTest.m */; };
 		D667F8D71A4101DB00D44699 /* LYRUIConversationListTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D667F8D61A4101DB00D44699 /* LYRUIConversationListTest.m */; };
+		D667F8D81A411FC100D44699 /* LYRUISampleConversationListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D0D778C41A02EAEE000A5F51 /* LYRUISampleConversationListViewController.m */; };
+		D6A0257A1A420765003C6513 /* LYRUITestConversationCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D6A025771A420765003C6513 /* LYRUITestConversationCell.m */; };
+		D6A0257B1A420765003C6513 /* LYRUITestParticipantCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D6A025791A420765003C6513 /* LYRUITestParticipantCell.m */; };
 		D6B282601A368065001DC713 /* LYRMockContentStore.m in Sources */ = {isa = PBXBuildFile; fileRef = D6B2825F1A368065001DC713 /* LYRMockContentStore.m */; };
 		D6DE58771A37651100FA9375 /* LYRMessagePartMock.m in Sources */ = {isa = PBXBuildFile; fileRef = D6DE58761A37651100FA9375 /* LYRMessagePartMock.m */; };
 		F309E194D1651CC5D4FEA717 /* libPods-Conversation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D9A79E80B908428B22486437 /* libPods-Conversation.a */; };
@@ -50,8 +53,8 @@
 		D0AF56C01A08383F0093D5A5 /* LYRUISampleConversationsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUISampleConversationsViewController.m; sourceTree = "<group>"; };
 		D0D778931A02EAA9000A5F51 /* Conversation.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Conversation.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D0D778BE1A02EAEE000A5F51 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
-		D0D778BF1A02EAEE000A5F51 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
-		D0D778C01A02EAEE000A5F51 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		D0D778BF1A02EAEE000A5F51 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = "../Sample Code/Conversation/Images.xcassets"; sourceTree = "<group>"; };
+		D0D778C01A02EAEE000A5F51 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = "../Sample Code/Conversation/Info.plist"; sourceTree = "<group>"; };
 		D0D778C31A02EAEE000A5F51 /* LYRUISampleConversationListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUISampleConversationListViewController.h; sourceTree = "<group>"; };
 		D0D778C41A02EAEE000A5F51 /* LYRUISampleConversationListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUISampleConversationListViewController.m; sourceTree = "<group>"; };
 		D0D778C51A02EAEE000A5F51 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -75,9 +78,13 @@
 		D667F8C51A40F5DB00D44699 /* LYRUIConversationViewTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIConversationViewTest.m; sourceTree = "<group>"; };
 		D667F8C61A40F5DB00D44699 /* Kevin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Kevin.m; sourceTree = "<group>"; };
 		D667F8C71A40F5DB00D44699 /* LYRUIParticipantPickerTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIParticipantPickerTest.m; sourceTree = "<group>"; };
-		D667F8CE1A40F63000D44699 /* LYRUITestUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUITestUtilities.h; sourceTree = "<group>"; };
-		D667F8CF1A40F63000D44699 /* LYRUITestUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUITestUtilities.m; sourceTree = "<group>"; };
+		D667F8CE1A40F63000D44699 /* LYRUITestInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUITestInterface.h; sourceTree = "<group>"; };
+		D667F8CF1A40F63000D44699 /* LYRUITestInterface.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUITestInterface.m; sourceTree = "<group>"; };
 		D667F8D61A4101DB00D44699 /* LYRUIConversationListTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIConversationListTest.m; sourceTree = "<group>"; };
+		D6A025761A420765003C6513 /* LYRUITestConversationCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUITestConversationCell.h; sourceTree = "<group>"; };
+		D6A025771A420765003C6513 /* LYRUITestConversationCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUITestConversationCell.m; sourceTree = "<group>"; };
+		D6A025781A420765003C6513 /* LYRUITestParticipantCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUITestParticipantCell.h; sourceTree = "<group>"; };
+		D6A025791A420765003C6513 /* LYRUITestParticipantCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUITestParticipantCell.m; sourceTree = "<group>"; };
 		D6B2825E1A368065001DC713 /* LYRMockContentStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRMockContentStore.h; sourceTree = "<group>"; };
 		D6B2825F1A368065001DC713 /* LYRMockContentStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRMockContentStore.m; sourceTree = "<group>"; };
 		D6DE58751A37651100FA9375 /* LYRMessagePartMock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRMessagePartMock.h; sourceTree = "<group>"; };
@@ -159,9 +166,6 @@
 		D0D778BC1A02EAEE000A5F51 /* Sample App */ = {
 			isa = PBXGroup;
 			children = (
-				D0D778BD1A02EAEE000A5F51 /* LaunchScreen.xib */,
-				D0D778BF1A02EAEE000A5F51 /* Images.xcassets */,
-				D0D778C01A02EAEE000A5F51 /* Info.plist */,
 				D0D778C31A02EAEE000A5F51 /* LYRUISampleConversationListViewController.h */,
 				D0D778C41A02EAEE000A5F51 /* LYRUISampleConversationListViewController.m */,
 				D0AF56BF1A08383F0093D5A5 /* LYRUISampleConversationsViewController.h */,
@@ -174,8 +178,9 @@
 		D0D778D41A02EB83000A5F51 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
-				D667F8CE1A40F63000D44699 /* LYRUITestUtilities.h */,
-				D667F8CF1A40F63000D44699 /* LYRUITestUtilities.m */,
+				D6A025751A420744003C6513 /* Test Utilities */,
+				D667F8CE1A40F63000D44699 /* LYRUITestInterface.h */,
+				D667F8CF1A40F63000D44699 /* LYRUITestInterface.m */,
 				D667F8C61A40F5DB00D44699 /* Kevin.m */,
 				D667F8D61A4101DB00D44699 /* LYRUIConversationListTest.m */,
 				D667F8C41A40F5DB00D44699 /* LYRUIMessageInputBarTest.m */,
@@ -190,6 +195,9 @@
 		D0D778D51A02EB83000A5F51 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				D0D778BD1A02EAEE000A5F51 /* LaunchScreen.xib */,
+				D0D778BF1A02EAEE000A5F51 /* Images.xcassets */,
+				D0D778C01A02EAEE000A5F51 /* Info.plist */,
 				D0D778D61A02EB83000A5F51 /* Info.plist */,
 			);
 			name = "Supporting Files";
@@ -217,6 +225,17 @@
 			);
 			name = "Mock Objects";
 			path = "Sample Code/Shared";
+			sourceTree = "<group>";
+		};
+		D6A025751A420744003C6513 /* Test Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				D6A025761A420765003C6513 /* LYRUITestConversationCell.h */,
+				D6A025771A420765003C6513 /* LYRUITestConversationCell.m */,
+				D6A025781A420765003C6513 /* LYRUITestParticipantCell.h */,
+				D6A025791A420765003C6513 /* LYRUITestParticipantCell.m */,
+			);
+			name = "Test Utilities";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -384,6 +403,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D0AF56C11A08383F0093D5A5 /* LYRUISampleConversationsViewController.m in Sources */,
+				D6A0257B1A420765003C6513 /* LYRUITestParticipantCell.m in Sources */,
 				D667D0671A36561F00D63546 /* LYRMessageMock.m in Sources */,
 				D6B282601A368065001DC713 /* LYRMockContentStore.m in Sources */,
 				D0D778CB1A02EAEE000A5F51 /* main.m in Sources */,
@@ -393,6 +413,7 @@
 				D0E7294F1A02FDB900B76672 /* LYRClientMock.m in Sources */,
 				D6DE58771A37651100FA9375 /* LYRMessagePartMock.m in Sources */,
 				D0D778CA1A02EAEE000A5F51 /* LYRUISampleConversationListViewController.m in Sources */,
+				D6A0257A1A420765003C6513 /* LYRUITestConversationCell.m in Sources */,
 				D667D0731A3658A800D63546 /* LYRQueryControllerMock.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -401,12 +422,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D667F8D81A411FC100D44699 /* LYRUISampleConversationListViewController.m in Sources */,
 				D667F8D51A40F88E00D44699 /* LYRUIParticipantPickerTest.m in Sources */,
 				D667F8D41A40F88900D44699 /* LYRUIConversationViewTest.m in Sources */,
 				D667F8D31A40F88500D44699 /* LYRUIMessageInputBarTest.m in Sources */,
 				D667F8D71A4101DB00D44699 /* LYRUIConversationListTest.m in Sources */,
 				D667F8D21A40F87F00D44699 /* Kevin.m in Sources */,
-				D667F8D11A40F87700D44699 /* LYRUITestUtilities.m in Sources */,
+				D667F8D11A40F87700D44699 /* LYRUITestInterface.m in Sources */,
 				D0E729511A03202700B76672 /* LYRClientMockTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -428,6 +450,7 @@
 				D0D778BE1A02EAEE000A5F51 /* Base */,
 			);
 			name = LaunchScreen.xib;
+			path = "../Sample Code/Conversation";
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
@@ -469,6 +492,7 @@
 				COPY_PHASE_STRIP = NO;
 				ENABLE_NS_ASSERTIONS = "$(inherited)";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -483,6 +507,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = "$(SRCROOT)/Sample Code/Conversation/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -517,6 +542,7 @@
 				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = "$(inherited)";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
@@ -524,6 +550,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = "$(SRCROOT)/Sample Code/Conversation/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -575,6 +602,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = Tests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
@@ -619,6 +647,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = Tests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";

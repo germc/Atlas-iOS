@@ -17,6 +17,10 @@
 
 - (void)hydrateConversationsForAuthenticatedUserID:(NSString *)authenticatedUserID count:(NSUInteger)count;
 
+- (void)hydrateConversationForAuthenticatedUserID:(NSString *)authenticatedUserID;
+
+- (void)resetContentStore;
+
 //-------------------------
 // Conversations
 //-------------------------

@@ -180,7 +180,10 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"LYRUIConversatio
     }
 }
 
-#pragma mark - UITableViewDelegate
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return self.allowsEditing;
+}
 
 - (NSArray *)tableView:(UITableView *)tableView editActionsForRowAtIndexPath:(NSIndexPath *)indexPath {
     

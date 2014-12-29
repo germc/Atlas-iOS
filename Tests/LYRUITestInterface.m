@@ -1,0 +1,81 @@
+//
+//  LYRUITestUtilities.m
+//  LayerUIKit
+//
+//  Created by Kevin Coleman on 12/16/14.
+//
+//
+
+#import "LYRUITestInterface.h"
+
+@interface LYRUITestInterface ()
+
+
+
+@end
+
+@implementation LYRUITestInterface
+
++ (instancetype)testIntefaceWithLayerClient:(LYRClientMock *)layerClient
+{
+    return [[self alloc] initWithLayerClient:layerClient];
+}
+
+- (id)initWithLayerClient:(LYRClientMock *)layerClient
+{
+    self = [super init];
+    if (self) {
+        _layerClient = layerClient;
+    }
+    return self;
+}
+
+- (LYRConversationMock *)conversationWithParticipants:(NSSet *)participants lastMessageText:(NSString *)lastMessageText
+{
+    LYRConversationMock *conversation = [self.layerClient newConversationWithParticipants:participants options:nil error:nil];
+    LYRMessagePart *part = [LYRMessagePart messagePartWithText:lastMessageText];
+    LYRMessageMock *message = [self.layerClient newMessageWithParts:@[part] options:nil error:nil];
+    [conversation sendMessage:message error:nil];
+    return conversation;
+}
+
+- (NSString *)conversationLabelForConversation:(LYRConversationMock *)conversation
+{
+
+    //    if ([conversation.metadata valueForKey:LYRUIConversationNameTag]) {
+    //        return [conversation.metadata valueForKey:LYRUIConversationNameTag];
+    //    }
+    
+    if (!self.layerClient.authenticatedUserID) return @"Not auth'd";
+    NSMutableSet *participantIdentifiers = [conversation.participants mutableCopy];
+    [participantIdentifiers minusSet:[NSSet setWithObject:self.layerClient.authenticatedUserID]];
+    
+    if (!participantIdentifiers.count > 0) return @"Personal Conversation";
+    
+    NSMutableSet *participants = [[LYRUserMock participantsForIdentifiers:conversation.participants] mutableCopy];
+    if (!participants.count > 0) return @"No Matching Participants";
+    
+    // Put the latest message sender's name first
+    LYRUserMock *firstUser;
+    if (![conversation.lastMessage.sentByUserID isEqualToString:self.layerClient.authenticatedUserID]){
+        if (conversation.lastMessage) {
+            NSPredicate *searchPredicate = [NSPredicate predicateWithFormat:@"SELF.userID IN %@", conversation.lastMessage.sentByUserID];
+            LYRUserMock *lastMessageSender = [[[participants filteredSetUsingPredicate:searchPredicate] allObjects] lastObject];
+            if (lastMessageSender) {
+                firstUser = lastMessageSender;
+                [participants removeObject:lastMessageSender];
+            }
+        }
+    } else {
+        firstUser = [[participants allObjects] objectAtIndex:0];
+    }
+    
+    NSString *conversationLabel = firstUser.fullName;
+    for (int i = 1; i < [[participants allObjects] count]; i++) {
+        LYRUserMock *user = [[participants allObjects] objectAtIndex:i];
+        conversationLabel = [NSString stringWithFormat:@"%@, %@", conversationLabel, user.fullName];
+    }
+    return conversationLabel;
+}
+
+@end
