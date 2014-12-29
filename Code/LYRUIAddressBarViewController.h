@@ -118,4 +118,9 @@
  */
 - (void)setPermanent;
 
+/**
+ @abstract A boolean indicating whether or not the reciever is in its permanent state.
+ */
+- (BOOL)isPermanent;
+
 @end

@@ -84,6 +84,7 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
     self.addressBarView.addressBarTextView.text = permanentText;
     self.addressBarView.addressBarTextView.textColor = LYRUIGrayColor();
     self.addressBarView.addressBarTextView.userInteractionEnabled = NO;
+    self.addressBarView.addressBarTextView.editable = NO;
     [self sizeAddressBarView];
 }
 
