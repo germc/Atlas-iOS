@@ -24,25 +24,45 @@
 
 - (void)testAddMessages
 {
-    LYRClientMock *client = [LYRClientMock layerClientMockWithAuthenticatedUserID:@"Alice"];
-    LYRConversationMock *conversation = [LYRConversationMock conversationWithParticipants:[NSSet setWithObjects:@"Alice", @"Bob", @"Carol", nil]];
-    LYRMessageMock *message1 = [LYRMessageMock messageWithConversation:conversation parts:@[[LYRMessagePart messagePartWithText:@"sup, buddy?"]]];
-    LYRMessageMock *message2 = [LYRMessageMock messageWithConversation:conversation parts:@[[LYRMessagePart messagePartWithText:@"you there?"]]];
-    [client receiveMessages:@[message1, message2]];
+    LYRUserMock *user = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameCam];
+    LYRClientMock *client = [LYRClientMock layerClientMockWithAuthenticatedUserID:user.participantIdentifier];
     
-    NSSet *messages = [client messagesForIdentifiers:nil];
+    NSSet *participants = [NSSet setWithObject:[[LYRUserMock randomUser] participantIdentifier]];
+    LYRConversationMock *conversation = [client newConversationWithParticipants:participants options:nil error:nil];
+    
+    LYRMessagePartMock *messagePart1 = [LYRMessagePartMock messagePartWithText:@"How are you?"];
+    LYRMessageMock *message1 = [client newMessageWithParts:@[messagePart1] options:nil error:nil];
+    [conversation sendMessage:message1 error:nil];
+    
+    LYRMessagePartMock *messagePart2 = [LYRMessagePartMock messagePartWithText:@"I am well"];
+    LYRMessageMock *message2 = [client newMessageWithParts:@[messagePart2] options:nil error:nil];
+    [conversation sendMessage:message2 error:nil];
+    
+    LYRQuery *query = [LYRQuery queryWithClass:[LYRMessage class]];
+    query.predicate = [LYRPredicate predicateWithProperty:@"conversation" operator:LYRPredicateOperatorIsEqualTo value:conversation];
+    NSOrderedSet *messages = [client executeQuery:query error:nil];
     expect(messages.count).to.equal(2);
 }
 
 - (void)testMessagesIndexInConversationPreserved
 {
-    LYRClientMock *client = [LYRClientMock layerClientMockWithAuthenticatedUserID:@"Alice"];
-    LYRConversationMock *conversation = [LYRConversationMock conversationWithParticipants:[NSSet setWithObjects:@"Alice", @"Bob", @"Carol", nil]];
-    LYRMessageMock *message1 = [LYRMessageMock messageWithConversation:conversation parts:@[[LYRMessagePart messagePartWithText:@"sup, buddy?"]]];
-    LYRMessageMock *message2 = [LYRMessageMock messageWithConversation:conversation parts:@[[LYRMessagePart messagePartWithText:@"you there?"]]];
-    [client receiveMessages:@[message1, message2]];
+    LYRUserMock *user = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameCam];
+    LYRClientMock *client = [LYRClientMock layerClientMockWithAuthenticatedUserID:user.participantIdentifier];
     
-    NSOrderedSet *messages = [client messagesForConversation:conversation];
+    NSSet *participants = [NSSet setWithObject:[[LYRUserMock randomUser] participantIdentifier]];
+    LYRConversationMock *conversation = [client newConversationWithParticipants:participants options:nil error:nil];
+    
+    LYRMessagePartMock *messagePart1 = [LYRMessagePartMock messagePartWithText:@"How are you?"];
+    LYRMessageMock *message1 = [client newMessageWithParts:@[messagePart1] options:nil error:nil];
+    [conversation sendMessage:message1 error:nil];
+    
+    LYRMessagePartMock *messagePart2 = [LYRMessagePartMock messagePartWithText:@"I am well"];
+    LYRMessageMock *message2 = [client newMessageWithParts:@[messagePart2] options:nil error:nil];
+    [conversation sendMessage:message2 error:nil];
+    
+    LYRQuery *query = [LYRQuery queryWithClass:[LYRConversation class]];
+    query.predicate = [LYRPredicate predicateWithProperty:@"conversation" operator:LYRPredicateOperatorIsEqualTo value:conversation];
+    NSOrderedSet *messages = [client executeQuery:query error:nil];
     expect(messages.count).to.equal(2);
     expect([messages[0] index]).to.equal(1);
     expect([messages[1] index]).to.equal(2);
@@ -51,71 +71,98 @@
 
 - (void)testDeletingMessagesReindexesIndexOrder
 {
-    LYRClientMock *client = [LYRClientMock layerClientMockWithAuthenticatedUserID:@"Alice"];
-    LYRConversationMock *conversation = [LYRConversationMock conversationWithParticipants:[NSSet setWithObjects:@"Alice", @"Bob", @"Carol", nil]];
-    LYRMessageMock *message1 = [LYRMessageMock messageWithConversation:conversation parts:@[[LYRMessagePart messagePartWithText:@"sup, buddy?"]]];
-    LYRMessageMock *message2 = [LYRMessageMock messageWithConversation:conversation parts:@[[LYRMessagePart messagePartWithText:@"you there?"]]];
-    [client receiveMessages:@[message1, message2]];
+    LYRUserMock *user = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameCam];
+    LYRClientMock *client = [LYRClientMock layerClientMockWithAuthenticatedUserID:user.participantIdentifier];
     
-    [client receiveMessageDeletion:message1];
+    NSSet *participants = [NSSet setWithObject:[[LYRUserMock randomUser] participantIdentifier]];
+    LYRConversationMock *conversation = [client newConversationWithParticipants:participants options:nil error:nil];
     
-    NSOrderedSet *messages = [client messagesForConversation:conversation];
+    LYRMessagePartMock *messagePart1 = [LYRMessagePartMock messagePartWithText:@"How are you?"];
+    LYRMessageMock *message1 = [client newMessageWithParts:@[messagePart1] options:nil error:nil];
+    [conversation sendMessage:message1 error:nil];
+    
+    LYRMessagePartMock *messagePart2 = [LYRMessagePartMock messagePartWithText:@"I am well"];
+    LYRMessageMock *message2 = [client newMessageWithParts:@[messagePart2] options:nil error:nil];
+    [conversation sendMessage:message2 error:nil];
+    
+    [[LYRMockContentStore sharedStore] deleteMessage:message1];
+    
+    LYRQuery *query = [LYRQuery queryWithClass:[LYRConversation class]];
+    query.predicate = [LYRPredicate predicateWithProperty:@"conversation" operator:LYRPredicateOperatorIsEqualTo value:conversation];
+    NSOrderedSet *messages = [client executeQuery:query error:nil];
     expect(messages.count).to.equal(1);
-    expect([messages[0] index]).to.equal(1);
+    expect([messages[0] index]).to.equal(0);
     expect(messages[0]).to.equal(message2);
     expect(conversation.lastMessage).to.equal(message2);
 }
 
 - (void)testFetchingConversationByIdentifier
 {
-    LYRClientMock *client = [LYRClientMock layerClientMockWithAuthenticatedUserID:@"Alice"];
-    LYRConversationMock *conversation1 = [LYRConversationMock conversationWithParticipants:[NSSet setWithObjects:@"Alice", @"Bob", @"Carol", nil]];
-    LYRMessageMock *message1 = [LYRMessageMock messageWithConversation:conversation1 parts:@[[LYRMessagePart messagePartWithText:@"sup, buddy?"]]];
-
-    LYRConversationMock *conversation2 = [LYRConversationMock conversationWithParticipants:[NSSet setWithObjects:@"Alice", @"Carol", nil]];
-    LYRMessageMock *message2 = [LYRMessageMock messageWithConversation:conversation2 parts:@[[LYRMessagePart messagePartWithText:@"you there?"]]];
-    [client receiveMessages:@[message1, message2]];
+    LYRUserMock *user = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameCam];
+    LYRClientMock *client = [LYRClientMock layerClientMockWithAuthenticatedUserID:user.participantIdentifier];
     
-    LYRConversationMock *fetchedConversation = [client conversationForIdentifier:conversation1.identifier];
+    NSSet *participants = [NSSet setWithObject:[[LYRUserMock randomUser] participantIdentifier]];
+    LYRConversationMock *conversation1 = [client newConversationWithParticipants:participants options:nil error:nil];
+    
+    LYRMessagePartMock *messagePart1 = [LYRMessagePartMock messagePartWithText:@"How are you?"];
+    LYRMessageMock *message1 = [client newMessageWithParts:@[messagePart1] options:nil error:nil];
+    [conversation1 sendMessage:message1 error:nil];
+    
+    LYRConversationMock *conversation2 = [client newConversationWithParticipants:participants options:nil error:nil];
+    
+    LYRMessagePartMock *messagePart2 = [LYRMessagePartMock messagePartWithText:@"How are you?"];
+    LYRMessageMock *message2 = [client newMessageWithParts:@[messagePart2] options:nil error:nil];
+    [conversation2 sendMessage:message2 error:nil];
+
+    LYRQuery *query = [LYRQuery queryWithClass:[LYRConversation class]];
+    query.predicate = [LYRPredicate predicateWithProperty:@"identifier" operator:LYRPredicateOperatorIsEqualTo value:conversation1.identifier];
+    LYRConversationMock *fetchedConversation = [[client executeQuery:query error:nil] lastObject];
     expect(conversation1).to.equal(fetchedConversation);
     
-    LYRConversationMock *fetchedConversation2 = [client conversationForIdentifier:conversation2.identifier];
-    expect(conversation2).to.equal(fetchedConversation2);
+    query.predicate = [LYRPredicate predicateWithProperty:@"identifier" operator:LYRPredicateOperatorIsEqualTo value:conversation2.identifier];
+    fetchedConversation = [[client executeQuery:query error:nil] lastObject];
+    expect(conversation2).to.equal(fetchedConversation);
 }
 
 - (void)testFetchingConversationForParticipants
 {
-    LYRClientMock *client = [LYRClientMock layerClientMockWithAuthenticatedUserID:@"Alice"];
-    LYRConversationMock *conversation1 = [LYRConversationMock conversationWithParticipants:[NSSet setWithObjects:@"Alice", @"Bob", @"Carol", nil]];
-    LYRMessageMock *message1 = [LYRMessageMock messageWithConversation:conversation1 parts:@[[LYRMessagePart messagePartWithText:@"sup, buddy?"]]];
+    LYRUserMock *user = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameCam];
+    LYRClientMock *client = [LYRClientMock layerClientMockWithAuthenticatedUserID:user.participantIdentifier];
     
-    LYRConversationMock *conversation2 = [LYRConversationMock conversationWithParticipants:[NSSet setWithObjects:@"Alice", @"Carol", nil]];
-    LYRMessageMock *message2 = [LYRMessageMock messageWithConversation:conversation2 parts:@[[LYRMessagePart messagePartWithText:@"you there?"]]];
-    [client receiveMessages:@[message1, message2]];
+    NSSet *participants1 = [NSSet setWithObject:[[LYRUserMock userWithMockUserName:LYRClientMockFactoryNameBobby] participantIdentifier]];
+    LYRConversationMock *conversation1 = [client newConversationWithParticipants:participants1 options:nil error:nil];
     
-    NSSet *conversations1 = [client conversationsForParticipants:[NSSet setWithObjects:@"Alice", @"Bob", @"Carol", nil]];
-    expect(conversations1.count).to.equal(1);
+    LYRMessagePartMock *messagePart1 = [LYRMessagePartMock messagePartWithText:@"How are you?"];
+    LYRMessageMock *message1 = [client newMessageWithParts:@[messagePart1] options:nil error:nil];
+    [conversation1 sendMessage:message1 error:nil];
     
-    LYRConversationMock *fetchedConversation = conversations1.anyObject;
+    NSSet *participants2 = [NSSet setWithObjects:[[LYRUserMock userWithMockUserName:LYRClientMockFactoryNameBobby] participantIdentifier], [[LYRUserMock userWithMockUserName:LYRClientMockFactoryNameMarshawn] participantIdentifier], nil];
+    LYRConversationMock *conversation2 = [client newConversationWithParticipants:participants2 options:nil error:nil];
+    
+    LYRMessagePartMock *messagePart2 = [LYRMessagePartMock messagePartWithText:@"How are you?"];
+    LYRMessageMock *message2 = [client newMessageWithParts:@[messagePart2] options:nil error:nil];
+    [conversation2 sendMessage:message2 error:nil];
+    
+    LYRQuery *query1 = [LYRQuery queryWithClass:[LYRConversation class]];
+    query1.predicate = [LYRPredicate predicateWithProperty:@"participants" operator:LYRPredicateOperatorIsEqualTo value:participants1];
+    NSOrderedSet *fetchedConversations1 = [client executeQuery:query1 error:nil];
+    expect(fetchedConversations1.count).to.equal(1);
+    
+    LYRConversationMock *fetchedConversation = [fetchedConversations1 lastObject];
     expect(conversation1).to.equal(fetchedConversation);
     
-    NSSet *conversations2 = [client conversationsForParticipants:[NSSet setWithObjects:@"Alice", @"Carol", nil]];
-    expect(conversations2.count).to.equal(1);
+    LYRQuery *query2 = [LYRQuery queryWithClass:[LYRConversation class]];
+    query2.predicate = [LYRPredicate predicateWithProperty:@"participants" operator:LYRPredicateOperatorIsEqualTo value:participants2];
+    NSOrderedSet *fetchedConversations2 = [client executeQuery:query2 error:nil];
+    expect(fetchedConversations2.count).to.equal(1);
     
-    LYRConversationMock *fetchedConversation2 = conversations2.anyObject;
+    LYRConversationMock *fetchedConversation2 = [fetchedConversations2 lastObject];
     expect(conversation2).to.equal(fetchedConversation2);
     
-    NSSet *noConversations = [client conversationsForParticipants:[NSSet setWithObjects:@"Alice", @"Carol", @"Foobar", nil]];
-    expect(conversations2.count).to.equal(1);
-    
-    noConversations = [client conversationsForParticipants:[NSSet setWithObjects:@"Carol", nil]];
-    expect(noConversations.count).to.equal(0);
-    
-    noConversations = [client conversationsForParticipants:[NSSet setWithObjects:@"Foobar", nil]];
-    expect(noConversations.count).to.equal(0);
-
-    noConversations = [client conversationsForParticipants:nil];
-    expect(noConversations.count).to.equal(0);
+    LYRQuery *query3 = [LYRQuery queryWithClass:[LYRConversation class]];
+    query3.predicate = [LYRPredicate predicateWithProperty:@"participants" operator:LYRPredicateOperatorIsEqualTo value:[NSSet set]];
+    NSOrderedSet *fetchedConversations3 = [client executeQuery:query3 error:nil];
+    expect(fetchedConversations3.count).to.equal(0);
 }
 
 @end

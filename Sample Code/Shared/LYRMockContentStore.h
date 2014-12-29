@@ -11,7 +11,15 @@
 
 @interface LYRMockContentStore : NSObject
 
+@property (nonatomic) NSString *authenticatedUserID;
+
 + (id)sharedStore;
+
+- (void)hydrateConversationsForAuthenticatedUserID:(NSString *)authenticatedUserID count:(NSUInteger)count;
+
+//-------------------------
+// Conversations
+//-------------------------
 
 - (void)insertConversation:(LYRConversationMock *)conversation;
 
@@ -23,6 +31,26 @@
 
 - (NSOrderedSet *)allConversations;
 
-- (void)hydrateConversationsWithCount:(NSUInteger)count;
+
+//-------------------------
+// Messages
+//-------------------------
+
+- (void)insertMessage:(LYRMessageMock *)message;
+
+- (void)updateMessage:(LYRMessageMock *)message;
+
+- (void)deleteMessage:(LYRMessageMock *)message;
+
+- (LYRMessageMock *)messageForIdentifier:(NSURL *)identifier;
+
+
+//-------------------------
+// Querying
+//-------------------------
+
+- (NSOrderedSet *)fetchObjectsWithClass:(Class)objectClass predicate:(LYRPredicate *)predicate sortDescriptior:(NSArray *)sortDescriptor;
+
+- (void)broadCastChanges;
 
 @end

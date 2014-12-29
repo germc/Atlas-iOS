@@ -7,8 +7,10 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "LayerKitMock.h"
 #import "LYRMessageMock.h"
+#import <LayerKit/LayerKit.h>
+
+@class LYRMessageMock;
 
 @interface LYRConversationMock : NSObject <LYRQueryable>
 
@@ -39,7 +41,5 @@
 - (BOOL)delete:(LYRDeletionMode)deletionMode error:(NSError **)error;
 
 - (BOOL)markAllMessagesAsRead:(NSError **)error;
-
-
 
 @end

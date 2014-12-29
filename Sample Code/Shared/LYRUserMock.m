@@ -89,4 +89,10 @@ NSString *const LYRMockUserIDDoug = @"0000000007";
     return nil;
 }
 
++ (instancetype)randomUser
+{
+    int randomUserName = arc4random_uniform(6);
+    return  [self userWithMockUserName:randomUserName];
+}
+
 @end

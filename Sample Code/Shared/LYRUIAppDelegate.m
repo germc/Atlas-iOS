@@ -7,6 +7,8 @@
 //
 
 #import "LYRUIAppDelegate.h"
+#import "LayerKitMock.h"
+#import "LYRUISampleConversationListViewController.h"
 
 @interface LYRUIAppDelegate ()
 
@@ -18,17 +20,11 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    // Get app info from Info.plist
-    NSBundle *mainBundle = [NSBundle mainBundle];
-    NSString *viewControllerClassName = [mainBundle objectForInfoDictionaryKey:@"LYRUILaunchViewControllerClass"];
+    LYRUserMock *mockUser = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameRussell];
+    LYRClientMock *layerClient = [LYRClientMock layerClientMockWithAuthenticatedUserID:mockUser.participantIdentifier];
     
-    // Setup the initial view controller
-    UIViewController *firstViewController = [[NSClassFromString(viewControllerClassName) alloc] init];
-    firstViewController.title = [(NSString *)[mainBundle objectForInfoDictionaryKey:@"CFBundleName"] stringByAppendingString:@" sample"];
-    
-    // Setup a navigation controller to be the root view controller
-    // and have the initial view be the fisrt on the navigation stack.
-    UINavigationController *rootViewController = [[UINavigationController alloc] initWithRootViewController:firstViewController];
+    LYRUISampleConversationListViewController *controller = [LYRUISampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)layerClient];
+    UINavigationController *rootViewController = [[UINavigationController alloc] initWithRootViewController:controller];
     
     // Add the navigation controller to the main window and make it visible
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
@@ -64,5 +60,13 @@
 {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
 }
+
+//// Get app info from Info.plist
+//NSBundle *mainBundle = [NSBundle mainBundle];
+//NSString *viewControllerClassName = [mainBundle objectForInfoDictionaryKey:@"LYRUILaunchViewControllerClass"];
+//
+//// Setup the initial view controller
+//UIViewController *firstViewController = [[NSClassFromString(viewControllerClassName) alloc] init];
+//firstViewController.title = [(NSString *)[mainBundle objectForInfoDictionaryKey:@"CFBundleName"] stringByAppendingString:@" sample"];
 
 @end
