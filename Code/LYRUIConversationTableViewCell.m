@@ -204,7 +204,7 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
     self.dateLabel.text = [self dateLabelForLastMessage:conversation.lastMessage];
     
     LYRMessage *message = conversation.lastMessage;
-    LYRMessagePart *messagePart = [message.parts firstObject];
+    LYRMessagePart *messagePart = message.parts.firstObject;
     if ([messagePart.MIMEType isEqualToString:LYRUIMIMETypeTextPlain]) {
         self.lastMessageTextView.text = [[NSString alloc] initWithData:messagePart.data encoding:NSUTF8StringEncoding];
     } else if ([messagePart.MIMEType isEqualToString:LYRUIMIMETypeImageJPEG]) {
