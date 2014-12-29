@@ -148,11 +148,6 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"LYRUIConversatio
     return conversationCell;
 }
 
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    return self.allowsEditing;
-}
-
 #pragma mark - Cell Configuration
 
 - (void)configureCell:(UITableViewCell<LYRUIConversationPresenting> *)conversationCell atIndexPath:(NSIndexPath *)indexPath
