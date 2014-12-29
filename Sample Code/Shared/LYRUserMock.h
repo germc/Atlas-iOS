@@ -10,6 +10,16 @@
 #import <UIKit/UIKit.h>
 #import <LayerUIKit/LYRUIParticipant.h>
 
+typedef NS_ENUM(NSUInteger, LYRClientMockUserName){
+    LYRClientMockFactoryNameMarshawn,
+    LYRClientMockFactoryNameRussell,
+    LYRClientMockFactoryNameCam,
+    LYRClientMockFactoryNameEarl,
+    LYRClientMockFactoryNameBobby,
+    LYRClientMockFactoryNameRichard,
+    LYRClientMockFactoryNameDoug
+};
+
 @interface LYRUserMock : NSObject <LYRUIParticipant>
 
 @property (nonatomic, readonly) NSString *firstName;
@@ -18,6 +28,8 @@
 @property (nonatomic, readonly) UIImage *avatarImage;
 @property (nonatomic, readonly) NSString *participantIdentifier;
 
-+ (instancetype)userWithFirstName:(NSString *)firstName lastName:(NSString *)lastName participantIdentifier:(NSString *)participantIdentifier;
++ (instancetype)userWithMockUserName:(LYRClientMockUserName)mockUserName;
+
++ (instancetype)mockUserForIdentifier:(NSString *)userIdentifier;
 
 @end

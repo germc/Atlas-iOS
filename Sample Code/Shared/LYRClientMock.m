@@ -18,37 +18,6 @@
 
 @end
 
-@interface LYRConversationMock ()
-
-@property (nonatomic, readwrite) NSURL *identifier;
-@property (nonatomic, readwrite) NSSet *participants;
-@property (nonatomic, readwrite) NSDate *createdAt;
-@property (nonatomic, readwrite) LYRMessageMock *lastMessage;
-@property (nonatomic, readwrite) BOOL isDeleted;
-@property (nonatomic, readwrite) NSMutableDictionary *mutableMetadata;
-
-+ (instancetype)conversationWithLYRConversation:(LYRConversation *)conversation;
-
-@end
-
-@interface LYRMessageMock ()
-
-@property (nonatomic, readwrite) NSURL *identifier;
-@property (nonatomic, readwrite) NSUInteger index;
-@property (nonatomic, readwrite) LYRConversationMock *conversation;
-@property (nonatomic, readwrite) NSArray *parts;
-@property (nonatomic, readwrite) BOOL isSent;
-@property (nonatomic, readwrite) BOOL isDeleted;
-@property (nonatomic, readwrite) NSDate *sentAt;
-@property (nonatomic, readwrite) NSDate *receivedAt;
-@property (nonatomic, readwrite) NSString *sentByUserID;
-@property (nonatomic, readwrite) NSMutableDictionary *mutableRecipientStatuses;
-@property (nonatomic, readwrite) NSMutableDictionary *mutableMetadata;
-
-+ (instancetype)messageWithLYRMessage:(LYRMessage *)message userID:(NSString *)userID;
-
-@end
-
 @implementation LYRClientMock
 
 #pragma mark Initializers
@@ -80,6 +49,34 @@
     [layerClientMock addConversationsFromArray:@[conversations]];
     return layerClientMock;
 }
+
+#pragma mark Public API
+
+- (LYRConversationMock *)newConversationWithParticipants:(NSSet *)participants options:(NSDictionary *)options error:(NSError *__autoreleasing *)error
+{
+    return [LYRConversationMock newConversationWithParticipants:participants options:options];
+}
+
+- (LYRMessageMock *)newMessageWithParts:(NSArray *)messageParts options:(NSDictionary *)options error:(NSError *__autoreleasing *)error
+{
+    return [LYRMessageMock newMessageWithParts:messageParts senderID:self.authenticatedUserID];
+}
+
+- (NSOrderedSet *)executeQuery:(LYRQuery *)query error:(NSError *__autoreleasing *)error
+{
+    
+}
+
+- (NSUInteger)countForQuery:(LYRQuery *)query error:(NSError *__autoreleasing *)error
+{
+    
+}
+
+- (LYRQueryControllerMock *)queryControllerWithQuery:(LYRQueryMock *)query
+{
+    return [LYRQueryControllerMock initWithQuery:query];
+}
+
 
 #pragma mark Public API - Conversation & Message retreiving
 
