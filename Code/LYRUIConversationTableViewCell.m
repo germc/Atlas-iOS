@@ -206,7 +206,7 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
     
     LYRMessage *message = conversation.lastMessage;
     LYRMessagePart *messagePart = [message.parts firstObject];
-    if ([messagePart.MIMEType isEqualToString:@"text/plain"]) {
+    if ([messagePart.MIMEType isEqualToString:LYRUIMIMETypeTextPlain]) {
         self.lastMessageTextView.text = [[NSString alloc] initWithData:messagePart.data encoding:NSUTF8StringEncoding];
     } else if (messagePart.MIMEType == LYRUIMIMETypeImageJPEG) {
         self.lastMessageTextView.text = @"Attachement: Image";
