@@ -176,7 +176,10 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    [self.addressBarController.addressBarView.addressBarTextView becomeFirstResponder];
+
+    if (self.addressBarController && !self.addressBarController.isPermanent) {
+        [self.addressBarController.addressBarView.addressBarTextView becomeFirstResponder];
+    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated
