@@ -112,6 +112,8 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
         // Initialiaze Sender Image
         self.conversationLabel = [[UILabel alloc] init];
         self.conversationLabel.translatesAutoresizingMaskIntoConstraints = NO;
+        self.conversationLabel.font = _conversationLabelFont;
+        self.conversationLabel.textColor = _conversationLabelColor;
         [self.contentView addSubview:self.conversationLabel];
         
         // Initialize Message Text
@@ -119,21 +121,27 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
         self.lastMessageTextView.translatesAutoresizingMaskIntoConstraints = NO;
         self.lastMessageTextView.contentInset = UIEdgeInsetsMake(-10,-4,0,0);
         self.lastMessageTextView.userInteractionEnabled = NO;
+        self.lastMessageTextView.font = _lastMessageTextFont;
+        self.lastMessageTextView.textColor = _lastMessageTextColor;
         [self.contentView addSubview:self.lastMessageTextView];
         
         // Initialize Date Label
         self.dateLabel = [[UILabel alloc] init];
         self.dateLabel.translatesAutoresizingMaskIntoConstraints = NO;
         self.dateLabel.textAlignment= NSTextAlignmentRight;
+        self.dateLabel.font = _dateLabelFont;
+        self.dateLabel.textColor = _dateLabelColor;
         [self.contentView addSubview:self.dateLabel];
         
         self.unreadMessageIndicator = [[UIView alloc] init];
         self.unreadMessageIndicator.layer.cornerRadius = LYRUIUnreadMessageCountLabelSize / 2;
         self.unreadMessageIndicator.clipsToBounds = YES;
         self.unreadMessageIndicator.translatesAutoresizingMaskIntoConstraints = NO;
+        self.unreadMessageIndicator.backgroundColor = _unreadMessageIndicatorBackgroundColor;
         [self.contentView addSubview:self.unreadMessageIndicator];
         
         self.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        self.backgroundColor = _cellBackgroundColor;
         self.cellHorizontalMargin = 15.0f;
         self.imageSizeRatio = 0.0f;
         self.displaysImage = NO;
@@ -147,6 +155,49 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
 - (void)setConversationLabelFont:(UIFont *)conversationLabelFont
 {
     _conversationLabelFont = conversationLabelFont;
+    self.conversationLabel.font = conversationLabelFont;
+}
+
+- (void)setConversationLabelColor:(UIColor *)conversationLabelColor
+{
+    _conversationLabelColor = conversationLabelColor;
+    self.conversationLabel.textColor = conversationLabelColor;
+}
+
+- (void)setLastMessageTextFont:(UIFont *)lastMessageTextFont
+{
+    _lastMessageTextFont = lastMessageTextFont;
+    self.lastMessageTextView.font = lastMessageTextFont;
+}
+
+- (void)setLastMessageTextColor:(UIColor *)lastMessageTextColor
+{
+    _lastMessageTextColor = lastMessageTextColor;
+    self.lastMessageTextView.textColor = lastMessageTextColor;
+}
+
+- (void)setDateLabelFont:(UIFont *)dateLabelFont
+{
+    _dateLabelFont = dateLabelFont;
+    self.dateLabel.font = dateLabelFont;
+}
+
+- (void)setDateLabelColor:(UIColor *)dateLabelColor
+{
+    _dateLabelColor = dateLabelColor;
+    self.dateLabel.textColor = dateLabelColor;
+}
+
+- (void)setUnreadMessageIndicatorBackgroundColor:(UIColor *)unreadMessageIndicatorBackgroundColor
+{
+    _unreadMessageIndicatorBackgroundColor = unreadMessageIndicatorBackgroundColor;
+    self.unreadMessageIndicator.backgroundColor = unreadMessageIndicatorBackgroundColor;
+}
+
+- (void)setCellBackgroundColor:(UIColor *)cellBackgroundColor
+{
+    _cellBackgroundColor = cellBackgroundColor;
+    self.backgroundColor = cellBackgroundColor;
 }
 
 - (void)presentConversation:(LYRConversation *)conversation
@@ -178,7 +229,6 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
 
 - (void)updateWithLastMessageRecipientStatus:(LYRRecipientStatus)recipientStatus
 {
-    self.unreadMessageIndicator.backgroundColor = self.unreadMessageIndicatorBackgroundColor;
     switch (recipientStatus) {
         case LYRRecipientStatusDelivered:
             self.unreadMessageIndicator.alpha = 1.0;
@@ -211,18 +261,6 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
 
 - (void)configureLayoutConstraintsForLabels
 {
-    // Configure per UI Appearance Proxy
-    self.conversationLabel.font = self.conversationLabelFont;
-    self.conversationLabel.textColor = self.conversationLabelColor;
-    
-    self.lastMessageTextView.font = self.lastMessageTextFont;
-    self.lastMessageTextView.textColor = self.lastMessageTextColor;
-    
-    self.dateLabel.font = self.dateLabelFont;
-    self.dateLabel.textColor = self.dateLabelColor;
-    
-    self.backgroundColor = self.cellBackgroundColor;
-    
     [self.conversationLabel sizeToFit];
     [self.dateLabel sizeToFit];
     [self updateConstraintConstants];
