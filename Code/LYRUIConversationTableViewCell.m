@@ -93,7 +93,7 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
 {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
-        //UIAppearance Proxy Defaults
+        // UIAppearance Proxy Defaults
         _conversationLabelFont = LYRUIBoldFont(14);
         _conversationLabelColor = [UIColor blackColor];
         _lastMessageTextFont = LYRUILightFont(14);
@@ -109,7 +109,7 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
         self.conversationImageView.backgroundColor = LYRUIGrayColor();
         [self.contentView addSubview:self.conversationImageView];
         
-        // Initialiaze Sender Image
+        // Initialize Sender Image
         self.conversationLabel = [[UILabel alloc] init];
         self.conversationLabel.translatesAutoresizingMaskIntoConstraints = NO;
         self.conversationLabel.font = _conversationLabelFont;
@@ -119,7 +119,7 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
         // Initialize Message Text
         self.lastMessageTextView = [[UITextView alloc] init];
         self.lastMessageTextView.translatesAutoresizingMaskIntoConstraints = NO;
-        self.lastMessageTextView.contentInset = UIEdgeInsetsMake(-10,-4,0,0);
+        self.lastMessageTextView.contentInset = UIEdgeInsetsMake(-10, -4, 0, 0);
         self.lastMessageTextView.userInteractionEnabled = NO;
         self.lastMessageTextView.font = _lastMessageTextFont;
         self.lastMessageTextView.textColor = _lastMessageTextColor;
@@ -128,7 +128,7 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
         // Initialize Date Label
         self.dateLabel = [[UILabel alloc] init];
         self.dateLabel.translatesAutoresizingMaskIntoConstraints = NO;
-        self.dateLabel.textAlignment= NSTextAlignmentRight;
+        self.dateLabel.textAlignment = NSTextAlignmentRight;
         self.dateLabel.font = _dateLabelFont;
         self.dateLabel.textColor = _dateLabelColor;
         [self.contentView addSubview:self.dateLabel];
@@ -147,7 +147,6 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
         self.displaysImage = NO;
         
         [self setupLayoutConstraints];
-
     }
     return self;
 }
