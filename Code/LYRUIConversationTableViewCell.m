@@ -136,7 +136,7 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
         self.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         self.cellHorizontalMargin = 15.0f;
         self.imageSizeRatio = 0.0f;
-        self.displaysImage = FALSE;
+        self.displaysImage = NO;
         
         [self setupLayoutConstraints];
 
@@ -173,7 +173,7 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
     self.cellHorizontalMargin = 10.0f;
     self.imageSizeRatio = 0.60f;
     self.conversationImageView.image = image;
-    self.displaysImage = TRUE;
+    self.displaysImage = YES;
 }
 
 - (void)updateWithLastMessageRecipientStatus:(LYRRecipientStatus)recipientStatus
