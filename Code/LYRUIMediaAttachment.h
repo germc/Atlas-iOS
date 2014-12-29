@@ -10,7 +10,7 @@
 
 /**
  @abstract The `LYRUIMediaAttachment` class configures the appropriate size
- for an NSTextAttachement to comfortably fit inside of a LYRUIMessageInputToolbar
+ for an NSTextAttachment to comfortably fit inside of a LYRUIMessageInputToolbar
  */
 @interface LYRUIMediaAttachment : NSTextAttachment
 

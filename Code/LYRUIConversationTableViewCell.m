@@ -209,13 +209,13 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
     if ([messagePart.MIMEType isEqualToString:LYRUIMIMETypeTextPlain]) {
         self.lastMessageTextView.text = [[NSString alloc] initWithData:messagePart.data encoding:NSUTF8StringEncoding];
     } else if ([messagePart.MIMEType isEqualToString:LYRUIMIMETypeImageJPEG]) {
-        self.lastMessageTextView.text = @"Attachement: Image";
+        self.lastMessageTextView.text = @"Attachment: Image";
     } else if ([messagePart.MIMEType isEqualToString:LYRUIMIMETypeImagePNG]) {
-        self.lastMessageTextView.text = @"Attachement: Image";
+        self.lastMessageTextView.text = @"Attachment: Image";
     } else if ([messagePart.MIMEType isEqualToString:LYRUIMIMETypeLocation]) {
-        self.lastMessageTextView.text = @"Attachement: Location";
+        self.lastMessageTextView.text = @"Attachment: Location";
     } else {
-        self.lastMessageTextView.text = @"Attachement: Image";
+        self.lastMessageTextView.text = @"Attachment: Image";
     }
 }
 
