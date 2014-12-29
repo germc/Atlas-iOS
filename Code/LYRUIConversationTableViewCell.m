@@ -85,9 +85,9 @@ static NSDateFormatter *LYRUIShortTimeFormatter()
 @implementation LYRUIConversationTableViewCell
 
 // Cell Constants
-static CGFloat const LSCellVerticalMargin = 12.0f;
-static CGFloat const LSConversationLabelRightPadding = -6.0f;
-static CGFloat const LSUnreadMessageCountLabelSize = 14.0f;
+static CGFloat const LYRUICellVerticalMargin = 12.0f;
+static CGFloat const LYRUIConversationLabelRightPadding = -6.0f;
+static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
@@ -128,7 +128,7 @@ static CGFloat const LSUnreadMessageCountLabelSize = 14.0f;
         [self.contentView addSubview:self.dateLabel];
         
         self.unreadMessageIndicator = [[UIView alloc] init];
-        self.unreadMessageIndicator.layer.cornerRadius = LSUnreadMessageCountLabelSize / 2;
+        self.unreadMessageIndicator.layer.cornerRadius = LYRUIUnreadMessageCountLabelSize / 2;
         self.unreadMessageIndicator.clipsToBounds = YES;
         self.unreadMessageIndicator.translatesAutoresizingMaskIntoConstraints = NO;
         [self.contentView addSubview:self.unreadMessageIndicator];
@@ -300,7 +300,7 @@ static CGFloat const LSUnreadMessageCountLabelSize = 14.0f;
                                                                     toItem:self.dateLabel
                                                                  attribute:NSLayoutAttributeLeft
                                                                 multiplier:1.0
-                                                                  constant:LSConversationLabelRightPadding];
+                                                                  constant:LYRUIConversationLabelRightPadding];
     // Top Margin
     self.conversationLabelTopConstraint = [NSLayoutConstraint constraintWithItem:self.conversationLabel
                                                                  attribute:NSLayoutAttributeTop
@@ -308,7 +308,7 @@ static CGFloat const LSUnreadMessageCountLabelSize = 14.0f;
                                                                     toItem:self.contentView
                                                                  attribute:NSLayoutAttributeTop
                                                                 multiplier:1.0
-                                                                  constant:LSCellVerticalMargin];
+                                                                  constant:LYRUICellVerticalMargin];
     // Height
     self.conversationLabelHeightConstraint = [NSLayoutConstraint constraintWithItem:self.conversationLabel
                                                                  attribute:NSLayoutAttributeHeight
@@ -342,7 +342,7 @@ static CGFloat const LSUnreadMessageCountLabelSize = 14.0f;
                                                                     toItem:self.contentView
                                                                  attribute:NSLayoutAttributeTop
                                                                 multiplier:1.0
-                                                                 constant:LSCellVerticalMargin];
+                                                                 constant:LYRUICellVerticalMargin];
 
     //**********Message Text Constraints**********//
     //Left Margin
@@ -386,7 +386,7 @@ static CGFloat const LSUnreadMessageCountLabelSize = 14.0f;
                                                                          toItem:nil
                                                                       attribute:NSLayoutAttributeNotAnAttribute
                                                                      multiplier:1.0
-                                                                       constant:LSUnreadMessageCountLabelSize];
+                                                                       constant:LYRUIUnreadMessageCountLabelSize];
     // Height
     self.unreadMessageIndicatorHeight = [NSLayoutConstraint constraintWithItem:self.unreadMessageIndicator
                                                                        attribute:NSLayoutAttributeHeight
@@ -394,7 +394,7 @@ static CGFloat const LSUnreadMessageCountLabelSize = 14.0f;
                                                                           toItem:nil
                                                                        attribute:NSLayoutAttributeNotAnAttribute
                                                                       multiplier:1.0
-                                                                        constant:LSUnreadMessageCountLabelSize];
+                                                                        constant:LYRUIUnreadMessageCountLabelSize];
     // Top Margin
     self.unreadMessageIndicatorTop = [NSLayoutConstraint constraintWithItem:self.unreadMessageIndicator
                                                                    attribute:NSLayoutAttributeRight
