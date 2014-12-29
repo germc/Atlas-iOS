@@ -40,36 +40,28 @@
 @protocol LYRUIConversationListViewControllerDataSource <NSObject>
 
 /**
- @abstract Asks the Data Source for a label to display for a given set of participants in a conversation.
- @param conversationListViewController The `LYRConversationListViewController` in which the label will appear.
- @param conversation The `LYRConversation` object
- @return The label to be displayed for a given conversation in the conversation list.
+ @abstract Asks the data source for a string to display for a given conversation.
+ @param conversationListViewController The `LYRConversationListViewController` in which the string will appear.
+ @param conversation The `LYRConversation` object.
+ @return The string to be displayed for a given conversation in the conversation list.
  */
 - (NSString *)conversationListViewController:(LYRUIConversationListViewController *)conversationListViewController labelForConversation:(LYRConversation *)conversation;
 
 @optional
-/**
- @abstract Asks the delegate for an image to display for a given set of participants in a conversation.
- @param conversationListViewController The `LYRConversationListViewController` in which the image will appear.
- @param conversation The `LYRConversation` object
- @return The conversation image to be displayed for a given conversation in the conversation list
- */
-- (UIImage *)conversationListViewController:(LYRUIConversationListViewController *)conversationListViewController imageForConversation:(LYRConversation *)conversation;
 
 /**
- @abstract Informs the data source that a search has requested with the given search string.
- @param conversationListViewController The `LYRConversationListViewController` in which the search did occur.
- @param searchString The search string that was just used for search.
- @param completion The completion block that should be called when the results are fetched from the search.
- @discussion After the completion block is called, the tableView will reload with the given set of `LYRConversation` objects.
+ @abstract Asks the delegate for an image to display for a given conversation.
+ @param conversationListViewController The `LYRConversationListViewController` in which the image will appear.
+ @param conversation The `LYRConversation` object.
+ @return The conversation image to be displayed for a given conversation in the conversation list.
  */
-- (void)conversationListViewController:(LYRUIConversationListViewController *)conversationListViewController didSearchWithString:(NSString *)searchString completion:(void (^)(NSSet *conversations))completion;
+- (UIImage *)conversationListViewController:(LYRUIConversationListViewController *)conversationListViewController imageForConversation:(LYRConversation *)conversation;
 
 @end
 
 /**
  @abstract The `LYRUIConversationListViewController` class presents an interface which provides
- for the display, selection, and search of Layer conversations.
+ for the display and selection of Layer conversations.
  */
 @interface LYRUIConversationListViewController : UITableViewController
 
@@ -85,14 +77,13 @@
 + (instancetype)conversationListViewControllerWithLayerClient:(LYRClient *)layerClient;
 
 /**
- @abstract The `LYRUIConversationViewControllerDelegate` class informs the receiver to specific events that occur
+ @abstract The object that is informed when specific events occur
  within the `LYRConversationListViewController`.
  */
 @property (nonatomic, weak) id<LYRUIConversationListViewControllerDelegate> delegate;
 
 /**
- @abstract The `LYRUIConversationListViewControllerDataSource` class requests information to be displayed 
- in the `LYRConversationListViewController`.
+ @abstract The object provides information to be displayed in the `LYRConversationListViewController`.
  */
 @property (nonatomic, weak) id<LYRUIConversationListViewControllerDataSource> dataSource;
 
@@ -102,26 +93,26 @@
 
 /**
  @abstract The `UITableViewCell` subclass for customizing the display of the conversations.
- @disucssion If you wish to provide you own custom class, your class must conform to the `LYRUIConversationPresenting` protocol.
- @default `LYRUIConversationTableViewCell`.
+ @discussion If you wish to provide your own custom class, your class must conform to the `LYRUIConversationPresenting` protocol.
+ @default `LYRUIConversationTableViewCell`
  @raises NSInternalInconsistencyException Raised if the value is mutated after the receiver has been presented.
  */
 @property (nonatomic) Class<LYRUIConversationPresenting> cellClass;
 
 /**
- @abstract Informs the receiver if is should display an image representing a conversation.
- @discussion When `YES`, an image will be displayed on the left side of every conversation cell.
+ @abstract Informs the receiver if it should display an image representing a conversation.
+ @discussion When `YES`, an image will be displayed for every conversation cell.
  Typically this image will be an avatar image representing the user or group of users.
- @default `YES`.
+ @default `YES`
  @raises NSInternalInconsistencyException Raised if the value is mutated after the receiver has been presented.
  */
 @property (nonatomic, assign) BOOL displaysConversationImage;
 
 /**
- @abstract A Boolean value that determines if editing is enabled.
+ @abstract A boolean value that determines if editing is enabled.
  @discussion When `YES`, an Edit button item will be displayed on the left hand side of the receiver's navigation 
- item which toggles the editing state of the receiver.
- @default `YES`.
+ item which toggles the editing state of the receiver and swiping to delete cells will be enabled.
+ @default `YES`
  @raises NSInternalInconsistencyException Raised if the value is mutated after the receiver has been presented.
  */
 @property (nonatomic, assign) BOOL allowsEditing;
@@ -138,8 +129,8 @@
 ///---------------------------------------
 
 /**
- @abstract The `LYRClient` object used to initailize the controller
+ @abstract The `LYRClient` object used to initialize the controller.
  */
-@property (nonatomic) LYRClient *layerClient;
+@property (nonatomic, readonly) LYRClient *layerClient;
 
 @end
