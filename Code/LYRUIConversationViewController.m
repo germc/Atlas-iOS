@@ -165,7 +165,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 {
     [super viewWillAppear:animated];
     
-    if (self.conversation) {
+    if (self.conversation && !self.queryController) {
         [self fetchLayerMessages];
     }
 
@@ -180,13 +180,6 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     if (self.addressBarController && !self.addressBarController.isPermanent) {
         [self.addressBarController.addressBarView.addressBarTextView becomeFirstResponder];
     }
-}
-
-- (void)viewWillDisappear:(BOOL)animated
-{
-    [super viewWillDisappear:animated];
-    
-    self.queryController = nil;
 }
 
 - (void)viewDidLayoutSubviews
@@ -259,6 +252,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     if (conversation) {
         [self fetchLayerMessages];
     } else {
+        self.queryController.delegate = nil;
         self.queryController = nil;
         [self.collectionView reloadData];
     }
