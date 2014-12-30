@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "LayerKitMock.h"
+#import "LYRUIMessagingUtilities.h"
 
 @interface LYRMessagePartMock : NSObject
 

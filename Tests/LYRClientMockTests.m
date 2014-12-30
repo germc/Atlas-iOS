@@ -72,6 +72,7 @@
     [conversation sendMessage:message2 error:nil];
     
     LYRQuery *query = [LYRQuery queryWithClass:[LYRMessage class]];
+    query.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"index" ascending:YES]];
     query.predicate = [LYRPredicate predicateWithProperty:@"conversation" operator:LYRPredicateOperatorIsEqualTo value:conversation];
     NSOrderedSet *messages = [client executeQuery:query error:nil];
     expect(messages.count).to.equal(2);

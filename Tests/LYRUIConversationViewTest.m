@@ -26,38 +26,39 @@
 - (void)setUp
 {
     [super setUp];
-    
-    [[LYRMockContentStore sharedStore] resetContentStore];
-    [[UIApplication sharedApplication] delegate].window.rootViewController = nil;
-    
+
     LYRUserMock *mockUser = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameRussell];
     LYRClientMock *layerClient = [LYRClientMock layerClientMockWithAuthenticatedUserID:mockUser.participantIdentifier];
     self.testInterface = [LYRUITestInterface testIntefaceWithLayerClient:layerClient];
     
     LYRUserMock *mockUser1 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameMarshawn];
     self.conversation = [self.testInterface conversationWithParticipants:[NSSet setWithObject:mockUser1.participantIdentifier] lastMessageText:nil];
-    self.viewController = [LYRUISampleConversationViewController conversationViewControllerWithConversation:(LYRConversation *)self.conversation layerClient:(LYRClient *)self.testInterface.layerClient];
-    [self setRootViewController:self.viewController];
 }
 
 - (void)tearDown
 {
-    self.conversation = nil;
-    self.viewController = nil;
-    [[UIApplication sharedApplication] delegate].window.rootViewController = nil;
     [[LYRMockContentStore sharedStore] resetContentStore];
+    self.viewController.queryController = nil;
+    self.testInterface = nil;
+    
     [super tearDown];
 }
 
 //Send a new message a verify it appears in the view.
 - (void)testToVerifySentMessageAppearsInConversationView
 {
+    self.viewController = [LYRUISampleConversationViewController conversationViewControllerWithConversation:(LYRConversation *)self.conversation layerClient:(LYRClient *)self.testInterface.layerClient];
+    [self setRootViewController:self.viewController];
+    
     [self sendMessageWithText:@"This is a test"];
 }
 
 //Synchronize a new message and verify it appears in the view.
 - (void)testToVerifyRecievedMessageAppearsInConversationView
 {
+    self.viewController = [LYRUISampleConversationViewController conversationViewControllerWithConversation:(LYRConversation *)self.conversation layerClient:(LYRClient *)self.testInterface.layerClient];
+    [self setRootViewController:self.viewController];
+    
     LYRMessagePart *part = [LYRMessagePart messagePartWithText:@"Hey Dude"];
     LYRMessageMock *message = [LYRMessageMock newMessageWithParts:@[part] senderID:[LYRUserMock userWithMockUserName:LYRClientMockFactoryNameMarshawn].participantIdentifier];
     [self.conversation sendMessage:message error:nil];
@@ -68,12 +69,18 @@
 //Add an image to a message and verify that it sends.
 - (void)testToVerifySentImageAppearsInConversationView
 {
+    self.viewController = [LYRUISampleConversationViewController conversationViewControllerWithConversation:(LYRConversation *)self.conversation layerClient:(LYRClient *)self.testInterface.layerClient];
+    [self setRootViewController:self.viewController];
+    
     [self sendPhotoMessage];
 }
 
 //- (void)conversationViewController:(LYRUIConversationViewController *)viewController didSendMessage:(LYRMessage *)message;
 - (void)testToVerifyDelegateIsNotifiedOfMessageSend
 {
+    self.viewController = [LYRUISampleConversationViewController conversationViewControllerWithConversation:(LYRConversation *)self.conversation layerClient:(LYRClient *)self.testInterface.layerClient];
+    [self setRootViewController:self.viewController];
+    
     id delegateMock = OCMProtocolMock(@protocol(LYRUIConversationViewControllerDelegate));
     self.viewController.delegate = delegateMock;
     
@@ -88,6 +95,9 @@
 //- (void)conversationViewController:(LYRUIConversationViewController *)viewController didSelectMessage:(LYRMessage *)message;
 - (void)testToVerifyDelegateIsNotifiedOfMessageSelection
 {
+    self.viewController = [LYRUISampleConversationViewController conversationViewControllerWithConversation:(LYRConversation *)self.conversation layerClient:(LYRClient *)self.testInterface.layerClient];
+    [self setRootViewController:self.viewController];
+    
     id delegateMock = OCMProtocolMock(@protocol(LYRUIConversationViewControllerDelegate));
     self.viewController.delegate = delegateMock;
     
@@ -102,12 +112,11 @@
 
 - (void)testToVerityControllerDisplaysCorrectDataFromTheDataSource
 {
+    self.viewController = [LYRUISampleConversationViewController conversationViewControllerWithConversation:(LYRConversation *)self.conversation layerClient:(LYRClient *)self.testInterface.layerClient];
+    [self setRootViewController:self.viewController];
+    
     id delegateMock = OCMProtocolMock(@protocol(LYRUIConversationViewControllerDataSource));
     self.viewController.dataSource = delegateMock;
-    //    [[[delegateMock expect] andDo:^(NSInvocation *invocation) {
-    //        LYRUserMock *mock = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameBobby];
-    //        [invocation setReturnValue:(void *)mock];
-    //    }] conversationViewController:[OCMArg any] participantForIdentifier:[OCMArg any]];
     
     [[[delegateMock expect] andDo:^(NSInvocation *invocation) {
         NSAttributedString *string = [[NSAttributedString alloc] initWithString:@"Gift"];

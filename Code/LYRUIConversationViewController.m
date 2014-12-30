@@ -227,6 +227,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 
 - (void)dealloc
 {
+    self.queryController.delegate = nil;
     self.collectionView.delegate = nil;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }

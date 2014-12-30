@@ -16,6 +16,7 @@
 @interface LYRUIConversationListTest : XCTestCase
 
 @property (nonatomic) LYRUITestInterface *testInterface;
+@property (nonatomic) LYRUIConversationListViewController *viewController;
 
 @end
 
@@ -24,7 +25,7 @@
 - (void)setUp
 {
     [super setUp];
-    [[LYRMockContentStore sharedStore] resetContentStore];
+
     LYRUserMock *mockUser = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameRussell];
     LYRClientMock *layerClient = [LYRClientMock layerClientMockWithAuthenticatedUserID:mockUser.participantIdentifier];
     self.testInterface = [LYRUITestInterface testIntefaceWithLayerClient:layerClient];
@@ -33,16 +34,17 @@
 - (void)tearDown
 {
     [[LYRMockContentStore sharedStore] resetContentStore];
-    [[UIApplication sharedApplication] delegate].window.rootViewController = nil;
+    self.viewController.queryController = nil;
     self.testInterface = nil;
+   
     [super tearDown];
 }
 
 - (void)testToVerifyConversationListBaseUI
 {
-    LYRUISampleConversationListViewController *controller = [LYRUISampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];
-    controller.allowsEditing = YES;
-    [self setRootViewController:controller];
+    self.viewController = [LYRUISampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];
+    self.viewController.allowsEditing = YES;
+    [self setRootViewController:self.viewController];
 
     [tester waitForViewWithAccessibilityLabel:@"Messages"];
     [tester waitForViewWithAccessibilityLabel:@"Edit Button"];
@@ -51,8 +53,8 @@
 //Load the list and verify that all conversations returned by conversationForIdentifiers: is presented in the list.
 - (void)testToVerifyConversationListDisplaysAllConversationsInLayer
 {
-    LYRUISampleConversationListViewController *controller = [LYRUISampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];
-    [self setRootViewController:controller];
+    self.viewController = [LYRUISampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];
+    [self setRootViewController:self.viewController];
 
     NSString *message1 = @"Message1";
     LYRUserMock *mockUser1 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameMarshawn];
@@ -74,8 +76,8 @@
 //Test swipe to delete for deleting a conversation. Verify the conversation is deleted from the table and from the Layer client.
 - (void)testToVerifyGlobalDeletionButtonFunctionality
 {
-    LYRUISampleConversationListViewController *controller = [LYRUISampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];
-    [self setRootViewController:controller];
+    self.viewController = [LYRUISampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];
+    [self setRootViewController:self.viewController];
 
     NSString *message1 = @"Message1";
     LYRUserMock *mockUser1 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameMarshawn];
@@ -89,8 +91,8 @@
 //Test swipe to delete for deleting a conversation. Verify the conversation is deleted from the table and from the Layer client.
 - (void)testToVerifyLocalDeletionButtonFunctionality
 {
-    LYRUISampleConversationListViewController *controller = [LYRUISampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];
-    [self setRootViewController:controller];
+    self.viewController = [LYRUISampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];
+    [self setRootViewController:self.viewController];
     
     NSString *message1 = @"Message1";
     LYRUserMock *mockUser1 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameMarshawn];
@@ -104,8 +106,8 @@
 //Test engaging editing mode and deleting several conversations at once. Verify that all conversations selected are deleted from the table and from the Layer client.
 - (void)testToVerifyEditingModeAndMultipleConversationDeletionFunctionality
 {
-    LYRUISampleConversationListViewController *controller = [LYRUISampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];
-    [self setRootViewController:controller];
+    self.viewController = [LYRUISampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];
+    [self setRootViewController:self.viewController];
     
     NSString *message1 = @"Message1";
     LYRUserMock *mockUser1 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameMarshawn];
@@ -138,9 +140,9 @@
 //Disable editing and verify that the controller does not permit the user to attempt to edit or engage swipe to delete.
 - (void)testToVerifyDisablingEditModeDoesNotAllowUserToDeleteConversations
 {
-    LYRUISampleConversationListViewController *controller = [LYRUISampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];
-    [controller setAllowsEditing:NO];
-    [self setRootViewController:controller];
+    self.viewController = [LYRUISampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];
+    [self.viewController setAllowsEditing:NO];
+    [self setRootViewController:self.viewController];
     
     NSString *message1 = @"Message1";
     LYRUserMock *mockUser1 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameMarshawn];
@@ -155,8 +157,8 @@
 //Customize the fonts and colors using UIAppearance and verify that the configuration is respected.
 - (void)testToVerifyColorAndFontChangeFunctionality
 {
-    LYRUISampleConversationListViewController *controller = [LYRUISampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];
-    [self setRootViewController:controller];
+    self.viewController = [LYRUISampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];
+    [self setRootViewController:self.viewController];
 
     UIFont *testFont = [UIFont systemFontOfSize:20];
     UIColor *testColor = [UIColor redColor];
@@ -180,9 +182,9 @@
 //Customize the row height and ensure that it is respected.
 - (void)testToVerifyCustomRowHeightFunctionality
 {
-    LYRUISampleConversationListViewController *controller = [LYRUISampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];
-    [controller setRowHeight:100];
-    [self setRootViewController:controller];
+    self.viewController = [LYRUISampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];
+    [self.viewController setRowHeight:100];
+    [self setRootViewController:self.viewController];
 
     NSString *message1 = @"Message1";
     LYRUserMock *mockUser1 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameMarshawn];
@@ -199,9 +201,9 @@
 //Customize the cell class and ensure that the correct cell is used to render the table.
 -(void)testToVerifyCustomCellClassFunctionality
 {
-    LYRUISampleConversationListViewController *controller = [LYRUISampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];
-    [controller setCellClass:[LYRUITestConversationCell class]];
-    [self setRootViewController:controller];
+    self.viewController = [LYRUISampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];
+    [self.viewController setCellClass:[LYRUITestConversationCell class]];
+    [self setRootViewController:self.viewController];
     
     NSString *message1 = @"Message1";
     LYRUserMock *mockUser1 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameMarshawn];
@@ -218,40 +220,40 @@
 //Verify that attempting to provide a cell class that does not conform to LYRUIConversationPresenting results in a runtime exception.
 - (void)testToVerifyCustomCellClassNotConformingToProtocolRaisesException
 {
-    LYRUISampleConversationListViewController *controller = [LYRUISampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];
-    [self setRootViewController:controller];
-    expect(^{ [controller setCellClass:[UITableViewCell class]]; }).to.raise(NSInternalInconsistencyException);
+    self.viewController = [LYRUISampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];
+    [self setRootViewController:self.viewController];
+    expect(^{ [self.viewController setCellClass:[UITableViewCell class]]; }).to.raise(NSInternalInconsistencyException);
 }
 
 //Verify that attempting to change the cell class after the table is loaded results in a runtime error.
 - (void)testToVerifyChangingCellClassAfterViewLoadRaiseException
 {
-    LYRUISampleConversationListViewController *controller = [LYRUISampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];
-    [self setRootViewController:controller];
-    expect(^{ [controller setCellClass:[LYRUITestConversationCell class]]; }).to.raise(NSInternalInconsistencyException);
+    self.viewController = [LYRUISampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];
+    [self setRootViewController:self.viewController];
+    expect(^{ [self.viewController setCellClass:[LYRUITestConversationCell class]]; }).to.raise(NSInternalInconsistencyException);
 }
 
 //Verify that attempting to change the cell class after the table is loaded results in a runtime error.
 - (void)testToVerifyChangingCellHeighAfterViewLoadRaiseException
 {
-    LYRUISampleConversationListViewController *controller = [LYRUISampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];
-    [self setRootViewController:controller];
-    expect(^{ [controller setRowHeight:40]; }).to.raise(NSInternalInconsistencyException);
+    self.viewController = [LYRUISampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];
+    [self setRootViewController:self.viewController];
+    expect(^{ [self.viewController setRowHeight:40]; }).to.raise(NSInternalInconsistencyException);
 }
 
 //Verify that attempting to change the cell class after the table is loaded results in a runtime error.
 - (void)testToVerifyChangingEditingSettingAfterViewLoadRaiseException
 {
-    LYRUISampleConversationListViewController *controller = [LYRUISampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];
-    [self setRootViewController:controller];
-    expect(^{ [controller setAllowsEditing:YES]; }).to.raise(NSInternalInconsistencyException);
+    self.viewController = [LYRUISampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];
+    [self setRootViewController:self.viewController];
+    expect(^{ [self.viewController setAllowsEditing:YES]; }).to.raise(NSInternalInconsistencyException);
 }
 
 //Synchronize a new conversation and verify that it live updates into the conversation list.
 - (void)testToVerifyCreatingANewConversationLiveUpdatesConversationList
 {
-    LYRUISampleConversationListViewController *controller = [LYRUISampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];
-    [self setRootViewController:controller];
+    self.viewController = [LYRUISampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];
+    [self setRootViewController:self.viewController];
     
     NSString *message1 = @"Message1";
     LYRUserMock *mockUser1 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameMarshawn];
@@ -278,9 +280,10 @@
     }
 }
 
-- (void)setRootViewController:(UIViewController *)controller
+- (void)setRootViewController:(UITableViewController *)controller
 {
     [self.testInterface setRootViewController:controller];
+    expect([controller.tableView numberOfRowsInSection:0]).to.equal(0);
     [tester waitForTimeInterval:1];
 }
 

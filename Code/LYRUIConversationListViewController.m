@@ -14,7 +14,6 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"LYRUIConversatio
 @interface LYRUIConversationListViewController () <UIActionSheetDelegate, LYRQueryControllerDelegate>
 
 @property (nonatomic) LYRClient *layerClient;
-@property (nonatomic) LYRQueryController *queryController;
 @property (nonatomic) BOOL hasAppeared;
 @property (nonatomic) LYRConversation *conversationToDelete;
 
@@ -73,6 +72,11 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"LYRUIConversatio
         }
         self.hasAppeared = YES;
     }
+}
+
+- (void)dealloc
+{
+    self.queryController = nil;
 }
 
 #pragma mark - Public Setters

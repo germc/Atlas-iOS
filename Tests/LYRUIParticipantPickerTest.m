@@ -19,7 +19,7 @@
 @interface LYRUIParticipantPickerTest : XCTestCase
 
 @property (nonatomic) LYRUITestInterface *testInterface;
-@property (nonatomic) LYRUIParticipantPickerController *controller;
+@property (nonatomic) LYRUIParticipantPickerController *viewController;
 @property (nonatomic) LYRUITestParticipantDataSource *dataSource;
 
 @end
@@ -29,25 +29,25 @@
 - (void)setUp
 {
     [super setUp];
-    [[LYRMockContentStore sharedStore] resetContentStore];
+
     LYRUserMock *mockUser = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameRussell];
     LYRClientMock *layerClient = [LYRClientMock layerClientMockWithAuthenticatedUserID:mockUser.participantIdentifier];
     self.testInterface = [LYRUITestInterface testIntefaceWithLayerClient:layerClient];
     
     NSSet *participants = [LYRUserMock allMockParticipants];
     self.dataSource = [LYRUITestParticipantDataSource dataSourceWithParticipants:participants];
-    self.controller = [LYRUIParticipantPickerController participantPickerWithDataSource:self.dataSource
+    self.viewController = [LYRUIParticipantPickerController participantPickerWithDataSource:self.dataSource
                                                                                sortType:LYRUIParticipantPickerSortTypeFirstName];
-    [self.controller setCellClass:[LYRUIParticipantTableViewCell class]];
+    [self.viewController setCellClass:[LYRUIParticipantTableViewCell class]];
+    [[LYRUIParticipantTableViewCell appearance] setTitleFont:[UIFont systemFontOfSize:14]];
+    [[LYRUIParticipantTableViewCell appearance] setTitleColor:[UIColor blackColor]];
 }
 
 - (void)tearDown
 {
-    self.dataSource = nil;
-    self.controller = nil;
-    self.testInterface = nil;
     [[LYRMockContentStore sharedStore] resetContentStore];
-    [[UIApplication sharedApplication] delegate].window.rootViewController = nil;
+    self.testInterface = nil;
+    self.viewController = nil;
     [super tearDown];
 }
 
@@ -98,7 +98,7 @@
 //Verify that the cell can be overridden and a new UI presented.
 - (void)testToVerifyCustomCellClassFunctionality
 {
-    self.controller.cellClass = [LYRUITestParticipantCell class];
+    self.viewController.cellClass = [LYRUITestParticipantCell class];
     [self setRootViewController];
     
     LYRUserMock *mock = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameBobby];
@@ -110,7 +110,7 @@
 - (void)testToVerifyCustomRowHeightFunctionality
 {
     LYRUserMock *mock = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameBobby];
-    self.controller.rowHeight = 80;
+    self.viewController.rowHeight = 80;
     [self setRootViewController];
     expect([tester waitForViewWithAccessibilityLabel:mock.fullName].frame.size.height).to.equal(80);
 }
@@ -126,7 +126,7 @@
     expect(cell.nameLabel.text).to.equal(firstUser.fullName);
     
     NSArray *sortedParticipantsLast = [[participants allObjects] sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"lastName" ascending:YES]]];
-    self.controller = [LYRUIParticipantPickerController participantPickerWithDataSource:self.dataSource
+    self.viewController = [LYRUIParticipantPickerController participantPickerWithDataSource:self.dataSource
                                                                                sortType:LYRUIParticipantPickerSortTypeLastName];
     [self setRootViewController];
     firstUser = (LYRUserMock *)[sortedParticipantsLast firstObject];
@@ -139,21 +139,21 @@
 - (void)testToVerifyChangingCellClassAfterViewLoadRaiseException
 {
     [self setRootViewController];
-    expect(^{ [self.controller setCellClass:[UITableView class]]; }).to.raise(NSInternalInconsistencyException);
+    expect(^{ [self.viewController setCellClass:[UITableView class]]; }).to.raise(NSInternalInconsistencyException);
 }
 
 //Test that attempting to change the row height after the view is loaded results in a runtime error.
 - (void)testToVerifyChangingRowHeightAfterViewLoadRaiseException
 {
     [self setRootViewController];
-    expect(^{ [self.controller setRowHeight:80]; }).to.raise(NSInternalInconsistencyException);
+    expect(^{ [self.viewController setRowHeight:80]; }).to.raise(NSInternalInconsistencyException);
 }
 
 - (void)testToVerifyParticipantPickerDelegateFunctionalityForCancelButton
 {
     [self setRootViewController];
     id delegateMock = OCMProtocolMock(@protocol(LYRUIParticipantPickerControllerDelegate));
-    self.controller.participantPickerDelegate = delegateMock;
+    self.viewController.participantPickerDelegate = delegateMock;
     [self setRootViewController];
     [[[delegateMock expect] andDo:^(NSInvocation *invocation) {
         //
@@ -167,7 +167,7 @@
 {
     [self setRootViewController];
     id delegateMock = OCMProtocolMock(@protocol(LYRUIParticipantPickerControllerDelegate));
-    self.controller.participantPickerDelegate = delegateMock;
+    self.viewController.participantPickerDelegate = delegateMock;
     [[[delegateMock expect] andDo:^(NSInvocation *invocation) {
 
     }] participantPickerController:[OCMArg any] didSelectParticipant:[OCMArg any]];
@@ -176,13 +176,8 @@
     [delegateMock verify];
 }
 
-- (void)testToVerifyParticipantPickerDataSourceFunctionality
-{
-    
-}
-
 - (void)setRootViewController
 {
-    [self.testInterface pushViewController:self.controller];
+    [self.testInterface pushViewController:self.viewController];
 }
 @end

@@ -28,15 +28,13 @@ static NSString *const LSCameraButtonLabel = @"Camera Button";
 - (void)setUp
 {
     [super setUp];
-    [[UIApplication sharedApplication] delegate].window.rootViewController = nil;
-    [[LYRMockContentStore sharedStore] resetContentStore];
+
     LYRUserMock *mockUser = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameRussell];
     LYRClientMock *layerClient = [LYRClientMock layerClientMockWithAuthenticatedUserID:mockUser.participantIdentifier];
     self.testInterface = [LYRUITestInterface testIntefaceWithLayerClient:layerClient];
     
-    NSString *message1 = @"Message1";
     LYRUserMock *mockUser1 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameMarshawn];
-    LYRConversationMock *conversation1 = [self.testInterface conversationWithParticipants:[NSSet setWithObject:mockUser1.participantIdentifier] lastMessageText:message1];
+    LYRConversationMock *conversation1 = [self.testInterface conversationWithParticipants:[NSSet setWithObject:mockUser1.participantIdentifier] lastMessageText:@"Message1"];
     self.viewController = [LYRUISampleConversationViewController conversationViewControllerWithConversation:(LYRConversation *)conversation1 layerClient:(LYRClient *)self.testInterface.layerClient];
     [self setRootViewController:self.viewController];
 }
@@ -44,8 +42,9 @@ static NSString *const LSCameraButtonLabel = @"Camera Button";
 - (void)tearDown
 {
     [[LYRMockContentStore sharedStore] resetContentStore];
-    [[UIApplication sharedApplication] delegate].window.rootViewController = nil;
+    self.viewController.queryController = nil;
     self.testInterface = nil;
+    
     [super tearDown];
 }
 

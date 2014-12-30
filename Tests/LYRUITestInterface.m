@@ -43,11 +43,6 @@
 
 - (NSString *)conversationLabelForConversation:(LYRConversationMock *)conversation
 {
-
-    //    if ([conversation.metadata valueForKey:LYRUIConversationNameTag]) {
-    //        return [conversation.metadata valueForKey:LYRUIConversationNameTag];
-    //    }
-    
     if (!self.layerClient.authenticatedUserID) return @"Not auth'd";
     NSMutableSet *participantIdentifiers = [conversation.participants mutableCopy];
     [participantIdentifiers minusSet:[NSSet setWithObject:self.layerClient.authenticatedUserID]];

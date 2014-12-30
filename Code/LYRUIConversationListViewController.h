@@ -91,6 +91,8 @@
 /// @name Configuration
 ///----------------------------------------
 
+@property (nonatomic) LYRQueryController *queryController;
+
 /**
  @abstract The `UITableViewCell` subclass for customizing the display of the conversations.
  @discussion If you wish to provide your own custom class, your class must conform to the `LYRUIConversationPresenting` protocol.
