@@ -107,7 +107,6 @@ static CGFloat const LYRUIButtonHeight = 28;
     frame.origin.y -= frame.size.height - CGRectGetHeight(self.frame);
  
     leftButtonFrame.origin.y = CGRectGetHeight(frame) - CGRectGetHeight(leftButtonFrame) - LYRUIVerticalButtonMargin;
-
     rightButtonFrame.origin.y = CGRectGetHeight(frame) - CGRectGetHeight(rightButtonFrame) - LYRUIVerticalButtonMargin;
 
     self.leftAccessoryButton.frame = leftButtonFrame;

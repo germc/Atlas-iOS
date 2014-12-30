@@ -176,6 +176,11 @@
 ///---------------------------------------
 
 /**
+ @abstract The `UICollectionView` for the controller.
+ */
+@property (nonatomic) UICollectionView *collectionView;
+
+/**
  @abstract The `LYRClient` object used to initailize the controller.
  */
 @property (nonatomic) LYRClient *layerClient;
@@ -186,6 +191,11 @@
 @property (nonatomic) LYRConversation *conversation;
 
 /**
+ @abstract The `LYRQueryController` that manages messaging content displayed in the controller.
+ */
+@property (nonatomic) LYRQueryController *queryController;
+
+/**
  @abstract The `LYRUIAddressBarViewController` displayed for addressing new conversations.
  */
 @property (nonatomic) LYRUIAddressBarViewController *addressBarController;
@@ -194,16 +204,6 @@
  @abstract The `LYRUIMessageInputToolbar` displayed for user input.
  */
 @property (nonatomic) LYRUIMessageInputToolbar *messageInputToolbar;
-
-/**
- @abstract The `UICollectionView` for the controller.
- */
-@property (nonatomic) UICollectionView *collectionView;
-
-/**
- @abstract The `LYRQueryController` that manages messaging content displayed in the controller.
- */
-@property (nonatomic) LYRQueryController *queryController;
 
 /**
  @abstract Informs the receiver if it should display a `LYRUIAddressBarController`. If yes, your application must implement

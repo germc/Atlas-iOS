@@ -94,7 +94,6 @@ NSString *const LYRMockUserIDDoug = @"0000000007";
                   [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameRichard],
                   [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameDoug],
             nil];
-    
 }
 
 + (NSSet *)participantsForIdentifiers:(NSSet *)identifiers

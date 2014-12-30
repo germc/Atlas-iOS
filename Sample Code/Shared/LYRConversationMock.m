@@ -53,7 +53,7 @@
         self.createdAt = [NSDate date];
         [[LYRMockContentStore sharedStore] insertConversation:self];
     }
-    [[LYRMockContentStore sharedStore] broadCastChanges];
+    [[LYRMockContentStore sharedStore] broadcastChanges];
     return YES;
 }
 
@@ -84,7 +84,7 @@
     NSMutableSet *participantCopy = [self.participants copy];
     [participantCopy unionSet:participants];
     self.participants = participantCopy;
-    [[LYRMockContentStore sharedStore] broadCastChanges];
+    [[LYRMockContentStore sharedStore] broadcastChanges];
     return YES;
 }
 
@@ -94,7 +94,7 @@
     NSMutableSet *participantCopy = [self.participants copy];
     [participantCopy minusSet:participants];
     self.participants = participantCopy;
-    [[LYRMockContentStore sharedStore] broadCastChanges];
+    [[LYRMockContentStore sharedStore] broadcastChanges];
     return YES;
 }
 
@@ -103,19 +103,19 @@
 - (void)setValue:(NSString *)value forMetadataAtKeyPath:(NSString *)keyPath
 {
     [self.metadata setValue:value forKeyPath:keyPath];
-    [[LYRMockContentStore sharedStore] broadCastChanges];
+    [[LYRMockContentStore sharedStore] broadcastChanges];
 }
 
 - (void)setValuesForMetadataKeyPathsWithDictionary:(NSDictionary *)metadata merge:(BOOL)merge
 {
     [self.metadata setValuesForKeysWithDictionary:metadata];
-    [[LYRMockContentStore sharedStore] broadCastChanges];
+    [[LYRMockContentStore sharedStore] broadcastChanges];
 }
 
 - (void)deleteValueForMetadataAtKeyPath:(NSString *)keyPath
 {
     [self.metadata setValue:nil forKeyPath:keyPath];
-    [[LYRMockContentStore sharedStore] broadCastChanges];
+    [[LYRMockContentStore sharedStore] broadcastChanges];
 }
 
 #pragma mark - Typing Indicator
@@ -139,7 +139,7 @@
 - (BOOL)markAllMessagesAsRead:(NSError **)error
 {
     self.hasUnreadMessages = NO;
-    [[LYRMockContentStore sharedStore] broadCastChanges];
+    [[LYRMockContentStore sharedStore] broadcastChanges];
     return YES;
 }
 

@@ -96,7 +96,7 @@
     NSDictionary *mockChangeObject = @{LYRMockObjectChangeObjectKey : conversation,
                                        LYRMockObjectChangeChangeTypeKey : [NSNumber numberWithInt:LYRObjectChangeTypeCreate]};
     [self.mockObjectChanges addObject:mockChangeObject];
-    [self broadCastChanges];
+    [self broadcastChanges];
     
 }
 
@@ -105,7 +105,7 @@
     NSDictionary *mockChangeObject = @{LYRMockObjectChangeObjectKey : conversation,
                                        LYRMockObjectChangeChangeTypeKey : [NSNumber numberWithInt:LYRObjectChangeTypeUpdate]};
     [self.mockObjectChanges addObject:mockChangeObject];
-    [self broadCastChanges];
+    [self broadcastChanges];
 }
 
 - (void)deleteConversation:(LYRConversation *)conversation
@@ -114,7 +114,7 @@
     NSDictionary *mockChangeObject = @{LYRMockObjectChangeObjectKey : conversation,
                                        LYRMockObjectChangeChangeTypeKey : [NSNumber numberWithInt:LYRObjectChangeTypeDelete]};
     [self.mockObjectChanges addObject:mockChangeObject];
-    [self broadCastChanges];
+    [self broadcastChanges];
 }
 
 - (LYRConversationMock *)conversationForIdentifier:(NSURL *)identifier
@@ -125,8 +125,7 @@
 
 - (NSOrderedSet *)allConversations
 {
-    //return self.conversations;
-    return nil;
+    return [[NSOrderedSet alloc] initWithSet:self.conversations];
 }
 
 #pragma mark - Message Methods
@@ -235,7 +234,7 @@
     return nil;
 }
 
-- (void)broadCastChanges
+- (void)broadcastChanges
 {
     [[NSNotificationCenter defaultCenter] postNotificationName:LYRMockObjectsDidChangeNotification object:self.mockObjectChanges];
     [self.mockObjectChanges removeAllObjects];

@@ -74,11 +74,6 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"LYRUIConversatio
     }
 }
 
-- (void)dealloc
-{
-    self.queryController = nil;
-}
-
 #pragma mark - Public Setters
 
 - (void)setAllowsEditing:(BOOL)allowsEditing

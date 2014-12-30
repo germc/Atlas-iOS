@@ -19,7 +19,6 @@
 @property (nonatomic, readwrite) NSDate *receivedAt;
 @property (nonatomic, readwrite) NSString *sentByUserID;
 
-
 @end
 
 @implementation LYRMessageMock
@@ -48,7 +47,7 @@
 {
     self.isUnread = NO;
     [[LYRMockContentStore sharedStore] updateMessage:self];
-    [[LYRMockContentStore sharedStore] broadCastChanges];
+    [[LYRMockContentStore sharedStore] broadcastChanges];
     return YES;
 }
 
@@ -56,7 +55,7 @@
 {
     self.isDeleted = YES;
     [[LYRMockContentStore sharedStore] deleteMessage:self];
-    [[LYRMockContentStore sharedStore] broadCastChanges];
+    [[LYRMockContentStore sharedStore] broadcastChanges];
     return YES;
 }
 

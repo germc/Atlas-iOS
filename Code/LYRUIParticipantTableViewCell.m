@@ -141,8 +141,4 @@ static CGFloat const LSSelectionIndicatorSize = 30;
     self.nameLabel.textColor = self.titleColor;
 }
 
-- (void)dealloc
-{
-    
-}
 @end
