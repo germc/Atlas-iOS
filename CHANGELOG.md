@@ -7,7 +7,10 @@
 `LYRUIConversationViewController` now sends mixed content (e.g. an image and text) in multiple messages, i.e. one message per piece of content (e.g. one message with an image part and another message with a text part). Correspondingly, it now displays one cell for each message. The previous behavior was to display one cell for each message part. The default message cells assume that each message only has one part. So a multi-part message (e.g. one sent with the previous behavior) will only have its first part displayed.
 
 ### Public API Changes
-
+* Added `nameLabel` property to `LYRUIParticipantTableViewCell`.
+* Added `collectionView` property to `LYRUIConversationViewController`.
+* Added `queryController` property to `LYRUIConversationViewController`.
+* Added `queryController` property to `LYRUIConversationListViewController`.
 * Added `bubbleViewCornerRadius` property to `LYRUIMessageCollectionViewCell`.  
 * Added `avatarImageViewCornerRadius` property to `LYRUIMessageCollectionViewCell`.
 * Changed `backgroundColor` property to `cellBackgroundColor` on `LYRUIConversationTableViewCell`.
@@ -52,6 +55,8 @@
 * Added logic to guard against messages with external content in applications using LayerKit v0.9.2 and previous.
 
 ### Enhancements
-
+* Implemented `LayerUIKit` unit test suite.
+* Re-implemented `LayerUIKit` mock objects.
+* Re-factored `LayerUIKit` sample app to use new mock objects.
 * Refactored internal constants.
 * Added support for external content.
