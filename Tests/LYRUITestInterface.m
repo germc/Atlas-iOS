@@ -83,15 +83,25 @@
 - (void)setRootViewController:(UIViewController *)controller
 {
     LYRUIAppDelegate *delegate = [[UIApplication sharedApplication] delegate];
-    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
     if (!delegate.window) {
         delegate.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
         [delegate.window makeKeyAndVisible];
     }
-    if (delegate.window.rootViewController) {
-        delegate.window.rootViewController = nil;
-    }
+    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
     [delegate.window setRootViewController:navigationController];
+    [delegate.window makeKeyAndVisible];
+}
+
+- (void)pushViewController:(UIViewController *)controller
+{
+    LYRUIAppDelegate *delegate = [[UIApplication sharedApplication] delegate];
+    if (!delegate.window.rootViewController) {
+        delegate.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+        delegate.window.rootViewController = controller;
+        [delegate.window makeKeyAndVisible];
+    }
+    [delegate.window setRootViewController:controller];
+    [delegate.window makeKeyAndVisible];
 }
 
 @end

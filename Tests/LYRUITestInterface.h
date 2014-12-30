@@ -32,4 +32,7 @@
 
 - (void)setRootViewController:(UIViewController *)controller;
 
+- (void)pushViewController:(UIViewController *)controller;
+
+
 @end

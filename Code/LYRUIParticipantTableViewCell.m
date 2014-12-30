@@ -1,4 +1,4 @@
-//
+ //
 //  LYRUIParticipantTableViewCell.m
 //  LayerSample
 //
@@ -12,7 +12,6 @@
 
 @interface LYRUIParticipantTableViewCell ()
 
-@property (nonatomic) UILabel *nameLabel;
 @property (nonatomic) LYRUIAvatarImageView *avatarImageView;
 @property (nonatomic) id<LYRUIParticipant> participant;
 @property (nonatomic) LYRUIParticipantPickerSortType sortType;
@@ -142,4 +141,8 @@ static CGFloat const LSSelectionIndicatorSize = 30;
     self.nameLabel.textColor = self.titleColor;
 }
 
+- (void)dealloc
+{
+    
+}
 @end

@@ -22,4 +22,6 @@
 @property (nonatomic) UIFont *subtitleFont UI_APPEARANCE_SELECTOR;
 @property (nonatomic) UIColor *subtitleColor UI_APPEARANCE_SELECTOR;
 
+@property (nonatomic) UILabel *nameLabel;
+
 @end

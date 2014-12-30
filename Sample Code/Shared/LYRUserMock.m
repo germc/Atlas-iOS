@@ -83,6 +83,20 @@ NSString *const LYRMockUserIDDoug = @"0000000007";
     return nil;
 }
 
++ (NSSet *)allMockParticipants
+{
+    return [NSSet setWithObjects:
+                  [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameMarshawn],
+                  [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameRussell],
+                  [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameCam],
+                  [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameEarl],
+                  [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameBobby],
+                  [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameRichard],
+                  [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameDoug],
+            nil];
+    
+}
+
 + (NSSet *)participantsForIdentifiers:(NSSet *)identifiers
 {
     NSMutableArray *users = [NSMutableArray new];

@@ -26,7 +26,8 @@
 - (void)setUp
 {
     [super setUp];
-
+    
+    [[LYRMockContentStore sharedStore] resetContentStore];
     [[UIApplication sharedApplication] delegate].window.rootViewController = nil;
     
     LYRUserMock *mockUser = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameRussell];
@@ -43,8 +44,7 @@
 {
     self.conversation = nil;
     self.viewController = nil;
-    self.testInterface = nil;
-    
+    [[UIApplication sharedApplication] delegate].window.rootViewController = nil;
     [[LYRMockContentStore sharedStore] resetContentStore];
     [super tearDown];
 }
