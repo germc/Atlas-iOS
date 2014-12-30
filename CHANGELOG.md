@@ -47,7 +47,7 @@
 * Changed `layerClient` property on `LYRUIConversationListViewController` from `readwrite` to `readonly`.
 
 ### Bug Fixes
-
+* Removed duplicate MIMEType constant declarations.
 * Fixed possibility of customizations via `UIAppearance` being overridden.
 * Fixed issue related to sending a push notification with `(null)` text.
 * Fixed typo for property `conversationLabelColor` on `LYRUIConversationTableViewCell`.
