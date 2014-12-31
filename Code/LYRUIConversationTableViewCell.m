@@ -51,11 +51,9 @@ static NSDateFormatter *LYRUIShortTimeFormatter()
 @property (nonatomic) NSLayoutConstraint *conversationLabelLeftConstraint;
 @property (nonatomic) NSLayoutConstraint *conversationLabelRightConstraint;
 @property (nonatomic) NSLayoutConstraint *conversationLabelTopConstraint;
-@property (nonatomic) NSLayoutConstraint *conversationLabelHeightConstraint;
 
 @property (nonatomic) NSLayoutConstraint *dateLabelRightConstraint;
 @property (nonatomic) NSLayoutConstraint *dateLabelTopConstraint;
-@property (nonatomic) NSLayoutConstraint *dateLabelWidthConstraint;
 
 @property (nonatomic) NSLayoutConstraint *lastMessageTextLeftConstraint;
 @property (nonatomic) NSLayoutConstraint *lastMessageTextRightConstraint;
@@ -243,7 +241,7 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
 {
     self.accessibilityLabel = conversationLabel;
     self.conversationLabel.text = conversationLabel;
-    [self configureLayoutConstraintsForLabels];
+    [self updateConstraintConstants];
 }
 
 - (NSString *)dateLabelForLastMessage:(LYRMessage *)lastMessage
@@ -258,24 +256,14 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
     }
 }
 
-- (void)configureLayoutConstraintsForLabels
-{
-    [self.conversationLabel sizeToFit];
-    [self.dateLabel sizeToFit];
-    [self updateConstraintConstants];
-}
-
 - (void)updateConstraintConstants
 {
     self.imageViewLeftConstraint.constant = self.cellHorizontalMargin;
     
     self.conversationLabelLeftConstraint.constant = self.cellHorizontalMargin;
-    self.conversationLabelHeightConstraint.constant = self.conversationLabel.frame.size.height;
     
     self.lastMessageTextLeftConstraint.constant = self.cellHorizontalMargin;
     self.lastMessageTextHeightConstraint.constant = self.lastMessageTextView.font.lineHeight * 2;
-    
-    self.dateLabelWidthConstraint.constant = self.dateLabel.frame.size.width;
     
     [self setNeedsUpdateConstraints];
 }
@@ -346,23 +334,8 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
                                                                  attribute:NSLayoutAttributeTop
                                                                 multiplier:1.0
                                                                   constant:LYRUICellVerticalMargin];
-    // Height
-    self.conversationLabelHeightConstraint = [NSLayoutConstraint constraintWithItem:self.conversationLabel
-                                                                 attribute:NSLayoutAttributeHeight
-                                                                 relatedBy:NSLayoutRelationEqual
-                                                                    toItem:nil
-                                                                 attribute:NSLayoutAttributeNotAnAttribute
-                                                                multiplier:1.0
-                                                                  constant:self.conversationLabelHeight];
+
     //**********Date Label Constraints**********//
-    // Width
-    self.dateLabelWidthConstraint = [NSLayoutConstraint constraintWithItem:self.dateLabel
-                                                                 attribute:NSLayoutAttributeWidth
-                                                                 relatedBy:NSLayoutRelationEqual
-                                                                    toItem:nil
-                                                                 attribute:NSLayoutAttributeNotAnAttribute
-                                                                multiplier:1.0
-                                                                  constant:0];
     // Right Margin
     self.dateLabelRightConstraint = [NSLayoutConstraint constraintWithItem:self.dateLabel
                                                                  attribute:NSLayoutAttributeRight
@@ -457,11 +430,9 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
     [self.contentView addConstraint:self.conversationLabelLeftConstraint];
     [self.contentView addConstraint:self.conversationLabelRightConstraint];
     [self.contentView addConstraint:self.conversationLabelTopConstraint];
-    [self.contentView addConstraint:self.conversationLabelHeightConstraint];
     
     [self.contentView addConstraint:self.dateLabelRightConstraint];
     [self.contentView addConstraint:self.dateLabelTopConstraint];
-    [self.contentView addConstraint:self.dateLabelWidthConstraint];
     
     [self.contentView addConstraint:self.lastMessageTextLeftConstraint];
     [self.contentView addConstraint:self.lastMessageTextRightConstraint];
