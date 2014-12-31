@@ -87,11 +87,6 @@
  */
 @property (nonatomic, weak) id<LYRUIConversationListViewControllerDataSource> dataSource;
 
-/**
- @abstract The `LYRQueryController` that manages messaging content displayed in the controller.
- */
-@property (nonatomic) LYRQueryController *queryController;
-
 ///----------------------------------------
 /// @name Configuration
 ///----------------------------------------
