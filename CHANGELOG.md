@@ -43,6 +43,8 @@
 * Changed `keyLabel` property to `nameLabel` on `LYRUIParticipantSectionHeaderView`.
 * Removed `conversationListViewController:didSearchWithString:completion:` from `LYRUIConversationListViewControllerDataSource`.
 * Changed `layerClient` property on `LYRUIConversationListViewController` from `readwrite` to `readonly`.
+* Changed `lastMessageTextFont` property on `LYRUIConversationTableViewCell` to `lastMessageLabelFont`.
+* Changed `lastMessageTextColor` property on `LYRUIConversationTableViewCell` to `lastMessageLabelColor`.
 
 ### Bug Fixes
 

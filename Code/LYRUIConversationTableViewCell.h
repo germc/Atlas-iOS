@@ -21,8 +21,8 @@
 @property (nonatomic) UIFont *conversationLabelFont UI_APPEARANCE_SELECTOR;
 @property (nonatomic) UIColor *conversationLabelColor UI_APPEARANCE_SELECTOR;
 
-@property (nonatomic) UIFont *lastMessageTextFont UI_APPEARANCE_SELECTOR;
-@property (nonatomic) UIColor *lastMessageTextColor UI_APPEARANCE_SELECTOR;
+@property (nonatomic) UIFont *lastMessageLabelFont UI_APPEARANCE_SELECTOR;
+@property (nonatomic) UIColor *lastMessageLabelColor UI_APPEARANCE_SELECTOR;
 
 @property (nonatomic) UIFont *dateLabelFont UI_APPEARANCE_SELECTOR;
 @property (nonatomic) UIColor *dateLabelColor UI_APPEARANCE_SELECTOR;

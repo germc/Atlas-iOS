@@ -55,10 +55,10 @@ static NSDateFormatter *LYRUIShortTimeFormatter()
 @property (nonatomic) NSLayoutConstraint *dateLabelRightConstraint;
 @property (nonatomic) NSLayoutConstraint *dateLabelTopConstraint;
 
-@property (nonatomic) NSLayoutConstraint *lastMessageTextLeftConstraint;
-@property (nonatomic) NSLayoutConstraint *lastMessageTextRightConstraint;
-@property (nonatomic) NSLayoutConstraint *lastMessageTextTopConstraint;
-@property (nonatomic) NSLayoutConstraint *lastMessageTextHeightConstraint;
+@property (nonatomic) NSLayoutConstraint *lastMessageLabelLeftConstraint;
+@property (nonatomic) NSLayoutConstraint *lastMessageLabelRightConstraint;
+@property (nonatomic) NSLayoutConstraint *lastMessageLabelTopConstraint;
+@property (nonatomic) NSLayoutConstraint *lastMessageLabelBottomConstraint;
 
 @property (nonatomic) NSLayoutConstraint *unreadMessageIndicatorWidth;
 @property (nonatomic) NSLayoutConstraint *unreadMessageIndicatorHeight;
@@ -68,7 +68,7 @@ static NSDateFormatter *LYRUIShortTimeFormatter()
 @property (nonatomic) UIImageView *conversationImageView;
 @property (nonatomic) UILabel *conversationLabel;
 @property (nonatomic) UILabel *dateLabel;
-@property (nonatomic) UITextView *lastMessageTextView;
+@property (nonatomic) UILabel *lastMessageLabel;
 @property (nonatomic) UIView *unreadMessageIndicator;
 
 @property (nonatomic, assign) BOOL displaysImage;
@@ -94,8 +94,8 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
         // UIAppearance Proxy Defaults
         _conversationLabelFont = LYRUIBoldFont(14);
         _conversationLabelColor = [UIColor blackColor];
-        _lastMessageTextFont = LYRUILightFont(14);
-        _lastMessageTextColor = [UIColor grayColor];
+        _lastMessageLabelFont = LYRUILightFont(14);
+        _lastMessageLabelColor = [UIColor grayColor];
         _dateLabelFont = LYRUIMediumFont(14);
         _dateLabelColor = [UIColor grayColor];
         _unreadMessageIndicatorBackgroundColor = LYRUIBlueColor();
@@ -114,14 +114,13 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
         self.conversationLabel.textColor = _conversationLabelColor;
         [self.contentView addSubview:self.conversationLabel];
         
-        // Initialize Message Text
-        self.lastMessageTextView = [[UITextView alloc] init];
-        self.lastMessageTextView.translatesAutoresizingMaskIntoConstraints = NO;
-        self.lastMessageTextView.contentInset = UIEdgeInsetsMake(-10, -4, 0, 0);
-        self.lastMessageTextView.userInteractionEnabled = NO;
-        self.lastMessageTextView.font = _lastMessageTextFont;
-        self.lastMessageTextView.textColor = _lastMessageTextColor;
-        [self.contentView addSubview:self.lastMessageTextView];
+        // Initialize Message Label
+        self.lastMessageLabel = [[UILabel alloc] init];
+        self.lastMessageLabel.translatesAutoresizingMaskIntoConstraints = NO;
+        self.lastMessageLabel.font = _lastMessageLabelFont;
+        self.lastMessageLabel.textColor = _lastMessageLabelColor;
+        self.lastMessageLabel.numberOfLines = 2;
+        [self.contentView addSubview:self.lastMessageLabel];
         
         // Initialize Date Label
         self.dateLabel = [[UILabel alloc] init];
@@ -161,16 +160,16 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
     self.conversationLabel.textColor = conversationLabelColor;
 }
 
-- (void)setLastMessageTextFont:(UIFont *)lastMessageTextFont
+- (void)setLastMessageLabelFont:(UIFont *)lastMessageLabelFont
 {
-    _lastMessageTextFont = lastMessageTextFont;
-    self.lastMessageTextView.font = lastMessageTextFont;
+    _lastMessageLabelFont = lastMessageLabelFont;
+    self.lastMessageLabel.font = lastMessageLabelFont;
 }
 
-- (void)setLastMessageTextColor:(UIColor *)lastMessageTextColor
+- (void)setLastMessageLabelColor:(UIColor *)lastMessageLabelColor
 {
-    _lastMessageTextColor = lastMessageTextColor;
-    self.lastMessageTextView.textColor = lastMessageTextColor;
+    _lastMessageLabelColor = lastMessageLabelColor;
+    self.lastMessageLabel.textColor = lastMessageLabelColor;
 }
 
 - (void)setDateLabelFont:(UIFont *)dateLabelFont
@@ -204,15 +203,15 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
     LYRMessage *message = conversation.lastMessage;
     LYRMessagePart *messagePart = message.parts.firstObject;
     if ([messagePart.MIMEType isEqualToString:LYRUIMIMETypeTextPlain]) {
-        self.lastMessageTextView.text = [[NSString alloc] initWithData:messagePart.data encoding:NSUTF8StringEncoding];
+        self.lastMessageLabel.text = [[NSString alloc] initWithData:messagePart.data encoding:NSUTF8StringEncoding];
     } else if ([messagePart.MIMEType isEqualToString:LYRUIMIMETypeImageJPEG]) {
-        self.lastMessageTextView.text = @"Attachment: Image";
+        self.lastMessageLabel.text = @"Attachment: Image";
     } else if ([messagePart.MIMEType isEqualToString:LYRUIMIMETypeImagePNG]) {
-        self.lastMessageTextView.text = @"Attachment: Image";
+        self.lastMessageLabel.text = @"Attachment: Image";
     } else if ([messagePart.MIMEType isEqualToString:LYRUIMIMETypeLocation]) {
-        self.lastMessageTextView.text = @"Attachment: Location";
+        self.lastMessageLabel.text = @"Attachment: Location";
     } else {
-        self.lastMessageTextView.text = @"Attachment: Image";
+        self.lastMessageLabel.text = @"Attachment: Image";
     }
 }
 
@@ -262,9 +261,8 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
     
     self.conversationLabelLeftConstraint.constant = self.cellHorizontalMargin;
     
-    self.lastMessageTextLeftConstraint.constant = self.cellHorizontalMargin;
-    self.lastMessageTextHeightConstraint.constant = self.lastMessageTextView.font.lineHeight * 2;
-    
+    self.lastMessageLabelLeftConstraint.constant = self.cellHorizontalMargin;
+
     [self setNeedsUpdateConstraints];
 }
 
@@ -354,9 +352,9 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
                                                                 multiplier:1.0
                                                                  constant:LYRUICellVerticalMargin];
 
-    //**********Message Text Constraints**********//
+    //**********Message Label Constraints**********//
     //Left Margin
-    self.lastMessageTextLeftConstraint = [NSLayoutConstraint constraintWithItem:self.lastMessageTextView
+    self.lastMessageLabelLeftConstraint = [NSLayoutConstraint constraintWithItem:self.lastMessageLabel
                                                                  attribute:NSLayoutAttributeLeft
                                                                  relatedBy:NSLayoutRelationEqual
                                                                     toItem:self.conversationImageView
@@ -364,7 +362,7 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
                                                                 multiplier:1.0
                                                                   constant:self.cellHorizontalMargin];
     // Right Margin
-    self.lastMessageTextRightConstraint = [NSLayoutConstraint constraintWithItem:self.lastMessageTextView
+    self.lastMessageLabelRightConstraint = [NSLayoutConstraint constraintWithItem:self.lastMessageLabel
                                                                  attribute:NSLayoutAttributeRight
                                                                  relatedBy:NSLayoutRelationEqual
                                                                     toItem:self.contentView
@@ -372,21 +370,21 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
                                                                 multiplier:1.0
                                                                   constant:-6];
     // Top Margin
-    self.lastMessageTextTopConstraint = [NSLayoutConstraint constraintWithItem:self.lastMessageTextView
+    self.lastMessageLabelTopConstraint = [NSLayoutConstraint constraintWithItem:self.lastMessageLabel
                                                                  attribute:NSLayoutAttributeTop
                                                                  relatedBy:NSLayoutRelationEqual
                                                                     toItem:self.conversationLabel
                                                                  attribute:NSLayoutAttributeBottom
                                                                 multiplier:1.0
-                                                                  constant:4];
-    // Height
-    self.lastMessageTextHeightConstraint = [NSLayoutConstraint constraintWithItem:self.lastMessageTextView
-                                                                 attribute:NSLayoutAttributeHeight
-                                                                 relatedBy:NSLayoutRelationEqual
-                                                                    toItem:nil
-                                                                 attribute:NSLayoutAttributeNotAnAttribute
+                                                                  constant:2];
+    // Bottom
+    self.lastMessageLabelBottomConstraint = [NSLayoutConstraint constraintWithItem:self.lastMessageLabel
+                                                                 attribute:NSLayoutAttributeBottom
+                                                                 relatedBy:NSLayoutRelationLessThanOrEqual
+                                                                    toItem:self.contentView
+                                                                 attribute:NSLayoutAttributeBottom
                                                                 multiplier:1.0
-                                                                  constant:self.lastMessageTextView.font.lineHeight * 2];
+                                                                  constant:-4];
     
     //**********Unread Messsage Label Constraints**********//
     //Width
@@ -434,10 +432,10 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
     [self.contentView addConstraint:self.dateLabelRightConstraint];
     [self.contentView addConstraint:self.dateLabelTopConstraint];
     
-    [self.contentView addConstraint:self.lastMessageTextLeftConstraint];
-    [self.contentView addConstraint:self.lastMessageTextRightConstraint];
-    [self.contentView addConstraint:self.lastMessageTextTopConstraint];
-    [self.contentView addConstraint:self.lastMessageTextHeightConstraint];
+    [self.contentView addConstraint:self.lastMessageLabelLeftConstraint];
+    [self.contentView addConstraint:self.lastMessageLabelRightConstraint];
+    [self.contentView addConstraint:self.lastMessageLabelTopConstraint];
+    [self.contentView addConstraint:self.lastMessageLabelBottomConstraint];
     
     [self.contentView addConstraint:self.unreadMessageIndicatorWidth];
     [self.contentView addConstraint:self.unreadMessageIndicatorHeight];
