@@ -441,8 +441,6 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
     [self.contentView addConstraint:self.unreadMessageIndicatorHeight];
     [self.contentView addConstraint:self.unreadMessageIndicatorTop];
     [self.contentView addConstraint:self.unreadMessageIndicatorRight];
-    
-    [super updateConstraints];
 }
 
 - (void)layoutSubviews
