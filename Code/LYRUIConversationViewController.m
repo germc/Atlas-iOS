@@ -818,7 +818,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 {
     if (!self.conversation) return;
     if (messageInputToolbar.messageParts.count > 0) {
-        id<LYRUIParticipant> sender = (id<LYRUIParticipant>)[self participantForIdentifier:self.layerClient.authenticatedUserID];
+        id<LYRUIParticipant> sender = [self participantForIdentifier:self.layerClient.authenticatedUserID];
         for (id part in messageInputToolbar.messageParts){
             LYRMessagePart *messagePart;
             if ([part isKindOfClass:[NSString class]]) {
@@ -1018,11 +1018,6 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 }
 
 #pragma mark - LYRQueryControllerDelegate
-
-- (void)queryControllerWillChangeContent:(LYRQueryController *)queryController
-{
-    
-}
 
 - (void)queryController:(LYRQueryController *)controller
         didChangeObject:(id)object

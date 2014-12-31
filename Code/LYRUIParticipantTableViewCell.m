@@ -12,6 +12,7 @@
 
 @interface LYRUIParticipantTableViewCell ()
 
+@property (nonatomic) UILabel *nameLabel;
 @property (nonatomic) LYRUIAvatarImageView *avatarImageView;
 @property (nonatomic) id<LYRUIParticipant> participant;
 @property (nonatomic) LYRUIParticipantPickerSortType sortType;

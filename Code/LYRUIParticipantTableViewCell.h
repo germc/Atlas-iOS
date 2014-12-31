@@ -19,7 +19,6 @@
 /**
  @abstract The `UILabel` object which displays a string representing the full name of a participant.
  */
-@property (nonatomic) UILabel *nameLabel;
 
 /**
  @abstract Appearance customization propoerties.
