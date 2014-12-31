@@ -38,7 +38,6 @@
 - (void)tearDown
 {
     [[LYRMockContentStore sharedStore] resetContentStore];
-    self.viewController.queryController = nil;
     self.testInterface = nil;
     
     [super tearDown];
@@ -73,6 +72,28 @@
     [self setRootViewController:self.viewController];
     
     [self sendPhotoMessage];
+}
+
+- (void)testToVerifyCorrectCellIsReturnedForMessage
+{
+    LYRMessagePartMock *messagePart1 = [LYRMessagePartMock messagePartWithText:@"How are you1?"];
+    LYRMessageMock *message1 = [self.testInterface.layerClient newMessageWithParts:@[messagePart1] options:nil error:nil];
+    [self.conversation sendMessage:message1 error:nil];
+    
+    LYRMessagePartMock *messagePart2 = [LYRMessagePartMock messagePartWithText:@"How are you2?"];
+    LYRMessageMock *message2 = [self.testInterface.layerClient newMessageWithParts:@[messagePart2] options:nil error:nil];
+    [self.conversation sendMessage:message2 error:nil];
+
+    LYRMessagePartMock *messagePart3 = [LYRMessagePartMock messagePartWithText:@"How are you3?"];
+    LYRMessageMock *message3 = [self.testInterface.layerClient newMessageWithParts:@[messagePart3] options:nil error:nil];
+    [self.conversation sendMessage:message3 error:nil];
+
+    self.viewController = [LYRUISampleConversationViewController conversationViewControllerWithConversation:(LYRConversation *)self.conversation layerClient:(LYRClient *)self.testInterface.layerClient];
+    [self setRootViewController:self.viewController];
+    
+    id cell = [self.viewController collectionViewCellForMessage:(LYRMessage *)message3];
+    expect([cell class]).to.beSubclassOf([LYRUIMessageCollectionViewCell class]);
+    expect([cell accessibilityLabel]).to.equal(@"Message: How are you3?");
 }
 
 //- (void)conversationViewController:(LYRUIConversationViewController *)viewController didSendMessage:(LYRMessage *)message;

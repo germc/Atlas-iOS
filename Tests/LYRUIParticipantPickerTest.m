@@ -16,6 +16,12 @@
 #import "LYRUIParticipant.h"
 #import "LYRUITestParticipantDataSource.h"
 
+@interface LYRUIParticipantTableViewCell ()
+
+@property (nonatomic) UILabel *nameLabel;
+
+@end
+
 @interface LYRUIParticipantPickerTest : XCTestCase
 
 @property (nonatomic) LYRUITestInterface *testInterface;

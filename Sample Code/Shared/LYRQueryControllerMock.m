@@ -59,7 +59,8 @@
 
 - (NSIndexPath *)indexPathForObject:(id<LYRQueryable>)object
 {
-    return nil;
+    NSUInteger row = [self.objects indexOfObject:object];
+    return [NSIndexPath indexPathForRow:row inSection:0];
 }
 
 - (BOOL)execute:(NSError **)error

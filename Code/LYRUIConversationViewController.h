@@ -171,14 +171,18 @@
  */
 - (void)registerClass:(Class<LYRUIMessagePresenting>)cellClass forMessageCellWithReuseIdentifier:(NSString *)reuseIdentifier;
 
+/**
+ @abstract Returns the `UICollectionViewCell` corresponding to the `index` property of the provided `LYRMessage` object.
+ @param message The LYRMessage object for which a cell will.
+ @return A `UICollectionView` object conforming tot the `LYRUIMessagePresenting` protocl.
+ @discussion If the provided `LYRMessage` object is not in the current results set for the controller, or the corresponding cell is
+ not currently visible, the method may return nil.
+ */
+- (UICollectionViewCell<LYRUIMessagePresenting> *)collectionViewCellForMessage:(LYRMessage *)message;
+
 ///---------------------------------------
 /// @name Public Accessors
 ///---------------------------------------
-
-/**
- @abstract The `UICollectionView` for the controller.
- */
-@property (nonatomic) UICollectionView *collectionView;
 
 /**
  @abstract The `LYRClient` object used to initialize the controller.
@@ -189,11 +193,6 @@
  @abstract The `LYRConversation` object used to initialize the controller.
  */
 @property (nonatomic) LYRConversation *conversation;
-
-/**
- @abstract The `LYRQueryController` that manages messaging content displayed in the controller.
- */
-@property (nonatomic) LYRQueryController *queryController;
 
 /**
  @abstract The `LYRUIAddressBarViewController` displayed for addressing new conversations.

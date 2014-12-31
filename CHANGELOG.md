@@ -8,10 +8,6 @@
 
 ### Public API Changes
 
-* Added `nameLabel` property to `LYRUIParticipantTableViewCell`.
-* Added `collectionView` property to `LYRUIConversationViewController`.
-* Added `queryController` property to `LYRUIConversationViewController`.
-* Added `queryController` property to `LYRUIConversationListViewController`.
 * Added `bubbleViewCornerRadius` property to `LYRUIMessageCollectionViewCell`.  
 * Added `avatarImageViewCornerRadius` property to `LYRUIMessageCollectionViewCell`.
 * Changed `backgroundColor` property to `cellBackgroundColor` on `LYRUIConversationTableViewCell`.
@@ -58,6 +54,7 @@
 
 ### Enhancements
 
+* `LYRUIConversationTableViewCell` no longer shows conversation image by default.
 * Implemented `LayerUIKit` unit test suite.
 * Re-implemented `LayerUIKit` mock objects.
 * Re-factored `LayerUIKit` sample app to use new mock objects.

@@ -23,6 +23,8 @@
 
 @interface LYRUIConversationViewController () <UICollectionViewDataSource, UICollectionViewDelegate, LYRUIMessageInputToolbarDelegate, UIActionSheetDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIGestureRecognizerDelegate, LYRQueryControllerDelegate>
 
+@property (nonatomic) UICollectionView *collectionView;
+@property (nonatomic) LYRQueryController *queryController;
 @property (nonatomic) LYRUIConversationView *view;
 @property (nonatomic) UILabel *typingIndicatorLabel;
 @property (nonatomic) LYRUITypingIndicatorView *typingIndicatorView;
@@ -350,6 +352,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     LYRMessage *message = [self messageAtCollectionViewIndexPath:indexPath];
+    NSLog(@"The message is %@", message);
     NSString *reuseIdentifier;
     if ([self.dataSource respondsToSelector:@selector(conversationViewController:reuseIdentifierForMessage:)]) {
         reuseIdentifier = [self.dataSource conversationViewController:self reuseIdentifierForMessage:message];
@@ -579,6 +582,16 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 - (void)registerClass:(Class<LYRUIMessagePresenting>)cellClass forMessageCellWithReuseIdentifier:(NSString *)reuseIdentifier
 {
     [self.collectionView registerClass:cellClass forCellWithReuseIdentifier:reuseIdentifier];
+}
+
+- (UICollectionViewCell<LYRUIMessagePresenting> *)collectionViewCellForMessage:(LYRMessage *)message
+{
+    NSIndexPath *indexPath = [self.queryController indexPathForObject:message];
+    if (indexPath) {
+        UICollectionViewCell *cell = [self.collectionView cellForItemAtIndexPath:[self collectionViewIndexPathForQueryControllerIndexPath:indexPath]];
+        if (cell) return (UICollectionViewCell<LYRUIMessagePresenting> *)cell;
+    }
+    return nil;
 }
 
 - (CGFloat)cellHeightForItemAtIndexPath:(NSIndexPath *)indexPath
