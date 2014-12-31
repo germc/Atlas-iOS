@@ -181,12 +181,12 @@
 @property (nonatomic) UICollectionView *collectionView;
 
 /**
- @abstract The `LYRClient` object used to initailize the controller.
+ @abstract The `LYRClient` object used to initialize the controller.
  */
 @property (nonatomic) LYRClient *layerClient;
 
 /**
- @abstract The `LYRConversation` object used to initailize the controller.
+ @abstract The `LYRConversation` object used to initialize the controller.
  */
 @property (nonatomic) LYRConversation *conversation;
 
