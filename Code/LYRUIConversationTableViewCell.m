@@ -460,6 +460,7 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated
 {
+    [super setSelected:selected animated:animated];
     if (selected) {
         self.unreadMessageIndicator.alpha = 0.0f;
     }
