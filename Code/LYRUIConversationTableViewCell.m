@@ -139,13 +139,17 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
         
         self.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         self.backgroundColor = _cellBackgroundColor;
-        self.cellHorizontalMargin = 15.0f;
-        self.imageSizeRatio = 0.0f;
-        self.displaysImage = NO;
         
         [self setupLayoutConstraints];
     }
     return self;
+}
+
+- (void)prepareForReuse
+{
+    [super prepareForReuse];
+    self.displaysImage = NO;
+    [self setNeedsUpdateConstraints];
 }
 
 - (void)setConversationLabelFont:(UIFont *)conversationLabelFont
@@ -217,8 +221,6 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
 
 - (void)updateWithConversationImage:(UIImage *)image
 {
-    self.cellHorizontalMargin = 10.0f;
-    self.imageSizeRatio = 0.60f;
     self.conversationImageView.image = image;
     self.displaysImage = YES;
     [self setNeedsUpdateConstraints];
@@ -257,10 +259,11 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
 
 - (void)updateConstraints
 {
+    self.cellHorizontalMargin = self.displaysImage ? 10.0f : 15.0f;
+    self.imageSizeRatio = self.displaysImage ? 0.60f : 0.0f;
+
     self.imageViewLeftConstraint.constant = self.cellHorizontalMargin;
-    
     self.conversationLabelLeftConstraint.constant = self.cellHorizontalMargin;
-    
     self.lastMessageLabelLeftConstraint.constant = self.cellHorizontalMargin;
 
     [self configureImageViewWidthConstraint];
