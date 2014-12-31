@@ -1019,6 +1019,11 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 
 #pragma mark - LYRQueryControllerDelegate
 
+- (void)queryControllerWillChangeContent:(LYRQueryController *)queryController
+{
+    
+}
+
 - (void)queryController:(LYRQueryController *)controller
         didChangeObject:(id)object
             atIndexPath:(NSIndexPath *)indexPath

@@ -17,10 +17,6 @@
 @interface LYRUIParticipantTableViewCell : UITableViewCell <LYRUIParticipantPresenting>
 
 /**
- @abstract The `UILabel` object which displays a string representing the full name of a participant.
- */
-
-/**
  @abstract Appearance customization propoerties.
  */
 @property (nonatomic) UIFont *titleFont UI_APPEARANCE_SELECTOR;
@@ -28,6 +24,5 @@
 @property (nonatomic) UIColor *titleColor UI_APPEARANCE_SELECTOR;
 @property (nonatomic) UIFont *subtitleFont UI_APPEARANCE_SELECTOR;
 @property (nonatomic) UIColor *subtitleColor UI_APPEARANCE_SELECTOR;
-
 
 @end

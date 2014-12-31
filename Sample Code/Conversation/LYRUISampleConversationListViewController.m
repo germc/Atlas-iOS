@@ -34,11 +34,6 @@
     [[LYRMockContentStore sharedStore] hydrateConversationsForAuthenticatedUserID:self.layerClient.authenticatedUserID count:10];
 }
 
-- (void)viewDidAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
-}
-
 - (void)conversationListViewController:(LYRUIConversationListViewController *)conversationListViewController didSelectConversation:(LYRConversation *)conversation
 {
     LYRUISampleConversationViewController *controller = [LYRUISampleConversationViewController conversationViewControllerWithConversation:conversation layerClient:self.layerClient];
@@ -61,16 +56,16 @@
 {
     if (!self.layerClient.authenticatedUserID) return @"Not auth'd";
     NSMutableSet *participantIdentifiers = [conversation.participants mutableCopy];
-    [participantIdentifiers minusSet:[NSSet setWithObject:self.layerClient.authenticatedUserID]];
+    [participantIdentifiers removeObject:self.layerClient.authenticatedUserID];
     
-    if (!participantIdentifiers.count > 0) return @"Personal Conversation";
+    if (participantIdentifiers.count == 0) return @"Personal Conversation";
     
     NSMutableSet *participants = [[LYRUserMock participantsForIdentifiers:participantIdentifiers] mutableCopy];
-    if (!participants.count > 0) return @"No Matching Participants";
+    if (participants.count == 0) return @"No Matching Participants";
     
     // Put the latest message sender's name first
     LYRUserMock *firstUser;
-    if (![conversation.lastMessage.sentByUserID isEqualToString:self.layerClient.authenticatedUserID]){
+    if (![conversation.lastMessage.sentByUserID isEqualToString:self.layerClient.authenticatedUserID]) {
         if (conversation.lastMessage) {
             NSPredicate *searchPredicate = [NSPredicate predicateWithFormat:@"SELF.participantIdentifier IN %@", conversation.lastMessage.sentByUserID];
             LYRUserMock *lastMessageSender = [[[participants filteredSetUsingPredicate:searchPredicate] allObjects] lastObject];
