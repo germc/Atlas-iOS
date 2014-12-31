@@ -208,11 +208,11 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
     LYRMessagePart *messagePart = [message.parts firstObject];
     if ([messagePart.MIMEType isEqualToString:LYRUIMIMETypeTextPlain]) {
         self.lastMessageTextView.text = [[NSString alloc] initWithData:messagePart.data encoding:NSUTF8StringEncoding];
-    } else if (messagePart.MIMEType == LYRUIMIMETypeImageJPEG) {
+    } else if ([messagePart.MIMEType isEqualToString:LYRUIMIMETypeImageJPEG]) {
         self.lastMessageTextView.text = @"Attachement: Image";
-    } else if (messagePart.MIMEType == LYRUIMIMETypeImagePNG) {
+    } else if ([messagePart.MIMEType isEqualToString:LYRUIMIMETypeImagePNG]) {
         self.lastMessageTextView.text = @"Attachement: Image";
-    } else if (messagePart.MIMEType == LYRUIMIMETypeLocation) {
+    } else if ([messagePart.MIMEType isEqualToString:LYRUIMIMETypeLocation]) {
         self.lastMessageTextView.text = @"Attachement: Location";
     } else {
         self.lastMessageTextView.text = @"Attachement: Image";
