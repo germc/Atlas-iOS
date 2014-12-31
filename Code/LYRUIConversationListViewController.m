@@ -13,6 +13,7 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"LYRUIConversatio
 
 @interface LYRUIConversationListViewController () <UIActionSheetDelegate, LYRQueryControllerDelegate>
 
+@property (nonatomic) LYRQueryController *queryController;
 @property (nonatomic) LYRClient *layerClient;
 @property (nonatomic) BOOL hasAppeared;
 @property (nonatomic) LYRConversation *conversationToDelete;

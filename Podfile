@@ -1,11 +1,13 @@
 platform :ios, '7.0'
 
 # Import CocoaPods sources
+source 'git@github.com:layerhq/cocoapods-specs.git'
 source 'https://github.com/CocoaPods/Specs.git'
 
 target 'Conversation' do
   pod 'LayerUIKit', path: '.'
-  pod 'LayerKit'
+  #pod 'LayerKit'
+  pod 'LayerKit', git: 'git@github.com:layerhq/LayerKit.git', branch: 'ben-query-controller-logging'
 end
 
 target 'Unit Tests' do

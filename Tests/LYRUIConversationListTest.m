@@ -13,6 +13,12 @@
 #import "LYRUITestConversationCell.h"
 #import "LYRUISampleConversationListViewController.h"
 
+@interface LYRUIConversationListViewController ()
+
+@property (nonatomic) LYRQueryController *queryController;
+
+@end
+
 @interface LYRUIConversationListTest : XCTestCase
 
 @property (nonatomic) LYRUITestInterface *testInterface;

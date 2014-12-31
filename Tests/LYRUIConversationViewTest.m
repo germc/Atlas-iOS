@@ -13,6 +13,12 @@
 #import "LYRUserMock.h"
 #import "LYRUITestMessageCollectionViewCell.h"
 
+@interface LYRUIConversationViewController ()
+
+@property (nonatomic) LYRQueryController *queryController;
+
+@end
+
 @interface LYRUIConversationViewTest : XCTestCase
 
 @property (nonatomic) LYRUITestInterface *testInterface;
@@ -38,6 +44,7 @@
 - (void)tearDown
 {
     [[LYRMockContentStore sharedStore] resetContentStore];
+    self.viewController.queryController = nil;
     self.testInterface = nil;
     
     [super tearDown];
@@ -143,6 +150,17 @@
         NSAttributedString *string = [[NSAttributedString alloc] initWithString:@"Gift"];
         [invocation setReturnValue:&string];
     }] conversationViewController:[OCMArg any] attributedStringForDisplayOfDate:[OCMArg any]];
+    
+    // Three call to get date string
+    [[[delegateMock expect] andDo:^(NSInvocation *invocation) {
+        NSAttributedString *string = [[NSAttributedString alloc] initWithString:@"Date String"];
+        [invocation setReturnValue:&string];
+    }] conversationViewController:[OCMArg any] attributedStringForDisplayOfRecipientStatus:[OCMArg any]];
+    
+    [[[delegateMock expect] andDo:^(NSInvocation *invocation) {
+        NSAttributedString *string = [[NSAttributedString alloc] initWithString:@"Date String"];
+        [invocation setReturnValue:&string];
+    }] conversationViewController:[OCMArg any] attributedStringForDisplayOfRecipientStatus:[OCMArg any]];
     
     [[[delegateMock expect] andDo:^(NSInvocation *invocation) {
         NSAttributedString *string = [[NSAttributedString alloc] initWithString:@"Date String"];

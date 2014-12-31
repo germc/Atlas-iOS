@@ -441,7 +441,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
                 } else {
                     dateString = [self.dataSource conversationViewController:self attributedStringForDisplayOfDate:[NSDate date]];
                 }
-                NSAssert([dateString isKindOfClass:[NSAttributedString class]], @"`Date String must be an attributed string");
+                NSAssert([dateString isKindOfClass:[NSAttributedString class]], @"Date String must be an attributed string");
                 [header updateWithAttributedStringForDate:dateString];
             } else {
                 @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"LYRUIConversationViewControllerDataSource must return an attributed string for Date" userInfo:nil];
@@ -1032,11 +1032,6 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 
 #pragma mark - LYRQueryControllerDelegate
 
-- (void)queryControllerWillChangeContent:(LYRQueryController *)queryController
-{
-    
-}
-
 - (void)queryController:(LYRQueryController *)controller
         didChangeObject:(id)object
             atIndexPath:(NSIndexPath *)indexPath
@@ -1253,7 +1248,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     if ([self shouldDisplayReadReceiptForSection:indexPath.section]) {
         if ([self.dataSource respondsToSelector:@selector(conversationViewController:attributedStringForDisplayOfRecipientStatus:)]) {
             NSAttributedString *recipientStatusString = [self.dataSource conversationViewController:self attributedStringForDisplayOfRecipientStatus:message.recipientStatusByUserID];
-            NSAssert([recipientStatusString isKindOfClass:[NSAttributedString class]], @"`Date String must be an attributed string");
+            NSAssert([recipientStatusString isKindOfClass:[NSAttributedString class]], @"Recipient String must be an attributed string");
             [footer updateWithAttributedStringForRecipientStatus:recipientStatusString];
         } else {
             @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"LYRUIConversationViewControllerDataSource must return an attributed string for recipient status" userInfo:nil];
