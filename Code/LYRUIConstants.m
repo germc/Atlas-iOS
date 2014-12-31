@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Layer, Inc. All rights reserved.
 //
 
-NSString *const LYRUIConversationName = @"LYRUIConvesationName";
+NSString *const LYRUIConversationName = @"LYRUIConversationName";
 
 UIColor *LYRUIBlueColor()
 {
