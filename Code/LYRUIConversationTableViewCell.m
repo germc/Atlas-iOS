@@ -58,9 +58,6 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
 @property (nonatomic) UIView *unreadMessageIndicator;
 
 @property (nonatomic, assign) BOOL displaysImage;
-@property (nonatomic, assign) CGFloat conversationLabelHeight;
-@property (nonatomic, assign) CGFloat dateLabelHeight;
-@property (nonatomic, assign) CGFloat dateLabelWidth;
 @property (nonatomic, assign) CGFloat cellHorizontalMargin;
 @property (nonatomic, assign) CGFloat imageSizeRatio;
 
