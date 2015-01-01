@@ -104,6 +104,7 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
         self.conversationImageView = [[UIImageView alloc] init];
         self.conversationImageView.translatesAutoresizingMaskIntoConstraints = NO;
         self.conversationImageView.backgroundColor = LYRUIGrayColor();
+        self.conversationImageView.layer.masksToBounds = YES;
         [self.contentView addSubview:self.conversationImageView];
         
         // Initialize Sender Image
