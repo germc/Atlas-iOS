@@ -41,6 +41,10 @@ static NSDateFormatter *LYRUIShortTimeFormatter()
     return shortTimeFormatter;
 }
 
+static CGFloat const LYRUICellVerticalMargin = 12.0f;
+static CGFloat const LYRUIConversationLabelRightPadding = -6.0f;
+static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
+
 @interface LYRUIConversationTableViewCell ()
 
 @property (nonatomic) NSLayoutConstraint *imageViewWidthConstraint;
@@ -81,11 +85,6 @@ static NSDateFormatter *LYRUIShortTimeFormatter()
 @end
 
 @implementation LYRUIConversationTableViewCell
-
-// Cell Constants
-static CGFloat const LYRUICellVerticalMargin = 12.0f;
-static CGFloat const LYRUIConversationLabelRightPadding = -6.0f;
-static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
