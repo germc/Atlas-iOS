@@ -221,6 +221,7 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
     self.imageSizeRatio = 0.60f;
     self.conversationImageView.image = image;
     self.displaysImage = YES;
+    [self setNeedsUpdateConstraints];
 }
 
 - (void)updateWithLastMessageRecipientStatus:(LYRRecipientStatus)recipientStatus
@@ -240,7 +241,6 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
 {
     self.accessibilityLabel = conversationLabel;
     self.conversationLabel.text = conversationLabel;
-    [self updateConstraintConstants];
 }
 
 - (NSString *)dateLabelForLastMessage:(LYRMessage *)lastMessage
@@ -255,7 +255,7 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
     }
 }
 
-- (void)updateConstraintConstants
+- (void)updateConstraints
 {
     self.imageViewLeftConstraint.constant = self.cellHorizontalMargin;
     
@@ -263,13 +263,15 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
     
     self.lastMessageLabelLeftConstraint.constant = self.cellHorizontalMargin;
 
-    [self setNeedsUpdateConstraints];
+    [self configureImageViewWidthConstraint];
+
+    [super updateConstraints];
 }
 
-- (void)setupLayoutConstraints
+- (void)configureImageViewWidthConstraint
 {
-    //**********Avatar Constraints**********//
-    // Width
+    if (self.imageViewWidthConstraint && self.imageViewWidthConstraint.multiplier == self.imageSizeRatio) return;
+    [self.contentView removeConstraint:self.imageViewWidthConstraint];
     self.imageViewWidthConstraint = [NSLayoutConstraint constraintWithItem:self.conversationImageView
                                                                  attribute:NSLayoutAttributeWidth
                                                                  relatedBy:NSLayoutRelationEqual
@@ -277,14 +279,22 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
                                                                  attribute:NSLayoutAttributeHeight
                                                                 multiplier:self.imageSizeRatio
                                                                   constant:0];
-    
+    [self.contentView addConstraint:self.imageViewWidthConstraint];
+}
+
+- (void)setupLayoutConstraints
+{
+    //**********Avatar Constraints**********//
+    // Width
+    [self configureImageViewWidthConstraint];
+
     // Height
     self.imageViewHeighConstraint = [NSLayoutConstraint constraintWithItem:self.conversationImageView
                                                                  attribute:NSLayoutAttributeHeight
                                                                  relatedBy:NSLayoutRelationEqual
-                                                                    toItem:self.contentView
-                                                                 attribute:NSLayoutAttributeHeight
-                                                                multiplier:self.imageSizeRatio
+                                                                    toItem:self.conversationImageView
+                                                                 attribute:NSLayoutAttributeWidth
+                                                                multiplier:1
                                                                   constant:0];
     
     // Left Margin
@@ -420,7 +430,6 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
                                                                     multiplier:1.0
                                                                       constant:0];
     
-    [self.contentView addConstraint:self.imageViewWidthConstraint];
     [self.contentView addConstraint:self.imageViewHeighConstraint];
     [self.contentView addConstraint:self.imageViewLeftConstraint];
     [self.contentView addConstraint:self.imageViewCenterYConstraint];
