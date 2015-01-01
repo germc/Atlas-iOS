@@ -47,19 +47,14 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
 
 @interface LYRUIConversationTableViewCell ()
 
-@property (nonatomic) NSLayoutConstraint *imageViewWidthConstraint;
-@property (nonatomic) NSLayoutConstraint *imageViewLeftConstraint;
-@property (nonatomic) NSLayoutConstraint *conversationLabelLeftConstraint;
+@property (nonatomic) NSLayoutConstraint *conversationLabelWithImageLeftConstraint;
+@property (nonatomic) NSLayoutConstraint *conversationLabelWithoutImageLeftConstraint;
 
 @property (nonatomic) UIImageView *conversationImageView;
 @property (nonatomic) UILabel *conversationLabel;
 @property (nonatomic) UILabel *dateLabel;
 @property (nonatomic) UILabel *lastMessageLabel;
 @property (nonatomic) UIView *unreadMessageIndicator;
-
-@property (nonatomic, assign) BOOL displaysImage;
-@property (nonatomic, assign) CGFloat cellHorizontalMargin;
-@property (nonatomic, assign) CGFloat imageSizeRatio;
 
 @end
 
@@ -84,6 +79,7 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
         self.conversationImageView.translatesAutoresizingMaskIntoConstraints = NO;
         self.conversationImageView.backgroundColor = LYRUIGrayColor();
         self.conversationImageView.layer.masksToBounds = YES;
+        self.conversationImageView.hidden = YES;
         [self.contentView addSubview:self.conversationImageView];
         
         // Initialize Sender Image
@@ -127,7 +123,7 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
 - (void)prepareForReuse
 {
     [super prepareForReuse];
-    self.displaysImage = NO;
+    self.conversationImageView.hidden = YES;
     [self setNeedsUpdateConstraints];
 }
 
@@ -201,7 +197,7 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
 - (void)updateWithConversationImage:(UIImage *)image
 {
     self.conversationImageView.image = image;
-    self.displaysImage = YES;
+    self.conversationImageView.hidden = NO;
     [self setNeedsUpdateConstraints];
 }
 
@@ -238,36 +234,28 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
 
 - (void)updateConstraints
 {
-    self.cellHorizontalMargin = self.displaysImage ? 10.0f : 15.0f;
-    self.imageSizeRatio = self.displaysImage ? 0.60f : 0.0f;
-
-    self.imageViewLeftConstraint.constant = self.cellHorizontalMargin;
-    self.conversationLabelLeftConstraint.constant = self.cellHorizontalMargin;
-
-    [self configureImageViewWidthConstraint];
+    if (self.conversationImageView.isHidden) {
+        [self.contentView removeConstraint:self.conversationLabelWithImageLeftConstraint];
+        [self.contentView addConstraint:self.conversationLabelWithoutImageLeftConstraint];
+    } else {
+        [self.contentView removeConstraint:self.conversationLabelWithoutImageLeftConstraint];
+        [self.contentView addConstraint:self.conversationLabelWithImageLeftConstraint];
+    }
 
     [super updateConstraints];
-}
-
-- (void)configureImageViewWidthConstraint
-{
-    if (self.imageViewWidthConstraint && self.imageViewWidthConstraint.multiplier == self.imageSizeRatio) return;
-    [self.contentView removeConstraint:self.imageViewWidthConstraint];
-    self.imageViewWidthConstraint = [NSLayoutConstraint constraintWithItem:self.conversationImageView
-                                                                 attribute:NSLayoutAttributeWidth
-                                                                 relatedBy:NSLayoutRelationEqual
-                                                                    toItem:self.contentView
-                                                                 attribute:NSLayoutAttributeHeight
-                                                                multiplier:self.imageSizeRatio
-                                                                  constant:0];
-    [self.contentView addConstraint:self.imageViewWidthConstraint];
 }
 
 - (void)setupLayoutConstraints
 {
     //**********Avatar Constraints**********//
     // Width
-    [self configureImageViewWidthConstraint];
+    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.conversationImageView
+                                                                 attribute:NSLayoutAttributeWidth
+                                                                 relatedBy:NSLayoutRelationEqual
+                                                                    toItem:self.contentView
+                                                                 attribute:NSLayoutAttributeHeight
+                                                                multiplier:0.6
+                                                                  constant:0]];
 
     // Height
     [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.conversationImageView
@@ -279,14 +267,13 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
                                                                   constant:0]];
     
     // Left Margin
-    self.imageViewLeftConstraint = [NSLayoutConstraint constraintWithItem:self.conversationImageView
+    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.conversationImageView
                                                                  attribute:NSLayoutAttributeLeft
                                                                  relatedBy:NSLayoutRelationEqual
                                                                     toItem:self.contentView
                                                                  attribute:NSLayoutAttributeLeft
                                                                 multiplier:1.0
-                                                                  constant:self.cellHorizontalMargin];
-    [self.contentView addConstraint:self.imageViewLeftConstraint];
+                                                                  constant:10]];
 
     // Center Y
     [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.conversationImageView
@@ -300,14 +287,20 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
 
     //**********Conversation Label Constraints**********//
     // Left Margin
-    self.conversationLabelLeftConstraint =  [NSLayoutConstraint constraintWithItem:self.conversationLabel
+    self.conversationLabelWithImageLeftConstraint = [NSLayoutConstraint constraintWithItem:self.conversationLabel
                                                                  attribute:NSLayoutAttributeLeft
                                                                  relatedBy:NSLayoutRelationEqual
                                                                     toItem:self.conversationImageView
                                                                  attribute:NSLayoutAttributeRight
                                                                 multiplier:1.0
-                                                                  constant:self.cellHorizontalMargin];
-    [self.contentView addConstraint:self.conversationLabelLeftConstraint];
+                                                                  constant:10];
+    self.conversationLabelWithoutImageLeftConstraint = [NSLayoutConstraint constraintWithItem:self.conversationLabel
+                                                                 attribute:NSLayoutAttributeLeft
+                                                                 relatedBy:NSLayoutRelationEqual
+                                                                    toItem:self.contentView
+                                                                 attribute:NSLayoutAttributeLeft
+                                                                multiplier:1.0
+                                                                  constant:30];
 
     // Right Margin
     [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.conversationLabel
@@ -419,15 +412,8 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
 {
     [super layoutSubviews];
     
-    CGFloat seperatorInset;
-    if (self.displaysImage) {
-        seperatorInset = self.frame.size.height * self.imageSizeRatio + self.cellHorizontalMargin * 2;
-    } else {
-        seperatorInset = self.cellHorizontalMargin * 2;
-    }
-
-    self.separatorInset = UIEdgeInsetsMake(0, seperatorInset, 0, 0);
-    self.conversationImageView.layer.cornerRadius = self.frame.size.height * self.imageSizeRatio / 2;
+    self.separatorInset = UIEdgeInsetsMake(0, CGRectGetMinX(self.conversationLabel.frame), 0, 0);
+    self.conversationImageView.layer.cornerRadius = CGRectGetHeight(self.conversationImageView.frame) / 2;
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated
