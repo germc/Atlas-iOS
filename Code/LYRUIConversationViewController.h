@@ -173,9 +173,9 @@
 
 /**
  @abstract Returns the `UICollectionViewCell` corresponding to the `index` property of the provided `LYRMessage` object.
- @param message The LYRMessage object for which a cell will.
- @return A `UICollectionView` object conforming tot the `LYRUIMessagePresenting` protocl.
- @discussion If the provided `LYRMessage` object is not in the current results set for the controller, or the corresponding cell is
+ @param message The LYRMessage object whose `index` property will be used to acquire the cell.
+ @return A `UICollectionView` object conforming tot the `LYRUIMessagePresenting` protocol.
+ @discussion If the provided `LYRMessage` object is not in the current results set of the controller, or the corresponding cell is
  not currently visible, the method may return nil.
  */
 - (UICollectionViewCell<LYRUIMessagePresenting> *)collectionViewCellForMessage:(LYRMessage *)message;
