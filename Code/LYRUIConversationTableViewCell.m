@@ -385,7 +385,7 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
                                                                     toItem:self.contentView
                                                                  attribute:NSLayoutAttributeRight
                                                                 multiplier:1.0
-                                                                  constant:-6]];
+                                                                  constant:0]];
     // Top Margin
     [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.lastMessageLabel
                                                                  attribute:NSLayoutAttributeTop
