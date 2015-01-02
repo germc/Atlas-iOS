@@ -115,7 +115,7 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
         self.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         self.backgroundColor = _cellBackgroundColor;
         
-        [self setupLayoutConstraints];
+        [self setUpLayoutConstraints];
     }
     return self;
 }
@@ -245,7 +245,7 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
     [super updateConstraints];
 }
 
-- (void)setupLayoutConstraints
+- (void)setUpLayoutConstraints
 {
     //**********Avatar Constraints**********//
     // Width
