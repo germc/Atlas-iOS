@@ -124,12 +124,43 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
     return self;
 }
 
+- (void)updateConstraints
+{
+    if (self.conversationImageView.isHidden) {
+        [self.contentView removeConstraint:self.conversationLabelWithImageLeftConstraint];
+        [self.contentView addConstraint:self.conversationLabelWithoutImageLeftConstraint];
+    } else {
+        [self.contentView removeConstraint:self.conversationLabelWithoutImageLeftConstraint];
+        [self.contentView addConstraint:self.conversationLabelWithImageLeftConstraint];
+    }
+
+    [super updateConstraints];
+}
+
+- (void)layoutSubviews
+{
+    [super layoutSubviews];
+
+    self.separatorInset = UIEdgeInsetsMake(0, CGRectGetMinX(self.conversationLabel.frame), 0, 0);
+    self.conversationImageView.layer.cornerRadius = CGRectGetHeight(self.conversationImageView.frame) / 2;
+}
+
+- (void)setSelected:(BOOL)selected animated:(BOOL)animated
+{
+    [super setSelected:selected animated:animated];
+    if (selected) {
+        self.unreadMessageIndicator.hidden = YES;
+    }
+}
+
 - (void)prepareForReuse
 {
     [super prepareForReuse];
     self.conversationImageView.hidden = YES;
     [self setNeedsUpdateConstraints];
 }
+
+#pragma mark - Appearance Setters
 
 - (void)setConversationLabelFont:(UIFont *)conversationLabelFont
 {
@@ -179,6 +210,8 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
     self.backgroundColor = cellBackgroundColor;
 }
 
+#pragma mark - LYRUIConversationPresenting
+
 - (void)presentConversation:(LYRConversation *)conversation
 {
     self.dateLabel.text = [self dateLabelForLastMessage:conversation.lastMessage];
@@ -224,6 +257,8 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
     self.conversationLabel.text = conversationLabel;
 }
 
+#pragma mark - Helpers
+
 - (NSString *)dateLabelForLastMessage:(LYRMessage *)lastMessage
 {
     if (!lastMessage) return @"";
@@ -234,19 +269,6 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
     } else {
         return [LYRUIRelativeDateFormatter() stringFromDate:lastMessage.receivedAt];
     }
-}
-
-- (void)updateConstraints
-{
-    if (self.conversationImageView.isHidden) {
-        [self.contentView removeConstraint:self.conversationLabelWithImageLeftConstraint];
-        [self.contentView addConstraint:self.conversationLabelWithoutImageLeftConstraint];
-    } else {
-        [self.contentView removeConstraint:self.conversationLabelWithoutImageLeftConstraint];
-        [self.contentView addConstraint:self.conversationLabelWithImageLeftConstraint];
-    }
-
-    [super updateConstraints];
 }
 
 - (void)setUpConversationImageViewLayoutContraints
@@ -416,22 +438,6 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
                                                                  attribute:NSLayoutAttributeCenterY
                                                                 multiplier:1.0
                                                                   constant:0]];
-}
-
-- (void)layoutSubviews
-{
-    [super layoutSubviews];
-    
-    self.separatorInset = UIEdgeInsetsMake(0, CGRectGetMinX(self.conversationLabel.frame), 0, 0);
-    self.conversationImageView.layer.cornerRadius = CGRectGetHeight(self.conversationImageView.frame) / 2;
-}
-
-- (void)setSelected:(BOOL)selected animated:(BOOL)animated
-{
-    [super setSelected:selected animated:animated];
-    if (selected) {
-        self.unreadMessageIndicator.hidden = YES;
-    }
 }
 
 @end
