@@ -205,11 +205,11 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
 {
     switch (recipientStatus) {
         case LYRRecipientStatusDelivered:
-            self.unreadMessageIndicator.alpha = 1.0;
+            self.unreadMessageIndicator.hidden = NO;
             break;
             
         default:
-            self.unreadMessageIndicator.alpha = 0.0;
+            self.unreadMessageIndicator.hidden = YES;
             break;
     }
 }
@@ -420,7 +420,7 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
 {
     [super setSelected:selected animated:animated];
     if (selected) {
-        self.unreadMessageIndicator.alpha = 0.0f;
+        self.unreadMessageIndicator.hidden = YES;
     }
 }
 
