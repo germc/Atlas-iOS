@@ -352,7 +352,6 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     LYRMessage *message = [self messageAtCollectionViewIndexPath:indexPath];
-    NSLog(@"The message is %@", message);
     NSString *reuseIdentifier;
     if ([self.dataSource respondsToSelector:@selector(conversationViewController:reuseIdentifierForMessage:)]) {
         reuseIdentifier = [self.dataSource conversationViewController:self reuseIdentifierForMessage:message];

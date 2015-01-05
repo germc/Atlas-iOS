@@ -172,9 +172,9 @@
 - (void)registerClass:(Class<LYRUIMessagePresenting>)cellClass forMessageCellWithReuseIdentifier:(NSString *)reuseIdentifier;
 
 /**
- @abstract Returns the `UICollectionViewCell` corresponding to the `index` property of the provided `LYRMessage` object.
- @param message The LYRMessage object whose `index` property will be used to acquire the cell.
- @return A `UICollectionView` object conforming tot the `LYRUIMessagePresenting` protocol.
+ @abstract Returns the `UICollectionViewCell` corresponding to the provided `LYRMessage` object.
+ @param message The LYRMessage object used to acquire the cell.
+ @return A `UICollectionViewCell` object conforming to the `LYRUIMessagePresenting` protocol.
  @discussion If the provided `LYRMessage` object is not in the current results set of the controller, or the corresponding cell is
  not currently visible, the method may return nil.
  */
