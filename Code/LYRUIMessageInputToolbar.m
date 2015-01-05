@@ -253,8 +253,7 @@ static CGFloat const LYRUIButtonHeight = 28;
 - (NSArray *)messagePartsFromAttributedString:(NSAttributedString *)attributedString
 {
     NSMutableArray *messageParts = [NSMutableArray new];
-    [attributedString enumerateAttributesInRange:NSMakeRange(0, attributedString.length) options:0 usingBlock:^(NSDictionary *attributes, NSRange range, BOOL *stop) {
-        id attachment = attributes[NSAttachmentAttributeName];
+    [attributedString enumerateAttribute:NSAttachmentAttributeName inRange:NSMakeRange(0, attributedString.length) options:0 usingBlock:^(id attachment, NSRange range, BOOL *stop) {
         if ([attachment isKindOfClass:[LYRUIMediaAttachment class]]) {
             LYRUIMediaAttachment *mediaAttachment = (LYRUIMediaAttachment *)attachment;
             [messageParts addObject:mediaAttachment.image];
