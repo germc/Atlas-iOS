@@ -23,15 +23,15 @@
 
 @interface LYRUIConversationViewController () <UICollectionViewDataSource, UICollectionViewDelegate, LYRUIMessageInputToolbarDelegate, UIActionSheetDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIGestureRecognizerDelegate, LYRQueryControllerDelegate>
 
-@property (nonatomic) LYRUIConversationView *view;
 @property (nonatomic) UICollectionView *collectionView;
+@property (nonatomic) LYRQueryController *queryController;
+@property (nonatomic) LYRUIConversationView *view;
 @property (nonatomic) UILabel *typingIndicatorLabel;
 @property (nonatomic) LYRUITypingIndicatorView *typingIndicatorView;
 @property (nonatomic) CGFloat keyboardHeight;
 @property (nonatomic) BOOL shouldDisplayAvatarImage;
 @property (nonatomic) NSLayoutConstraint *typingIndicatorViewBottomConstraint;
 @property (nonatomic) NSMutableArray *typingParticipantIDs;
-@property (nonatomic) LYRQueryController *queryController;
 @property (nonatomic) NSMutableArray *objectChanges;
 @property (nonatomic) NSHashTable *sectionFooters;
 @property (nonatomic, getter=isFirstAppearance) BOOL firstAppearance;
@@ -437,7 +437,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
                 } else {
                     dateString = [self.dataSource conversationViewController:self attributedStringForDisplayOfDate:[NSDate date]];
                 }
-                NSAssert([dateString isKindOfClass:[NSAttributedString class]], @"`Date String must be an attributed string");
+                NSAssert([dateString isKindOfClass:[NSAttributedString class]], @"Date String must be an attributed string");
                 [header updateWithAttributedStringForDate:dateString];
             } else {
                 @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"LYRUIConversationViewControllerDataSource must return an attributed string for Date" userInfo:nil];
@@ -578,6 +578,16 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 - (void)registerClass:(Class<LYRUIMessagePresenting>)cellClass forMessageCellWithReuseIdentifier:(NSString *)reuseIdentifier
 {
     [self.collectionView registerClass:cellClass forCellWithReuseIdentifier:reuseIdentifier];
+}
+
+- (UICollectionViewCell<LYRUIMessagePresenting> *)collectionViewCellForMessage:(LYRMessage *)message
+{
+    NSIndexPath *indexPath = [self.queryController indexPathForObject:message];
+    if (indexPath) {
+        UICollectionViewCell *cell = [self.collectionView cellForItemAtIndexPath:[self collectionViewIndexPathForQueryControllerIndexPath:indexPath]];
+        if (cell) return (UICollectionViewCell<LYRUIMessagePresenting> *)cell;
+    }
+    return nil;
 }
 
 - (CGFloat)cellHeightForItemAtIndexPath:(NSIndexPath *)indexPath
@@ -1234,7 +1244,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     if ([self shouldDisplayReadReceiptForSection:indexPath.section]) {
         if ([self.dataSource respondsToSelector:@selector(conversationViewController:attributedStringForDisplayOfRecipientStatus:)]) {
             NSAttributedString *recipientStatusString = [self.dataSource conversationViewController:self attributedStringForDisplayOfRecipientStatus:message.recipientStatusByUserID];
-            NSAssert([recipientStatusString isKindOfClass:[NSAttributedString class]], @"`Date String must be an attributed string");
+            NSAssert([recipientStatusString isKindOfClass:[NSAttributedString class]], @"Recipient String must be an attributed string");
             [footer updateWithAttributedStringForRecipientStatus:recipientStatusString];
         } else {
             @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"LYRUIConversationViewControllerDataSource must return an attributed string for recipient status" userInfo:nil];

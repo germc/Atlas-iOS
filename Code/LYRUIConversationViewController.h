@@ -171,27 +171,36 @@
  */
 - (void)registerClass:(Class<LYRUIMessagePresenting>)cellClass forMessageCellWithReuseIdentifier:(NSString *)reuseIdentifier;
 
+/**
+ @abstract Returns the `UICollectionViewCell` corresponding to the provided `LYRMessage` object.
+ @param message The LYRMessage object used to acquire the cell.
+ @return A `UICollectionViewCell` object conforming to the `LYRUIMessagePresenting` protocol.
+ @discussion If the provided `LYRMessage` object is not in the current results set of the controller, or the corresponding cell is
+ not currently visible, the method may return nil.
+ */
+- (UICollectionViewCell<LYRUIMessagePresenting> *)collectionViewCellForMessage:(LYRMessage *)message;
+
 ///---------------------------------------
 /// @name Public Accessors
 ///---------------------------------------
 
 /**
- @abstract The `LYRClient` object used to initailize the controller
+ @abstract The `LYRClient` object used to initialize the controller.
  */
 @property (nonatomic) LYRClient *layerClient;
 
 /**
- @abstract The `LYRConversation` object used to initailize the controller
+ @abstract The `LYRConversation` object used to initialize the controller.
  */
 @property (nonatomic) LYRConversation *conversation;
 
 /**
- @abstract The `LYRUIAddressBarViewController` displayed for addressing new conversations
+ @abstract The `LYRUIAddressBarViewController` displayed for addressing new conversations.
  */
 @property (nonatomic) LYRUIAddressBarViewController *addressBarController;
 
 /**
- @abstract The `LYRUIMessageInputToolbar` displayed for user input
+ @abstract The `LYRUIMessageInputToolbar` displayed for user input.
  */
 @property (nonatomic) LYRUIMessageInputToolbar *messageInputToolbar;
 
@@ -202,7 +211,7 @@
 @property (nonatomic) BOOL showsAddressBar;
 
 /**
- @abstract If set, places the text in the navigation bar, otherwise UI will place the names of the participants
+ @abstract If set, places the text in the navigation bar, otherwise UI will place the names of the participants.
  */
 @property (nonatomic) NSString *conversationTitle;
 

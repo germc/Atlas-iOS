@@ -22,7 +22,9 @@ extern CGFloat const LYRUIMessageBubbleMapHeight;
  */
 @interface LYRUIMessageBubbleView : UIView <UIAppearanceContainer>
 
-
+/**
+ @abstract Tells the bubble view to display a UIActivityIndicator to indicate external content is downloading.
+ */
 - (void)displayDownloadActivityIndicator;
 
 /**

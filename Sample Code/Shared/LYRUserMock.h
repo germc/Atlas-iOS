@@ -10,14 +10,32 @@
 #import <UIKit/UIKit.h>
 #import <LayerUIKit/LYRUIParticipant.h>
 
+typedef NS_ENUM(NSUInteger, LYRClientMockUserName){
+    LYRClientMockFactoryNameMarshawn,
+    LYRClientMockFactoryNameRussell,
+    LYRClientMockFactoryNameCam,
+    LYRClientMockFactoryNameEarl,
+    LYRClientMockFactoryNameBobby,
+    LYRClientMockFactoryNameRichard,
+    LYRClientMockFactoryNameDoug
+};
+
 @interface LYRUserMock : NSObject <LYRUIParticipant>
 
-@property (nonatomic, readonly) NSString *firstName;
-@property (nonatomic, readonly) NSString *lastName;
-@property (nonatomic, readonly) NSString *fullName;
-@property (nonatomic, readonly) UIImage *avatarImage;
-@property (nonatomic, readonly) NSString *participantIdentifier;
+@property (nonatomic) NSString *firstName;
+@property (nonatomic) NSString *lastName;
+@property (nonatomic) NSString *fullName;
+@property (nonatomic) UIImage *avatarImage;
+@property (nonatomic) NSString *participantIdentifier;
 
-+ (instancetype)userWithFirstName:(NSString *)firstName lastName:(NSString *)lastName participantIdentifier:(NSString *)participantIdentifier;
++ (instancetype)userWithMockUserName:(LYRClientMockUserName)mockUserName;
+
++ (instancetype)mockUserForIdentifier:(NSString *)userIdentifier;
+
++ (instancetype)randomUser;
+
++ (NSSet *)allMockParticipants;
+
++ (NSSet *)participantsForIdentifiers:(NSSet *)identifiers;
 
 @end

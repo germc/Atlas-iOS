@@ -13,8 +13,8 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"LYRUIConversatio
 
 @interface LYRUIConversationListViewController () <UIActionSheetDelegate, LYRQueryControllerDelegate>
 
-@property (nonatomic) LYRClient *layerClient;
 @property (nonatomic) LYRQueryController *queryController;
+@property (nonatomic) LYRClient *layerClient;
 @property (nonatomic) BOOL hasAppeared;
 @property (nonatomic) LYRConversation *conversationToDelete;
 
@@ -34,7 +34,7 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"LYRUIConversatio
     if (self)  {
         _layerClient = layerClient;
         _cellClass = [LYRUIConversationTableViewCell class];
-        _displaysConversationImage = YES;
+        _displaysConversationImage = NO;
         _allowsEditing = YES;
         _rowHeight = 72.0f;
     }

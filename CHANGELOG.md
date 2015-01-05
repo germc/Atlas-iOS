@@ -8,6 +8,7 @@
 
 ### Public API Changes
 
+* Added `collectionViewCellForMessage:` to `LYRUIConversationViewController`.
 * Added `bubbleViewCornerRadius` property to `LYRUIMessageCollectionViewCell`.  
 * Added `avatarImageViewCornerRadius` property to `LYRUIMessageCollectionViewCell`.
 * Changed `backgroundColor` property to `cellBackgroundColor` on `LYRUIConversationTableViewCell`.
@@ -48,6 +49,7 @@
 
 ### Bug Fixes
 
+* Removed duplicate MIMEType constant declarations.
 * Fixed possibility of customizations via `UIAppearance` being overridden.
 * Fixed issue related to sending a push notification with `(null)` text.
 * Fixed typo for property `conversationLabelColor` on `LYRUIConversationTableViewCell`.
@@ -56,5 +58,9 @@
 
 ### Enhancements
 
+* `LYRUIConversationTableViewCell` no longer shows conversation image by default.
+* Implemented `LayerUIKit` unit test suite.
+* Re-implemented `LayerUIKit` mock objects.
+* Re-factored `LayerUIKit` sample app to use new mock objects.
 * Refactored internal constants.
 * Added support for external content.

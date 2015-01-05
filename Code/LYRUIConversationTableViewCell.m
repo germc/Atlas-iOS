@@ -8,6 +8,7 @@
 
 #import "LYRUIConversationTableViewCell.h"
 #import "LYRUIConstants.h"
+#import "LYRUIMessagingUtilities.h"
 
 static BOOL LYRUIIsDateInToday(NSDate *date)
 {

@@ -27,6 +27,7 @@ NSString *const LYRUIMessageInputToolbarDidChangeHeightNotification = @"LYRUIMes
 // Compose View Margin Constants
 static CGFloat const LYRUIHorizontalMargin = 6;
 static CGFloat const LYRUIVerticalMargin = 6;
+static CGFloat const LYRUIVerticalButtonMargin = 8;
 
 // Compose View Button Constants
 static CGFloat const LYRUILeftAccessoryButtonWidth = 40;
@@ -104,10 +105,9 @@ static CGFloat const LYRUIButtonHeight = 28;
 
     frame.size.height = CGRectGetHeight(textViewFrame) + LYRUIVerticalMargin * 2;
     frame.origin.y -= frame.size.height - CGRectGetHeight(self.frame);
-
-    leftButtonFrame.origin.y = CGRectGetHeight(frame) - CGRectGetHeight(leftButtonFrame) - LYRUIVerticalMargin;
-
-    rightButtonFrame.origin.y = CGRectGetHeight(frame) - CGRectGetHeight(rightButtonFrame) - LYRUIVerticalMargin;
+ 
+    leftButtonFrame.origin.y = CGRectGetHeight(frame) - CGRectGetHeight(leftButtonFrame) - LYRUIVerticalButtonMargin;
+    rightButtonFrame.origin.y = CGRectGetHeight(frame) - CGRectGetHeight(rightButtonFrame) - LYRUIVerticalButtonMargin;
 
     self.leftAccessoryButton.frame = leftButtonFrame;
     self.rightAccessoryButton.frame = rightButtonFrame;

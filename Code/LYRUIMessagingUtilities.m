@@ -119,7 +119,6 @@ LYRMessagePart *LYRUIMessagePartWithJPEGImage(UIImage *image)
 {
     UIImage *adjustedImage = LYRUIAdjustOrientationForImage(image);
     NSData *imageData = LYRUIJPEGDataForImageWithConstraint(adjustedImage, 300);
-//    NSData *imageData = UIImageJPEGRepresentation(adjustedImage, 1.0);
     return [LYRMessagePart messagePartWithMIMEType:LYRUIMIMETypeImageJPEG
                                               data:imageData];
 }

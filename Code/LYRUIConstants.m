@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 Layer, Inc. All rights reserved.
 //
 
+NSString *const LYRUIConversationName = @"LYRUIConversationName";
+
 UIColor *LYRUIBlueColor()
 {
     return [UIColor colorWithRed:36.0f/255.0f green:166.0f/255.0f blue:225.0f/255.0f alpha:1.0];
