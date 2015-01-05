@@ -1,6 +1,6 @@
 //
 //  LYRUIParticipantSectionHeaderView.m
-//  Pods
+//  LayerUIKit
 //
 //  Created by Kevin Coleman on 8/31/14.
 //

@@ -1,6 +1,6 @@
 //
 //  LYRUIDataSourceChange.h
-//  Pods
+//  LayerUIKit
 //
 //  Created by Kevin Coleman on 9/20/14.
 //

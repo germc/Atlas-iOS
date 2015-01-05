@@ -1,6 +1,6 @@
 //
 //  LYRUIErrors.m
-//  Pods
+//  LayerUIKit
 //
 //  Created by Kevin Coleman on 9/26/14.
 //

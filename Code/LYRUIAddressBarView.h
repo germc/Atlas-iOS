@@ -1,6 +1,6 @@
 //
 //  LYRUIAddressBarView.h
-//  Pods
+//  LayerUIKit
 //
 //  Created by Kevin Coleman on 10/30/14.
 //

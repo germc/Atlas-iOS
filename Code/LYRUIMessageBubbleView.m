@@ -1,6 +1,6 @@
 //
 //  LRYUIMessageBubbleVIew.m
-//  Pods
+//  LayerUIKit
 //
 //  Created by Kevin Coleman on 9/8/14.
 //

@@ -1,6 +1,6 @@
 //
 //  LYRUIParticipantTableDataSet.h
-//  Pods
+//  LayerUIKit
 //
 //  Created by Ben Blakley on 12/18/14.
 //
