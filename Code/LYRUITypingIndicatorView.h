@@ -1,6 +1,6 @@
 //
 //  LYRTypingIndicatorView.h
-//  Pods
+//  LayerUIKit
 //
 //  Created by Kevin Coleman on 11/11/14.
 //

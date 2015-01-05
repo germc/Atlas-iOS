@@ -1,6 +1,6 @@
 //
 //  LYRUIAddresBarView.m
-//  Pods
+//  LayerUIKit
 //
 //  Created by Kevin Coleman on 10/27/14.
 //

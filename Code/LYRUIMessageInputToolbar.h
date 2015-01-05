@@ -1,6 +1,6 @@
 //
 //  LYRUIMessageInputToolbar.h
-//  Pods
+//  LayerUIKit
 //
 //  Created by Kevin Coleman on 9/18/14.
 //

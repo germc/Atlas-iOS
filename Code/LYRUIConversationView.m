@@ -1,6 +1,6 @@
 //
 //  LYRUIConversationView.m
-//  Pods
+//  LayerUIKit
 //
 //  Created by Ben Blakley on 12/5/14.
 //
