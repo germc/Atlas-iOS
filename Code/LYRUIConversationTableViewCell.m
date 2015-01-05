@@ -41,63 +41,34 @@ static NSDateFormatter *LYRUIShortTimeFormatter()
     return shortTimeFormatter;
 }
 
+static CGFloat const LYRUICellVerticalMargin = 12.0f;
+static CGFloat const LYRUIConversationLabelRightPadding = -6.0f;
+static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
+
 @interface LYRUIConversationTableViewCell ()
 
-@property (nonatomic) NSLayoutConstraint *imageViewWidthConstraint;
-@property (nonatomic) NSLayoutConstraint *imageViewHeighConstraint;
-@property (nonatomic) NSLayoutConstraint *imageViewLeftConstraint;
-@property (nonatomic) NSLayoutConstraint *imageViewCenterYConstraint;
-
-@property (nonatomic) NSLayoutConstraint *conversationLabelLeftConstraint;
-@property (nonatomic) NSLayoutConstraint *conversationLabelRightConstraint;
-@property (nonatomic) NSLayoutConstraint *conversationLabelTopConstraint;
-@property (nonatomic) NSLayoutConstraint *conversationLabelHeightConstraint;
-
-@property (nonatomic) NSLayoutConstraint *dateLabelRightConstraint;
-@property (nonatomic) NSLayoutConstraint *dateLabelTopConstraint;
-@property (nonatomic) NSLayoutConstraint *dateLabelWidthConstraint;
-
-@property (nonatomic) NSLayoutConstraint *lastMessageTextLeftConstraint;
-@property (nonatomic) NSLayoutConstraint *lastMessageTextRightConstraint;
-@property (nonatomic) NSLayoutConstraint *lastMessageTextTopConstraint;
-@property (nonatomic) NSLayoutConstraint *lastMessageTextHeightConstraint;
-
-@property (nonatomic) NSLayoutConstraint *unreadMessageIndicatorWidth;
-@property (nonatomic) NSLayoutConstraint *unreadMessageIndicatorHeight;
-@property (nonatomic) NSLayoutConstraint *unreadMessageIndicatorRight;
-@property (nonatomic) NSLayoutConstraint *unreadMessageIndicatorTop;
+@property (nonatomic) NSLayoutConstraint *conversationLabelWithImageLeftConstraint;
+@property (nonatomic) NSLayoutConstraint *conversationLabelWithoutImageLeftConstraint;
 
 @property (nonatomic) UIImageView *conversationImageView;
 @property (nonatomic) UILabel *conversationLabel;
 @property (nonatomic) UILabel *dateLabel;
-@property (nonatomic) UITextView *lastMessageTextView;
+@property (nonatomic) UILabel *lastMessageLabel;
 @property (nonatomic) UIView *unreadMessageIndicator;
-
-@property (nonatomic, assign) BOOL displaysImage;
-@property (nonatomic, assign) CGFloat conversationLabelHeight;
-@property (nonatomic, assign) CGFloat dateLabelHeight;
-@property (nonatomic, assign) CGFloat dateLabelWidth;
-@property (nonatomic, assign) CGFloat cellHorizontalMargin;
-@property (nonatomic, assign) CGFloat imageSizeRatio;
 
 @end
 
 @implementation LYRUIConversationTableViewCell
 
-// Cell Constants
-static CGFloat const LSCellVerticalMargin = 12.0f;
-static CGFloat const LSConversationLabelRightPadding = -6.0f;
-static CGFloat const LSUnreadMessageCountLabelSize = 14.0f;
-
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
-        //UIAppearance Proxy Defaults
+        // UIAppearance Proxy Defaults
         _conversationLabelFont = LYRUIBoldFont(14);
         _conversationLabelColor = [UIColor blackColor];
-        _lastMessageTextFont = LYRUILightFont(14);
-        _lastMessageTextColor = [UIColor grayColor];
+        _lastMessageLabelFont = LYRUILightFont(14);
+        _lastMessageLabelColor = [UIColor grayColor];
         _dateLabelFont = LYRUIMediumFont(14);
         _dateLabelColor = [UIColor grayColor];
         _unreadMessageIndicatorBackgroundColor = LYRUIBlueColor();
@@ -107,85 +78,175 @@ static CGFloat const LSUnreadMessageCountLabelSize = 14.0f;
         self.conversationImageView = [[UIImageView alloc] init];
         self.conversationImageView.translatesAutoresizingMaskIntoConstraints = NO;
         self.conversationImageView.backgroundColor = LYRUIGrayColor();
+        self.conversationImageView.layer.masksToBounds = YES;
+        self.conversationImageView.hidden = YES;
         [self.contentView addSubview:self.conversationImageView];
         
-        // Initialiaze Sender Image
+        // Initialize Sender Image
         self.conversationLabel = [[UILabel alloc] init];
         self.conversationLabel.translatesAutoresizingMaskIntoConstraints = NO;
+        self.conversationLabel.font = _conversationLabelFont;
+        self.conversationLabel.textColor = _conversationLabelColor;
         [self.contentView addSubview:self.conversationLabel];
         
-        // Initialize Message Text
-        self.lastMessageTextView = [[UITextView alloc] init];
-        self.lastMessageTextView.translatesAutoresizingMaskIntoConstraints = NO;
-        self.lastMessageTextView.contentInset = UIEdgeInsetsMake(-10,-4,0,0);
-        self.lastMessageTextView.userInteractionEnabled = NO;
-        [self.contentView addSubview:self.lastMessageTextView];
+        // Initialize Message Label
+        self.lastMessageLabel = [[UILabel alloc] init];
+        self.lastMessageLabel.translatesAutoresizingMaskIntoConstraints = NO;
+        self.lastMessageLabel.font = _lastMessageLabelFont;
+        self.lastMessageLabel.textColor = _lastMessageLabelColor;
+        self.lastMessageLabel.numberOfLines = 2;
+        [self.contentView addSubview:self.lastMessageLabel];
         
         // Initialize Date Label
         self.dateLabel = [[UILabel alloc] init];
         self.dateLabel.translatesAutoresizingMaskIntoConstraints = NO;
-        self.dateLabel.textAlignment= NSTextAlignmentRight;
+        self.dateLabel.textAlignment = NSTextAlignmentRight;
+        self.dateLabel.font = _dateLabelFont;
+        self.dateLabel.textColor = _dateLabelColor;
         [self.contentView addSubview:self.dateLabel];
         
         self.unreadMessageIndicator = [[UIView alloc] init];
-        self.unreadMessageIndicator.layer.cornerRadius = LSUnreadMessageCountLabelSize / 2;
+        self.unreadMessageIndicator.layer.cornerRadius = LYRUIUnreadMessageCountLabelSize / 2;
         self.unreadMessageIndicator.clipsToBounds = YES;
         self.unreadMessageIndicator.translatesAutoresizingMaskIntoConstraints = NO;
+        self.unreadMessageIndicator.backgroundColor = _unreadMessageIndicatorBackgroundColor;
         [self.contentView addSubview:self.unreadMessageIndicator];
         
         self.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-        self.cellHorizontalMargin = 15.0f;
-        self.imageSizeRatio = 0.0f;
-        self.displaysImage = FALSE;
+        self.backgroundColor = _cellBackgroundColor;
         
-        [self setupLayoutConstraints];
-
+        [self setUpConversationImageViewLayoutContraints];
+        [self setUpConversationLabelLayoutContraints];
+        [self setUpDateLabelLayoutContstraints];
+        [self setUpLastMessageLayoutConstraints];
+        [self setUpUnreadMessageIndicatorLayoutConstraints];
     }
     return self;
 }
 
+- (void)updateConstraints
+{
+    if (self.conversationImageView.isHidden) {
+        [self.contentView removeConstraint:self.conversationLabelWithImageLeftConstraint];
+        [self.contentView addConstraint:self.conversationLabelWithoutImageLeftConstraint];
+    } else {
+        [self.contentView removeConstraint:self.conversationLabelWithoutImageLeftConstraint];
+        [self.contentView addConstraint:self.conversationLabelWithImageLeftConstraint];
+    }
+
+    [super updateConstraints];
+}
+
+- (void)layoutSubviews
+{
+    [super layoutSubviews];
+
+    self.separatorInset = UIEdgeInsetsMake(0, CGRectGetMinX(self.conversationLabel.frame), 0, 0);
+    self.conversationImageView.layer.cornerRadius = CGRectGetHeight(self.conversationImageView.frame) / 2;
+}
+
+- (void)setSelected:(BOOL)selected animated:(BOOL)animated
+{
+    [super setSelected:selected animated:animated];
+    if (selected) {
+        self.unreadMessageIndicator.hidden = YES;
+    }
+}
+
+- (void)prepareForReuse
+{
+    [super prepareForReuse];
+    self.conversationImageView.hidden = YES;
+    [self setNeedsUpdateConstraints];
+}
+
+#pragma mark - Appearance Setters
+
 - (void)setConversationLabelFont:(UIFont *)conversationLabelFont
 {
     _conversationLabelFont = conversationLabelFont;
+    self.conversationLabel.font = conversationLabelFont;
 }
+
+- (void)setConversationLabelColor:(UIColor *)conversationLabelColor
+{
+    _conversationLabelColor = conversationLabelColor;
+    self.conversationLabel.textColor = conversationLabelColor;
+}
+
+- (void)setLastMessageLabelFont:(UIFont *)lastMessageLabelFont
+{
+    _lastMessageLabelFont = lastMessageLabelFont;
+    self.lastMessageLabel.font = lastMessageLabelFont;
+}
+
+- (void)setLastMessageLabelColor:(UIColor *)lastMessageLabelColor
+{
+    _lastMessageLabelColor = lastMessageLabelColor;
+    self.lastMessageLabel.textColor = lastMessageLabelColor;
+}
+
+- (void)setDateLabelFont:(UIFont *)dateLabelFont
+{
+    _dateLabelFont = dateLabelFont;
+    self.dateLabel.font = dateLabelFont;
+}
+
+- (void)setDateLabelColor:(UIColor *)dateLabelColor
+{
+    _dateLabelColor = dateLabelColor;
+    self.dateLabel.textColor = dateLabelColor;
+}
+
+- (void)setUnreadMessageIndicatorBackgroundColor:(UIColor *)unreadMessageIndicatorBackgroundColor
+{
+    _unreadMessageIndicatorBackgroundColor = unreadMessageIndicatorBackgroundColor;
+    self.unreadMessageIndicator.backgroundColor = unreadMessageIndicatorBackgroundColor;
+}
+
+- (void)setCellBackgroundColor:(UIColor *)cellBackgroundColor
+{
+    _cellBackgroundColor = cellBackgroundColor;
+    self.backgroundColor = cellBackgroundColor;
+}
+
+#pragma mark - LYRUIConversationPresenting
 
 - (void)presentConversation:(LYRConversation *)conversation
 {
     self.dateLabel.text = [self dateLabelForLastMessage:conversation.lastMessage];
     
     LYRMessage *message = conversation.lastMessage;
-    LYRMessagePart *messagePart = [message.parts firstObject];
-    if ([messagePart.MIMEType isEqualToString:@"text/plain"]) {
-        self.lastMessageTextView.text = [[NSString alloc] initWithData:messagePart.data encoding:NSUTF8StringEncoding];
-    } else if (messagePart.MIMEType == LYRUIMIMETypeImageJPEG) {
-        self.lastMessageTextView.text = @"Attachement: Image";
-    } else if (messagePart.MIMEType == LYRUIMIMETypeImagePNG) {
-        self.lastMessageTextView.text = @"Attachement: Image";
-    } else if (messagePart.MIMEType == LYRUIMIMETypeLocation) {
-        self.lastMessageTextView.text = @"Attachement: Location";
+    LYRMessagePart *messagePart = message.parts.firstObject;
+    if ([messagePart.MIMEType isEqualToString:LYRUIMIMETypeTextPlain]) {
+        self.lastMessageLabel.text = [[NSString alloc] initWithData:messagePart.data encoding:NSUTF8StringEncoding];
+    } else if ([messagePart.MIMEType isEqualToString:LYRUIMIMETypeImageJPEG]) {
+        self.lastMessageLabel.text = @"Attachment: Image";
+    } else if ([messagePart.MIMEType isEqualToString:LYRUIMIMETypeImagePNG]) {
+        self.lastMessageLabel.text = @"Attachment: Image";
+    } else if ([messagePart.MIMEType isEqualToString:LYRUIMIMETypeLocation]) {
+        self.lastMessageLabel.text = @"Attachment: Location";
     } else {
-        self.lastMessageTextView.text = @"Attachement: Image";
+        self.lastMessageLabel.text = @"Attachment: Image";
     }
 }
 
 - (void)updateWithConversationImage:(UIImage *)image
 {
-    self.cellHorizontalMargin = 10.0f;
-    self.imageSizeRatio = 0.60f;
     self.conversationImageView.image = image;
-    self.displaysImage = TRUE;
+    self.conversationImageView.hidden = NO;
+    [self setNeedsUpdateConstraints];
 }
 
 - (void)updateWithLastMessageRecipientStatus:(LYRRecipientStatus)recipientStatus
 {
-    self.unreadMessageIndicator.backgroundColor = self.unreadMessageIndicatorBackgroundColor;
     switch (recipientStatus) {
         case LYRRecipientStatusDelivered:
-            self.unreadMessageIndicator.alpha = 1.0;
+            self.unreadMessageIndicator.hidden = NO;
             break;
             
         default:
-            self.unreadMessageIndicator.alpha = 0.0;
+            self.unreadMessageIndicator.hidden = YES;
             break;
     }
 }
@@ -194,8 +255,9 @@ static CGFloat const LSUnreadMessageCountLabelSize = 14.0f;
 {
     self.accessibilityLabel = conversationLabel;
     self.conversationLabel.text = conversationLabel;
-    [self configureLayoutConstraintsForLabels];
 }
+
+#pragma mark - Helpers
 
 - (NSString *)dateLabelForLastMessage:(LYRMessage *)lastMessage
 {
@@ -209,256 +271,173 @@ static CGFloat const LSUnreadMessageCountLabelSize = 14.0f;
     }
 }
 
-- (void)configureLayoutConstraintsForLabels
+- (void)setUpConversationImageViewLayoutContraints
 {
-    // Configure per UI Appearance Proxy
-    self.conversationLabel.font = self.conversationLabelFont;
-    self.conversationLabel.textColor = self.conversationLabelColor;
-    
-    self.lastMessageTextView.font = self.lastMessageTextFont;
-    self.lastMessageTextView.textColor = self.lastMessageTextColor;
-    
-    self.dateLabel.font = self.dateLabelFont;
-    self.dateLabel.textColor = self.dateLabelColor;
-    
-    self.backgroundColor = self.cellBackgroundColor;
-    
-    [self.conversationLabel sizeToFit];
-    [self.dateLabel sizeToFit];
-    [self updateConstraintConstants];
-}
-
-- (void)updateConstraintConstants
-{
-    self.imageViewLeftConstraint.constant = self.cellHorizontalMargin;
-    
-    self.conversationLabelLeftConstraint.constant = self.cellHorizontalMargin;
-    self.conversationLabelHeightConstraint.constant = self.conversationLabel.frame.size.height;
-    
-    self.lastMessageTextLeftConstraint.constant = self.cellHorizontalMargin;
-    self.lastMessageTextHeightConstraint.constant = self.lastMessageTextView.font.lineHeight * 2;
-    
-    self.dateLabelWidthConstraint.constant = self.dateLabel.frame.size.width;
-    
-    [self setNeedsUpdateConstraints];
-}
-
-- (void)setupLayoutConstraints
-{
-    //**********Avatar Constraints**********//
     // Width
-    self.imageViewWidthConstraint = [NSLayoutConstraint constraintWithItem:self.conversationImageView
+    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.conversationImageView
                                                                  attribute:NSLayoutAttributeWidth
                                                                  relatedBy:NSLayoutRelationEqual
                                                                     toItem:self.contentView
                                                                  attribute:NSLayoutAttributeHeight
-                                                                multiplier:self.imageSizeRatio
-                                                                  constant:0];
-    
-    // Height
-    self.imageViewHeighConstraint = [NSLayoutConstraint constraintWithItem:self.conversationImageView
-                                                                 attribute:NSLayoutAttributeHeight
-                                                                 relatedBy:NSLayoutRelationEqual
-                                                                    toItem:self.contentView
-                                                                 attribute:NSLayoutAttributeHeight
-                                                                multiplier:self.imageSizeRatio
-                                                                  constant:0];
-    
-    // Left Margin
-    self.imageViewLeftConstraint = [NSLayoutConstraint constraintWithItem:self.conversationImageView
-                                                                 attribute:NSLayoutAttributeLeft
-                                                                 relatedBy:NSLayoutRelationEqual
-                                                                    toItem:self.contentView
-                                                                 attribute:NSLayoutAttributeLeft
-                                                                multiplier:1.0
-                                                                  constant:self.cellHorizontalMargin];
-    
-    // Center Y
-    self.imageViewCenterYConstraint = [NSLayoutConstraint constraintWithItem:self.conversationImageView
-                                                                 attribute:NSLayoutAttributeCenterY
-                                                                 relatedBy:NSLayoutRelationEqual
-                                                                    toItem:self.contentView
-                                                                 attribute:NSLayoutAttributeCenterY
-                                                                multiplier:1.0
-                                                                  constant:0];
-    
+                                                                multiplier:0.6
+                                                                  constant:0]];
 
-    //**********Conversation Label Constraints**********//
+    // Height
+    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.conversationImageView
+                                                                 attribute:NSLayoutAttributeHeight
+                                                                 relatedBy:NSLayoutRelationEqual
+                                                                    toItem:self.conversationImageView
+                                                                 attribute:NSLayoutAttributeWidth
+                                                                multiplier:1
+                                                                  constant:0]];
+    
     // Left Margin
-    self.conversationLabelLeftConstraint =  [NSLayoutConstraint constraintWithItem:self.conversationLabel
+    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.conversationImageView
+                                                                 attribute:NSLayoutAttributeLeft
+                                                                 relatedBy:NSLayoutRelationEqual
+                                                                    toItem:self.contentView
+                                                                 attribute:NSLayoutAttributeLeft
+                                                                multiplier:1.0
+                                                                  constant:10]];
+
+    // Center Y
+    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.conversationImageView
+                                                                 attribute:NSLayoutAttributeCenterY
+                                                                 relatedBy:NSLayoutRelationEqual
+                                                                    toItem:self.contentView
+                                                                 attribute:NSLayoutAttributeCenterY
+                                                                multiplier:1.0
+                                                                  constant:0]];
+}
+
+- (void)setUpConversationLabelLayoutContraints
+{
+    // Left Margin
+    self.conversationLabelWithImageLeftConstraint = [NSLayoutConstraint constraintWithItem:self.conversationLabel
                                                                  attribute:NSLayoutAttributeLeft
                                                                  relatedBy:NSLayoutRelationEqual
                                                                     toItem:self.conversationImageView
                                                                  attribute:NSLayoutAttributeRight
                                                                 multiplier:1.0
-                                                                  constant:self.cellHorizontalMargin];
+                                                                  constant:10];
+    self.conversationLabelWithoutImageLeftConstraint = [NSLayoutConstraint constraintWithItem:self.conversationLabel
+                                                                 attribute:NSLayoutAttributeLeft
+                                                                 relatedBy:NSLayoutRelationEqual
+                                                                    toItem:self.contentView
+                                                                 attribute:NSLayoutAttributeLeft
+                                                                multiplier:1.0
+                                                                  constant:30];
 
     // Right Margin
-    self.conversationLabelRightConstraint = [NSLayoutConstraint constraintWithItem:self.conversationLabel
+    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.conversationLabel
                                                                  attribute:NSLayoutAttributeRight
                                                                  relatedBy:NSLayoutRelationEqual
                                                                     toItem:self.dateLabel
                                                                  attribute:NSLayoutAttributeLeft
                                                                 multiplier:1.0
-                                                                  constant:LSConversationLabelRightPadding];
+                                                                  constant:LYRUIConversationLabelRightPadding]];
     // Top Margin
-    self.conversationLabelTopConstraint = [NSLayoutConstraint constraintWithItem:self.conversationLabel
+    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.conversationLabel
                                                                  attribute:NSLayoutAttributeTop
                                                                  relatedBy:NSLayoutRelationEqual
                                                                     toItem:self.contentView
                                                                  attribute:NSLayoutAttributeTop
                                                                 multiplier:1.0
-                                                                  constant:LSCellVerticalMargin];
-    // Height
-    self.conversationLabelHeightConstraint = [NSLayoutConstraint constraintWithItem:self.conversationLabel
-                                                                 attribute:NSLayoutAttributeHeight
-                                                                 relatedBy:NSLayoutRelationEqual
-                                                                    toItem:nil
-                                                                 attribute:NSLayoutAttributeNotAnAttribute
-                                                                multiplier:1.0
-                                                                  constant:self.conversationLabelHeight];
-    //**********Date Label Constraints**********//
-    // Width
-    self.dateLabelWidthConstraint = [NSLayoutConstraint constraintWithItem:self.dateLabel
-                                                                 attribute:NSLayoutAttributeWidth
-                                                                 relatedBy:NSLayoutRelationEqual
-                                                                    toItem:nil
-                                                                 attribute:NSLayoutAttributeNotAnAttribute
-                                                                multiplier:1.0
-                                                                  constant:0];
+                                                                  constant:LYRUICellVerticalMargin]];
+}
+
+- (void)setUpDateLabelLayoutContstraints
+{
     // Right Margin
-    self.dateLabelRightConstraint = [NSLayoutConstraint constraintWithItem:self.dateLabel
+    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.dateLabel
                                                                  attribute:NSLayoutAttributeRight
                                                                  relatedBy:NSLayoutRelationEqual
                                                                     toItem:self.contentView
                                                                  attribute:NSLayoutAttributeRight
                                                                 multiplier:1.0
-                                                                  constant:0];
+                                                                  constant:0]];
 
     // Top Margin
-    self.dateLabelTopConstraint = [NSLayoutConstraint constraintWithItem:self.dateLabel
+    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.dateLabel
                                                                  attribute:NSLayoutAttributeTop
                                                                  relatedBy:NSLayoutRelationEqual
                                                                     toItem:self.contentView
                                                                  attribute:NSLayoutAttributeTop
                                                                 multiplier:1.0
-                                                                 constant:LSCellVerticalMargin];
+                                                                 constant:LYRUICellVerticalMargin]];
+}
 
-    //**********Message Text Constraints**********//
-    //Left Margin
-    self.lastMessageTextLeftConstraint = [NSLayoutConstraint constraintWithItem:self.lastMessageTextView
+- (void)setUpLastMessageLayoutConstraints
+{
+    // Left Margin
+    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.lastMessageLabel
                                                                  attribute:NSLayoutAttributeLeft
                                                                  relatedBy:NSLayoutRelationEqual
-                                                                    toItem:self.conversationImageView
-                                                                 attribute:NSLayoutAttributeRight
+                                                                    toItem:self.conversationLabel
+                                                                 attribute:NSLayoutAttributeLeft
                                                                 multiplier:1.0
-                                                                  constant:self.cellHorizontalMargin];
+                                                                  constant:0]];
+
     // Right Margin
-    self.lastMessageTextRightConstraint = [NSLayoutConstraint constraintWithItem:self.lastMessageTextView
+    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.lastMessageLabel
                                                                  attribute:NSLayoutAttributeRight
                                                                  relatedBy:NSLayoutRelationEqual
                                                                     toItem:self.contentView
                                                                  attribute:NSLayoutAttributeRight
                                                                 multiplier:1.0
-                                                                  constant:-6];
+                                                                  constant:0]];
     // Top Margin
-    self.lastMessageTextTopConstraint = [NSLayoutConstraint constraintWithItem:self.lastMessageTextView
+    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.lastMessageLabel
                                                                  attribute:NSLayoutAttributeTop
                                                                  relatedBy:NSLayoutRelationEqual
                                                                     toItem:self.conversationLabel
                                                                  attribute:NSLayoutAttributeBottom
                                                                 multiplier:1.0
-                                                                  constant:4];
+                                                                  constant:2]];
+    // Bottom
+    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.lastMessageLabel
+                                                                 attribute:NSLayoutAttributeBottom
+                                                                 relatedBy:NSLayoutRelationLessThanOrEqual
+                                                                    toItem:self.contentView
+                                                                 attribute:NSLayoutAttributeBottom
+                                                                multiplier:1.0
+                                                                  constant:-4]];
+}
+
+- (void)setUpUnreadMessageIndicatorLayoutConstraints
+{
+    // Width
+    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.unreadMessageIndicator
+                                                                 attribute:NSLayoutAttributeWidth
+                                                                 relatedBy:NSLayoutRelationEqual
+                                                                    toItem:nil
+                                                                 attribute:NSLayoutAttributeNotAnAttribute
+                                                                multiplier:1.0
+                                                                  constant:LYRUIUnreadMessageCountLabelSize]];
     // Height
-    self.lastMessageTextHeightConstraint = [NSLayoutConstraint constraintWithItem:self.lastMessageTextView
+    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.unreadMessageIndicator
                                                                  attribute:NSLayoutAttributeHeight
                                                                  relatedBy:NSLayoutRelationEqual
                                                                     toItem:nil
                                                                  attribute:NSLayoutAttributeNotAnAttribute
                                                                 multiplier:1.0
-                                                                  constant:self.lastMessageTextView.font.lineHeight * 2];
-    
-    //**********Unread Messsage Label Constraints**********//
-    //Width
-    self.unreadMessageIndicatorWidth = [NSLayoutConstraint constraintWithItem:self.unreadMessageIndicator
-                                                                      attribute:NSLayoutAttributeWidth
-                                                                      relatedBy:NSLayoutRelationEqual
-                                                                         toItem:nil
-                                                                      attribute:NSLayoutAttributeNotAnAttribute
-                                                                     multiplier:1.0
-                                                                       constant:LSUnreadMessageCountLabelSize];
-    // Height
-    self.unreadMessageIndicatorHeight = [NSLayoutConstraint constraintWithItem:self.unreadMessageIndicator
-                                                                       attribute:NSLayoutAttributeHeight
-                                                                       relatedBy:NSLayoutRelationEqual
-                                                                          toItem:nil
-                                                                       attribute:NSLayoutAttributeNotAnAttribute
-                                                                      multiplier:1.0
-                                                                        constant:LSUnreadMessageCountLabelSize];
+                                                                  constant:LYRUIUnreadMessageCountLabelSize]];
     // Top Margin
-    self.unreadMessageIndicatorTop = [NSLayoutConstraint constraintWithItem:self.unreadMessageIndicator
-                                                                   attribute:NSLayoutAttributeRight
-                                                                   relatedBy:NSLayoutRelationEqual
-                                                                      toItem:self.conversationLabel
-                                                                   attribute:NSLayoutAttributeLeft
-                                                                  multiplier:1.0
-                                                                    constant:-6];
+    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.unreadMessageIndicator
+                                                                 attribute:NSLayoutAttributeRight
+                                                                 relatedBy:NSLayoutRelationEqual
+                                                                    toItem:self.conversationLabel
+                                                                 attribute:NSLayoutAttributeLeft
+                                                                multiplier:1.0
+                                                                  constant:-6]];
     // Right
-    self.unreadMessageIndicatorRight = [NSLayoutConstraint constraintWithItem:self.unreadMessageIndicator
-                                                                     attribute:NSLayoutAttributeCenterY
-                                                                     relatedBy:NSLayoutRelationEqual
-                                                                        toItem:self.conversationLabel
-                                                                     attribute:NSLayoutAttributeCenterY
-                                                                    multiplier:1.0
-                                                                      constant:0];
-    
-    [self.contentView addConstraint:self.imageViewWidthConstraint];
-    [self.contentView addConstraint:self.imageViewHeighConstraint];
-    [self.contentView addConstraint:self.imageViewLeftConstraint];
-    [self.contentView addConstraint:self.imageViewCenterYConstraint];
-   
-    [self.contentView addConstraint:self.conversationLabelLeftConstraint];
-    [self.contentView addConstraint:self.conversationLabelRightConstraint];
-    [self.contentView addConstraint:self.conversationLabelTopConstraint];
-    [self.contentView addConstraint:self.conversationLabelHeightConstraint];
-    
-    [self.contentView addConstraint:self.dateLabelRightConstraint];
-    [self.contentView addConstraint:self.dateLabelTopConstraint];
-    [self.contentView addConstraint:self.dateLabelWidthConstraint];
-    
-    [self.contentView addConstraint:self.lastMessageTextLeftConstraint];
-    [self.contentView addConstraint:self.lastMessageTextRightConstraint];
-    [self.contentView addConstraint:self.lastMessageTextTopConstraint];
-    [self.contentView addConstraint:self.lastMessageTextHeightConstraint];
-    
-    [self.contentView addConstraint:self.unreadMessageIndicatorWidth];
-    [self.contentView addConstraint:self.unreadMessageIndicatorHeight];
-    [self.contentView addConstraint:self.unreadMessageIndicatorTop];
-    [self.contentView addConstraint:self.unreadMessageIndicatorRight];
-    
-    [super updateConstraints];
-}
-
-- (void)layoutSubviews
-{
-    [super layoutSubviews];
-    
-    CGFloat seperatorInset;
-    if (self.displaysImage) {
-        seperatorInset = self.frame.size.height * self.imageSizeRatio + self.cellHorizontalMargin * 2;
-    } else {
-        seperatorInset = self.cellHorizontalMargin * 2;
-    }
-
-    self.separatorInset = UIEdgeInsetsMake(0, seperatorInset, 0, 0);
-    self.conversationImageView.layer.cornerRadius = self.frame.size.height * self.imageSizeRatio / 2;
-}
-
-- (void)setSelected:(BOOL)selected animated:(BOOL)animated
-{
-    if (selected) {
-        self.unreadMessageIndicator.alpha = 0.0f;
-    }
+    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.unreadMessageIndicator
+                                                                 attribute:NSLayoutAttributeCenterY
+                                                                 relatedBy:NSLayoutRelationEqual
+                                                                    toItem:self.conversationLabel
+                                                                 attribute:NSLayoutAttributeCenterY
+                                                                multiplier:1.0
+                                                                  constant:0]];
 }
 
 @end
