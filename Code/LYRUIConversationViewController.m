@@ -808,7 +808,6 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 
 - (void)messageInputToolbar:(LYRUIMessageInputToolbar *)messageInputToolbar didTapLeftAccessoryButton:(UIButton *)leftAccessoryButton
 {
-    [self.collectionView reloadData];
     UIActionSheet *actionSheet = [[UIActionSheet alloc]
                                   initWithTitle:nil
                                   delegate:self
@@ -1170,7 +1169,6 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
                                                                              constant:0];
     [self.view addConstraint:self.typingIndicatorViewBottomConstraint];
 }
-
 
 #pragma mark - Helpers
 
