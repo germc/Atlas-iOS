@@ -8,5 +8,5 @@
 
 #import "LYRUIErrors.h"
 
-NSString *const LYRErrorDomain = @"com.layer.LayerUIKit.Error";
+NSString *const LYRUIErrorDomain = @"com.layer.LayerUIKit.Error";
 
