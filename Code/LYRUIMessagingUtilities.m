@@ -148,7 +148,7 @@ void LYRUILastPhotoTaken(void(^completionHandler)(UIImage *image, NSError *error
                 *innerStop = YES;
                 completionHandler(latestPhoto, nil);
             } else {
-                completionHandler(nil, [NSError errorWithDomain:LYRUIErrorDomain code:LYRUIErrorNoPhotos userInfo:@{NSLocalizedDescriptionKey : @"There is no latest photo."}]);
+                completionHandler(nil, [NSError errorWithDomain:LYRUIErrorDomain code:LYRUIErrorNoPhotos userInfo:@{NSLocalizedDescriptionKey : @"There are no photos."}]);
             }
         }];
     } failureBlock:^(NSError *error) {
