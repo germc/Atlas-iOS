@@ -7,6 +7,7 @@
 //
 
 #import "LYRUIMessagingUtilities.h"
+#import <AssetsLibrary/AssetsLibrary.h>
 
 NSString *const LYRUIMIMETypeTextPlain = @"text/plain";
 NSString *const LYRUIMIMETypeTextHTML = @"text/HTML";
@@ -121,4 +122,32 @@ LYRMessagePart *LYRUIMessagePartWithJPEGImage(UIImage *image)
     NSData *imageData = LYRUIJPEGDataForImageWithConstraint(adjustedImage, 300);
     return [LYRMessagePart messagePartWithMIMEType:LYRUIMIMETypeImageJPEG
                                               data:imageData];
+}
+
+void LYRUILastPhotoTaken(void(^completionHandler)(UIImage *))
+{
+    // Credit goes to @iBrad Apps on Stack Overflow
+    // http://stackoverflow.com/questions/8867496/get-last-image-from-photos-app
+    
+    ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
+    
+    // Enumerate just the photos and videos group by using ALAssetsGroupSavedPhotos.
+    [library enumerateGroupsWithTypes:ALAssetsGroupSavedPhotos usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
+        
+        // Within the group enumeration block, filter to enumerate just photos.
+        [group setAssetsFilter:[ALAssetsFilter allPhotos]];
+        
+        [group enumerateAssetsWithOptions:NSEnumerationReverse usingBlock:^(ALAsset *result, NSUInteger index, BOOL *innerStop) {
+            if (result) {
+                ALAssetRepresentation *representation = [result defaultRepresentation];
+                UIImage *latestPhoto = [UIImage imageWithCGImage:[representation fullScreenImage]];
+                
+                // Stop the enumerations
+                *stop = YES;
+                *innerStop = YES;
+                completionHandler(latestPhoto);
+            }
+        }];
+        
+    } failureBlock:nil];
 }

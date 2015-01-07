@@ -18,9 +18,9 @@ extern NSString *const LYRUIMIMETypeDate;      // text/date
 
 CGFloat LYRUIMaxCellWidth();
 
-CGSize LYRUITextPlainSize(NSString *string, UIFont *font);
-
 CGSize LYRUIImageSize(UIImage *image);
+
+CGSize LYRUITextPlainSize(NSString *string, UIFont *font);
 
 CGSize LYRUISizeProportionallyConstrainedToSize(CGSize nativeSize, CGSize maxSize);
 
@@ -33,3 +33,5 @@ LYRMessagePart *LYRUIMessagePartWithLocation(CLLocation *location);
 LYRMessagePart *LYRUIMessagePartWithText(NSString *text);
 
 LYRMessagePart *LYRUIMessagePartWithJPEGImage(UIImage *image);
+
+void LYRUILastPhotoTaken(void(^completionHandler)(UIImage *));
