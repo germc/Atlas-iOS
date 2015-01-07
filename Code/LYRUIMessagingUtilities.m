@@ -7,6 +7,7 @@
 //
 
 #import "LYRUIMessagingUtilities.h"
+#import "LYRUIErrors.h"
 #import <AssetsLibrary/AssetsLibrary.h>
 
 NSString *const LYRUIMIMETypeTextPlain = @"text/plain";
@@ -124,7 +125,7 @@ LYRMessagePart *LYRUIMessagePartWithJPEGImage(UIImage *image)
                                               data:imageData];
 }
 
-void LYRUILastPhotoTaken(void(^completionHandler)(UIImage *))
+void LYRUILastPhotoTaken(void(^completionHandler)(UIImage *image, NSError *error))
 {
     // Credit goes to @iBrad Apps on Stack Overflow
     // http://stackoverflow.com/questions/8867496/get-last-image-from-photos-app
@@ -145,9 +146,12 @@ void LYRUILastPhotoTaken(void(^completionHandler)(UIImage *))
                 // Stop the enumerations
                 *stop = YES;
                 *innerStop = YES;
-                completionHandler(latestPhoto);
+                completionHandler(latestPhoto, nil);
+            } else {
+                completionHandler(nil, [NSError errorWithDomain:LYRUIErrorDomain code:LYRUIErrorNoPhotos userInfo:@{NSLocalizedDescriptionKey : @"There is no latest photo."}]);
             }
         }];
-        
-    } failureBlock:nil];
+    } failureBlock:^(NSError *error) {
+        completionHandler(nil, error);
+    }];
 }

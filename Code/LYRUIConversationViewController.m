@@ -941,8 +941,12 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 
 - (void)captureLastPhotoTaken
 {
-    LYRUILastPhotoTaken(^(UIImage *image) {
-        [self.messageInputToolbar insertImage:image];
+    LYRUILastPhotoTaken(^(UIImage *image, NSError *error) {
+        if (error) {
+            NSLog(@"Failed to capture last photo with error: %@", [error localizedDescription]);
+        } else {
+            [self.messageInputToolbar insertImage:image];
+        }
     });
 }
 

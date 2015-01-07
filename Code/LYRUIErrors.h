@@ -11,15 +11,16 @@
 extern NSString *const LYRUIErrorDomain;
 
 typedef NS_ENUM(NSUInteger, LYRUIError) {
-    LYRErrorUnknownError                            = 1000,
+    LYRUIErrorUnknownError                            = 1000,
     
     /* Messaging Errors */
-    LYRErrorUnauthenticated                         = 1001,
-    LYRErrorInvalidMessage                          = 1002,
-    LYRErrorTooManyParticipants                     = 1003,
-    LYRErrorDataLengthExceedsMaximum                = 1004,
-    LYRErrorMessageAlreadyMarkedAsRead              = 1005,
-    LYRErrorObjectNotSent                           = 1006
+    LYRUIErrorUnauthenticated                         = 1001,
+    LYRUIErrorInvalidMessage                          = 1002,
+    LYRUIErrorTooManyParticipants                     = 1003,
+    LYRUIErrorDataLengthExceedsMaximum                = 1004,
+    LYRUIErrorMessageAlreadyMarkedAsRead              = 1005,
+    LYRUIErrorObjectNotSent                           = 1006,
+    LYRUIErrorNoPhotos                                = 1007
 };
 
 
