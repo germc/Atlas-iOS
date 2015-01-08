@@ -49,6 +49,7 @@
 
 ### Bug Fixes
 
+* Fixed bug which allowed messages to be marked as read while app is in the background.
 * Removed duplicate MIMEType constant declarations.
 * Fixed possibility of customizations via `UIAppearance` being overridden.
 * Fixed issue related to sending a push notification with `(null)` text.
