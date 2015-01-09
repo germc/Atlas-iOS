@@ -710,15 +710,20 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 
 - (void)updateTypingIndicatorOverlay:(BOOL)animated
 {
-    NSMutableArray *participantsTyping = [NSMutableArray array];
+    NSMutableArray *knownParticipantsTyping = [NSMutableArray array];
+    __block NSUInteger unknownParticipantsTypingCount = 0;
     [self.typingParticipantIDs enumerateObjectsUsingBlock:^(NSString *participantID, NSUInteger idx, BOOL *stop) {
         id<LYRUIParticipant> participant = [self participantForIdentifier:participantID];
-        [participantsTyping addObject:participant];
+        if (!participant) {
+            unknownParticipantsTypingCount++;
+            return;
+        }
+        [knownParticipantsTyping addObject:participant];
     }];
 
-    BOOL visible = participantsTyping.count > 0;
+    BOOL visible = knownParticipantsTyping.count + unknownParticipantsTypingCount > 0;
     if (visible) {
-        NSString *text = [self typingIndicatorTextWithParticipantsTyping:participantsTyping];
+        NSString *text = [self typingIndicatorTextWithKnownParticipants:knownParticipantsTyping unknownParticipantsCount:unknownParticipantsTypingCount];
         self.typingIndicatorView.label.text = text;
     }
 
@@ -736,37 +741,52 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     }];
 }
 
-- (NSString *)typingIndicatorTextWithParticipantsTyping:(NSArray *)participantsTyping
+- (NSString *)typingIndicatorTextWithKnownParticipants:(NSArray *)knownParticipants unknownParticipantsCount:(NSUInteger)unknownParticipantsCount
 {
-    if (participantsTyping.count == 0) return nil;
+    NSUInteger participantsCount = knownParticipants.count + unknownParticipantsCount;
+    if (participantsCount == 0) return nil;
 
-    NSArray *fullNames = [participantsTyping valueForKey:@"fullName"];
-    NSString *fullNamesText = [self typingIndicatorTextWithParticipantStrings:fullNames participantsCount:participantsTyping.count];
+    NSString *unknownParticipantsSummary;
+    if (unknownParticipantsCount == 1) {
+        unknownParticipantsSummary = @"Unknown";
+    } else if (unknownParticipantsCount > 1) {
+        unknownParticipantsSummary = [NSString stringWithFormat:@"%ld unknowns", (unsigned long)unknownParticipantsCount];
+    }
+
+    NSMutableArray *fullNameComponents = [[knownParticipants valueForKey:@"fullName"] mutableCopy];
+    if (unknownParticipantsSummary) {
+        [fullNameComponents addObject:unknownParticipantsSummary];
+    }
+    NSString *fullNamesText = [self typingIndicatorTextWithParticipantStrings:fullNameComponents participantsCount:participantsCount];
     if ([self typingIndicatorLabelHasSpaceForText:fullNamesText]) return fullNamesText;
 
-    NSArray *firstNames = [participantsTyping valueForKey:@"firstName"];
-    NSString *firstNamesText = [self typingIndicatorTextWithParticipantStrings:firstNames participantsCount:participantsTyping.count];
+    NSArray *firstNames = [knownParticipants valueForKey:@"firstName"];
+    NSMutableArray *firstNameComponents = [firstNames mutableCopy];
+    if (unknownParticipantsSummary) {
+        [firstNameComponents addObject:unknownParticipantsSummary];
+    }
+    NSString *firstNamesText = [self typingIndicatorTextWithParticipantStrings:firstNameComponents participantsCount:participantsCount];
     if ([self typingIndicatorLabelHasSpaceForText:firstNamesText]) return firstNamesText;
 
     NSMutableArray *strings = [NSMutableArray new];
-    for (NSInteger displayedFirstNamesCount = participantsTyping.count - 1; displayedFirstNamesCount >= 0; displayedFirstNamesCount--) {
+    for (NSInteger displayedFirstNamesCount = knownParticipants.count; displayedFirstNamesCount >= 0; displayedFirstNamesCount--) {
         [strings removeAllObjects];
 
         NSRange displayedRange = NSMakeRange(0, displayedFirstNamesCount);
         NSArray *displayedFirstNames = [firstNames subarrayWithRange:displayedRange];
         [strings addObjectsFromArray:displayedFirstNames];
 
-        NSUInteger undisplayedCount = participantsTyping.count - displayedRange.length;
+        NSUInteger undisplayedCount = participantsCount - displayedRange.length;
         NSMutableString *textForUndisplayedParticipants = [NSMutableString new];;
         [textForUndisplayedParticipants appendFormat:@"%ld", (unsigned long)undisplayedCount];
-        if (undisplayedCount != participantsTyping.count && undisplayedCount == 1) {
+        if (displayedFirstNamesCount > 0 && undisplayedCount == 1) {
             [textForUndisplayedParticipants appendString:@" other"];
-        } else if (undisplayedCount != participantsTyping.count) {
+        } else if (displayedFirstNamesCount > 0) {
             [textForUndisplayedParticipants appendString:@" others"];
         }
         [strings addObject:textForUndisplayedParticipants];
 
-        NSString *proposedSummary = [self typingIndicatorTextWithParticipantStrings:strings participantsCount:participantsTyping.count];
+        NSString *proposedSummary = [self typingIndicatorTextWithParticipantStrings:strings participantsCount:participantsCount];
         if ([self typingIndicatorLabelHasSpaceForText:proposedSummary]) {
             return proposedSummary;
         }
