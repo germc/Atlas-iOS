@@ -134,22 +134,28 @@ void LYRUILastPhotoTaken(void(^completionHandler)(UIImage *image, NSError *error
     
     // Enumerate just the photos and videos group by using ALAssetsGroupSavedPhotos.
     [library enumerateGroupsWithTypes:ALAssetsGroupSavedPhotos usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
-        
+        // When done, the group enumeration block is called another time with group set to nil.
+        if (!group) return;
+
         // Within the group enumeration block, filter to enumerate just photos.
         [group setAssetsFilter:[ALAssetsFilter allPhotos]];
+
+        if ([group numberOfAssets] == 0) {
+            completionHandler(nil, [NSError errorWithDomain:LYRUIErrorDomain code:LYRUIErrorNoPhotos userInfo:@{NSLocalizedDescriptionKey: @"There are no photos."}]);
+            return;
+        }
         
         [group enumerateAssetsWithOptions:NSEnumerationReverse usingBlock:^(ALAsset *result, NSUInteger index, BOOL *innerStop) {
-            if (result) {
-                ALAssetRepresentation *representation = [result defaultRepresentation];
-                UIImage *latestPhoto = [UIImage imageWithCGImage:[representation fullScreenImage]];
-                
-                // Stop the enumerations
-                *stop = YES;
-                *innerStop = YES;
-                completionHandler(latestPhoto, nil);
-            } else {
-                completionHandler(nil, [NSError errorWithDomain:LYRUIErrorDomain code:LYRUIErrorNoPhotos userInfo:@{NSLocalizedDescriptionKey : @"There are no photos."}]);
-            }
+            // When done, the asset enumeration block is called another time with result set to nil.
+            if (!result) return;
+
+            ALAssetRepresentation *representation = [result defaultRepresentation];
+            UIImage *latestPhoto = [UIImage imageWithCGImage:[representation fullScreenImage]];
+            
+            // Stop the enumerations
+            *innerStop = YES;
+            *stop = YES;
+            completionHandler(latestPhoto, nil);
         }];
     } failureBlock:^(NSError *error) {
         completionHandler(nil, error);
