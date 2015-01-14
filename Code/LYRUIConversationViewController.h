@@ -133,7 +133,7 @@
 @interface LYRUIConversationViewController : UIViewController <LYRUIAddressBarControllerDelegate>
 
 ///---------------------------------------
-/// @name Designated Initializer
+/// @name Initializing a Controller
 ///---------------------------------------
 
 /**
