@@ -11,6 +11,7 @@
 #import "LYRUIConversationViewController.h"
 #import "LYRUIOutgoingMessageCollectionViewCell.h"
 #import "LYRUIIncomingMessageCollectionViewCell.h"
+#import "LYRUIConversationCollectionViewMoreMessagesHeader.h"
 #import "LYRUIConversationCollectionViewHeader.h"
 #import "LYRUIConversationCollectionViewFooter.h"
 #import "LYRUIConstants.h"
@@ -37,6 +38,8 @@
 @property (nonatomic, getter=isFirstAppearance) BOOL firstAppearance;
 @property (nonatomic) LYRUIIncomingMessageCollectionViewCell *sizingIncomingMessageCell;
 @property (nonatomic) LYRUIOutgoingMessageCollectionViewCell *sizingOutgoingMessageCell;
+@property (nonatomic) BOOL expandingPaginationWindow;
+@property (nonatomic) BOOL showingMoreMessagesIndicator;
 
 @end
 
@@ -44,10 +47,13 @@
 
 static NSString *const LYRUIIncomingMessageCellIdentifier = @"LYRUIIncomingMessageCellIdentifier";
 static NSString *const LYRUIOutgoingMessageCellIdentifier = @"LYRUIOutgoingMessageCellIdentifier";
+static NSString *const LYRUIMoreMessagesHeaderIdentifier = @"LYRUIMoreMessagesHeaderIdentifier";
 static NSString *const LYRUIMessageCellHeaderIdentifier = @"LYRUIMessageCellHeaderIdentifier";
 static NSString *const LYRUIMessageCellFooterIdentifier = @"LYUIMessageCellFooterIdentifier";
 
 static CGFloat const LYRUITypingIndicatorHeight = 20;
+static NSInteger const LYRUIMoreMessagesSection = 0;
+static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 
 + (instancetype)conversationViewControllerWithConversation:(LYRConversation *)conversation layerClient:(LYRClient *)layerClient;
 {
@@ -111,6 +117,10 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 
     [self.collectionView registerClass:[LYRUIOutgoingMessageCollectionViewCell class]
             forCellWithReuseIdentifier:LYRUIOutgoingMessageCellIdentifier];
+
+    [self.collectionView registerClass:[LYRUIConversationCollectionViewMoreMessagesHeader class]
+            forSupplementaryViewOfKind:UICollectionElementKindSectionHeader
+                   withReuseIdentifier:LYRUIMoreMessagesHeaderIdentifier];
 
     [self.collectionView registerClass:[LYRUIConversationCollectionViewHeader class]
             forSupplementaryViewOfKind:UICollectionElementKindSectionHeader
@@ -236,12 +246,16 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     LYRQuery *query = [LYRQuery queryWithClass:[LYRMessage class]];
     query.predicate = [LYRPredicate predicateWithProperty:@"conversation" operator:LYRPredicateOperatorIsEqualTo value:self.conversation];
     query.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"index" ascending:YES]];
+    NSUInteger numberOfMessagesAvailable = [self.layerClient countForQuery:query error:nil];
+    NSUInteger numberOfMessagesToDisplay = MIN(numberOfMessagesAvailable, 30);
     
     self.queryController = [self.layerClient queryControllerWithQuery:query];
+    self.queryController.paginationWindow = -numberOfMessagesToDisplay;
     self.queryController.delegate = self;
     NSError *error = nil;
     BOOL success = [self.queryController execute:&error];
     if (!success) NSLog(@"LayerKit failed to execute query with error: %@", error);
+    self.showingMoreMessagesIndicator = [self moreMessagesAvailable];
     [self.collectionView reloadData];
 }
 
@@ -315,6 +329,22 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     [self.view setNeedsUpdateConstraints];
 }
 
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
+{
+    if (decelerate) return;
+    [self configurePaginationWindow];
+}
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
+{
+    [self configurePaginationWindow];
+}
+
+- (void)scrollViewDidScrollToTop:(UIScrollView *)scrollView
+{
+    [self configurePaginationWindow];
+}
+
 # pragma mark - UICollectionViewDataSource
 
 /**
@@ -324,6 +354,8 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
  */
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
+    if (section == LYRUIMoreMessagesSection) return 0;
+
     // Each message is represented by one cell no matter how many parts it has.
     return 1;
 }
@@ -337,6 +369,7 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 {
     // Messages correspond to sections
     NSInteger numberOfSections = [self.queryController numberOfObjectsInSection:0];
+    numberOfSections += LYRUINumberOfSectionsBeforeFirstMessageSection;
     return numberOfSections;
 }
 
@@ -416,6 +449,11 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
 {
+    if (indexPath.section == LYRUIMoreMessagesSection) {
+        LYRUIConversationCollectionViewMoreMessagesHeader *header = [self.collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:LYRUIMoreMessagesHeaderIdentifier forIndexPath:indexPath];
+        return header;
+    }
+
     LYRMessage *message = [self messageAtCollectionViewIndexPath:indexPath];
     if (kind == UICollectionElementKindSectionHeader) {
         LYRUIConversationCollectionViewHeader *header = [self.collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:LYRUIMessageCellHeaderIdentifier forIndexPath:indexPath];
@@ -454,9 +492,15 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section
 {
+    if (section == LYRUIMoreMessagesSection) {
+        if (self.showingMoreMessagesIndicator) return CGSizeMake(0, 30);
+        return CGSizeZero;
+    }
+
     CGFloat height = 0;
     LYRMessage *message = [self messageAtCollectionViewSection:section];
-    if (section > 0) {
+    NSUInteger firstMessageSection = LYRUINumberOfSectionsBeforeFirstMessageSection;
+    if (section > firstMessageSection) {
         // 1. If previous message was sent by a different user, add 10px
         LYRMessage *previousMessage = [self messageAtCollectionViewSection:section - 1];
         if (![message.sentByUserID isEqualToString:previousMessage.sentByUserID]) {
@@ -476,6 +520,8 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForFooterInSection:(NSInteger)section
 {
+    if (section == LYRUIMoreMessagesSection) return CGSizeZero;
+
     // If we display a read receipt...
     if ([self shouldDisplayReadReceiptForSection:section]) {
         return CGSizeMake(CGRectGetWidth(collectionView.frame), 28);
@@ -507,9 +553,10 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 - (BOOL)shouldDisplayDateLabelForSection:(NSUInteger)section
 {
     // Always show date label for the first section
-    if (section == 0) return YES;
+    NSUInteger firstMessageSection = LYRUINumberOfSectionsBeforeFirstMessageSection;
+    if (section == firstMessageSection) return YES;
     LYRMessage *message = [self messageAtCollectionViewSection:section];
-    if (section > 0) {
+    if (section > firstMessageSection) {
         LYRMessage *previousMessage = [self messageAtCollectionViewSection:section - 1];
         NSTimeInterval interval = [message.receivedAt timeIntervalSinceDate:previousMessage.receivedAt];
         // If it has been 60min since last message, show date label
@@ -535,7 +582,8 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     }
 
     // 3. If the previous message was sent by the same user, don't show label
-    if (section > 0) {
+    NSUInteger firstMessageSection = LYRUINumberOfSectionsBeforeFirstMessageSection;
+    if (section > firstMessageSection) {
         LYRMessage *previousMessage = [self messageAtCollectionViewSection:section - 1];
         if ([previousMessage.sentByUserID isEqualToString:message.sentByUserID]) {
             return NO;
@@ -548,7 +596,8 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 - (BOOL)shouldDisplayReadReceiptForSection:(NSUInteger)section
 {
     // Only show read receipt if last message was sent by currently authenticated user
-    NSInteger lastSection = [self.queryController numberOfObjectsInSection:0] - 1;
+    NSInteger lastQueryControllerRow = [self.queryController numberOfObjectsInSection:0] - 1;
+    NSInteger lastSection = [self collectionViewSectionForQueryControllerRow:lastQueryControllerRow];
     if (section != lastSection) return NO;
 
     LYRMessage *message = [self messageAtCollectionViewSection:section];
@@ -565,7 +614,8 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     if ([message.sentByUserID isEqualToString:self.layerClient.authenticatedUserID]) {
         return NO;
     }
-    NSInteger lastSection = [self.queryController numberOfObjectsInSection:0] - 1;
+    NSInteger lastQueryControllerRow = [self.queryController numberOfObjectsInSection:0] - 1;
+    NSInteger lastSection = [self collectionViewSectionForQueryControllerRow:lastQueryControllerRow];
     if (indexPath.section < lastSection) {
         LYRMessage *nextMessage = [self messageAtCollectionViewSection:indexPath.section + 1];
         // If the next message is sent by the same user, no
@@ -1035,11 +1085,26 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
           forChangeType:(LYRQueryControllerChangeType)type
            newIndexPath:(NSIndexPath *)newIndexPath
 {
-    [self.objectChanges addObject:[LYRUIDataSourceChange changeObjectWithType:type newIndex:newIndexPath.row currentIndex:indexPath.row]];
+    if (self.expandingPaginationWindow) return;
+    NSInteger currentIndex = indexPath ? [self collectionViewSectionForQueryControllerRow:indexPath.row] : NSNotFound;
+    NSInteger newIndex = newIndexPath ? [self collectionViewSectionForQueryControllerRow:newIndexPath.row] : NSNotFound;
+    [self.objectChanges addObject:[LYRUIDataSourceChange changeObjectWithType:type newIndex:newIndex currentIndex:currentIndex]];
 }
 
 - (void)queryControllerDidChangeContent:(LYRQueryController *)queryController
 {
+    if (self.expandingPaginationWindow) {
+        self.showingMoreMessagesIndicator = [self moreMessagesAvailable];
+        [self reloadCollectionViewAdjustingForContentHeightChange];
+        return;
+    }
+
+    if (self.objectChanges.count == 0) {
+        [self configurePaginationWindow];
+        [self configureMoreMessagesIndicatorVisibility];
+        return;
+    }
+
     CGPoint bottomOffset = [self bottomOffset];
     CGFloat distanceToBottom = bottomOffset.y - self.collectionView.contentOffset.y;
     BOOL shouldScrollToBottom = distanceToBottom <= 50 && !self.collectionView.isTracking && !self.collectionView.isDragging && !self.collectionView.isDecelerating;
@@ -1085,6 +1150,9 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 
     if (shouldScrollToBottom)  {
         [self scrollToBottomOfCollectionViewAnimated:YES];
+    } else {
+        [self configurePaginationWindow];
+        [self configureMoreMessagesIndicatorVisibility];
     }
 }
 
@@ -1195,6 +1263,55 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
     [self.view addConstraint:self.typingIndicatorViewBottomConstraint];
 }
 
+#pragma mark - Pagination
+
+- (void)configurePaginationWindow
+{
+    if (!self.queryController) return;
+    if (CGRectEqualToRect(self.collectionView.frame, CGRectZero)) return;
+    if (self.collectionView.isDragging) return;
+    if (self.collectionView.isDecelerating) return;
+
+    CGFloat topOffset = -self.collectionView.contentInset.top;
+    CGFloat distanceFromTop = self.collectionView.contentOffset.y - topOffset;
+    CGFloat minimumDistanceFromTopToTriggerLoadingMore = 200;
+    BOOL nearTop = distanceFromTop <= minimumDistanceFromTopToTriggerLoadingMore;
+    if (!nearTop) return;
+
+    BOOL moreMessagesAvailable = self.queryController.totalNumberOfObjects > ABS(self.queryController.paginationWindow);
+    if (!moreMessagesAvailable) return;
+
+    self.expandingPaginationWindow = YES;
+    NSUInteger numberOfMessagesToDisplay = MIN(-self.queryController.paginationWindow + 30, self.queryController.totalNumberOfObjects);
+    self.queryController.paginationWindow = -numberOfMessagesToDisplay;
+    self.expandingPaginationWindow = NO;
+}
+
+- (void)configureMoreMessagesIndicatorVisibility
+{
+    if (self.collectionView.isDragging) return;
+    if (self.collectionView.isDecelerating) return;
+    BOOL moreMessagesAvailable = [self moreMessagesAvailable];
+    if (moreMessagesAvailable == self.showingMoreMessagesIndicator) return;
+    self.showingMoreMessagesIndicator = [self moreMessagesAvailable];
+    [self reloadCollectionViewAdjustingForContentHeightChange];
+}
+
+- (BOOL)moreMessagesAvailable
+{
+    return self.queryController.totalNumberOfObjects > ABS(self.queryController.count);
+}
+
+- (void)reloadCollectionViewAdjustingForContentHeightChange
+{
+    CGFloat priorContentHeight = self.collectionView.collectionViewLayout.collectionViewContentSize.height;
+    [self.collectionView reloadData];
+    CGFloat contentHeightDifference = self.collectionView.collectionViewLayout.collectionViewContentSize.height - priorContentHeight;
+    CGFloat adjustment = contentHeightDifference;
+    self.collectionView.contentOffset = CGPointMake(0, self.collectionView.contentOffset.y + adjustment);
+    [self.collectionView flashScrollIndicators];
+}
+
 #pragma mark - Helpers
 
 - (void)scrollToBottomOfCollectionViewAnimated:(BOOL)animated
@@ -1264,8 +1381,14 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 
 - (NSIndexPath *)queryControllerIndexPathForCollectionViewSection:(NSInteger)collectionViewSection
 {
-    NSIndexPath *queryControllerIndexPath = [NSIndexPath indexPathForRow:collectionViewSection inSection:0];
+    NSInteger queryControllerRow = [self queryControllerRowForCollectionViewSection:collectionViewSection];
+    NSIndexPath *queryControllerIndexPath = [NSIndexPath indexPathForRow:queryControllerRow inSection:0];
     return queryControllerIndexPath;
+}
+
+- (NSInteger)queryControllerRowForCollectionViewSection:(NSInteger)collectionViewSection
+{
+    return collectionViewSection - LYRUINumberOfSectionsBeforeFirstMessageSection;
 }
 
 - (NSIndexPath *)collectionViewIndexPathForQueryControllerIndexPath:(NSIndexPath *)queryControllerIndexPath
@@ -1275,8 +1398,14 @@ static CGFloat const LYRUITypingIndicatorHeight = 20;
 
 - (NSIndexPath *)collectionViewIndexPathForQueryControllerRow:(NSInteger)queryControllerRow
 {
-    NSIndexPath *collectionViewIndexPath = [NSIndexPath indexPathForRow:0 inSection:queryControllerRow];
+    NSInteger collectionViewSection = [self collectionViewSectionForQueryControllerRow:queryControllerRow];
+    NSIndexPath *collectionViewIndexPath = [NSIndexPath indexPathForRow:0 inSection:collectionViewSection];
     return collectionViewIndexPath;
+}
+
+- (NSInteger)collectionViewSectionForQueryControllerRow:(NSInteger)queryControllerRow
+{
+    return queryControllerRow + LYRUINumberOfSectionsBeforeFirstMessageSection;
 }
 
 - (LYRMessage *)messageAtCollectionViewIndexPath:(NSIndexPath *)collectionViewIndexPath

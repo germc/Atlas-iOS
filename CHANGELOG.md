@@ -59,6 +59,7 @@
 
 ### Enhancements
 
+* Implemented pagination in the `LYRUIConversationViewController`.
 * `LYRUIConversationTableViewCell` no longer shows conversation image by default.
 * Implemented `LayerUIKit` unit test suite.
 * Re-implemented `LayerUIKit` mock objects.

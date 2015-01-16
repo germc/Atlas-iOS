@@ -6,8 +6,7 @@ source 'https://github.com/CocoaPods/Specs.git'
 
 target 'Conversation' do
   pod 'LayerUIKit', path: '.'
-  #pod 'LayerKit'
-  pod 'LayerKit', git: 'git@github.com:layerhq/LayerKit.git', branch: 'ben-query-controller-logging'
+  pod 'LayerKit', git: 'git@github.com:layerhq/LayerKit.git', tag: 'v0.9.4-rc1'
 end
 
 target 'Unit Tests' do
