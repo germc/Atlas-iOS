@@ -18,6 +18,7 @@ CGFloat const LYRUIMessageBubbleMapHeight = 200;
 @property (nonatomic) UIActivityIndicatorView *activityIndicator;
 @property (nonatomic) UIView *longPressMask;
 @property (nonatomic) MKMapSnapshotter *snapshotter;
+@property (nonatomic) CLLocationCoordinate2D locationShown;
 
 @property (nonatomic) NSLayoutConstraint *mapWidthConstraint;
 @property (nonatomic) NSLayoutConstraint *imageWidthConstraint;
@@ -30,7 +31,9 @@ CGFloat const LYRUIMessageBubbleMapHeight = 200;
 {
     self = [super initWithFrame:frame];
     if (self) {
+        _locationShown = kCLLocationCoordinate2DInvalid;
         self.clipsToBounds = YES;
+
         self.bubbleViewLabel = [[UILabel alloc] init];
         self.bubbleViewLabel.numberOfLines = 0;
         self.bubbleViewLabel.translatesAutoresizingMaskIntoConstraints = NO;
@@ -83,6 +86,7 @@ CGFloat const LYRUIMessageBubbleMapHeight = 200;
     self.bubbleViewLabel.hidden = NO;
     self.bubbleViewLabel.text = text;
     self.bubbleImageView.image = nil;
+    self.locationShown = kCLLocationCoordinate2DInvalid;
     [self.snapshotter cancel];
 
     [self removeConstraint:self.mapWidthConstraint];
@@ -96,6 +100,7 @@ CGFloat const LYRUIMessageBubbleMapHeight = 200;
     self.bubbleViewLabel.hidden = YES;
     self.bubbleImageView.hidden = NO;
     self.bubbleImageView.image = image;
+    self.locationShown = kCLLocationCoordinate2DInvalid;
     self.bubbleViewLabel.text = nil;
     [self.snapshotter cancel];
 
@@ -114,15 +119,23 @@ CGFloat const LYRUIMessageBubbleMapHeight = 200;
 {
     self.activityIndicator.hidden = YES;
     self.bubbleViewLabel.hidden = YES;
-    self.bubbleImageView.hidden = YES;
     self.bubbleViewLabel.text = nil;
-    self.bubbleImageView.image = nil;
     [self.snapshotter cancel];
 
     [self removeConstraint:self.imageWidthConstraint];
     [self addConstraint:self.mapWidthConstraint];
     [self setNeedsUpdateConstraints];
     
+    BOOL alreadyShowingLocation = self.locationShown.latitude == location.latitude && self.locationShown.longitude == location.longitude;
+    if (alreadyShowingLocation) {
+        self.bubbleImageView.hidden = NO;
+        return;
+    }
+
+    self.bubbleImageView.hidden = YES;
+    self.bubbleImageView.image = nil;
+    self.locationShown = kCLLocationCoordinate2DInvalid;
+
     MKMapSnapshotOptions *options = [[MKMapSnapshotOptions alloc] init];
     MKCoordinateSpan span = MKCoordinateSpanMake(0.005, 0.005);
     options.region = MKCoordinateRegionMake(location, span);
@@ -159,6 +172,7 @@ CGFloat const LYRUIMessageBubbleMapHeight = 200;
         strongSelf.bubbleImageView.hidden = NO;
         strongSelf.bubbleImageView.alpha = 0.0;
         strongSelf.bubbleImageView.image = finalImage;
+        strongSelf.locationShown = location;
         
         // Animate into view.
         [UIView animateWithDuration:0.2 animations:^{
