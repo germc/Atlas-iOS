@@ -22,6 +22,10 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"LYRUIConversatio
 
 @implementation LYRUIConversationListViewController
 
+NSString *const LYRUIConversationListViewControllerTitle = @"Messages";
+NSString *const LYRUIConversationTableViewTitle = @"Conversation List";
+
+
 + (instancetype)conversationListViewControllerWithLayerClient:(LYRClient *)layerClient
 {
     NSAssert(layerClient, @"layerClient cannot be nil");
@@ -53,9 +57,9 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"LYRUIConversatio
 {
     [super viewDidLoad];
 
-    self.title = @"Messages";
-    self.accessibilityLabel = @"Messages";
-    self.tableView.accessibilityLabel = @"Conversation List";
+    self.title = LYRUIConversationListViewControllerTitle;
+    self.accessibilityLabel = LYRUIConversationListViewControllerTitle;
+    self.tableView.accessibilityLabel =LYRUIConversationTableViewTitle;
 
     [self setupConversationDataSource];
 }
@@ -168,9 +172,6 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"LYRUIConversatio
            @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Conversation View Delegate must return a conversation image" userInfo:nil]; 
         }
     }
-    
-    LYRRecipientStatus status = [[conversation.lastMessage.recipientStatusByUserID objectForKey:self.layerClient.authenticatedUserID] integerValue];
-    [conversationCell updateWithLastMessageRecipientStatus:status];
     
     if ([self.dataSource respondsToSelector:@selector(conversationListViewController:labelForConversation:)]) {
         NSString *conversationLabel = [self.dataSource conversationListViewController:self labelForConversation:conversation];

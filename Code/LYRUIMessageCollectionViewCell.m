@@ -28,9 +28,6 @@
         _avatarImageViewCornerRadius = LYRUIAvatarImageDiameter / 2;
         _messageTextFont = [UIFont systemFontOfSize:14];
         
-        _bubbleView.layer.cornerRadius = _bubbleViewCornerRadius;
-        _avatarImageView.layer.cornerRadius = _avatarImageViewCornerRadius;
-        
         _bubbleView = [[LYRUIMessageBubbleView alloc] init];
         _bubbleView.translatesAutoresizingMaskIntoConstraints = NO;
         _bubbleView.bubbleViewLabel.font = _messageTextFont;
