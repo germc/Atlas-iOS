@@ -23,7 +23,7 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"LYRUIConversatio
 @implementation LYRUIConversationListViewController
 
 NSString *const LYRUIConversationListViewControllerTitle = @"Messages";
-NSString *const LYRUIConversationTableViewTitle = @"Conversation List";
+NSString *const LYRUIConversationTableViewTitle = @"Conversation Table View";
 
 
 + (instancetype)conversationListViewControllerWithLayerClient:(LYRClient *)layerClient
