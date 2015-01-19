@@ -1359,7 +1359,7 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
     }
     NSAttributedString *participantString;
     if ([self shouldDisplaySenderLabelForSection:indexPath.section]) {
-        participantString = [self attributedStringForMessageParticipant:message];
+        participantString = [self attributedStringForMessageSender:message];
         [header updateWithAttributedStringForParticipantName:participantString];
     }
 }
@@ -1394,7 +1394,7 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
     return dateString;
 }
 
-- (NSAttributedString *)attributedStringForMessageParticipant:(LYRMessage *)message
+- (NSAttributedString *)attributedStringForMessageSender:(LYRMessage *)message
 {
     NSAttributedString *participantString;
     id<LYRUIParticipant> participant = [self participantForIdentifier:message.sentByUserID];
