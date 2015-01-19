@@ -192,6 +192,17 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
     }
 }
 
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+
+    // Workaround for view's content flashing onscreen after pop animation concludes on iOS 8.
+    BOOL isPopping = ![self.navigationController.viewControllers containsObject:self];
+    if (isPopping) {
+        [self.messageInputToolbar.textInputView resignFirstResponder];
+    }
+}
+
 - (void)viewDidLayoutSubviews
 {
     [super viewDidLayoutSubviews];
