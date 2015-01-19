@@ -1355,13 +1355,13 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
     NSAttributedString *dateString;
     if ([self shouldDisplayDateLabelForSection:indexPath.section]) {
         dateString = [self attributedStringForMessageDate:message];
+        [header updateWithAttributedStringForDate:dateString];
     }
     NSAttributedString *participantString;
     if ([self shouldDisplaySenderLabelForSection:indexPath.section]) {
         participantString = [self attributedStringForMessageParticipant:message];
+        [header updateWithAttributedStringForParticipantName:participantString];
     }
-    [header updateWithAttributedStringForDate:dateString];
-    [header updateWithAttributedStringForParticipantName:participantString];
 }
 
 - (void)configureFooter:(LYRUIConversationCollectionViewFooter *)footer atIndexPath:(NSIndexPath *)indexPath
