@@ -66,16 +66,21 @@
 
 - (void)updateWithAttributedStringForDate:(NSAttributedString *)date
 {
-    if (!date) return;
-    self.dateLabel.attributedText = date;
+    if (date) {
+        self.participantLabel.hidden = NO;
+        self.dateLabel.attributedText = date;
+    } else {
+        self.dateLabel.hidden = YES;
+    }
 }
 
 - (void)updateWithAttributedStringForParticipantName:(NSAttributedString *)participantName
 {
     if (participantName.length) {
+        self.participantLabel.hidden = NO;
         self.participantLabel.attributedText = participantName;
     } else {
-        self.participantLabel.text = @"Unknown User";
+        self.participantLabel.hidden = YES;
     }
 }
 

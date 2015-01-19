@@ -45,9 +45,6 @@
 
 @implementation LYRUIConversationViewController
 
-NSString *const LYRUIConversationListViewControllerTitle = @"Messages";
-NSString *const LYRUIConversationTableViewTitle = @"Conversation List";
-
 static NSString *const LYRUIIncomingMessageCellIdentifier = @"LYRUIIncomingMessageCellIdentifier";
 static NSString *const LYRUIOutgoingMessageCellIdentifier = @"LYRUIOutgoingMessageCellIdentifier";
 static NSString *const LYRUIMoreMessagesHeaderIdentifier = @"LYRUIMoreMessagesHeaderIdentifier";
@@ -1352,10 +1349,9 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
     return [self.layerClient executeQuery:query error:nil].lastObject;
 }
 
-- (void)configureHeader:(LYRUIConversationViewControllerHeader *)header atIndexPath:(NSIndexPath *)indexPath
+- (void)configureHeader:(LYRUIConversationCollectionViewHeader *)header atIndexPath:(NSIndexPath *)indexPath
 {
     LYRMessage *message = [self messageAtCollectionViewIndexPath:indexPath];
-    header.message = message;
     NSAttributedString *dateString;
     if ([self shouldDisplayDateLabelForSection:indexPath.section]) {
         dateString = [self attributedStringForMessageDate:message];
@@ -1364,10 +1360,8 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
     if ([self shouldDisplaySenderLabelForSection:indexPath.section]) {
         participantString = [self attributedStringForMessageParticipant:message];
     }
-    [header updateWithAttributedStringForDate:dateString participantName:participantString];
-    if (indexPath.section == 0) {
-        self.topHeader = header;
-    }
+    [header updateWithAttributedStringForDate:dateString];
+    [header updateWithAttributedStringForParticipantName:participantString];
 }
 
 - (void)configureFooter:(LYRUIConversationCollectionViewFooter *)footer atIndexPath:(NSIndexPath *)indexPath
