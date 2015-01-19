@@ -45,6 +45,9 @@
 
 @implementation LYRUIConversationViewController
 
+NSString *const LYRUIConversationViewControllerAccessibilityLabel = @"ConversationViewController";
+NSString *const LYRUIConversationCollectionViewAccessibilityIdentifier = @"ConversationCollectionView";
+
 static NSString *const LYRUIIncomingMessageCellIdentifier = @"LYRUIIncomingMessageCellIdentifier";
 static NSString *const LYRUIOutgoingMessageCellIdentifier = @"LYRUIOutgoingMessageCellIdentifier";
 static NSString *const LYRUIMoreMessagesHeaderIdentifier = @"LYRUIMoreMessagesHeaderIdentifier";
@@ -98,8 +101,7 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
     [super viewDidLoad];
     
     self.view.backgroundColor = [UIColor whiteColor];
-    self.accessibilityLabel = @"Conversation";
-    
+    self.accessibilityLabel = LYRUIConversationViewControllerAccessibilityLabel;
     // Collection View Setup
     self.collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero
                                              collectionViewLayout:[[UICollectionViewFlowLayout alloc] init]];
@@ -109,6 +111,7 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
     self.collectionView.backgroundColor = [UIColor whiteColor];
     self.collectionView.alwaysBounceVertical = YES;
     self.collectionView.bounces = YES;
+    self.collectionView.accessibilityLabel = LYRUIConversationCollectionViewAccessibilityIdentifier;
     self.collectionView.keyboardDismissMode = UIScrollViewKeyboardDismissModeInteractive;
     self.collectionView.accessibilityLabel = @"Conversation Collection View";
 
