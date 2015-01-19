@@ -19,6 +19,7 @@
 #import "KIFSystemTestActor+ViewControllerActions.h"
 #import <LayerUIKit/LayerUIKit.h>
 #import "LYRUIAppDelegate.h"
+#import "LYRUITestClasses.h"
 
 @interface LYRUITestInterface : NSObject
 

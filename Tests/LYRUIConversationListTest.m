@@ -10,7 +10,6 @@
 #import <LayerUIKit/LayerUIKit.h>
 #import "LYRUITestInterface.h"
 #import "LYRClientMock.h"
-#import "LYRUITestConversationCell.h"
 #import "LYRUISampleConversationListViewController.h"
 
 @interface LYRUIConversationListViewController ()
@@ -31,7 +30,7 @@
 - (void)setUp
 {
     [super setUp];
-
+    
     LYRUserMock *mockUser = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameRussell];
     LYRClientMock *layerClient = [LYRClientMock layerClientMockWithAuthenticatedUserID:mockUser.participantIdentifier];
     self.testInterface = [LYRUITestInterface testIntefaceWithLayerClient:layerClient];
@@ -42,7 +41,7 @@
     [[LYRMockContentStore sharedStore] resetContentStore];
     self.viewController.queryController = nil;
     self.testInterface = nil;
-   
+    
     [super tearDown];
 }
 
@@ -51,7 +50,7 @@
     self.viewController = [LYRUISampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];
     self.viewController.allowsEditing = YES;
     [self setRootViewController:self.viewController];
-
+    
     [tester waitForViewWithAccessibilityLabel:@"Messages"];
     [tester waitForViewWithAccessibilityLabel:@"Edit Button"];
 }
@@ -61,11 +60,11 @@
 {
     self.viewController = [LYRUISampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];
     [self setRootViewController:self.viewController];
-
+    
     NSString *message1 = @"Message1";
     LYRUserMock *mockUser1 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameMarshawn];
     LYRConversationMock *conversation1 = [self.testInterface conversationWithParticipants:[NSSet setWithObject:mockUser1.participantIdentifier] lastMessageText:message1];
-
+    
     NSString *message2 = @"Message2";
     LYRUserMock *userMock2 = [LYRUserMock randomUser];
     LYRConversationMock *conversation2 = [self.testInterface conversationWithParticipants:[NSSet setWithObject:userMock2.participantIdentifier] lastMessageText:message2];
@@ -84,7 +83,7 @@
 {
     self.viewController = [LYRUISampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];
     [self setRootViewController:self.viewController];
-
+    
     NSString *message1 = @"Message1";
     LYRUserMock *mockUser1 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameMarshawn];
     LYRConversationMock *conversation1 = [self.testInterface conversationWithParticipants:[NSSet setWithObject:mockUser1.participantIdentifier] lastMessageText:message1];
@@ -132,13 +131,13 @@
     [tester waitForViewWithAccessibilityLabel:[self.testInterface conversationLabelForConversation:conversation3]];
     
     [tester tapViewWithAccessibilityLabel:@"Edit"];
-
+    
     [tester tapViewWithAccessibilityLabel:[NSString stringWithFormat:@"Delete %@", mockUser1.fullName]];
     [self deleteConversation:conversation1 deletionMode:LYRDeletionModeLocal];
-
+    
     [tester tapViewWithAccessibilityLabel:[NSString stringWithFormat:@"Delete %@", mockUser2.fullName]];
     [self deleteConversation:conversation2 deletionMode:LYRDeletionModeLocal];
-
+    
     [tester tapViewWithAccessibilityLabel:[NSString stringWithFormat:@"Delete %@", mockUser3.fullName]];
     [self deleteConversation:conversation3 deletionMode:LYRDeletionModeLocal];
 }
@@ -165,21 +164,21 @@
 {
     self.viewController = [LYRUISampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];
     [self setRootViewController:self.viewController];
-
+    
     UIFont *testFont = [UIFont systemFontOfSize:20];
     UIColor *testColor = [UIColor redColor];
-
+    
     [[LYRUIConversationTableViewCell appearance] setConversationLabelFont:testFont];
     [[LYRUIConversationTableViewCell appearance] setConversationLabelColor:testColor];
-
+    
     NSString *message1 = @"Message1";
     LYRUserMock *mockUser1 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameMarshawn];
     LYRConversationMock *conversation1 =  [self.testInterface conversationWithParticipants:[NSSet setWithObject:mockUser1.participantIdentifier] lastMessageText:message1];
     
     [tester waitForViewWithAccessibilityLabel:[self.testInterface conversationLabelForConversation:conversation1]];
-
+    
     NSString *conversationLabel = [self.testInterface conversationLabelForConversation:conversation1];
-
+    
     LYRUIConversationTableViewCell *cell = (LYRUIConversationTableViewCell *)[tester waitForViewWithAccessibilityLabel:conversationLabel];
     expect(cell.conversationLabelFont).to.equal(testFont);
     expect(cell.conversationLabelColor).to.equal(testColor);
@@ -191,7 +190,7 @@
     self.viewController = [LYRUISampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];
     [self.viewController setRowHeight:100];
     [self setRootViewController:self.viewController];
-
+    
     NSString *message1 = @"Message1";
     LYRUserMock *mockUser1 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameMarshawn];
     LYRConversationMock *conversation1 =  [self.testInterface conversationWithParticipants:[NSSet setWithObject:mockUser1.participantIdentifier] lastMessageText:message1];
@@ -200,7 +199,7 @@
     
     NSString *conversationLabel = [self.testInterface conversationLabelForConversation:conversation1];
     LYRUIConversationTableViewCell *cell = (LYRUIConversationTableViewCell *)[tester waitForViewWithAccessibilityLabel:conversationLabel];
-
+    
     expect(cell.frame.size.height).to.equal(100);
 }
 
@@ -216,9 +215,9 @@
     LYRConversationMock *conversation1 =  [self.testInterface conversationWithParticipants:[NSSet setWithObject:mockUser1.participantIdentifier] lastMessageText:message1];
     
     [tester waitForViewWithAccessibilityLabel:[self.testInterface conversationLabelForConversation:conversation1]];
-
+    
     LYRUIConversationTableViewCell *cell = (LYRUIConversationTableViewCell *)[tester waitForViewWithAccessibilityLabel:[self.testInterface conversationLabelForConversation:conversation1]];
-
+    
     expect([cell class]).to.equal([LYRUITestConversationCell class]);
     expect([cell class]).toNot.equal([LYRUIConversationTableViewCell class]);
 }
@@ -292,6 +291,5 @@
     expect([controller.tableView numberOfRowsInSection:0]).to.equal(0);
     [tester waitForTimeInterval:1];
 }
-
 
 @end
