@@ -59,7 +59,7 @@ NSString *const LYRUIConversationTableViewTitle = @"Conversation Table View";
 
     self.title = LYRUIConversationListViewControllerTitle;
     self.accessibilityLabel = LYRUIConversationListViewControllerTitle;
-    self.tableView.accessibilityLabel =LYRUIConversationTableViewTitle;
+    self.tableView.accessibilityLabel = LYRUIConversationTableViewTitle;
 
     [self setupConversationDataSource];
 }

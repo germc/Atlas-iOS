@@ -1352,14 +1352,13 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 - (void)configureHeader:(LYRUIConversationCollectionViewHeader *)header atIndexPath:(NSIndexPath *)indexPath
 {
     LYRMessage *message = [self messageAtCollectionViewIndexPath:indexPath];
-    NSAttributedString *dateString;
+    
     if ([self shouldDisplayDateLabelForSection:indexPath.section]) {
-        dateString = [self attributedStringForMessageDate:message];
+        NSAttributedString *dateString = [self attributedStringForMessageDate:message];
         [header updateWithAttributedStringForDate:dateString];
     }
-    NSAttributedString *participantString;
     if ([self shouldDisplaySenderLabelForSection:indexPath.section]) {
-        participantString = [self attributedStringForMessageSender:message];
+        NSAttributedString *participantString = [self attributedStringForMessageSender:message];
         [header updateWithAttributedStringForParticipantName:participantString];
     }
 }
