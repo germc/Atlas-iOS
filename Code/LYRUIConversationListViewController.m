@@ -23,8 +23,7 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"LYRUIConversatio
 @implementation LYRUIConversationListViewController
 
 NSString *const LYRUIConversationListViewControllerTitle = @"Messages";
-NSString *const LYRUIConversationTableViewTitle = @"Conversation Table View";
-
+NSString *const LYRUIConversationTableViewAccessibilityLabel = @"Conversation Table View";
 
 + (instancetype)conversationListViewControllerWithLayerClient:(LYRClient *)layerClient
 {
@@ -59,7 +58,7 @@ NSString *const LYRUIConversationTableViewTitle = @"Conversation Table View";
 
     self.title = LYRUIConversationListViewControllerTitle;
     self.accessibilityLabel = LYRUIConversationListViewControllerTitle;
-    self.tableView.accessibilityLabel = LYRUIConversationTableViewTitle;
+    self.tableView.accessibilityLabel = LYRUIConversationTableViewAccessibilityLabel;
 
     [self setupConversationDataSource];
 }

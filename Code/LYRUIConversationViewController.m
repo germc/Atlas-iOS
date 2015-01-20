@@ -45,8 +45,8 @@
 
 @implementation LYRUIConversationViewController
 
-NSString *const LYRUIConversationViewControllerAccessibilityLabel = @"ConversationViewController";
-NSString *const LYRUIConversationCollectionViewAccessibilityIdentifier = @"ConversationCollectionView";
+NSString *const LYRUIConversationViewControllerAccessibilityLabel = @"Conversation View Controller";
+NSString *const LYRUIConversationCollectionViewAccessibilityIdentifier = @"Conversation Collection View";
 
 static NSString *const LYRUIIncomingMessageCellIdentifier = @"LYRUIIncomingMessageCellIdentifier";
 static NSString *const LYRUIOutgoingMessageCellIdentifier = @"LYRUIOutgoingMessageCellIdentifier";
