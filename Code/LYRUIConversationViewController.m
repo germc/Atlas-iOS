@@ -45,6 +45,9 @@
 
 @implementation LYRUIConversationViewController
 
+NSString *const LYRUIConversationViewControllerAccessibilityLabel = @"Conversation View Controller";
+NSString *const LYRUIConversationCollectionViewAccessibilityIdentifier = @"Conversation Collection View";
+
 static NSString *const LYRUIIncomingMessageCellIdentifier = @"LYRUIIncomingMessageCellIdentifier";
 static NSString *const LYRUIOutgoingMessageCellIdentifier = @"LYRUIOutgoingMessageCellIdentifier";
 static NSString *const LYRUIMoreMessagesHeaderIdentifier = @"LYRUIMoreMessagesHeaderIdentifier";
@@ -98,8 +101,7 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
     [super viewDidLoad];
     
     self.view.backgroundColor = [UIColor whiteColor];
-    self.accessibilityLabel = @"Conversation";
-    
+    self.accessibilityLabel = LYRUIConversationViewControllerAccessibilityLabel;
     // Collection View Setup
     self.collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero
                                              collectionViewLayout:[[UICollectionViewFlowLayout alloc] init]];
@@ -109,6 +111,7 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
     self.collectionView.backgroundColor = [UIColor whiteColor];
     self.collectionView.alwaysBounceVertical = YES;
     self.collectionView.bounces = YES;
+    self.collectionView.accessibilityLabel = LYRUIConversationCollectionViewAccessibilityIdentifier;
     self.collectionView.keyboardDismissMode = UIScrollViewKeyboardDismissModeInteractive;
     self.collectionView.accessibilityLabel = @"Conversation Collection View";
 
@@ -169,6 +172,7 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageInputToolbarDidChangeHeight:) name:LYRUIMessageInputToolbarDidChangeHeightNotification object:self.messageInputToolbar];
 
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveTypingIndicator:) name:LYRConversationDidReceiveTypingIndicatorNotification object:self.conversation];
+     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleApplicationWillEnterForeground:) name:UIApplicationWillEnterForegroundNotification object:nil];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -248,6 +252,17 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 {
     self.collectionView.delegate = nil;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)handleApplicationWillEnterForeground:(NSNotification *)notification
+{
+    if (self.conversation) {
+        NSError *error;
+        BOOL success = [self.conversation markAllMessagesAsRead:&error];
+        if (!success) {
+            NSLog(@"Failed to mark all messages as read with error: %@", error);
+        }
+    }
 }
 
 #pragma mark - Conversation Setup
@@ -468,30 +483,7 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
     LYRMessage *message = [self messageAtCollectionViewIndexPath:indexPath];
     if (kind == UICollectionElementKindSectionHeader) {
         LYRUIConversationCollectionViewHeader *header = [self.collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:LYRUIMessageCellHeaderIdentifier forIndexPath:indexPath];
-        // Should we display a sender label?
-        if ([self shouldDisplaySenderLabelForSection:indexPath.section]) {
-            id<LYRUIParticipant> participant = [self participantForIdentifier:message.sentByUserID];
-            if (participant) {
-                [header updateWithAttributedStringForParticipantName:[[NSAttributedString alloc] initWithString:participant.fullName]];
-            } else {
-                [header updateWithAttributedStringForParticipantName:[[NSAttributedString alloc] initWithString:@"No Matching Participant"]];
-            }
-        }
-        // Should we display a date label?
-        if ([self shouldDisplayDateLabelForSection:indexPath.section]) {
-            if ([self.dataSource respondsToSelector:@selector(conversationViewController:attributedStringForDisplayOfDate:)]) {
-                NSAttributedString *dateString;
-                if (message.sentAt) {
-                    dateString = [self.dataSource conversationViewController:self attributedStringForDisplayOfDate:message.sentAt];
-                } else {
-                    dateString = [self.dataSource conversationViewController:self attributedStringForDisplayOfDate:[NSDate date]];
-                }
-                NSAssert([dateString isKindOfClass:[NSAttributedString class]], @"Date String must be an attributed string");
-                [header updateWithAttributedStringForDate:dateString];
-            } else {
-                @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"LYRUIConversationViewControllerDataSource must return an attributed string for Date" userInfo:nil];
-            }
-        }
+        [self configureHeader:header atIndexPath:indexPath];
         return header;
     } else {
         LYRUIConversationCollectionViewFooter *footer = [self.collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:LYRUIMessageCellFooterIdentifier forIndexPath:indexPath];
@@ -1146,6 +1138,18 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
         [self.objectChanges removeAllObjects];
     } completion:nil];
 
+     [self configureCollectionViewElements];
+
+    if (shouldScrollToBottom)  {
+        [self scrollToBottomOfCollectionViewAnimated:YES];
+    } else {
+        [self configurePaginationWindow];
+        [self configureMoreMessagesIndicatorVisibility];
+    }
+}
+
+- (void)configureCollectionViewElements
+{
     // Since each section's content depends on other messages, we need to update each visible section even when a section's corresponding message has not changed. This also solves the issue with LYRQueryControllerChangeTypeUpdate (see above).
     for (UICollectionViewCell<LYRUIMessagePresenting> *cell in [self.collectionView visibleCells]) {
         NSIndexPath *indexPath = [self.collectionView indexPathForCell:cell];
@@ -1157,13 +1161,6 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
         if (!queryControllerIndexPath) continue;
         NSIndexPath *collectionViewIndexPath = [self collectionViewIndexPathForQueryControllerIndexPath:queryControllerIndexPath];
         [self configureFooter:footer atIndexPath:collectionViewIndexPath];
-    }
-
-    if (shouldScrollToBottom)  {
-        [self scrollToBottomOfCollectionViewAnimated:YES];
-    } else {
-        [self configurePaginationWindow];
-        [self configureMoreMessagesIndicatorVisibility];
     }
 }
 
@@ -1366,6 +1363,20 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
     return [self.layerClient executeQuery:query error:nil].lastObject;
 }
 
+- (void)configureHeader:(LYRUIConversationCollectionViewHeader *)header atIndexPath:(NSIndexPath *)indexPath
+{
+    LYRMessage *message = [self messageAtCollectionViewIndexPath:indexPath];
+    
+    if ([self shouldDisplayDateLabelForSection:indexPath.section]) {
+        NSAttributedString *dateString = [self attributedStringForMessageDate:message];
+        [header updateWithAttributedStringForDate:dateString];
+    }
+    if ([self shouldDisplaySenderLabelForSection:indexPath.section]) {
+        NSAttributedString *participantString = [self attributedStringForMessageSender:message];
+        [header updateWithAttributedStringForParticipantName:participantString];
+    }
+}
+
 - (void)configureFooter:(LYRUIConversationCollectionViewFooter *)footer atIndexPath:(NSIndexPath *)indexPath
 {
     LYRMessage *message = [self messageAtCollectionViewIndexPath:indexPath];
@@ -1381,6 +1392,28 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
     } else {
         [footer updateWithAttributedStringForRecipientStatus:nil];
     }
+}
+
+- (NSAttributedString *)attributedStringForMessageDate:(LYRMessage *)message
+{
+    NSAttributedString *dateString;
+    if ([self.dataSource respondsToSelector:@selector(conversationViewController:attributedStringForDisplayOfDate:)]) {
+        NSDate *date = message.sentAt ?: [NSDate date];
+        dateString = [self.dataSource conversationViewController:self attributedStringForDisplayOfDate:date];
+        NSAssert([dateString isKindOfClass:[NSAttributedString class]], @"Date string must be an attributed string");
+    } else {
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"LYRUIConversationViewControllerDataSource must return an attributed string for Date" userInfo:nil];
+    }
+    return dateString;
+}
+
+- (NSAttributedString *)attributedStringForMessageSender:(LYRMessage *)message
+{
+    NSAttributedString *participantString;
+    id<LYRUIParticipant> participant = [self participantForIdentifier:message.sentByUserID];
+    NSString *participantName = participant.fullName ?: @"Unknown User";
+    participantString = [[NSAttributedString alloc] initWithString:participantName];
+    return participantString;
 }
 
 #pragma mark - Query Controller

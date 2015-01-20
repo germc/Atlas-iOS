@@ -24,6 +24,8 @@ NSString *const LYRUIMessageInputToolbarDidChangeHeightNotification = @"LYRUIMes
 
 @implementation LYRUIMessageInputToolbar
 
+NSString *const LYRUIMessageInputToolbarAccessibilityLabel = @"Message Input Toolbar";
+
 // Compose View Margin Constants
 static CGFloat const LYRUIHorizontalMargin = 6;
 static CGFloat const LYRUIVerticalMargin = 6;
@@ -38,7 +40,7 @@ static CGFloat const LYRUIButtonHeight = 28;
 {
     self = [super init];
     if (self) {
-        self.accessibilityLabel = @"Message Input Toolbar";
+        self.accessibilityLabel = LYRUIMessageInputToolbarAccessibilityLabel;
         self.translatesAutoresizingMaskIntoConstraints = NO;
         self.autoresizingMask = UIViewAutoresizingFlexibleWidth;
         self.backgroundColor =  LYRUILightGrayColor();

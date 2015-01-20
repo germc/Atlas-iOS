@@ -10,8 +10,6 @@
 
 @interface LYRUITestInterface ()
 
-
-
 @end
 
 @implementation LYRUITestInterface

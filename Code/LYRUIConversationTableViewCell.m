@@ -230,6 +230,7 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
     } else {
         self.lastMessageLabel.text = @"Attachment: Image";
     }
+    [self updateUnreadMessageIndicatorWithConversation:conversation];
 }
 
 - (void)updateWithConversationImage:(UIImage *)image
@@ -239,16 +240,12 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
     [self setNeedsUpdateConstraints];
 }
 
-- (void)updateWithLastMessageRecipientStatus:(LYRRecipientStatus)recipientStatus
+- (void)updateUnreadMessageIndicatorWithConversation:(LYRConversation *)conversation
 {
-    switch (recipientStatus) {
-        case LYRRecipientStatusDelivered:
-            self.unreadMessageIndicator.hidden = NO;
-            break;
-            
-        default:
-            self.unreadMessageIndicator.hidden = YES;
-            break;
+    if (conversation.hasUnreadMessages) {
+        self.unreadMessageIndicator.hidden = NO;
+    } else {
+        self.unreadMessageIndicator.hidden = YES;
     }
 }
 

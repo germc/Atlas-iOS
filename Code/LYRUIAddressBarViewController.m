@@ -22,6 +22,7 @@
 
 @implementation LYRUIAddressBarViewController
 
+NSString *const LYRUIAddressBarAccessibilityLabel = @"Address Bar";
 static NSString *const LSParticpantCellIdentifier = @"participantCellIdentifier";
 static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressBarParticipant";
 
@@ -33,7 +34,7 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
+    self.view.accessibilityLabel = LYRUIAddressBarAccessibilityLabel;
     self.view.translatesAutoresizingMaskIntoConstraints = NO;
     
     self.addressBarView = [[LYRUIAddressBarView alloc] init];
