@@ -111,9 +111,8 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
     self.collectionView.backgroundColor = [UIColor whiteColor];
     self.collectionView.alwaysBounceVertical = YES;
     self.collectionView.bounces = YES;
-    self.collectionView.accessibilityLabel = LYRUIConversationCollectionViewAccessibilityIdentifier;
+    self.collectionView.accessibilityIdentifier = LYRUIConversationCollectionViewAccessibilityIdentifier;
     self.collectionView.keyboardDismissMode = UIScrollViewKeyboardDismissModeInteractive;
-    self.collectionView.accessibilityLabel = @"Conversation Collection View";
 
     [self.collectionView registerClass:[LYRUIIncomingMessageCollectionViewCell class]
             forCellWithReuseIdentifier:LYRUIIncomingMessageCellIdentifier];
@@ -301,7 +300,7 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 - (void)configureAvatarImageDisplay
 {
     NSMutableSet *otherParticipantIDs = [self.conversation.participants mutableCopy];
-    [otherParticipantIDs removeObject:self.layerClient.authenticatedUserID];
+    if (self.layerClient.authenticatedUserID) [otherParticipantIDs removeObject:self.layerClient.authenticatedUserID];
     self.shouldDisplayAvatarImage = otherParticipantIDs.count > 1;
 }
 
@@ -318,7 +317,7 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
     }
 
     NSMutableSet *otherParticipantIDs = [self.conversation.participants mutableCopy];
-    [otherParticipantIDs removeObject:self.layerClient.authenticatedUserID];
+    if (self.layerClient.authenticatedUserID) [otherParticipantIDs removeObject:self.layerClient.authenticatedUserID];
 
     if (otherParticipantIDs.count == 0) {
         self.title = @"Personal";
