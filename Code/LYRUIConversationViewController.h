@@ -123,6 +123,16 @@
  */
 - (NSString *)conversationViewController:(LYRUIConversationViewController *)viewController reuseIdentifierForMessage:(LYRMessage *)message;
 
+/**
+ @abstract Asks the data source to provide a conversation for a set of participants.
+ @param viewController The `LYRUIConversationViewController` requesting the conversation.
+ @param participants A set of objects conforming to `LYRUIParticipant`.
+ @return A conversation that will be used by the conversation view controller.
+ @discussion Applications may implement this method to override the default behavior which is described below.
+ If this method is not implemented or `nil` is returned, the conversation view controller will default to 1) disabling delivery receipts if there are more than five participants and 2) using an existing conversation between the participants if one already exists.
+ */
+- (LYRConversation *)conversationViewController:(LYRUIConversationViewController *)viewController conversationWithParticipants:(NSSet *)participants;
+
 @end
 
 /**
