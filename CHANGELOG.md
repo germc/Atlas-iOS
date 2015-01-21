@@ -46,6 +46,7 @@
 * Changed `layerClient` property on `LYRUIConversationListViewController` from `readwrite` to `readonly`.
 * Changed `lastMessageTextFont` property on `LYRUIConversationTableViewCell` to `lastMessageLabelFont`.
 * Changed `lastMessageTextColor` property on `LYRUIConversationTableViewCell` to `lastMessageLabelColor`.
+* Added optional `conversationViewController:conversationWithParticipants:` method to `LYRUIConversationViewControllerDataSource`.
 
 ### Bug Fixes
 

@@ -1337,14 +1337,8 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 
 - (void)configureConversationWithAddressBar:(LYRUIAddressBarViewController *)addressBarViewController
 {
-    NSSet *participants = [addressBarViewController.selectedParticipants valueForKey:@"participantIdentifier"];
-    LYRConversation *conversation;
-    if (participants.count > 0) {
-        conversation = [self conversationWithParticipants:participants];
-        if (!conversation) {
-            conversation = [self.layerClient newConversationWithParticipants:participants options:nil error:nil];
-        }
-    }
+    NSSet *participants = addressBarViewController.selectedParticipants;
+    LYRConversation *conversation = [self conversationWithParticipants:participants];
     if (conversation == self.conversation) return;
     self.conversation = conversation;
     [self setConversationViewTitle];
@@ -1354,7 +1348,27 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 
 - (LYRConversation *)conversationWithParticipants:(NSSet *)participants
 {
-    NSMutableSet *set = [participants mutableCopy];
+    if (participants.count == 0) return nil;
+
+    LYRConversation *conversation;
+    if ([self.dataSource respondsToSelector:@selector(conversationViewController:conversationWithParticipants:)]) {
+        conversation = [self.dataSource conversationViewController:self conversationWithParticipants:participants];
+        if (conversation) return conversation;
+    }
+
+    NSSet *participantIdentifiers = [participants valueForKey:@"participantIdentifier"];
+    conversation = [self existingConversationWithParticipantIdentifiers:participantIdentifiers];
+    if (conversation) return conversation;
+
+    BOOL deliveryReceiptsEnabled = participants.count <= 5;
+    NSDictionary *options = @{LYRConversationOptionsDeliveryReceiptsEnabledKey: @(deliveryReceiptsEnabled)};
+    conversation = [self.layerClient newConversationWithParticipants:participantIdentifiers options:options error:nil];
+    return conversation;
+}
+
+- (LYRConversation *)existingConversationWithParticipantIdentifiers:(NSSet *)participantIdentifiers
+{
+    NSMutableSet *set = [participantIdentifiers mutableCopy];
     [set addObject:self.layerClient.authenticatedUserID];
     LYRQuery *query = [LYRQuery queryWithClass:[LYRConversation class]];
     query.predicate = [LYRPredicate predicateWithProperty:@"participants" operator:LYRPredicateOperatorIsEqualTo value:set];
