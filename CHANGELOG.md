@@ -8,6 +8,7 @@
 
 ### Public API Changes
 
+* Updated `LYRUIParticipantPresenting` to display default `Unknown Participant` text if `participant.fullName` is nil.
 * Added `collectionViewCellForMessage:` to `LYRUIConversationViewController`.
 * Added `bubbleViewCornerRadius` property to `LYRUIMessageCollectionViewCell`.  
 * Added `avatarImageViewCornerRadius` property to `LYRUIMessageCollectionViewCell`.
@@ -50,6 +51,9 @@
 
 ### Bug Fixes
 
+* Fixed bug which allowed name labels to be truncated in `LYRUIParticipantTableViewCell`.
+* Fixed bug which would display an empty name string if the `fullName` property of `LYRUIParticipant` was nil in `LYRUIParticipantTableViewCell`.
+* Fixed bug which would display innacurate intials in `LYRUIParticipantTableViewCell` if the `fullName` property of `LYRUIParticipant` was nil.
 * Fixed bug which allowed messages to be marked as read while app is in the background.
 * Removed duplicate MIMEType constant declarations.
 * Fixed possibility of customizations via `UIAppearance` being overridden.

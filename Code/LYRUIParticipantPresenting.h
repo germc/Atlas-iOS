@@ -28,6 +28,8 @@ typedef NS_ENUM(NSUInteger, LYRUIParticipantPickerSortType) {
  @param participant The participant to present.
  @param sortType The type of sorting currently used.
  @param shouldShowAvatarImage Whether or not the receiver should display the participant's avatar.
+ @discussion If the `fullName` property of the `participant` parameter is nil, the cell with display the default 
+ text, `Unknown Participant`.
  */
 - (void)presentParticipant:(id<LYRUIParticipant>)participant
               withSortType:(LYRUIParticipantPickerSortType)sortType
