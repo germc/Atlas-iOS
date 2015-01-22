@@ -170,8 +170,9 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageInputToolbarDidChangeHeight:) name:LYRUIMessageInputToolbarDidChangeHeightNotification object:self.messageInputToolbar];
 
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveTypingIndicator:) name:LYRConversationDidReceiveTypingIndicatorNotification object:self.conversation];
-     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleApplicationWillEnterForeground:) name:UIApplicationWillEnterForegroundNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveTypingIndicator:) name:LYRConversationDidReceiveTypingIndicatorNotification object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleApplicationWillEnterForeground:) name:UIApplicationWillEnterForegroundNotification object:nil];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -286,7 +287,14 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 
 - (void)setConversation:(LYRConversation *)conversation
 {
+    if (!conversation && !_conversation) return;
+    if ([conversation isEqual:_conversation]) return;
+
     _conversation = conversation;
+
+    [self.typingParticipantIDs removeAllObjects];
+    [self updateTypingIndicatorOverlay:NO];
+
     [self configureSendButtonEnablement];
     if (conversation) {
         [self fetchLayerMessages];
@@ -747,6 +755,10 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 
 - (void)didReceiveTypingIndicator:(NSNotification *)notification
 {
+    if (!self.conversation) return;
+    if (!notification.object) return;
+    if (![notification.object isEqual:self.conversation]) return;
+
     NSString *participantID = notification.userInfo[LYRTypingIndicatorParticipantUserInfoKey];
     NSNumber *statusNumber = notification.userInfo[LYRTypingIndicatorValueUserInfoKey];
     LYRTypingIndicator status = statusNumber.unsignedIntegerValue;
