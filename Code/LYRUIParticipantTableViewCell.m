@@ -90,7 +90,7 @@ static CGFloat const LSSelectionIndicatorSize = 30;
         [self addConstraint:self.nameWithoutAvatarLeftConstraint];
         self.avatarImageView.hidden = YES;
     }
-    [self.avatarImageView setInitialsForName:participant.fullName];
+    [self configureAvatarInitials];
     [self configureNameLabel];
 }
 
@@ -112,14 +112,16 @@ static CGFloat const LSSelectionIndicatorSize = 30;
     [self configureNameLabel];
 }
 
+- (void)configureAvatarInitials
+{
+    NSString *participantName = self.participant.fullName.length ? self.participant.fullName : @"Unknown Participant";
+    [self.avatarImageView setInitialsForName:participantName];
+}
+
 - (void)configureNameLabel
 {
-    if (self.participant.fullName.length == 0) {
-        self.nameLabel.text = nil;
-        return;
-    }
-
-    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:self.participant.fullName attributes:@{NSFontAttributeName: self.titleFont}];
+    NSString *participantName = self.participant.fullName.length ? self.participant.fullName : @"Unknown Participant";
+    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:participantName attributes:@{NSFontAttributeName: self.titleFont}];
 
     NSRange rangeToBold = NSMakeRange(NSNotFound, 0);
     switch (self.sortType) {
@@ -140,6 +142,7 @@ static CGFloat const LSSelectionIndicatorSize = 30;
 
     self.nameLabel.attributedText = attributedString;
     self.nameLabel.textColor = self.titleColor;
+    [self.nameLabel sizeToFit];
 }
 
 @end
