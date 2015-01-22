@@ -52,7 +52,7 @@
 
 * Fixed bug which allowed name labels to be truncated in `LYRUIParticipantTableViewCell`.
 * Fixed bug which would display an empty name string if the `fullName` property of `LYRUIParticipant` was nil in `LYRUIParticipantTableViewCell`.
-* Fixed bug which would display innacurate intials in `LYRUIParticipantTableViewCell` if the `fullName` property of `LYRUIParticipant` was nil.
+* Fixed bug which would display inaccurate initials if the `fullName` property of `LYRUIParticipant` was nil in `LYRUIParticipantTableViewCell`.
 * Fixed bug which allowed messages to be marked as read while app is in the background.
 * Removed duplicate MIMEType constant declarations.
 * Fixed possibility of customizations via `UIAppearance` being overridden.
