@@ -8,7 +8,6 @@
 
 ### Public API Changes
 
-* Updated `LYRUIParticipantPresenting` to display default `Unknown Participant` text if `participant.fullName` is nil.
 * Added `collectionViewCellForMessage:` to `LYRUIConversationViewController`.
 * Added `bubbleViewCornerRadius` property to `LYRUIMessageCollectionViewCell`.  
 * Added `avatarImageViewCornerRadius` property to `LYRUIMessageCollectionViewCell`.
