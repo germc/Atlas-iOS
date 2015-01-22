@@ -479,7 +479,6 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
         return header;
     }
 
-    LYRMessage *message = [self messageAtCollectionViewIndexPath:indexPath];
     if (kind == UICollectionElementKindSectionHeader) {
         LYRUIConversationCollectionViewHeader *header = [self.collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:LYRUIMessageCellHeaderIdentifier forIndexPath:indexPath];
         [self configureHeader:header atIndexPath:indexPath];
