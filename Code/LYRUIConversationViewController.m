@@ -229,6 +229,10 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
     if (self.isFirstAppearance) {
         self.firstAppearance = NO;
         [self scrollToBottomOfCollectionViewAnimated:NO];
+
+        // This works around an issue where in some situations iOS 7.1 will crash with 'Auto Layout still required after sending -viewDidLayoutSubviews to the view controller.' apparently due to our usage of the collection view layout's content size when scrolling to the bottom in the above method call.
+        [self.view layoutIfNeeded];
+
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
     }
 }
