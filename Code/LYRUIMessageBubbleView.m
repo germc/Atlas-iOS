@@ -36,6 +36,7 @@ CGFloat const LYRUIMessageBubbleMapHeight = 200;
 
         self.bubbleViewLabel = [[UILabel alloc] init];
         self.bubbleViewLabel.numberOfLines = 0;
+        self.bubbleViewLabel.userInteractionEnabled = YES;
         self.bubbleViewLabel.translatesAutoresizingMaskIntoConstraints = NO;
         [self.bubbleViewLabel setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh + 1 forAxis:UILayoutConstraintAxisHorizontal];
         [self addSubview:self.bubbleViewLabel];
@@ -65,6 +66,9 @@ CGFloat const LYRUIMessageBubbleMapHeight = 200;
 
         self.mapWidthConstraint = [NSLayoutConstraint constraintWithItem:self.bubbleImageView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:LYRUIMessageBubbleMapWidth];
 
+        UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleLabelTap:)];
+        [self.bubbleViewLabel addGestureRecognizer:tapGestureRecognizer];
+        
         UILongPressGestureRecognizer *gestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
         [self addGestureRecognizer:gestureRecognizer];
     }
@@ -84,7 +88,8 @@ CGFloat const LYRUIMessageBubbleMapHeight = 200;
     self.activityIndicator.hidden = YES;
     self.bubbleImageView.hidden = YES;
     self.bubbleViewLabel.hidden = NO;
-    self.bubbleViewLabel.text = text;
+
+    self.bubbleViewLabel.attributedText = [self formatBubbleViewTextIfNeeded:text];
     self.bubbleImageView.image = nil;
     self.locationShown = kCLLocationCoordinate2DInvalid;
     [self.snapshotter cancel];
@@ -231,6 +236,60 @@ CGFloat const LYRUIMessageBubbleMapHeight = 200;
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (NSAttributedString *)formatBubbleViewTextIfNeeded:(NSString *)text
+{
+    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:text attributes:@{NSFontAttributeName : self.bubbleViewLabel.font,
+                                                                                                                      NSForegroundColorAttributeName : self.bubbleViewLabel.textColor}];
+    NSArray *linkParts = [self linkPartsInText:text];
+    for (NSTextCheckingResult *result in linkParts) {
+        NSString *linkString = [text substringWithRange:result.range];
+        [attributedString addAttribute:NSLinkAttributeName value:linkString range:result.range];
+    }
+    return attributedString;
+}
+
+- (NSArray *)linkPartsInText:(NSString *)text
+{
+    NSError *error;
+    NSDataDetector *detector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeLink
+                                                               error:&error];
+    if (error) return nil;
+    return [detector matchesInString:text options:kNilOptions range:NSMakeRange(0, text.length)];
+}
+
+- (void)handleLabelTap:(UITapGestureRecognizer *)tapGestureRecognizer
+{
+    CGPoint point = [tapGestureRecognizer locationInView:self.bubbleViewLabel];
+    
+    //http://stackoverflow.com/questions/21349725/character-index-at-touch-point-for-uilabel/26806991#26806991
+    UILabel *textLabel = (UILabel *)tapGestureRecognizer.view;
+    CGPoint tapLocation = [tapGestureRecognizer locationInView:textLabel];
+    NSMutableAttributedString *attributedText = [[NSMutableAttributedString alloc] initWithAttributedString:textLabel.attributedText];
+    
+    // init text storage
+    NSTextStorage *textStorage = [[NSTextStorage alloc] initWithAttributedString:attributedText];
+    NSLayoutManager *layoutManager = [[NSLayoutManager alloc] init];
+    [textStorage addLayoutManager:layoutManager];
+    
+    // init text container
+    NSTextContainer *textContainer = [[NSTextContainer alloc] initWithSize:CGSizeMake(textLabel.frame.size.width, textLabel.frame.size.height)];
+    textContainer.lineFragmentPadding  = 0;
+    textContainer.maximumNumberOfLines = textLabel.numberOfLines;
+    textContainer.lineBreakMode        = textLabel.lineBreakMode;
+    textContainer.layoutManager        = layoutManager;
+    
+    [layoutManager addTextContainer:textContainer];
+    [layoutManager setTextStorage:textStorage];
+    
+    NSUInteger characterIndex = [layoutManager characterIndexForPoint:tapLocation
+                                                      inTextContainer:textContainer
+                             fractionOfDistanceBetweenInsertionPoints:NULL];
+    NSArray *parts = [self linkPartsInText:self.bubbleViewLabel.text];
+    for (NSTextCheckingResult *result in parts) {
+        NS
+    }
 }
 
 @end
