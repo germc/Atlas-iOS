@@ -193,6 +193,7 @@ static CGFloat const LYRUIButtonHeight = 28;
 - (void)rightAccessoryButtonTapped
 {
     if (self.textInputView.text.length == 0) return;
+    [self acceptAutoCorrectionSuggestion];
     if ([self.inputToolBarDelegate respondsToSelector:@selector(messageInputToolbarDidEndTyping:)]) {
         [self.inputToolBarDelegate messageInputToolbarDidEndTyping:self];
     }
@@ -268,6 +269,13 @@ static CGFloat const LYRUIButtonHeight = 28;
         [messageParts addObject:trimmedSubstring];
     }];
     return messageParts;
+}
+
+- (void)acceptAutoCorrectionSuggestion
+{
+    // This is a workaround to accept the current auto correction suggestion while not resigning as first responder. From: http://stackoverflow.com/a/27865136
+    [self.textInputView.inputDelegate selectionWillChange:self.textInputView];
+    [self.textInputView.inputDelegate selectionDidChange:self.textInputView];
 }
 
 #pragma mark - Send Button Enablement
