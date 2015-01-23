@@ -51,6 +51,7 @@
 * Changed `lastMessageTextFont` property on `LYRUIConversationTableViewCell` to `lastMessageLabelFont`.
 * Changed `lastMessageTextColor` property on `LYRUIConversationTableViewCell` to `lastMessageLabelColor`.
 * Added optional `conversationViewController:conversationWithParticipants:` method to `LYRUIConversationViewControllerDataSource`.
+* Changed `selectedParticipants` property on `LYRUIAddressBarViewController` from a `readonly` `NSSet` to a `readwrite` `NSOrderedSet`.
 
 ### Bug Fixes
 

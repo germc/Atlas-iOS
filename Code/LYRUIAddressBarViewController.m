@@ -15,7 +15,6 @@
 @property (nonatomic) LYRUIAddressBarContainerView *view;
 @property (nonatomic) UITableView *tableView;
 @property (nonatomic) NSArray *participants;
-@property (nonatomic) NSSet *selectedParticipants;
 @property (nonatomic, getter=isPermanent) BOOL permanent;
 
 @end
@@ -73,16 +72,7 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
     if (self.isPermanent) return;
     self.permanent = YES;
 
-    NSAttributedString *attributedString = self.addressBarView.addressBarTextView.attributedText;
-    NSMutableString *permanentText = [NSMutableString new];
-    [attributedString enumerateAttribute:LYRUIAddressBarParticipantAttributeName inRange:NSMakeRange(0, attributedString.length) options:0 usingBlock:^(id<LYRUIParticipant> participant, NSRange range, BOOL *stop) {
-        if (!participant) return;
-        if (permanentText.length > 0) {
-            [permanentText appendString:@", "];
-        }
-        [permanentText appendString:participant.fullName];
-    }];
-    self.addressBarView.addressBarTextView.text = permanentText;
+    self.addressBarView.addressBarTextView.text = [self stringForParticipants:self.selectedParticipants];
     self.addressBarView.addressBarTextView.textColor = LYRUIGrayColor();
     self.addressBarView.addressBarTextView.userInteractionEnabled = NO;
     self.addressBarView.addressBarTextView.editable = NO;
@@ -91,32 +81,49 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
 
 - (void)selectParticipant:(id<LYRUIParticipant>)participant
 {
-    for (id<LYRUIParticipant> existingParticipant in self.selectedParticipants) {
-        if ([existingParticipant.participantIdentifier isEqualToString:participant.participantIdentifier]) {
-            return;
+    if (!participant) return;
+
+    NSMutableOrderedSet *participants = [NSMutableOrderedSet orderedSetWithOrderedSet:self.selectedParticipants];
+    [participants addObject:participant];
+    self.selectedParticipants = participants;
+}
+
+- (void)setSelectedParticipants:(NSOrderedSet *)selectedParticipants
+{
+    if (!selectedParticipants && !_selectedParticipants) return;
+    if ([selectedParticipants isEqual:_selectedParticipants]) return;
+
+    NSOrderedSet *existingParticipants = _selectedParticipants;
+
+    _selectedParticipants = selectedParticipants;
+
+    NSMutableOrderedSet *removedParticipants = [NSMutableOrderedSet orderedSetWithOrderedSet:existingParticipants];
+    if (selectedParticipants) [removedParticipants minusOrderedSet:selectedParticipants];
+
+    NSMutableOrderedSet *addedParticipants = [NSMutableOrderedSet orderedSetWithOrderedSet:selectedParticipants];
+    if (existingParticipants) [addedParticipants minusOrderedSet:existingParticipants];
+
+    if (self.isPermanent) {
+        NSString *text = [self stringForParticipants:selectedParticipants];
+        self.addressBarView.addressBarTextView.text = text;
+    } else {
+        NSAttributedString *attributedText = [self attributedStringForParticipants:selectedParticipants];
+        self.addressBarView.addressBarTextView.attributedText = attributedText;
+    }
+    [self sizeAddressBarView];
+
+    if ([self.delegate respondsToSelector:@selector(addressBarViewController:didRemoveParticipant:)]) {
+        for (id<LYRUIParticipant> removedParticipant in removedParticipants) {
+            [self.delegate addressBarViewController:self didRemoveParticipant:removedParticipant];
         }
     }
 
-    NSSet *existingParticipants = [NSSet setWithSet:self.selectedParticipants];
-    self.selectedParticipants = [existingParticipants setByAddingObject:participant];
-
-    NSAttributedString *attributedString = self.addressBarView.addressBarTextView.attributedText;
-    NSMutableAttributedString *adjustedAttributedString = [NSMutableAttributedString new];
-    [attributedString enumerateAttribute:LYRUIAddressBarParticipantAttributeName inRange:NSMakeRange(0, attributedString.length) options:0 usingBlock:^(id<LYRUIParticipant> participant, NSRange range, BOOL *stop) {
-        if (!participant) return;
-        NSAttributedString *attributedParticipant = [self attributedStringForParticipant:participant];
-        [adjustedAttributedString appendAttributedString:attributedParticipant];
-    }];
-
-    NSAttributedString *attributedParticipant = [self attributedStringForParticipant:participant];
-    [adjustedAttributedString appendAttributedString:attributedParticipant];
-
-    self.addressBarView.addressBarTextView.attributedText = adjustedAttributedString;
-    [self sizeAddressBarView];
-
     if ([self.delegate respondsToSelector:@selector(addressBarViewController:didSelectParticipant:)]) {
-        [self.delegate addressBarViewController:self didSelectParticipant:participant];
+        for (id<LYRUIParticipant> addedParticipant in addedParticipants) {
+            [self.delegate addressBarViewController:self didSelectParticipant:addedParticipant];
+        }
     }
+
     [self searchEnded];
 }
 
@@ -212,14 +219,10 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
 - (void)textViewDidChange:(UITextView *)textView
 {
     NSAttributedString *attributedString = textView.attributedText;
-    NSMutableSet *participants = [NSMutableSet new];
-    [attributedString enumerateAttribute:LYRUIAddressBarParticipantAttributeName inRange:NSMakeRange(0, attributedString.length) options:0 usingBlock:^(id<LYRUIParticipant> participant, NSRange range, BOOL *stop) {
-        if (!participant) return;
-        [participants addObject:participant];
-    }];
-    NSMutableSet *removedParticipants = [NSMutableSet setWithSet:self.selectedParticipants];
-    [removedParticipants minusSet:participants];
-    self.selectedParticipants = participants;
+    NSOrderedSet *participants = [self participantsInAttributedString:attributedString];
+    NSMutableOrderedSet *removedParticipants = [NSMutableOrderedSet orderedSetWithOrderedSet:self.selectedParticipants];
+    [removedParticipants minusOrderedSet:participants];
+    _selectedParticipants = participants;
     if ([self.delegate respondsToSelector:@selector(addressBarViewController:didRemoveParticipant:)]) {
         for (id<LYRUIParticipant> participant in removedParticipants) {
             [self.delegate addressBarViewController:self didRemoveParticipant:participant];
@@ -315,7 +318,7 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
 - (NSArray *)filteredParticipants:(NSArray *)participants
 {
     NSMutableArray *prospectiveParticipants = [participants mutableCopy];
-    [prospectiveParticipants removeObjectsInArray:self.selectedParticipants.allObjects];
+    [prospectiveParticipants removeObjectsInArray:self.selectedParticipants.array];
     return prospectiveParticipants;
 }
 
@@ -328,6 +331,38 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
     self.participants = nil;
     self.tableView.hidden = YES;
     [self.tableView reloadData];
+}
+
+- (NSOrderedSet *)participantsInAttributedString:(NSAttributedString *)attributedString
+{
+    NSMutableOrderedSet *participants = [NSMutableOrderedSet new];
+    [attributedString enumerateAttribute:LYRUIAddressBarParticipantAttributeName inRange:NSMakeRange(0, attributedString.length) options:0 usingBlock:^(id<LYRUIParticipant> participant, NSRange range, BOOL *stop) {
+        if (!participant) return;
+        [participants addObject:participant];
+    }];
+    return participants;
+}
+
+- (NSString *)stringForParticipants:(NSOrderedSet *)participants
+{
+    NSMutableArray *fullNames = [NSMutableArray new];
+    for (id<LYRUIParticipant> participant in participants) {
+        NSString *fullName = participant.fullName;
+        if (fullName.length == 0) continue;
+        [fullNames addObject:fullName];
+    }
+    NSString *string = [fullNames componentsJoinedByString:@", "];
+    return string;
+}
+
+- (NSAttributedString *)attributedStringForParticipants:(NSOrderedSet *)participants
+{
+    NSMutableAttributedString *attributedString = [NSMutableAttributedString new];
+    for (id<LYRUIParticipant> participant in participants) {
+        NSAttributedString *attributedParticipant = [self attributedStringForParticipant:participant];
+        [attributedString appendAttributedString:attributedParticipant];
+    }
+    return attributedString;
 }
 
 - (NSAttributedString *)attributedStringForParticipant:(id<LYRUIParticipant>)participant
