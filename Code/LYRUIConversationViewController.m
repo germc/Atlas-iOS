@@ -1375,8 +1375,8 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
     conversation = [self existingConversationWithParticipantIdentifiers:participantIdentifiers];
     if (conversation) return conversation;
 
-    //BOOL deliveryReceiptsEnabled = participants.count <= 5;
-    NSDictionary *options; // = @{LYRConversationOptionsDeliveryReceiptsEnabledKey: @(deliveryReceiptsEnabled)};
+    BOOL deliveryReceiptsEnabled = participants.count <= 5;
+    NSDictionary *options = @{LYRConversationOptionsDeliveryReceiptsEnabledKey: @(deliveryReceiptsEnabled)};
     conversation = [self.layerClient newConversationWithParticipants:participantIdentifiers options:options error:nil];
     return conversation;
 }

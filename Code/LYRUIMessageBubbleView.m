@@ -14,7 +14,7 @@ CGFloat const LYRUIMessageBubbleLabelVerticalPadding = 8;
 CGFloat const LYRUIMessageBubbleMapWidth = 200;
 CGFloat const LYRUIMessageBubbleMapHeight = 200;
 
-NSString *const LYRUIUserDidTapLinkNotification = @"UserDidTapLink";
+NSString *const LYRUIUserDidTapLinkNotification = @"UserDidTapLinkNotification";
 
 @interface LYRUIMessageBubbleView ()
 
