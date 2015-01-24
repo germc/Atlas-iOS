@@ -30,7 +30,7 @@ extern CGFloat const LYRUIMessageBubbleMapHeight;
 /**
  @abstract Tells the bubble view to display a given string.
  */
-- (void)updateWithText:(NSString *)text;
+- (void)updateWithAttributedText:(NSAttributedString *)text;
 
 /**
  @abstract Tells the bubble view to display a given image.

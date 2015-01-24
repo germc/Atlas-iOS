@@ -22,3 +22,5 @@
  @abstract Returns the version of the Layer UIKit as a string.
  */
 extern NSString *const LYRUIKitVersionString;
+
+extern NSString *const LYRUIUserDidTapLinkNotification;

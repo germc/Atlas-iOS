@@ -7,11 +7,14 @@
 //
 
 #import "LYRUIMessageBubbleView.h"
+#import "LYRUIMessagingUtilities.h"
 
 CGFloat const LYRUIMessageBubbleLabelHorizontalPadding = 12;
 CGFloat const LYRUIMessageBubbleLabelVerticalPadding = 8;
 CGFloat const LYRUIMessageBubbleMapWidth = 200;
 CGFloat const LYRUIMessageBubbleMapHeight = 200;
+
+NSString *const LYRUIUserDidTapLinkNotification = @"UserDidTapLink";
 
 @interface LYRUIMessageBubbleView ()
 
@@ -83,13 +86,13 @@ CGFloat const LYRUIMessageBubbleMapHeight = 200;
     [self.activityIndicator startAnimating];
 }
 
-- (void)updateWithText:(NSString *)text
+- (void)updateWithAttributedText:(NSAttributedString *)text
 {
     self.activityIndicator.hidden = YES;
     self.bubbleImageView.hidden = YES;
     self.bubbleViewLabel.hidden = NO;
 
-    self.bubbleViewLabel.attributedText = [self formatBubbleViewTextIfNeeded:text];
+    self.bubbleViewLabel.attributedText = text;
     self.bubbleImageView.image = nil;
     self.locationShown = kCLLocationCoordinate2DInvalid;
     [self.snapshotter cancel];
@@ -238,31 +241,8 @@ CGFloat const LYRUIMessageBubbleMapHeight = 200;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (NSAttributedString *)formatBubbleViewTextIfNeeded:(NSString *)text
-{
-    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:text attributes:@{NSFontAttributeName : self.bubbleViewLabel.font,
-                                                                                                                      NSForegroundColorAttributeName : self.bubbleViewLabel.textColor}];
-    NSArray *linkParts = [self linkPartsInText:text];
-    for (NSTextCheckingResult *result in linkParts) {
-        NSString *linkString = [text substringWithRange:result.range];
-        [attributedString addAttribute:NSLinkAttributeName value:linkString range:result.range];
-    }
-    return attributedString;
-}
-
-- (NSArray *)linkPartsInText:(NSString *)text
-{
-    NSError *error;
-    NSDataDetector *detector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeLink
-                                                               error:&error];
-    if (error) return nil;
-    return [detector matchesInString:text options:kNilOptions range:NSMakeRange(0, text.length)];
-}
-
 - (void)handleLabelTap:(UITapGestureRecognizer *)tapGestureRecognizer
 {
-    CGPoint point = [tapGestureRecognizer locationInView:self.bubbleViewLabel];
-    
     //http://stackoverflow.com/questions/21349725/character-index-at-touch-point-for-uilabel/26806991#26806991
     UILabel *textLabel = (UILabel *)tapGestureRecognizer.view;
     CGPoint tapLocation = [tapGestureRecognizer locationInView:textLabel];
@@ -286,9 +266,14 @@ CGFloat const LYRUIMessageBubbleMapHeight = 200;
     NSUInteger characterIndex = [layoutManager characterIndexForPoint:tapLocation
                                                       inTextContainer:textContainer
                              fractionOfDistanceBetweenInsertionPoints:NULL];
-    NSArray *parts = [self linkPartsInText:self.bubbleViewLabel.text];
-    for (NSTextCheckingResult *result in parts) {
-        NS
+    NSArray *results = LYRUILinkResultsForText(self.bubbleViewLabel.attributedText.string);
+    for (NSTextCheckingResult *result in results) {
+        NSUInteger start = result.range.location;
+        NSUInteger end = result.range.location + result.range.length;
+        if (characterIndex > start && characterIndex < end){
+            NSString *substring = [self.bubbleViewLabel.text substringWithRange:result.range];
+            [[NSNotificationCenter defaultCenter] postNotificationName:LYRUIUserDidTapLinkNotification object:substring];
+        }
     }
 }
 

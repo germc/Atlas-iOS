@@ -27,10 +27,9 @@
         _bubbleViewCornerRadius = 12;
         _avatarImageViewCornerRadius = LYRUIAvatarImageDiameter / 2;
         _messageTextFont = [UIFont systemFontOfSize:14];
-        
+    
         _bubbleView = [[LYRUIMessageBubbleView alloc] init];
         _bubbleView.translatesAutoresizingMaskIntoConstraints = NO;
-        _bubbleView.bubbleViewLabel.font = _messageTextFont;
         _bubbleView.layer.cornerRadius = _bubbleViewCornerRadius;
         [self.contentView addSubview:_bubbleView];
         
@@ -92,7 +91,7 @@
     }
     if ([messagePart.MIMEType isEqualToString:LYRUIMIMETypeTextPlain]) {
         NSString *text = [[NSString alloc] initWithData:messagePart.data encoding:NSUTF8StringEncoding];
-        [self.bubbleView updateWithText:text];
+        [self.bubbleView updateWithAttributedText:[self attributedStringForText:text]];
         self.accessibilityLabel = [NSString stringWithFormat:@"Message: %@", text];
     } else if ([messagePart.MIMEType isEqualToString:LYRUIMIMETypeImageJPEG] || [messagePart.MIMEType isEqualToString:LYRUIMIMETypeImagePNG]) {
         UIImage *image = [UIImage imageWithData:messagePart.data];
@@ -142,5 +141,19 @@
     _avatarImageViewCornerRadius = avatarImageViewCornerRadius;
     self.avatarImageView.layer.cornerRadius = avatarImageViewCornerRadius;
 }
-	
+
+- (NSAttributedString *)attributedStringForText:(NSString *)text
+{
+    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:text attributes:@{NSFontAttributeName : self.messageTextFont,
+                                                                                                                      NSForegroundColorAttributeName : self.messageTextColor}];
+    NSArray *linkResults = LYRUILinkResultsForText(text);
+    for (NSTextCheckingResult *result in linkResults) {
+        NSString *linkString = [text substringWithRange:result.range];
+        [attributedString addAttribute:NSForegroundColorAttributeName value:self.messageLinkTextColor range:result.range];
+        [attributedString addAttribute:NSUnderlineStyleAttributeName value:@(1) range:result.range];
+    }
+    return attributedString;
+}
+
+
 @end

@@ -16,8 +16,8 @@
     if (self) {
         self.avatarImageView.hidden = YES;
         self.messageTextColor = [UIColor whiteColor];
+        self.messageLinkTextColor = [UIColor whiteColor];
         self.bubbleViewColor = LYRUIBlueColor();
-        
         [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleView
                                                                      attribute:NSLayoutAttributeRight
                                                                      relatedBy:NSLayoutRelationEqual
