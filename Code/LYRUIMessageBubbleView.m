@@ -14,7 +14,7 @@ CGFloat const LYRUIMessageBubbleLabelVerticalPadding = 8;
 CGFloat const LYRUIMessageBubbleMapWidth = 200;
 CGFloat const LYRUIMessageBubbleMapHeight = 200;
 
-NSString *const LYRUIUserDidTapLinkNotification = @"UserDidTapLinkNotification";
+NSString *const LYRUIUserDidTapLinkNotification = @"LYRUIUserDidTapLinkNotification";
 
 @interface LYRUIMessageBubbleView ()
 
@@ -246,33 +246,27 @@ NSString *const LYRUIUserDidTapLinkNotification = @"UserDidTapLinkNotification";
     //http://stackoverflow.com/questions/21349725/character-index-at-touch-point-for-uilabel/26806991#26806991
     UILabel *textLabel = (UILabel *)tapGestureRecognizer.view;
     CGPoint tapLocation = [tapGestureRecognizer locationInView:textLabel];
-    NSMutableAttributedString *attributedText = [[NSMutableAttributedString alloc] initWithAttributedString:textLabel.attributedText];
     
     // init text storage
-    NSTextStorage *textStorage = [[NSTextStorage alloc] initWithAttributedString:attributedText];
+    NSTextStorage *textStorage = [[NSTextStorage alloc] initWithAttributedString:textLabel.attributedText];
     NSLayoutManager *layoutManager = [[NSLayoutManager alloc] init];
     [textStorage addLayoutManager:layoutManager];
     
     // init text container
-    NSTextContainer *textContainer = [[NSTextContainer alloc] initWithSize:CGSizeMake(textLabel.frame.size.width, textLabel.frame.size.height)];
+    NSTextContainer *textContainer = [[NSTextContainer alloc] initWithSize:textLabel.frame.size];
     textContainer.lineFragmentPadding  = 0;
     textContainer.maximumNumberOfLines = textLabel.numberOfLines;
     textContainer.lineBreakMode        = textLabel.lineBreakMode;
-    textContainer.layoutManager        = layoutManager;
-    
     [layoutManager addTextContainer:textContainer];
-    [layoutManager setTextStorage:textStorage];
     
     NSUInteger characterIndex = [layoutManager characterIndexForPoint:tapLocation
                                                       inTextContainer:textContainer
                              fractionOfDistanceBetweenInsertionPoints:NULL];
     NSArray *results = LYRUILinkResultsForText(self.bubbleViewLabel.attributedText.string);
     for (NSTextCheckingResult *result in results) {
-        NSUInteger start = result.range.location;
-        NSUInteger end = result.range.location + result.range.length;
-        if (characterIndex > start && characterIndex < end){
-            NSString *substring = [self.bubbleViewLabel.text substringWithRange:result.range];
-            [[NSNotificationCenter defaultCenter] postNotificationName:LYRUIUserDidTapLinkNotification object:substring];
+        if (NSLocationInRange(characterIndex, result.range)){
+            [[NSNotificationCenter defaultCenter] postNotificationName:LYRUIUserDidTapLinkNotification object:result.URL];
+            break;
         }
     }
 }

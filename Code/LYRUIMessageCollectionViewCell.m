@@ -115,15 +115,17 @@
 - (void)setMessageTextFont:(UIFont *)messageTextFont
 {
     _messageTextFont = messageTextFont;
-    self.bubbleView.bubbleViewLabel.font = messageTextFont;
 }
 
 - (void)setMessageTextColor:(UIColor *)messageTextColor
 {
     _messageTextColor = messageTextColor;
-    self.bubbleView.bubbleViewLabel.textColor = messageTextColor;
 }
 
+- (void)setMessageLinkTextColor:(UIColor *)messageLinkTextColor
+{
+    _messageLinkTextColor = messageLinkTextColor;
+}
 - (void)setBubbleViewColor:(UIColor *)bubbleViewColor
 {
     _bubbleViewColor = bubbleViewColor;
@@ -144,16 +146,15 @@
 
 - (NSAttributedString *)attributedStringForText:(NSString *)text
 {
-    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:text attributes:@{NSFontAttributeName : self.messageTextFont,
-                                                                                                                      NSForegroundColorAttributeName : self.messageTextColor}];
+    NSDictionary *attributes = @{NSFontAttributeName : self.messageTextFont, NSForegroundColorAttributeName : self.messageTextColor};
+    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:text attributes:attributes];
     NSArray *linkResults = LYRUILinkResultsForText(text);
     for (NSTextCheckingResult *result in linkResults) {
-        NSString *linkString = [text substringWithRange:result.range];
-        [attributedString addAttribute:NSForegroundColorAttributeName value:self.messageLinkTextColor range:result.range];
-        [attributedString addAttribute:NSUnderlineStyleAttributeName value:@(1) range:result.range];
+        NSDictionary *linkAttributes = @{NSForegroundColorAttributeName : self.messageLinkTextColor,
+                                         NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle)};
+        [attributedString addAttributes:linkAttributes range:result.range];
     }
     return attributedString;
 }
-
 
 @end

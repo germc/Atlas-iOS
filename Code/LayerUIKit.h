@@ -23,4 +23,7 @@
  */
 extern NSString *const LYRUIKitVersionString;
 
+/**
+ @abstract Posted when a user taps on a link in a message bubble.
+ */
 extern NSString *const LYRUIUserDidTapLinkNotification;
