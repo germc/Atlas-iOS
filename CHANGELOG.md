@@ -8,6 +8,7 @@
 
 ### Public API Changes
 
+* Added `LYRUIUserDidTapLinkNotification` to `LayerUIKit`.
 * Added `collectionViewCellForMessage:` to `LYRUIConversationViewController`.
 * Added `bubbleViewCornerRadius` property to `LYRUIMessageCollectionViewCell`.  
 * Added `avatarImageViewCornerRadius` property to `LYRUIMessageCollectionViewCell`.
