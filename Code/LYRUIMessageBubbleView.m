@@ -1,5 +1,5 @@
 //
-//  LRYUIMessageBubbleVIew.m
+//  LRYUIMessageBubbleView.m
 //  LayerUIKit
 //
 //  Created by Kevin Coleman on 9/8/14.
@@ -153,35 +153,38 @@ NSString *const LYRUIUserDidTapLinkNotification = @"LYRUIUserDidTapLinkNotificat
 
     __weak typeof(self) weakSelf = self;
     [self.snapshotter startWithCompletionHandler:^(MKMapSnapshot *snapshot, NSError *error) {
-        if (error) {
-            NSLog(@"Error generating map snapshot: %@", error);
-            return;
-        }
-
         typeof(self) strongSelf = weakSelf;
         if (!strongSelf) return;
         
-        // Create a pin image.
-        MKAnnotationView *pin = [[MKPinAnnotationView alloc] initWithAnnotation:nil reuseIdentifier:@""];
-        UIImage *pinImage = pin.image;
-        
-        // Draw the image.
-        UIImage *image = snapshot.image;
-        UIGraphicsBeginImageContextWithOptions(image.size, YES, image.scale);
-        [image drawAtPoint:CGPointMake(0, 0)];
-        
-        // Draw the pin.
-        CGPoint point = [snapshot pointForCoordinate:location];
-        [pinImage drawAtPoint:CGPointMake(point.x, point.y - pinImage.size.height)];
-        UIImage *finalImage = UIGraphicsGetImageFromCurrentImageContext();
-        UIGraphicsEndImageContext();
-        
-        // Set image.
         strongSelf.bubbleImageView.hidden = NO;
         strongSelf.bubbleImageView.alpha = 0.0;
-        strongSelf.bubbleImageView.image = finalImage;
-        strongSelf.locationShown = location;
         
+        if (error) {
+            NSLog(@"Error generating map snapshot: %@", error);
+            UIImageView *iconImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"LayerUIKitResource.bundle/warning-black"]];
+            iconImageView.center = weakSelf.bubbleImageView.center;
+            [weakSelf.bubbleImageView addSubview:iconImageView];
+        } else {
+            // Create a pin image.
+            MKAnnotationView *pin = [[MKPinAnnotationView alloc] initWithAnnotation:nil reuseIdentifier:@""];
+            UIImage *pinImage = pin.image;
+            
+            // Draw the image.
+            UIImage *image = snapshot.image;
+            UIGraphicsBeginImageContextWithOptions(image.size, YES, image.scale);
+            [image drawAtPoint:CGPointMake(0, 0)];
+            
+            // Draw the pin.
+            CGPoint point = [snapshot pointForCoordinate:location];
+            [pinImage drawAtPoint:CGPointMake(point.x, point.y - pinImage.size.height)];
+            UIImage *finalImage = UIGraphicsGetImageFromCurrentImageContext();
+            UIGraphicsEndImageContext();
+            
+            // Set image.
+            strongSelf.bubbleImageView.image = finalImage;
+            strongSelf.locationShown = location;
+        }
+
         // Animate into view.
         [UIView animateWithDuration:0.2 animations:^{
             strongSelf.bubbleImageView.alpha = 1.0;
