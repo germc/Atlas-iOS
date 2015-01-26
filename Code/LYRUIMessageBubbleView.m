@@ -254,9 +254,9 @@ NSString *const LYRUIUserDidTapLinkNotification = @"LYRUIUserDidTapLinkNotificat
     
     // init text container
     NSTextContainer *textContainer = [[NSTextContainer alloc] initWithSize:textLabel.frame.size];
-    textContainer.lineFragmentPadding  = 0;
+    textContainer.lineFragmentPadding = 0;
     textContainer.maximumNumberOfLines = textLabel.numberOfLines;
-    textContainer.lineBreakMode        = textLabel.lineBreakMode;
+    textContainer.lineBreakMode = textLabel.lineBreakMode;
     [layoutManager addTextContainer:textContainer];
     
     NSUInteger characterIndex = [layoutManager characterIndexForPoint:tapLocation
@@ -264,7 +264,7 @@ NSString *const LYRUIUserDidTapLinkNotification = @"LYRUIUserDidTapLinkNotificat
                              fractionOfDistanceBetweenInsertionPoints:NULL];
     NSArray *results = LYRUILinkResultsForText(self.bubbleViewLabel.attributedText.string);
     for (NSTextCheckingResult *result in results) {
-        if (NSLocationInRange(characterIndex, result.range)){
+        if (NSLocationInRange(characterIndex, result.range)) {
             [[NSNotificationCenter defaultCenter] postNotificationName:LYRUIUserDidTapLinkNotification object:result.URL];
             break;
         }

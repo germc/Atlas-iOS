@@ -14,6 +14,7 @@
 @interface LYRUIMessageCollectionViewCell ()
 
 @property (nonatomic) BOOL messageSentState;
+@property (nonatomic) LYRMessage *message;
 
 @end
 
@@ -105,27 +106,33 @@
         double lon = [dictionary[@"lon"] doubleValue];
         [self.bubbleView updateWithLocation:CLLocationCoordinate2DMake(lat, lon)];
     }
+    _message = message;
 }
 
 - (void)updateWithMessageSentState:(BOOL)messageSentState
 {
     self.messageSentState = messageSentState;
+    [self presentMessage:self.message];
 }
 
 - (void)setMessageTextFont:(UIFont *)messageTextFont
 {
     _messageTextFont = messageTextFont;
+    [self presentMessage:self.message];
 }
 
 - (void)setMessageTextColor:(UIColor *)messageTextColor
 {
     _messageTextColor = messageTextColor;
+    [self presentMessage:self.message];
 }
 
 - (void)setMessageLinkTextColor:(UIColor *)messageLinkTextColor
 {
     _messageLinkTextColor = messageLinkTextColor;
+    [self presentMessage:self.message];
 }
+
 - (void)setBubbleViewColor:(UIColor *)bubbleViewColor
 {
     _bubbleViewColor = bubbleViewColor;
