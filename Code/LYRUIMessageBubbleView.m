@@ -25,6 +25,7 @@ NSString *const LYRUIUserDidTapLinkNotification = @"LYRUIUserDidTapLinkNotificat
 
 @property (nonatomic) NSLayoutConstraint *mapWidthConstraint;
 @property (nonatomic) NSLayoutConstraint *imageWidthConstraint;
+@property (nonatomic) UIImageView *snapshotErrorIconView;
 
 @end
 
@@ -161,10 +162,11 @@ NSString *const LYRUIUserDidTapLinkNotification = @"LYRUIUserDidTapLinkNotificat
         
         if (error) {
             NSLog(@"Error generating map snapshot: %@", error);
-            UIImageView *iconImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"LayerUIKitResource.bundle/warning-black"]];
-            iconImageView.center = weakSelf.bubbleImageView.center;
-            [weakSelf.bubbleImageView addSubview:iconImageView];
+            self.snapshotErrorIconView.center = weakSelf.bubbleImageView.center;
+            [weakSelf.bubbleImageView addSubview:self.snapshotErrorIconView];
         } else {
+            if ([self.bubbleImageView.subviews containsObject:self.snapshotErrorIconView]) [self.snapshotErrorIconView removeFromSuperview];
+            
             // Create a pin image.
             MKAnnotationView *pin = [[MKPinAnnotationView alloc] initWithAnnotation:nil reuseIdentifier:@""];
             UIImage *pinImage = pin.image;
@@ -272,6 +274,14 @@ NSString *const LYRUIUserDidTapLinkNotification = @"LYRUIUserDidTapLinkNotificat
             break;
         }
     }
+}
+
+- (UIImageView *)snapshotErrorIconView
+{
+    if (!_snapshotErrorIconView) {
+        _snapshotErrorIconView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"LayerUIKitResource.bundle/warning-black"]];
+    }
+    return _snapshotErrorIconView;
 }
 
 @end
