@@ -81,8 +81,6 @@
     if (!delegate.window) {
         delegate.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
         [delegate.window makeKeyAndVisible];
-    } else {
-        delegate.window.rootViewController = nil;
     }
     UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
     [delegate.window setRootViewController:navigationController];
