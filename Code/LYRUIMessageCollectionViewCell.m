@@ -109,12 +109,6 @@
     _message = message;
 }
 
-- (void)updateWithMessageSentState:(BOOL)messageSentState
-{
-    self.messageSentState = messageSentState;
-    if (self.message) [self presentMessage:self.message];
-}
-
 - (void)setMessageTextFont:(UIFont *)messageTextFont
 {
     _messageTextFont = messageTextFont;

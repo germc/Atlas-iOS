@@ -445,7 +445,6 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 - (void)configureCell:(UICollectionViewCell<LYRUIMessagePresenting> *)cell forMessage:(LYRMessage *)message indexPath:(NSIndexPath *)indexPath
 {
     [cell presentMessage:message];
-    [cell updateWithMessageSentState:message.isSent];
     [cell shouldDisplayAvatarImage:self.shouldDisplayAvatarImage];
 
     if ([self shouldDisplayParticipantInfoAtIndexPath:indexPath]) {

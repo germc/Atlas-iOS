@@ -17,6 +17,8 @@
 
 @property (nonatomic) NSString *authenticatedUserID;
 
+@property (nonatomic) BOOL shouldBroadcastChanges;
+
 /**
  @abstract Singleton Accessor for the mock content store
  */
@@ -65,6 +67,8 @@
 - (void)deleteMessage:(LYRMessageMock *)message;
 
 - (LYRMessageMock *)messageForIdentifier:(NSURL *)identifier;
+
+- (NSOrderedSet *)allMessages;
 
 //-------------------------
 // Querying
