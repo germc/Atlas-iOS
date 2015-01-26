@@ -24,6 +24,8 @@
     self = [super init];
     if (self) {
         _layerClient = layerClient;
+        [[LYRMockContentStore sharedStore] setShouldBroadcastChanges:YES];
+        
     }
     return self;
 }

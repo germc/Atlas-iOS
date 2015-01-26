@@ -8,6 +8,7 @@
 
 ### Public API Changes
 
+* Removed `updateWithMessageSentState:` method from `LYRUIMessagePresenting`. Message sent state can be inferred from the `isSent` property on `LYRMessage`.
 * Added `LYRUIUserDidTapLinkNotification` to `LayerUIKit`.
 * Added `collectionViewCellForMessage:` to `LYRUIConversationViewController`.
 * Added `bubbleViewCornerRadius` property to `LYRUIMessageCollectionViewCell`.  

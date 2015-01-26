@@ -28,6 +28,9 @@
 @property (nonatomic, readonly) LYRQuery *query;
 @property (nonatomic, weak) id<LYRQueryControllerMockDelegate> delegate;
 @property (nonatomic) LYRClientMock *layerClient;
+@property (nonatomic) NSSet *updatableProperties;
+@property (nonatomic) NSInteger paginationWindow;
+@property (nonatomic, readonly) NSUInteger totalNumberOfObjects;
 
 + (instancetype)initWithQuery:(LYRQuery *)query;
 

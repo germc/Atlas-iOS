@@ -20,6 +20,7 @@
 #import <LayerUIKit/LayerUIKit.h>
 #import "LYRUIAppDelegate.h"
 #import "LYRUITestClasses.h"
+#import "LYRMockContentStore.h"
 
 @interface LYRUITestInterface : NSObject
 

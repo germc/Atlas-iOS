@@ -12,9 +12,7 @@
 
 #import "LYRUIParticipantPickerController.h"
 #import "LYRUIParticipantTableViewCell.h"
-#import "LYRUITestParticipantCell.h"
 #import "LYRUIParticipant.h"
-#import "LYRUITestParticipantDataSource.h"
 
 @interface LYRUIParticipantTableViewCell ()
 

@@ -11,7 +11,6 @@
 #import "LYRUITestInterface.h"
 #import "LYRUISampleConversationViewController.h"
 #import "LYRUserMock.h"
-#import "LYRUITestMessageCollectionViewCell.h"
 
 @interface LYRUIConversationViewController ()
 
@@ -151,19 +150,13 @@
         [invocation setReturnValue:&string];
     }] conversationViewController:[OCMArg any] attributedStringForDisplayOfDate:[OCMArg any]];
     
-    // Three call to get date string
     [[[delegateMock expect] andDo:^(NSInvocation *invocation) {
-        NSAttributedString *string = [[NSAttributedString alloc] initWithString:@"Date String"];
+        NSAttributedString *string = [[NSAttributedString alloc] initWithString:@"Recipient Status"];
         [invocation setReturnValue:&string];
     }] conversationViewController:[OCMArg any] attributedStringForDisplayOfRecipientStatus:[OCMArg any]];
     
     [[[delegateMock expect] andDo:^(NSInvocation *invocation) {
-        NSAttributedString *string = [[NSAttributedString alloc] initWithString:@"Date String"];
-        [invocation setReturnValue:&string];
-    }] conversationViewController:[OCMArg any] attributedStringForDisplayOfRecipientStatus:[OCMArg any]];
-    
-    [[[delegateMock expect] andDo:^(NSInvocation *invocation) {
-        NSAttributedString *string = [[NSAttributedString alloc] initWithString:@"Date String"];
+        NSAttributedString *string = [[NSAttributedString alloc] initWithString:@"Recipient Status"];
         [invocation setReturnValue:&string];
     }] conversationViewController:[OCMArg any] attributedStringForDisplayOfRecipientStatus:[OCMArg any]];
     
@@ -198,7 +191,7 @@
     [tester tapViewWithAccessibilityLabel:@"Camera Button"];
     [tester tapViewWithAccessibilityLabel:@"Photo Library"];
     [tester tapViewWithAccessibilityLabel:@"Camera Roll"];
-    [tester tapViewWithAccessibilityLabel:@"Photo, Landscape, July 13, 9:28 PM"];
+    [tester tapViewWithAccessibilityLabel:@"Photo, Landscape, July 13, 2014, 9:28 PM"];
     [tester tapViewWithAccessibilityLabel:@"Send Button"];
     [tester waitForViewWithAccessibilityLabel:[NSString stringWithFormat:@"Message: Photo"]];
 }

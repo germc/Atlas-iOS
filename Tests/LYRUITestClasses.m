@@ -31,11 +31,6 @@
     [super updateWithConversationImage:image];
 }
 
-- (void)updateWithLastMessageRecipientStatus:(LYRRecipientStatus)recipientStatus
-{
-    [super updateWithLastMessageRecipientStatus:recipientStatus];
-}
-
 @end
 
 #pragma mark - Test Message Cell Implementaion

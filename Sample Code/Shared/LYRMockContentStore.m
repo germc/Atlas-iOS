@@ -35,6 +35,7 @@
         _conversations = [NSMutableSet new];
         _messages = [NSMutableSet new];
         _mockObjectChanges = [NSMutableArray new];
+        _shouldBroadcastChanges = YES;
     }
     return self;
 }
@@ -173,6 +174,11 @@
     }];
 }
 
+- (NSOrderedSet *)allMessages
+{
+    return [[NSOrderedSet alloc] initWithSet:self.messages];
+}
+
 #pragma mark - Querying 
 
 - (NSOrderedSet *)fetchObjectsWithClass:(Class)objectClass predicate:(LYRPredicate *)predicate sortDescriptior:(NSArray *)sortDescriptor
@@ -236,7 +242,9 @@
 
 - (void)broadcastChanges
 {
-    [[NSNotificationCenter defaultCenter] postNotificationName:LYRMockObjectsDidChangeNotification object:self.mockObjectChanges];
+    if (self.shouldBroadcastChanges) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:LYRMockObjectsDidChangeNotification object:self.mockObjectChanges];
+    }
     [self.mockObjectChanges removeAllObjects];
 }
 

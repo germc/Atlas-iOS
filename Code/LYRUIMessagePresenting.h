@@ -22,11 +22,6 @@
 - (void)presentMessage:(LYRMessage *)message;
 
 /**
- @abstract Tells the receiver if the message has been sent.
- */
-- (void)updateWithMessageSentState:(BOOL)messageSentState;
-
-/**
  @abstract Informs the receiver of its participant.
  */
 - (void)updateWithParticipant:(id<LYRUIParticipant>)participant;

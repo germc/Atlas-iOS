@@ -15,9 +15,11 @@
 
 #import <LayerKit/LayerKit.h>
 #import "LYRClientMock.h"
+#import "LYRUITestInterface.h"
 
 @interface LYRClientMockTests : XCTestCase
 
+@property (nonatomic) LYRUITestInterface *testInterface;
 @end
 
 @implementation LYRClientMockTests
@@ -25,6 +27,7 @@
 - (void)setUp
 {
     [super setUp];
+    [[LYRMockContentStore sharedStore] setShouldBroadcastChanges:NO];
 }
 
 - (void)tearDown
