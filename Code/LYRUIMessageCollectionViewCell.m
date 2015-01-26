@@ -112,25 +112,25 @@
 - (void)updateWithMessageSentState:(BOOL)messageSentState
 {
     self.messageSentState = messageSentState;
-    [self presentMessage:self.message];
+    if (self.message) [self presentMessage:self.message];
 }
 
 - (void)setMessageTextFont:(UIFont *)messageTextFont
 {
     _messageTextFont = messageTextFont;
-    [self presentMessage:self.message];
+    if (self.message) [self presentMessage:self.message];
 }
 
 - (void)setMessageTextColor:(UIColor *)messageTextColor
 {
     _messageTextColor = messageTextColor;
-    [self presentMessage:self.message];
+    if (self.message) [self presentMessage:self.message];
 }
 
 - (void)setMessageLinkTextColor:(UIColor *)messageLinkTextColor
 {
     _messageLinkTextColor = messageLinkTextColor;
-    [self presentMessage:self.message];
+    if (self.message) [self presentMessage:self.message];
 }
 
 - (void)setBubbleViewColor:(UIColor *)bubbleViewColor
