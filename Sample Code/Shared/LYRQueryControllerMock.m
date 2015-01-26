@@ -117,6 +117,16 @@
     }
 }
 
+- (void)setPaginationWindow:(NSInteger)paginationWindow
+{
+    _paginationWindow = paginationWindow;
+}
+
+- (void)setUpdatableProperties:(NSSet *)updatableProperties
+{
+    _updatableProperties = updatableProperties;
+}
+
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];

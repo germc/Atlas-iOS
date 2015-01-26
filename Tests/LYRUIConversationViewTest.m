@@ -11,7 +11,6 @@
 #import "LYRUITestInterface.h"
 #import "LYRUISampleConversationViewController.h"
 #import "LYRUserMock.h"
-#import "LYRUITestMessageCollectionViewCell.h"
 
 @interface LYRUIConversationViewController ()
 
