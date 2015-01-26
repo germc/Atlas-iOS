@@ -17,6 +17,9 @@
 
 @property (nonatomic) NSString *authenticatedUserID;
 
+/**
+ @abstract Defaults to `YES`. If set to `NO`, the content store will not broadcast mock change notifications.
+ */
 @property (nonatomic) BOOL shouldBroadcastChanges;
 
 /**
