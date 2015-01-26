@@ -25,7 +25,7 @@ NSString *const LYRUIUserDidTapLinkNotification = @"LYRUIUserDidTapLinkNotificat
 
 @property (nonatomic) NSLayoutConstraint *mapWidthConstraint;
 @property (nonatomic) NSLayoutConstraint *imageWidthConstraint;
-@property (nonatomic) UIImageView *snapshotErrorIconView;
+@property (nonatomic) UIImageView *snapshotErrorImageView;
 
 @end
 
@@ -157,15 +157,12 @@ NSString *const LYRUIUserDidTapLinkNotification = @"LYRUIUserDidTapLinkNotificat
         typeof(self) strongSelf = weakSelf;
         if (!strongSelf) return;
         
-        strongSelf.bubbleImageView.hidden = NO;
-        strongSelf.bubbleImageView.alpha = 0.0;
-        
         if (error) {
             NSLog(@"Error generating map snapshot: %@", error);
-            self.snapshotErrorIconView.center = weakSelf.bubbleImageView.center;
-            [weakSelf.bubbleImageView addSubview:self.snapshotErrorIconView];
+            self.snapshotErrorImageView.center = weakSelf.bubbleImageView.center;
+            [strongSelf.bubbleImageView addSubview:self.snapshotErrorImageView];
         } else {
-            if ([self.bubbleImageView.subviews containsObject:self.snapshotErrorIconView]) [self.snapshotErrorIconView removeFromSuperview];
+            if ([self.bubbleImageView.subviews containsObject:self.snapshotErrorImageView]) [self.snapshotErrorImageView removeFromSuperview];
             
             // Create a pin image.
             MKAnnotationView *pin = [[MKPinAnnotationView alloc] initWithAnnotation:nil reuseIdentifier:@""];
@@ -186,6 +183,8 @@ NSString *const LYRUIUserDidTapLinkNotification = @"LYRUIUserDidTapLinkNotificat
             strongSelf.bubbleImageView.image = finalImage;
             strongSelf.locationShown = location;
         }
+        strongSelf.bubbleImageView.hidden = NO;
+        strongSelf.bubbleImageView.alpha = 0.0;
 
         // Animate into view.
         [UIView animateWithDuration:0.2 animations:^{
@@ -276,12 +275,12 @@ NSString *const LYRUIUserDidTapLinkNotification = @"LYRUIUserDidTapLinkNotificat
     }
 }
 
-- (UIImageView *)snapshotErrorIconView
+- (UIImageView *)snapshotErrorImageView
 {
-    if (!_snapshotErrorIconView) {
-        _snapshotErrorIconView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"LayerUIKitResource.bundle/warning-black"]];
+    if (!_snapshotErrorImageView) {
+        _snapshotErrorImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"LayerUIKitResource.bundle/warning-black"]];
     }
-    return _snapshotErrorIconView;
+    return _snapshotErrorImageView;
 }
 
 @end
