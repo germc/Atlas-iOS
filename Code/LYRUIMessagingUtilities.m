@@ -161,3 +161,12 @@ void LYRUILastPhotoTaken(void(^completionHandler)(UIImage *image, NSError *error
         completionHandler(nil, error);
     }];
 }
+
+NSArray *LYRUILinkResultsForText(NSString *text)
+{
+    NSError *error;
+    NSDataDetector *detector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeLink
+                                                               error:&error];
+    if (error) return nil;
+    return [detector matchesInString:text options:kNilOptions range:NSMakeRange(0, text.length)];
+}

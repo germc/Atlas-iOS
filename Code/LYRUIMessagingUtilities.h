@@ -35,3 +35,5 @@ LYRMessagePart *LYRUIMessagePartWithText(NSString *text);
 LYRMessagePart *LYRUIMessagePartWithJPEGImage(UIImage *image);
 
 void LYRUILastPhotoTaken(void(^completionHandler)(UIImage *image, NSError *error));
+
+NSArray *LYRUILinkResultsForText(NSString *text);

@@ -14,6 +14,7 @@
 @interface LYRUIMessageCollectionViewCell ()
 
 @property (nonatomic) BOOL messageSentState;
+@property (nonatomic) LYRMessage *message;
 
 @end
 
@@ -27,10 +28,9 @@
         _bubbleViewCornerRadius = 12;
         _avatarImageViewCornerRadius = LYRUIAvatarImageDiameter / 2;
         _messageTextFont = [UIFont systemFontOfSize:14];
-        
+    
         _bubbleView = [[LYRUIMessageBubbleView alloc] init];
         _bubbleView.translatesAutoresizingMaskIntoConstraints = NO;
-        _bubbleView.bubbleViewLabel.font = _messageTextFont;
         _bubbleView.layer.cornerRadius = _bubbleViewCornerRadius;
         [self.contentView addSubview:_bubbleView];
         
@@ -92,7 +92,7 @@
     }
     if ([messagePart.MIMEType isEqualToString:LYRUIMIMETypeTextPlain]) {
         NSString *text = [[NSString alloc] initWithData:messagePart.data encoding:NSUTF8StringEncoding];
-        [self.bubbleView updateWithText:text];
+        [self.bubbleView updateWithAttributedText:[self attributedStringForText:text]];
         self.accessibilityLabel = [NSString stringWithFormat:@"Message: %@", text];
     } else if ([messagePart.MIMEType isEqualToString:LYRUIMIMETypeImageJPEG] || [messagePart.MIMEType isEqualToString:LYRUIMIMETypeImagePNG]) {
         UIImage *image = [UIImage imageWithData:messagePart.data];
@@ -106,23 +106,31 @@
         double lon = [dictionary[@"lon"] doubleValue];
         [self.bubbleView updateWithLocation:CLLocationCoordinate2DMake(lat, lon)];
     }
+    _message = message;
 }
 
 - (void)updateWithMessageSentState:(BOOL)messageSentState
 {
     self.messageSentState = messageSentState;
+    if (self.message) [self presentMessage:self.message];
 }
 
 - (void)setMessageTextFont:(UIFont *)messageTextFont
 {
     _messageTextFont = messageTextFont;
-    self.bubbleView.bubbleViewLabel.font = messageTextFont;
+    if (self.message) [self presentMessage:self.message];
 }
 
 - (void)setMessageTextColor:(UIColor *)messageTextColor
 {
     _messageTextColor = messageTextColor;
-    self.bubbleView.bubbleViewLabel.textColor = messageTextColor;
+    if (self.message) [self presentMessage:self.message];
+}
+
+- (void)setMessageLinkTextColor:(UIColor *)messageLinkTextColor
+{
+    _messageLinkTextColor = messageLinkTextColor;
+    if (self.message) [self presentMessage:self.message];
 }
 
 - (void)setBubbleViewColor:(UIColor *)bubbleViewColor
@@ -142,5 +150,18 @@
     _avatarImageViewCornerRadius = avatarImageViewCornerRadius;
     self.avatarImageView.layer.cornerRadius = avatarImageViewCornerRadius;
 }
-	
+
+- (NSAttributedString *)attributedStringForText:(NSString *)text
+{
+    NSDictionary *attributes = @{NSFontAttributeName : self.messageTextFont, NSForegroundColorAttributeName : self.messageTextColor};
+    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:text attributes:attributes];
+    NSArray *linkResults = LYRUILinkResultsForText(text);
+    for (NSTextCheckingResult *result in linkResults) {
+        NSDictionary *linkAttributes = @{NSForegroundColorAttributeName : self.messageLinkTextColor,
+                                         NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle)};
+        [attributedString addAttributes:linkAttributes range:result.range];
+    }
+    return attributedString;
+}
+
 @end

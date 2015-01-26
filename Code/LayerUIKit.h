@@ -22,3 +22,8 @@
  @abstract Returns the version of the Layer UIKit as a string.
  */
 extern NSString *const LYRUIKitVersionString;
+
+/**
+ @abstract Posted when a user taps a link in a message bubble.
+ */
+extern NSString *const LYRUIUserDidTapLinkNotification;

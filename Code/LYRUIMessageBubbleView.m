@@ -7,11 +7,14 @@
 //
 
 #import "LYRUIMessageBubbleView.h"
+#import "LYRUIMessagingUtilities.h"
 
 CGFloat const LYRUIMessageBubbleLabelHorizontalPadding = 12;
 CGFloat const LYRUIMessageBubbleLabelVerticalPadding = 8;
 CGFloat const LYRUIMessageBubbleMapWidth = 200;
 CGFloat const LYRUIMessageBubbleMapHeight = 200;
+
+NSString *const LYRUIUserDidTapLinkNotification = @"LYRUIUserDidTapLinkNotification";
 
 @interface LYRUIMessageBubbleView ()
 
@@ -36,6 +39,7 @@ CGFloat const LYRUIMessageBubbleMapHeight = 200;
 
         self.bubbleViewLabel = [[UILabel alloc] init];
         self.bubbleViewLabel.numberOfLines = 0;
+        self.bubbleViewLabel.userInteractionEnabled = YES;
         self.bubbleViewLabel.translatesAutoresizingMaskIntoConstraints = NO;
         [self.bubbleViewLabel setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh + 1 forAxis:UILayoutConstraintAxisHorizontal];
         [self addSubview:self.bubbleViewLabel];
@@ -65,6 +69,9 @@ CGFloat const LYRUIMessageBubbleMapHeight = 200;
 
         self.mapWidthConstraint = [NSLayoutConstraint constraintWithItem:self.bubbleImageView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:LYRUIMessageBubbleMapWidth];
 
+        UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleLabelTap:)];
+        [self.bubbleViewLabel addGestureRecognizer:tapGestureRecognizer];
+        
         UILongPressGestureRecognizer *gestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
         [self addGestureRecognizer:gestureRecognizer];
     }
@@ -79,12 +86,13 @@ CGFloat const LYRUIMessageBubbleMapHeight = 200;
     [self.activityIndicator startAnimating];
 }
 
-- (void)updateWithText:(NSString *)text
+- (void)updateWithAttributedText:(NSAttributedString *)text
 {
     self.activityIndicator.hidden = YES;
     self.bubbleImageView.hidden = YES;
     self.bubbleViewLabel.hidden = NO;
-    self.bubbleViewLabel.text = text;
+
+    self.bubbleViewLabel.attributedText = text;
     self.bubbleImageView.image = nil;
     self.locationShown = kCLLocationCoordinate2DInvalid;
     [self.snapshotter cancel];
@@ -231,6 +239,36 @@ CGFloat const LYRUIMessageBubbleMapHeight = 200;
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)handleLabelTap:(UITapGestureRecognizer *)tapGestureRecognizer
+{
+    //http://stackoverflow.com/questions/21349725/character-index-at-touch-point-for-uilabel/26806991#26806991
+    UILabel *textLabel = (UILabel *)tapGestureRecognizer.view;
+    CGPoint tapLocation = [tapGestureRecognizer locationInView:textLabel];
+    
+    // init text storage
+    NSTextStorage *textStorage = [[NSTextStorage alloc] initWithAttributedString:textLabel.attributedText];
+    NSLayoutManager *layoutManager = [[NSLayoutManager alloc] init];
+    [textStorage addLayoutManager:layoutManager];
+    
+    // init text container
+    NSTextContainer *textContainer = [[NSTextContainer alloc] initWithSize:textLabel.frame.size];
+    textContainer.lineFragmentPadding = 0;
+    textContainer.maximumNumberOfLines = textLabel.numberOfLines;
+    textContainer.lineBreakMode = textLabel.lineBreakMode;
+    [layoutManager addTextContainer:textContainer];
+    
+    NSUInteger characterIndex = [layoutManager characterIndexForPoint:tapLocation
+                                                      inTextContainer:textContainer
+                             fractionOfDistanceBetweenInsertionPoints:NULL];
+    NSArray *results = LYRUILinkResultsForText(self.bubbleViewLabel.attributedText.string);
+    for (NSTextCheckingResult *result in results) {
+        if (NSLocationInRange(characterIndex, result.range)) {
+            [[NSNotificationCenter defaultCenter] postNotificationName:LYRUIUserDidTapLinkNotification object:result.URL];
+            break;
+        }
+    }
 }
 
 @end
