@@ -25,7 +25,6 @@ NSString *const LYRUIUserDidTapLinkNotification = @"LYRUIUserDidTapLinkNotificat
 
 @property (nonatomic) NSLayoutConstraint *mapWidthConstraint;
 @property (nonatomic) NSLayoutConstraint *imageWidthConstraint;
-@property (nonatomic) UIImageView *snapshotErrorImageView;
 
 @end
 
@@ -109,6 +108,7 @@ NSString *const LYRUIUserDidTapLinkNotification = @"LYRUIUserDidTapLinkNotificat
     self.bubbleViewLabel.hidden = YES;
     self.bubbleImageView.hidden = NO;
     self.bubbleImageView.image = image;
+    self.bubbleImageView.contentMode = UIViewContentModeScaleAspectFill;
     self.locationShown = kCLLocationCoordinate2DInvalid;
     self.bubbleViewLabel.text = nil;
     [self.snapshotter cancel];
@@ -157,13 +157,12 @@ NSString *const LYRUIUserDidTapLinkNotification = @"LYRUIUserDidTapLinkNotificat
         typeof(self) strongSelf = weakSelf;
         if (!strongSelf) return;
         
-        if (error) {
+        if (!error) {
             NSLog(@"Error generating map snapshot: %@", error);
-            self.snapshotErrorImageView.center = weakSelf.bubbleImageView.center;
-            [strongSelf.bubbleImageView addSubview:self.snapshotErrorImageView];
+            self.bubbleImageView.image = [UIImage imageNamed:@"LayerUIKitResource.bundle/warning-black"];
+            self.bubbleImageView.contentMode = UIViewContentModeCenter;
         } else {
-            if ([self.bubbleImageView.subviews containsObject:self.snapshotErrorImageView]) [self.snapshotErrorImageView removeFromSuperview];
-            
+            self.bubbleImageView.contentMode = UIViewContentModeScaleAspectFill;
             // Create a pin image.
             MKAnnotationView *pin = [[MKPinAnnotationView alloc] initWithAnnotation:nil reuseIdentifier:@""];
             UIImage *pinImage = pin.image;
@@ -273,14 +272,6 @@ NSString *const LYRUIUserDidTapLinkNotification = @"LYRUIUserDidTapLinkNotificat
             break;
         }
     }
-}
-
-- (UIImageView *)snapshotErrorImageView
-{
-    if (!_snapshotErrorImageView) {
-        _snapshotErrorImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"LayerUIKitResource.bundle/warning-black"]];
-    }
-    return _snapshotErrorImageView;
 }
 
 @end
