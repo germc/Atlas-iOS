@@ -1,5 +1,5 @@
 //
-//  LRYUIMessageBubbleView.h
+//  LYRUIMessageBubbleView.h
 //  LayerUIKit
 //
 //  Created by Kevin Coleman on 9/8/14.
