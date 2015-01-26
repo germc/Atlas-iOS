@@ -157,7 +157,7 @@ NSString *const LYRUIUserDidTapLinkNotification = @"LYRUIUserDidTapLinkNotificat
         typeof(self) strongSelf = weakSelf;
         if (!strongSelf) return;
         
-        if (!error) {
+        if (error) {
             NSLog(@"Error generating map snapshot: %@", error);
             self.bubbleImageView.image = [UIImage imageNamed:@"LayerUIKitResource.bundle/warning-black"];
             self.bubbleImageView.contentMode = UIViewContentModeCenter;
