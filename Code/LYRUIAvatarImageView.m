@@ -86,7 +86,6 @@ NSString *const LYRUIAvatarImageViewAccessibilityLabel = @"LYRUIAvatarImageViewA
     self.layer.cornerRadius = avatarImageViewDiameter / 2;
     _avatarImageViewDiameter = avatarImageViewDiameter;
     [self invalidateIntrinsicContentSize];
-    [self updateConstraintsIfNeeded];
 }
 
 @end
