@@ -12,6 +12,8 @@
 #import "LYRUISampleConversationViewController.h"
 #import "LYRUserMock.h"
 
+extern NSString *const LYRUIAvatarImageViewAccessibilityLabel;
+
 @interface LYRUIConversationViewController ()
 
 @property (nonatomic) LYRQueryController *queryController;
@@ -177,6 +179,58 @@
     
     [self sendMessageWithText:@"This is a test"];
     [delegateMock verify];
+}
+
+- (void)testToVerifyAvatarImageIsNotDisplayedInOneOnOneConversation
+{
+    LYRUserMock *mockUser2 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameEarl];
+    LYRClientMock *layerClient = [LYRClientMock layerClientMockWithAuthenticatedUserID:mockUser2.participantIdentifier];
+    self.conversation = [self.testInterface conversationWithParticipants:[NSSet setWithObject:mockUser2.participantIdentifier] lastMessageText:nil];
+    
+    LYRMessagePartMock *part = [LYRMessagePartMock messagePartWithText:@"Test"];
+    LYRMessageMock *message = [layerClient newMessageWithParts:@[part] options:nil error:nil];
+    [self.conversation sendMessage:message error:nil];
+    
+    self.viewController = [LYRUISampleConversationViewController conversationViewControllerWithConversation:(LYRConversation *)self.conversation layerClient:(LYRClient *)self.testInterface.layerClient];
+    [self setRootViewController:self.viewController];
+    
+    [tester waitForAbsenceOfViewWithAccessibilityLabel:LYRUIAvatarImageViewAccessibilityLabel];
+}
+
+
+- (void)testToVerifyAvatarImageIsDisplayedInGroupConversation
+{
+    LYRUserMock *mockUser2 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameEarl];
+    LYRClientMock *layerClient = [LYRClientMock layerClientMockWithAuthenticatedUserID:mockUser2.participantIdentifier];
+    [self.conversation addParticipants:[NSSet setWithObject:mockUser2.participantIdentifier] error:nil];
+    
+    LYRMessagePartMock *part = [LYRMessagePartMock messagePartWithText:@"Test"];
+    LYRMessageMock *message = [layerClient newMessageWithParts:@[part] options:nil error:nil];
+    [self.conversation sendMessage:message error:nil];
+    
+    self.viewController = [LYRUISampleConversationViewController conversationViewControllerWithConversation:(LYRConversation *)self.conversation layerClient:(LYRClient *)self.testInterface.layerClient];
+    [self setRootViewController:self.viewController];
+    
+    [tester waitForViewWithAccessibilityLabel:LYRUIAvatarImageViewAccessibilityLabel];
+}
+
+- (void)testToVerifyCustomAvatarImageDiameter
+{
+    [[LYRUIAvatarImageView appearance] setAvatarImageViewDiameter:40];
+    
+    LYRUserMock *mockUser2 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameEarl];
+    LYRClientMock *layerClient = [LYRClientMock layerClientMockWithAuthenticatedUserID:mockUser2.participantIdentifier];
+    [self.conversation addParticipants:[NSSet setWithObject:mockUser2.participantIdentifier] error:nil];
+    
+    LYRMessagePartMock *part = [LYRMessagePartMock messagePartWithText:@"Test"];
+    LYRMessageMock *message = [layerClient newMessageWithParts:@[part] options:nil error:nil];
+    [self.conversation sendMessage:message error:nil];
+    
+    self.viewController = [LYRUISampleConversationViewController conversationViewControllerWithConversation:(LYRConversation *)self.conversation layerClient:(LYRClient *)self.testInterface.layerClient];
+    [self setRootViewController:self.viewController];
+    
+    LYRUIAvatarImageView *imageView = (LYRUIAvatarImageView *)[tester waitForViewWithAccessibilityLabel:LYRUIAvatarImageViewAccessibilityLabel];
+    expect(imageView.avatarImageViewDiameter).to.equal(40);
 }
 
 - (void)sendMessageWithText:(NSString *)messageText

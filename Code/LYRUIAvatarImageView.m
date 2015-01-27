@@ -17,6 +17,8 @@
 
 @implementation LYRUIAvatarImageView
 
+NSString *const LYRUIAvatarImageViewAccessibilityLabel = @"LYRUIAvatarImageViewAccessibilityLabel";
+
 - (id)init
 {
     self = [super init];
@@ -26,6 +28,8 @@
         _initialsFont = [UIFont systemFontOfSize:14];
         _initialsColor = [UIColor blackColor];
         _avatarImageViewDiameter = 30;
+        self.layer.cornerRadius = _avatarImageViewDiameter / 2;
+        self.accessibilityLabel = LYRUIAvatarImageViewAccessibilityLabel;
         
         _initialsLabel = [[UILabel alloc] init];
         _initialsLabel.translatesAutoresizingMaskIntoConstraints = NO;
@@ -34,7 +38,6 @@
         _initialsLabel.minimumScaleFactor = 0.75;
         _initialsLabel.textColor = _initialsColor;
         _initialsLabel.font = _initialsFont;
-        
         [self addSubview:_initialsLabel];
     
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.initialsLabel attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1.0 constant:3]];
@@ -50,14 +53,14 @@
     return CGSizeMake(self.avatarImageViewDiameter, self.avatarImageViewDiameter);
 }
 
-- (void)setInitialsForName:(NSString *)name
+- (void)setInitialsForFullName:(NSString *)fullName
 {
-    if (name) {
+    if (fullName) {
         NSMutableString *initials = [NSMutableString new];
-        NSArray *names = [name componentsSeparatedByString:@" "];
+        NSArray *names = [fullName componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
         for (NSString *name in names) {
-            if (name.length > 0) {
-                [initials appendString:[name substringToIndex:1]];
+            if (fullName.length > 0) {
+                [initials appendString:[fullName substringToIndex:1]];
             }
         }
         self.initialsLabel.text = initials;
@@ -80,6 +83,8 @@
 {
     self.layer.cornerRadius = avatarImageViewDiameter / 2;
     _avatarImageViewDiameter = avatarImageViewDiameter;
+    [self invalidateIntrinsicContentSize];
+    [self updateConstraintsIfNeeded];
 }
 
 @end

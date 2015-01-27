@@ -81,9 +81,9 @@
 - (BOOL)addParticipants:(NSSet *)participants error:(NSError **)error
 {
     NSAssert(participants.count, @"Cannot send add null participants to a conversation");
-    NSMutableSet *participantCopy = [self.participants copy];
-    [participantCopy unionSet:participants];
-    self.participants = participantCopy;
+    NSMutableSet *participantsCopy = [self.participants mutableCopy];
+    [participantsCopy unionSet:participants];
+    self.participants = participantsCopy;
     [[LYRMockContentStore sharedStore] broadcastChanges];
     return YES;
 }
@@ -91,9 +91,9 @@
 - (BOOL)removeParticipants:(NSSet *)participants error:(NSError **)error
 {
     NSAssert(participants.count, @"Cannot send add null participants to a conversation");
-    NSMutableSet *participantCopy = [self.participants copy];
-    [participantCopy minusSet:participants];
-    self.participants = participantCopy;
+    NSMutableSet *participantsCopy = [self.participants mutableCopy];
+    [participantsCopy minusSet:participants];
+    self.participants = participantsCopy;
     [[LYRMockContentStore sharedStore] broadcastChanges];
     return YES;
 }
