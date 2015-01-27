@@ -28,7 +28,6 @@ NSString *const LYRUIAvatarImageViewAccessibilityLabel = @"LYRUIAvatarImageViewA
         _initialsColor = [UIColor blackColor];
         _avatarImageViewDiameter = 30;
 
-        
         self.accessibilityLabel = LYRUIAvatarImageViewAccessibilityLabel;
         self.clipsToBounds = YES;
         self.backgroundColor = LYRUILightGrayColor();
