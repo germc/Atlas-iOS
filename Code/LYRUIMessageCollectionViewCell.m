@@ -28,7 +28,7 @@
         _messageTextFont = [UIFont systemFontOfSize:14];
         _messageTextColor = [UIColor blackColor];
         _messageLinkTextColor = [UIColor blueColor];
-         _bubbleViewColor = [UIColor lightGrayColor];
+        _bubbleViewColor = [UIColor lightGrayColor];
         _bubbleViewCornerRadius = 12;
         
         _bubbleView = [[LYRUIMessageBubbleView alloc] init];
