@@ -99,4 +99,12 @@
     [delegate.window makeKeyAndVisible];
 }
 
+- (void)clearRootViewController
+{
+    LYRUIAppDelegate *delegate = [[UIApplication sharedApplication] delegate];
+    if (delegate.window.rootViewController) {
+        delegate.window.rootViewController = nil;
+    }
+}
+
 @end

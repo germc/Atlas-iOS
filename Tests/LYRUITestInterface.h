@@ -36,5 +36,6 @@
 
 - (void)pushViewController:(UIViewController *)controller;
 
+- (void)clearRootViewController;
 
 @end

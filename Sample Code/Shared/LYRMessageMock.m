@@ -16,7 +16,6 @@
 @property (nonatomic, readwrite) BOOL isSent;
 @property (nonatomic, readwrite) BOOL isDeleted;
 @property (nonatomic, readwrite) BOOL isUnread;
-@property (nonatomic, readwrite) NSDate *receivedAt;
 @property (nonatomic, readwrite) NSString *sentByUserID;
 
 @end

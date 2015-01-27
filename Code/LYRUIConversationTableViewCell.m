@@ -42,10 +42,6 @@ static NSDateFormatter *LYRUIShortTimeFormatter()
     return shortTimeFormatter;
 }
 
-static CGFloat const LYRUICellVerticalMargin = 12.0f;
-static CGFloat const LYRUIConversationLabelRightPadding = -6.0f;
-static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
-
 @interface LYRUIConversationTableViewCell ()
 
 @property (nonatomic) NSLayoutConstraint *conversationLabelWithImageLeftConstraint;
@@ -61,16 +57,23 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
 
 @implementation LYRUIConversationTableViewCell
 
+static CGFloat const LYRUICellVerticalMargin = 6.0f;
+static CGFloat const LYRUIConversationLabelRightPadding = -6.0f;
+static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
+
+NSString *const LYRUIImageMIMETypePlaceholderText = @"Attachment: Image";
+NSString *const LYRUILocationMIMETypePlaceholderText = @"Attachment: Location";
+
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
         // UIAppearance Proxy Defaults
-        _conversationLabelFont = LYRUIBoldFont(14);
+        _conversationLabelFont = [UIFont boldSystemFontOfSize:14];
         _conversationLabelColor = [UIColor blackColor];
-        _lastMessageLabelFont = LYRUILightFont(14);
+        _lastMessageLabelFont = [UIFont systemFontOfSize:12];
         _lastMessageLabelColor = [UIColor grayColor];
-        _dateLabelFont = LYRUIMediumFont(14);
+        _dateLabelFont = [UIFont systemFontOfSize:12];
         _dateLabelColor = [UIColor grayColor];
         _unreadMessageIndicatorBackgroundColor = LYRUIBlueColor();
         _cellBackgroundColor = [UIColor whiteColor];
@@ -222,13 +225,13 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
     if ([messagePart.MIMEType isEqualToString:LYRUIMIMETypeTextPlain]) {
         self.lastMessageLabel.text = [[NSString alloc] initWithData:messagePart.data encoding:NSUTF8StringEncoding];
     } else if ([messagePart.MIMEType isEqualToString:LYRUIMIMETypeImageJPEG]) {
-        self.lastMessageLabel.text = @"Attachment: Image";
+        self.lastMessageLabel.text = LYRUIImageMIMETypePlaceholderText;
     } else if ([messagePart.MIMEType isEqualToString:LYRUIMIMETypeImagePNG]) {
-        self.lastMessageLabel.text = @"Attachment: Image";
+        self.lastMessageLabel.text = LYRUIImageMIMETypePlaceholderText;
     } else if ([messagePart.MIMEType isEqualToString:LYRUIMIMETypeLocation]) {
-        self.lastMessageLabel.text = @"Attachment: Location";
+        self.lastMessageLabel.text = LYRUILocationMIMETypePlaceholderText;
     } else {
-        self.lastMessageLabel.text = @"Attachment: Image";
+        self.lastMessageLabel.text = LYRUIImageMIMETypePlaceholderText;
     }
     [self updateUnreadMessageIndicatorWithConversation:conversation];
 }
@@ -310,7 +313,7 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
 
 - (void)setUpConversationLabelLayoutContraints
 {
-    // Left Margin
+    // Left Margin w/ conversation image
     self.conversationLabelWithImageLeftConstraint = [NSLayoutConstraint constraintWithItem:self.conversationLabel
                                                                  attribute:NSLayoutAttributeLeft
                                                                  relatedBy:NSLayoutRelationEqual
@@ -318,6 +321,7 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
                                                                  attribute:NSLayoutAttributeRight
                                                                 multiplier:1.0
                                                                   constant:10];
+    // Left Margin w/out conversation image
     self.conversationLabelWithoutImageLeftConstraint = [NSLayoutConstraint constraintWithItem:self.conversationLabel
                                                                  attribute:NSLayoutAttributeLeft
                                                                  relatedBy:NSLayoutRelationEqual
@@ -325,7 +329,6 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
                                                                  attribute:NSLayoutAttributeLeft
                                                                 multiplier:1.0
                                                                   constant:30];
-
     // Right Margin
     [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.conversationLabel
                                                                  attribute:NSLayoutAttributeRight
@@ -355,14 +358,14 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
                                                                 multiplier:1.0
                                                                   constant:0]];
 
-    // Top Margin
+    // Center Y
     [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.dateLabel
-                                                                 attribute:NSLayoutAttributeTop
+                                                                 attribute:NSLayoutAttributeCenterY
                                                                  relatedBy:NSLayoutRelationEqual
-                                                                    toItem:self.contentView
-                                                                 attribute:NSLayoutAttributeTop
+                                                                    toItem:self.conversationLabel
+                                                                 attribute:NSLayoutAttributeCenterY
                                                                 multiplier:1.0
-                                                                 constant:LYRUICellVerticalMargin]];
+                                                                 constant:0.0f]];
 }
 
 - (void)setUpLastMessageLayoutConstraints
@@ -420,15 +423,15 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
                                                                  attribute:NSLayoutAttributeNotAnAttribute
                                                                 multiplier:1.0
                                                                   constant:LYRUIUnreadMessageCountLabelSize]];
-    // Top Margin
+    // Right Margin
     [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.unreadMessageIndicator
                                                                  attribute:NSLayoutAttributeRight
                                                                  relatedBy:NSLayoutRelationEqual
                                                                     toItem:self.conversationLabel
                                                                  attribute:NSLayoutAttributeLeft
                                                                 multiplier:1.0
-                                                                  constant:-6]];
-    // Right
+                                                                  constant:-8]];
+    // Center Y
     [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.unreadMessageIndicator
                                                                  attribute:NSLayoutAttributeCenterY
                                                                  relatedBy:NSLayoutRelationEqual

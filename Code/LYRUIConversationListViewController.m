@@ -25,6 +25,8 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"LYRUIConversatio
 
 NSString *const LYRUIConversationListViewControllerTitle = @"Messages";
 NSString *const LYRUIConversationTableViewAccessibilityLabel = @"Conversation Table View";
+NSString *const LYRUIConversationTableViewAccessibilityIdentifier = @"Conversation Table View Identifier";
+
 
 + (instancetype)conversationListViewControllerWithLayerClient:(LYRClient *)layerClient
 {
@@ -40,7 +42,7 @@ NSString *const LYRUIConversationTableViewAccessibilityLabel = @"Conversation Ta
         _cellClass = [LYRUIConversationTableViewCell class];
         _displaysConversationImage = NO;
         _allowsEditing = YES;
-        _rowHeight = 72.0f;
+        _rowHeight = 62.0f;
     }
     return self;
 }
@@ -56,18 +58,17 @@ NSString *const LYRUIConversationTableViewAccessibilityLabel = @"Conversation Ta
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-
     self.title = LYRUIConversationListViewControllerTitle;
-    self.accessibilityLabel = LYRUIConversationListViewControllerTitle;
-    self.tableView.accessibilityLabel = LYRUIConversationTableViewAccessibilityLabel;
-
     [self setupConversationDataSource];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-
+    self.accessibilityLabel = LYRUIConversationListViewControllerTitle;
+    self.tableView.accessibilityLabel = LYRUIConversationTableViewAccessibilityLabel;
+    self.tableView.accessibilityIdentifier = LYRUIConversationTableViewAccessibilityIdentifier;
+    
     if (!self.hasAppeared) {
         // Set public configuration properties once view has loaded
         [self.tableView registerClass:self.cellClass forCellReuseIdentifier:LYRUIConversationCellReuseIdentifier];
@@ -77,6 +78,12 @@ NSString *const LYRUIConversationTableViewAccessibilityLabel = @"Conversation Ta
         }
         self.hasAppeared = YES;
     }
+}
+
+- (void)dealloc
+{
+    self.queryController.delegate = nil;
+    self.queryController = nil;
 }
 
 #pragma mark - Public Setters
