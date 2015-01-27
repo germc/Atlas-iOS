@@ -28,8 +28,8 @@
         _messageTextFont = [UIFont systemFontOfSize:14];
         _messageTextColor = [UIColor blackColor];
         _messageLinkTextColor = [UIColor blueColor];
+         _bubbleViewColor = [UIColor lightGrayColor];
         _bubbleViewCornerRadius = 12;
-        _bubbleViewColor = [UIColor lightGrayColor];
         
         _bubbleView = [[LYRUIMessageBubbleView alloc] init];
         _bubbleView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -39,7 +39,6 @@
         _avatarImageView = [[LYRUIAvatarImageView alloc] init];
         _avatarImageView.backgroundColor = LYRUILightGrayColor();
         _avatarImageView.translatesAutoresizingMaskIntoConstraints = NO;
-        _avatarImageView.clipsToBounds = YES;
         [self.contentView addSubview:_avatarImageView];
 
         [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleView

@@ -24,7 +24,7 @@ extern CGFloat const LYRUIAvatarImageDiameter;
 @property (nonatomic) CGFloat avatarImageViewDiameter UI_APPEARANCE_SELECTOR;
 
 /**
- @abstract Sets the font for the avatar initials. Defailt is 14pt system font.
+ @abstract Sets the font for the avatar initials. Default is 14pt system font.
  */
 @property (nonatomic) UIFont *initialsFont UI_APPEARANCE_SELECTOR;
 
@@ -32,9 +32,9 @@ extern CGFloat const LYRUIAvatarImageDiameter;
  @abstract Sets the text color for the avatar initials. Default is black.
  */
 @property (nonatomic) UIColor *initialsColor UI_APPEARANCE_SELECTOR;
-
+ 
 /*
- @abstract Sets the initials text to be displayed in the image view.
+ @abstract Sets the initials to be displayed in the image view.
  @param fullName The full name string representing a participant in a conversation. 
  @discussion The string supplied will be split into components seperated by `whitespaceCharacterSet`. The first 
  letter of each component will be concatened and displayed as the initials. It is reccomended that the `fullName` string

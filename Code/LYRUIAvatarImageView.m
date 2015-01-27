@@ -23,14 +23,17 @@ NSString *const LYRUIAvatarImageViewAccessibilityLabel = @"LYRUIAvatarImageViewA
 {
     self = [super init];
     if (self) {
-        self.backgroundColor = [UIColor colorWithRed:200.0/255.0 green:200.0/255.0 blue:200.0/255.0 alpha:1.0];
-        
+        // Default UI Appearance
         _initialsFont = [UIFont systemFontOfSize:14];
         _initialsColor = [UIColor blackColor];
         _avatarImageViewDiameter = 30;
-        self.layer.cornerRadius = _avatarImageViewDiameter / 2;
-        self.accessibilityLabel = LYRUIAvatarImageViewAccessibilityLabel;
+
         
+        self.accessibilityLabel = LYRUIAvatarImageViewAccessibilityLabel;
+        self.clipsToBounds = YES;
+        self.backgroundColor = LYRUILightGrayColor();
+        self.layer.cornerRadius = _avatarImageViewDiameter / 2;
+       
         _initialsLabel = [[UILabel alloc] init];
         _initialsLabel.translatesAutoresizingMaskIntoConstraints = NO;
         _initialsLabel.textAlignment = NSTextAlignmentCenter;
@@ -39,7 +42,7 @@ NSString *const LYRUIAvatarImageViewAccessibilityLabel = @"LYRUIAvatarImageViewA
         _initialsLabel.textColor = _initialsColor;
         _initialsLabel.font = _initialsFont;
         [self addSubview:_initialsLabel];
-    
+        
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.initialsLabel attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1.0 constant:3]];
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.initialsLabel attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeRight multiplier:1.0 constant:-3]];
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.initialsLabel attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1.0 constant:3]];
@@ -59,8 +62,8 @@ NSString *const LYRUIAvatarImageViewAccessibilityLabel = @"LYRUIAvatarImageViewA
         NSMutableString *initials = [NSMutableString new];
         NSArray *names = [fullName componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
         for (NSString *name in names) {
-            if (fullName.length > 0) {
-                [initials appendString:[fullName substringToIndex:1]];
+            if (name.length > 0) {
+                [initials appendString:[name substringToIndex:1]];
             }
         }
         self.initialsLabel.text = initials;
