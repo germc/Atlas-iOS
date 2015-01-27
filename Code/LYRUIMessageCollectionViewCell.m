@@ -27,9 +27,9 @@
         // Default UIAppearance
         _messageTextFont = [UIFont systemFontOfSize:14];
         _messageTextColor = [UIColor blackColor];
-        _messageLinkTextColor = LYRUIBlueColor();
+        _messageLinkTextColor = [UIColor blueColor];
         _bubbleViewCornerRadius = 12;
-        _bubbleViewColor = LYRUILightGrayColor();
+        _bubbleViewColor = [UIColor lightGrayColor];
         
         _bubbleView = [[LYRUIMessageBubbleView alloc] init];
         _bubbleView.translatesAutoresizingMaskIntoConstraints = NO;

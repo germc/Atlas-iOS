@@ -24,7 +24,7 @@
         self.backgroundColor = [UIColor colorWithRed:200.0/255.0 green:200.0/255.0 blue:200.0/255.0 alpha:1.0];
         
         _initialsFont = [UIFont systemFontOfSize:14];
-        _initialsColor = [UIColor blueColor];
+        _initialsColor = [UIColor blackColor];
         _avatarImageViewDiameter = 30;
         
         _initialsLabel = [[UILabel alloc] init];
@@ -32,8 +32,8 @@
         _initialsLabel.textAlignment = NSTextAlignmentCenter;
         _initialsLabel.adjustsFontSizeToFitWidth = YES;
         _initialsLabel.minimumScaleFactor = 0.75;
-        _initialsLabel.textColor = [UIColor blackColor];
-        _initialsLabel.font = LYRUILightFont(14);
+        _initialsLabel.textColor = _initialsColor;
+        _initialsLabel.font = _initialsFont;
         
         [self addSubview:_initialsLabel];
     

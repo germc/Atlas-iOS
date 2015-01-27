@@ -20,27 +20,27 @@
 @interface LYRUIMessageCollectionViewCell : UICollectionViewCell <LYRUIMessagePresenting>
 
 /**
- @abstract The font for text displayed in the cell.
+ @abstract The font for text displayed in the cell. Default is 14pt sytem font.
  */
 @property (nonatomic) UIFont *messageTextFont UI_APPEARANCE_SELECTOR;
 
 /**
- @abstract The text color for text displayed in the cell.
+ @abstract The text color for text displayed in the cell. Default is Black.
  */
 @property (nonatomic) UIColor *messageTextColor UI_APPEARANCE_SELECTOR;
 
 /**
- @abstract The text color for links displayed in the cell.
+ @abstract The text color for links displayed in the cell. Default is Blue
  */
 @property (nonatomic) UIColor *messageLinkTextColor UI_APPEARANCE_SELECTOR;
 
 /**
- @abstract The background color for the bubble view displayed in the cell.
+ @abstract The background color for the bubble view displayed in the cell. Default is 12.
  */
 @property (nonatomic) UIColor *bubbleViewColor UI_APPEARANCE_SELECTOR;
 
 /**
- @abstract The corner radius of the bubble view displayed in the cell.
+ @abstract The corner radius of the bubble view displayed in the cell. Default is Light Gray.
  */
 @property (nonatomic) CGFloat bubbleViewCornerRadius UI_APPEARANCE_SELECTOR;
 
