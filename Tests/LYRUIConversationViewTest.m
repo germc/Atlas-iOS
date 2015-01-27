@@ -233,7 +233,7 @@ extern NSString *const LYRUIAvatarImageViewAccessibilityLabel;
     expect(imageView.avatarImageViewDiameter).to.equal(40);
 }
 
-- (void)testTiVerifyCustomBubbleViewCornerRadius
+- (void)testToVerifyCustomBubbleViewCornerRadius
 {
     [[LYRUIMessageCollectionViewCell appearance] setBubbleViewCornerRadius:8];
     
