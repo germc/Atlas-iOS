@@ -38,7 +38,7 @@ extern CGFloat const LYRUIAvatarImageDiameter;
  @param fullName The full name string representing a participant in a conversation. 
  @discussion The string supplied will be split into components seperated by `whitespaceCharacterSet`. The first 
  letter of each component will be concatened and displayed as the initials. It is reccomended that the `fullName` string
- only consist of a first and last name, seperated by one white space. 
+ only consist of a first and last name, separated by one white space.
  */
 - (void)setInitialsForFullName:(NSString *)fullName;
 

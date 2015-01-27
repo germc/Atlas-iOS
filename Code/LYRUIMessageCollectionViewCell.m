@@ -134,6 +134,12 @@
     self.bubbleView.backgroundColor = bubbleViewColor;
 }
 
+- (void)setBubbleViewCornerRadius:(CGFloat)bubbleViewCornerRadius
+{
+    _bubbleViewCornerRadius = bubbleViewCornerRadius;
+    self.bubbleView.layer.cornerRadius = bubbleViewCornerRadius;
+}
+
 - (NSAttributedString *)attributedStringForText:(NSString *)text
 {
     NSDictionary *attributes = @{NSFontAttributeName : self.messageTextFont, NSForegroundColorAttributeName : self.messageTextColor};

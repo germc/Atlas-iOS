@@ -25,17 +25,17 @@
 @property (nonatomic) UIFont *messageTextFont UI_APPEARANCE_SELECTOR;
 
 /**
- @abstract The text color for text displayed in the cell. Default is Black.
+ @abstract The text color for text displayed in the cell. Default is black.
  */
 @property (nonatomic) UIColor *messageTextColor UI_APPEARANCE_SELECTOR;
 
 /**
- @abstract The text color for links displayed in the cell. Default is Blue.
+ @abstract The text color for links displayed in the cell. Default is blue.
  */
 @property (nonatomic) UIColor *messageLinkTextColor UI_APPEARANCE_SELECTOR;
 
 /**
- @abstract The background color for the bubble view displayed in the cell. Default is Light Gray.
+ @abstract The background color for the bubble view displayed in the cell. Default is light gray.
  */
 @property (nonatomic) UIColor *bubbleViewColor UI_APPEARANCE_SELECTOR;
 
