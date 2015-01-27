@@ -117,7 +117,7 @@ static CGFloat const LSSelectionIndicatorSize = 30;
 - (void)configureAvatarInitials
 {
     NSString *participantName = self.participant.fullName.length ? self.participant.fullName : @"Unknown Participant";
-    [self.avatarImageView setInitialsForName:participantName];
+    [self.avatarImageView setInitialsForFullName:participantName];
 }
 
 - (void)configureNameLabel

@@ -42,11 +42,6 @@
     [super presentMessage:message];
 }
 
-- (void)updateWithMessageSentState:(BOOL)messageSentState
-{
-    [super updateWithMessageSentState:messageSentState];
-}
-
 - (void)updateWithParticipant:(id<LYRUIParticipant>)participant
 {
     [super updateWithParticipant:participant];

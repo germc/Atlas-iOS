@@ -17,32 +17,12 @@
 
 @implementation LYRUIIncomingMessageCollectionViewCell
 
-static CGFloat const LYRAvatarImageDiameter = 30.0f;
-
 - (id)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
     if (self) {
-        self.avatarImageView.clipsToBounds = YES;
-        self.messageTextColor = [UIColor blackColor];
         self.messageLinkTextColor = LYRUIBlueColor();
         self.bubbleViewColor = LYRUILightGrayColor();
-        
-        [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.avatarImageView
-                                                                     attribute:NSLayoutAttributeWidth
-                                                                     relatedBy:NSLayoutRelationEqual
-                                                                        toItem:nil
-                                                                     attribute:NSLayoutAttributeNotAnAttribute
-                                                                    multiplier:1.0
-                                                                      constant:LYRAvatarImageDiameter]];
-
-        [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.avatarImageView
-                                                                     attribute:NSLayoutAttributeHeight
-                                                                     relatedBy:NSLayoutRelationEqual
-                                                                        toItem:self.avatarImageView
-                                                                     attribute:NSLayoutAttributeWidth
-                                                                    multiplier:1.0
-                                                                      constant:0]];
 
         [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.avatarImageView
                                                                      attribute:NSLayoutAttributeLeft
@@ -102,7 +82,7 @@ static CGFloat const LYRAvatarImageDiameter = 30.0f;
         if (participant.avatarImage) {
             [self.avatarImageView setImage:participant.avatarImage];
         } else {
-            [self.avatarImageView setInitialsForName:participant.fullName];
+            [self.avatarImageView setInitialsForFullName:participant.fullName];
         }
     } else {
         self.avatarImageView.hidden = YES;
