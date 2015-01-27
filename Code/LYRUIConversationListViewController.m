@@ -17,6 +17,7 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"LYRUIConversatio
 @property (nonatomic) LYRClient *layerClient;
 @property (nonatomic) BOOL hasAppeared;
 @property (nonatomic) LYRConversation *conversationToDelete;
+@property (nonatomic) LYRConversation *conversationSelectedBeforeContentChange;
 
 @end
 
@@ -230,6 +231,13 @@ NSString *const LYRUIConversationTableViewAccessibilityLabel = @"Conversation Ta
 
 - (void)queryControllerWillChangeContent:(LYRQueryController *)queryController
 {
+    LYRConversation *selectedConversation;
+    NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
+    if (indexPath) {
+        selectedConversation = [self.queryController objectAtIndexPath:indexPath];
+    }
+    self.conversationSelectedBeforeContentChange = selectedConversation;
+
     [self.tableView beginUpdates];
 }
 
@@ -266,6 +274,14 @@ NSString *const LYRUIConversationTableViewAccessibilityLabel = @"Conversation Ta
 - (void)queryControllerDidChangeContent:(LYRQueryController *)queryController
 {
     [self.tableView endUpdates];
+
+    if (self.conversationSelectedBeforeContentChange) {
+        NSIndexPath *indexPath = [self.queryController indexPathForObject:self.conversationSelectedBeforeContentChange];
+        if (indexPath) {
+            [self.tableView selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
+        }
+        self.conversationSelectedBeforeContentChange = nil;
+    }
 }
 
 #pragma mark - Helpers
