@@ -8,6 +8,8 @@
 
 ### Public API Changes
 
+* Removed `avatarImageViewCornerRadius` property from `LYRUIMessageCollectionViewCell`.
+* Added `avatarImageViewDiameter` property to `LYRUIAvatarImageView`.
 * Removed `updateWithMessageSentState:` method from `LYRUIMessagePresenting`. Message sent state can be inferred from the `isSent` property on `LYRMessage`.
 * Added `LYRUIUserDidTapLinkNotification` to `LayerUIKit`.
 * Added `collectionViewCellForMessage:` to `LYRUIConversationViewController`.
