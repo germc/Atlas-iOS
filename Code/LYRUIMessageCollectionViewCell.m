@@ -24,11 +24,13 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-        // UIAppearance Defaults
-        _bubbleViewCornerRadius = 12;
-        _avatarImageViewCornerRadius = LYRUIAvatarImageDiameter / 2;
+        // Default UIAppearance
         _messageTextFont = [UIFont systemFontOfSize:14];
-    
+        _messageTextColor = [UIColor blackColor];
+        _messageLinkTextColor = LYRUIBlueColor();
+        _bubbleViewCornerRadius = 12;
+        _bubbleViewColor = LYRUILightGrayColor();
+        
         _bubbleView = [[LYRUIMessageBubbleView alloc] init];
         _bubbleView.translatesAutoresizingMaskIntoConstraints = NO;
         _bubbleView.layer.cornerRadius = _bubbleViewCornerRadius;
@@ -37,7 +39,7 @@
         _avatarImageView = [[LYRUIAvatarImageView alloc] init];
         _avatarImageView.backgroundColor = LYRUILightGrayColor();
         _avatarImageView.translatesAutoresizingMaskIntoConstraints = NO;
-        _avatarImageView.layer.cornerRadius = _avatarImageViewCornerRadius;
+        _avatarImageView.clipsToBounds = YES;
         [self.contentView addSubview:_avatarImageView];
 
         [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleView
@@ -131,18 +133,6 @@
 {
     _bubbleViewColor = bubbleViewColor;
     self.bubbleView.backgroundColor = bubbleViewColor;
-}
-
-- (void)setBubbleViewCornerRadius:(CGFloat)bubbleViewCornerRadius
-{
-    _bubbleViewCornerRadius = bubbleViewCornerRadius;
-    self.bubbleView.layer.cornerRadius = bubbleViewCornerRadius;
-}
-
-- (void)setAvatarImageViewCornerRadius:(CGFloat)avatarImageViewCornerRadius
-{
-    _avatarImageViewCornerRadius = avatarImageViewCornerRadius;
-    self.avatarImageView.layer.cornerRadius = avatarImageViewCornerRadius;
 }
 
 - (NSAttributedString *)attributedStringForText:(NSString *)text

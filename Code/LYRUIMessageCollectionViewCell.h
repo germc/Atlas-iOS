@@ -20,14 +20,29 @@
 @interface LYRUIMessageCollectionViewCell : UICollectionViewCell <LYRUIMessagePresenting>
 
 /**
- @abstract Customization selectors for configuring cell appearance.
+ @abstract The font for text displayed in the cell.
  */
 @property (nonatomic) UIFont *messageTextFont UI_APPEARANCE_SELECTOR;
+
+/**
+ @abstract The text color for text displayed in the cell.
+ */
 @property (nonatomic) UIColor *messageTextColor UI_APPEARANCE_SELECTOR;
+
+/**
+ @abstract The text color for links displayed in the cell.
+ */
 @property (nonatomic) UIColor *messageLinkTextColor UI_APPEARANCE_SELECTOR;
+
+/**
+ @abstract The background color for the bubble view displayed in the cell.
+ */
 @property (nonatomic) UIColor *bubbleViewColor UI_APPEARANCE_SELECTOR;
+
+/**
+ @abstract The corner radius of the bubble view displayed in the cell.
+ */
 @property (nonatomic) CGFloat bubbleViewCornerRadius UI_APPEARANCE_SELECTOR;
-@property (nonatomic) CGFloat avatarImageViewCornerRadius UI_APPEARANCE_SELECTOR;
 
 /**
  @abstract The view that handles displaying the cell content.
