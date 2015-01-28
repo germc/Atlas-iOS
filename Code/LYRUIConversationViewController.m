@@ -911,7 +911,7 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
     
     NSOrderedSet *messages = [NSOrderedSet new];
     if ([self.delegate respondsToSelector:@selector(conversationViewController:messagesForContentParts:)]) {
-        messages = [[self.delegate conversationViewController:self messagesForContentParts:messageInputToolbar.messageParts] mutableCopy];
+        messages = [self.delegate conversationViewController:self messagesForContentParts:messageInputToolbar.messageParts];
     } else  {
         messages = [self messagesForMessageParts:messageInputToolbar.messageParts];
     }
