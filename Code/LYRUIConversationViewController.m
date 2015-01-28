@@ -922,7 +922,7 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
     }
     
     for (LYRMessage *message in messages) {
-        if (message)[self sendMessage:message];
+        [self sendMessage:message];
     }
     
     if (self.addressBarController) [self.addressBarController setPermanent];
@@ -954,7 +954,8 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
         } else if ([part isKindOfClass:[CLLocation class]]) {
             messagePart = LYRUIMessagePartWithLocation(part);
         }
-        [messages addObject:[self messageForMessagePart:messagePart]];
+        LYRMessage *message = [self messageForMessagePart:messagePart];
+        if (message)[messages addObject:message];
     }
     return messages;
 }
