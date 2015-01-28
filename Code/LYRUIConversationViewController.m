@@ -912,7 +912,9 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
     NSOrderedSet *messages;
     if ([self.delegate respondsToSelector:@selector(conversationViewController:messagesForContentParts:)]) {
         messages = [self.delegate conversationViewController:self messagesForContentParts:messageInputToolbar.messageParts];
+        if (!messages.count) return;
     }
+    
     // If delegat returns nil, we fall back to default behavior
     if (!messages) {
         messages = [self messagesForMessageParts:messageInputToolbar.messageParts];
