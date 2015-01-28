@@ -62,9 +62,9 @@
  @param contentParts The array of content parts supplied via user input into the `messageInputToolbar` property of the controller.
  @discussion Called when a user taps the `SEND` button on an `LYRUIMessageInputToolbar`. The contentParts array supplied can contain
  either `NSString` or `UIImage` objects. Applications who wish to send `LYRMessage` objects with custom `LYRMessagePart`
- MIMETypes not supported by default by LayerUIKit can do so by implementing this method. All `LYRMessage` objects returned will be immediately 
+ MIME types not supported by default by LayerUIKit can do so by implementing this method. All `LYRMessage` objects returned will be immediately 
  sent into the current conversation for the controller. If implemented, applications should also register custom `UICollectionViewCell` classes 
- with the controller via a call to `registerClass:forMessageCellWithReuseIdentifier:`. They should also implement the optional datasource method,
+ with the controller via a call to `registerClass:forMessageCellWithReuseIdentifier:`. They should also implement the optional data source method,
  `conversationViewController:reuseIdentifierForMessage:`.
  */
 - (NSOrderedSet *)conversationViewController:(LYRUIConversationViewController *)viewController messagesForContentParts:(NSArray *)contentParts;

@@ -904,68 +904,31 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
     [actionSheet showInView:self.view];
 }
 
-/**
- 
- LAYER - Sending a message through Layer. The `LYRUIMessageInputToolbar` informs the controller that the `rightAccessoryButton` 
- property (representing the `SEND` button) was tapped.
- 
- */
 - (void)messageInputToolbar:(LYRUIMessageInputToolbar *)messageInputToolbar didTapRightAccessoryButton:(UIButton *)rightAccessoryButton
 {
     if (!self.conversation) return;
+    if (!messageInputToolbar.messageParts.count) return;
     
-    NSMutableArray *messages = [NSMutableArray new];
+    NSOrderedSet *messages = [NSOrderedSet new];
     if ([self.delegate respondsToSelector:@selector(conversationViewController:messagesForContentParts:)]) {
-        messages = [[self.delegate conversationViewController:self messagesForContentParts:messageInputToolbar.messageParts] copy];
+        messages = [[self.delegate conversationViewController:self messagesForContentParts:messageInputToolbar.messageParts] mutableCopy];
+    } else  {
+        messages = [self messagesForMessageParts:messageInputToolbar.messageParts];
     }
-    if (!messages) {
-        if (messageInputToolbar.messageParts.count > 0) {
-            id<LYRUIParticipant> sender = [self participantForIdentifier:self.layerClient.authenticatedUserID];
-            for (id part in messageInputToolbar.messageParts){
-                LYRMessagePart *messagePart;
-                if ([part isKindOfClass:[NSString class]]) {
-                    messagePart = LYRUIMessagePartWithText(part);
-                } else if ([part isKindOfClass:[UIImage class]]) {
-                    messagePart = LYRUIMessagePartWithJPEGImage(part);
-                } else if ([part isKindOfClass:[CLLocation class]]) {
-                    messagePart = LYRUIMessagePartWithLocation(part);
-                } else {
-                    continue;
-                }
-                NSString *pushText = [self pushNotificationStringForMessagePart:messagePart];
-                NSString *text = [NSString stringWithFormat:@"%@: %@", [sender fullName], pushText];
-                NSDictionary *pushOptions;
-                pushOptions = @{LYRMessageOptionsPushNotificationAlertKey: text,
-                                LYRMessageOptionsPushNotificationSoundNameKey: @"default"};
-                LYRMessage *message = [self.layerClient newMessageWithParts:@[messagePart]
-                                                                    options:pushOptions
-                                                                      error:nil];
-                [messages addObject:message];
-            }
-        }
-    }
+    
     for (LYRMessage *message in messages) {
         [self sendMessage:message];
     }
+    
     if (self.addressBarController) [self.addressBarController setPermanent];
 }
 
-/**
- 
- LAYER - Input tool bar began typing, so we can send a typing indicator.
- 
- */
 - (void)messageInputToolbarDidType:(LYRUIMessageInputToolbar *)messageInputToolbar
 {
     if (!self.conversation) return;
     [self.conversation sendTypingIndicator:LYRTypingDidBegin];
 }
 
-/**
- 
- LAYER - Input tool bar ended typing, so we can terminate the typing indicator.
- 
- */
 - (void)messageInputToolbarDidEndTyping:(LYRUIMessageInputToolbar *)messageInputToolbar
 {
     if (!self.conversation) return;
@@ -974,16 +937,41 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 
 #pragma mark - Message Sending
 
+- (NSOrderedSet *)messagesForMessageParts:(NSArray *)messageParts
+{
+    NSMutableOrderedSet *messages = [NSMutableOrderedSet new];
+    for (id part in messageParts){
+        LYRMessagePart *messagePart;
+        if ([part isKindOfClass:[NSString class]]) {
+            messagePart = LYRUIMessagePartWithText(part);
+        } else if ([part isKindOfClass:[UIImage class]]) {
+            messagePart = LYRUIMessagePartWithJPEGImage(part);
+        } else if ([part isKindOfClass:[CLLocation class]]) {
+            messagePart = LYRUIMessagePartWithLocation(part);
+        }
+        NSDictionary *pushOptions = @{LYRMessageOptionsPushNotificationAlertKey: [self pushNotificationStringForMessagePart:messagePart],
+                                      LYRMessageOptionsPushNotificationSoundNameKey: @"default"};
+        LYRMessage *message = [self.layerClient newMessageWithParts:@[messagePart]
+                                                            options:pushOptions
+                                                              error:nil];
+        [messages addObject:message];
+    }
+    return [messages copy];
+}
+
 - (NSString *)pushNotificationStringForMessagePart:(LYRMessagePart *)messagePart
 {
+    id<LYRUIParticipant> sender = [self participantForIdentifier:self.layerClient.authenticatedUserID];
+    
+    NSString *pushText;
     if ([messagePart.MIMEType isEqualToString:LYRUIMIMETypeTextPlain]) {
-        return [[NSString alloc] initWithData:messagePart.data encoding:NSUTF8StringEncoding];
+        pushText = [[NSString alloc] initWithData:messagePart.data encoding:NSUTF8StringEncoding];
     } else if ([messagePart.MIMEType isEqualToString:LYRUIMIMETypeImageJPEG] || [messagePart.MIMEType isEqualToString:LYRUIMIMETypeImagePNG]) {
-        return @"Has sent a new image";
+        pushText = @"Has sent a new image";
     } else if ([messagePart.MIMEType isEqualToString:LYRUIMIMETypeLocation]) {
-        return @"Has sent a new location";
+        pushText = @"Has sent a new location";
     }
-    return nil;
+    return [NSString stringWithFormat:@"%@: %@", [sender fullName], pushText];
 }
 
 - (void)sendMessage:(LYRMessage *)message
