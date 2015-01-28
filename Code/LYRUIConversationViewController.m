@@ -922,7 +922,7 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
     }
     
     for (LYRMessage *message in messages) {
-        [self sendMessage:message];
+        if (message)[self sendMessage:message];
     }
     
     if (self.addressBarController) [self.addressBarController setPermanent];
