@@ -60,6 +60,7 @@
  @abstract Asks the delegate for an `NSOrderedSet` of `LYRMessage` objects representing an `NSArray` of content parts.
  @param viewController The `LYRUIConversationViewController` supplying the content parts.
  @param contentParts The array of content parts supplied via user input into the `messageInputToolbar` property of the controller.
+ @return An `NSOrderedSet` of `LYRMessageObjects`. If `nil` is returned, the controller will fall back to default behavior.
  @discussion Called when a user taps the `SEND` button on an `LYRUIMessageInputToolbar`. The contentParts array supplied can contain
  either `NSString` or `UIImage` objects. Applications who wish to send `LYRMessage` objects with custom `LYRMessagePart`
  MIME types not supported by default by LayerUIKit can do so by implementing this method. All `LYRMessage` objects returned will be immediately 
