@@ -59,16 +59,15 @@ NSString *const LYRUIConversationTableViewAccessibilityIdentifier = @"Conversati
 {
     [super viewDidLoad];
     self.title = LYRUIConversationListViewControllerTitle;
+    self.accessibilityLabel = LYRUIConversationListViewControllerTitle;
+    self.tableView.accessibilityLabel = LYRUIConversationTableViewAccessibilityLabel;
+    self.tableView.accessibilityIdentifier = LYRUIConversationTableViewAccessibilityIdentifier;
     [self setupConversationDataSource];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    self.accessibilityLabel = LYRUIConversationListViewControllerTitle;
-    self.tableView.accessibilityLabel = LYRUIConversationTableViewAccessibilityLabel;
-    self.tableView.accessibilityIdentifier = LYRUIConversationTableViewAccessibilityIdentifier;
-    
     if (!self.hasAppeared) {
         // Set public configuration properties once view has loaded
         [self.tableView registerClass:self.cellClass forCellReuseIdentifier:LYRUIConversationCellReuseIdentifier];
@@ -78,12 +77,6 @@ NSString *const LYRUIConversationTableViewAccessibilityIdentifier = @"Conversati
         }
         self.hasAppeared = YES;
     }
-}
-
-- (void)dealloc
-{
-    self.queryController.delegate = nil;
-    self.queryController = nil;
 }
 
 #pragma mark - Public Setters
