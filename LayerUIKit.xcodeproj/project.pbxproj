@@ -30,7 +30,6 @@
 		D667F8D71A4101DB00D44699 /* LYRUIConversationListTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D667F8D61A4101DB00D44699 /* LYRUIConversationListTest.m */; };
 		D667F8D81A411FC100D44699 /* LYRUISampleConversationListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D0D778C41A02EAEE000A5F51 /* LYRUISampleConversationListViewController.m */; };
 		D67922101A77137B008BE823 /* LYRUIMessageCollectionViewCellTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D679220F1A77137B008BE823 /* LYRUIMessageCollectionViewCellTest.m */; };
-		D67922141A771699008BE823 /* test.png in Sources */ = {isa = PBXBuildFile; fileRef = 0A1B02B41A6DB2AA00D5DA8E /* test.png */; };
 		D689C6771A7834E100BE1A60 /* LYRUIConversationTableViewCellTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D689C6761A7834E100BE1A60 /* LYRUIConversationTableViewCellTest.m */; };
 		D6B282601A368065001DC713 /* LYRMockContentStore.m in Sources */ = {isa = PBXBuildFile; fileRef = D6B2825F1A368065001DC713 /* LYRMockContentStore.m */; };
 		D6DE58771A37651100FA9375 /* LYRMessagePartMock.m in Sources */ = {isa = PBXBuildFile; fileRef = D6DE58761A37651100FA9375 /* LYRMessagePartMock.m */; };
@@ -450,7 +449,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D67922141A771699008BE823 /* test.png in Sources */,
 				D662CFBF1A43BB3100E7331B /* LYRUserMock.m in Sources */,
 				D689C6771A7834E100BE1A60 /* LYRUIConversationTableViewCellTest.m in Sources */,
 				D662CFB91A43A75900E7331B /* LYRUISampleConversationViewController.m in Sources */,

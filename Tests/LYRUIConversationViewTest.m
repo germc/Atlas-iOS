@@ -163,11 +163,6 @@ extern NSString *const LYRUIAvatarImageViewAccessibilityLabel;
     }] conversationViewController:[OCMArg any] attributedStringForDisplayOfRecipientStatus:[OCMArg any]];
     
     [[[delegateMock expect] andDo:^(NSInvocation *invocation) {
-        NSString *pushText = @"Test Push Text";
-        [invocation setReturnValue:&pushText];
-    }] conversationViewController:[OCMArg any] pushNotificationTextForMessagePart:[OCMArg any]];
-    
-    [[[delegateMock expect] andDo:^(NSInvocation *invocation) {
         float yes = 1.0f;
         [invocation setReturnValue:&yes];
     }] conversationViewController:[OCMArg any] shouldUpdateRecipientStatusForMessage:[OCMArg any]];
