@@ -56,6 +56,21 @@
  */
 - (CGFloat)conversationViewController:(LYRUIConversationViewController *)viewController heightForMessage:(LYRMessage *)message withCellWidth:(CGFloat)cellWidth;
 
+/**
+ @abstract Asks the delegate for an `NSOrderedSet` of `LYRMessage` objects representing an `NSArray` of content parts.
+ @param viewController The `LYRUIConversationViewController` supplying the content parts.
+ @param contentParts The array of content parts supplied via user input into the `messageInputToolbar` property of the controller.
+ @return An `NSOrderedSet` of `LYRMessage` objects. If `nil` is returned, the controller will fall back to default behavior. If an empty
+ `NSOrderedSet` is returned, the controller will not send any messages.
+ @discussion Called when a user taps the `SEND` button on an `LYRUIMessageInputToolbar`. The contentParts array supplied can contain
+ either `NSString` or `UIImage` objects. Applications who wish to send `LYRMessage` objects with custom `LYRMessagePart`
+ MIME types not supported by default by LayerUIKit can do so by implementing this method. All `LYRMessage` objects returned will be immediately 
+ sent into the current conversation for the controller. If implemented, applications should also register custom `UICollectionViewCell` classes 
+ with the controller via a call to `registerClass:forMessageCellWithReuseIdentifier:`. They should also implement the optional data source method,
+ `conversationViewController:reuseIdentifierForMessage:`.
+ */
+- (NSOrderedSet *)conversationViewController:(LYRUIConversationViewController *)viewController messagesForContentParts:(NSArray *)contentParts;
+
 @end
 
 ///---------------------------------------
@@ -93,15 +108,6 @@
 - (NSAttributedString *)conversationViewController:(LYRUIConversationViewController *)conversationViewController attributedStringForDisplayOfRecipientStatus:(NSDictionary *)recipientStatus;
 
 @optional
-
-/**
- @abstract Asks the data source for an `NSString` object to be sent as the push notification alert text via Layer.
- @param conversationViewController The `LYRUIConversationViewController` requesting the string.
- @param messagePart The `LYRMessagePart` object to be sent via Layer.
- @return a string representing the push notification text.
- @discussion If this method is not implemented, or it returns nil, Layer will deliver silent push notifications.
- */
-- (NSString *)conversationViewController:(LYRUIConversationViewController *)conversationViewController pushNotificationTextForMessagePart:(LYRMessagePart *)messagePart;
 
 /**
  @abstract Asks the data source if the `LRYRecipientStatus` should be updated.

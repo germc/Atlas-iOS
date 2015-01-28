@@ -170,3 +170,17 @@ NSArray *LYRUILinkResultsForText(NSString *text)
     if (error) return nil;
     return [detector matchesInString:text options:kNilOptions range:NSMakeRange(0, text.length)];
 }
+
+NSString *LYRUIPushTextWithPartAndSenderName(LYRMessagePart *messagePart, NSString *senderName)
+{
+    NSString *pushText;
+    if ([messagePart.MIMEType isEqualToString:LYRUIMIMETypeTextPlain]) {
+        pushText = [[NSString alloc] initWithData:messagePart.data encoding:NSUTF8StringEncoding];
+    } else if ([messagePart.MIMEType isEqualToString:LYRUIMIMETypeImageJPEG] || [messagePart.MIMEType isEqualToString:LYRUIMIMETypeImagePNG]) {
+        pushText = @"Has sent a new image";
+    } else if ([messagePart.MIMEType isEqualToString:LYRUIMIMETypeLocation]) {
+        pushText = @"Has sent a new location";
+    }
+    return [NSString stringWithFormat:@"%@: %@", senderName, pushText];
+}
+
