@@ -913,33 +913,41 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 - (void)messageInputToolbar:(LYRUIMessageInputToolbar *)messageInputToolbar didTapRightAccessoryButton:(UIButton *)rightAccessoryButton
 {
     if (!self.conversation) return;
-    if (messageInputToolbar.messageParts.count > 0) {
-        id<LYRUIParticipant> sender = [self participantForIdentifier:self.layerClient.authenticatedUserID];
-        for (id part in messageInputToolbar.messageParts){
-            LYRMessagePart *messagePart;
-            if ([part isKindOfClass:[NSString class]]) {
-                messagePart = LYRUIMessagePartWithText(part);
-            } else if ([part isKindOfClass:[UIImage class]]) {
-                messagePart = LYRUIMessagePartWithJPEGImage(part);
-            } else if ([part isKindOfClass:[CLLocation class]]) {
-                messagePart = LYRUIMessagePartWithLocation(part);
-            } else {
-                continue;
-            }
-            NSString *pushText = [self pushNotificationStringForMessagePart:messagePart];
-            NSString *text = [NSString stringWithFormat:@"%@: %@", [sender fullName], pushText];
-            NSDictionary *pushOptions;
-            if (pushText) {
-                pushOptions = @{LYRMessageOptionsPushNotificationAlertKey: text,
-                               LYRMessageOptionsPushNotificationSoundNameKey: @"default"};
-            }
-            LYRMessage *message = [self.layerClient newMessageWithParts:@[messagePart]
-                                                                options:pushOptions
-                                                                  error:nil];
-            [self sendMessage:message];
-        }
-        if (self.addressBarController) [self.addressBarController setPermanent];
+    
+    NSMutableArray *messages = [NSMutableArray new];
+    if ([self.delegate respondsToSelector:@selector(conversationViewController:messagesForContentParts:)]) {
+        messages = [[self.delegate conversationViewController:self messagesForContentParts:messageInputToolbar.messageParts] copy];
     }
+    if (!messages) {
+        if (messageInputToolbar.messageParts.count > 0) {
+            id<LYRUIParticipant> sender = [self participantForIdentifier:self.layerClient.authenticatedUserID];
+            for (id part in messageInputToolbar.messageParts){
+                LYRMessagePart *messagePart;
+                if ([part isKindOfClass:[NSString class]]) {
+                    messagePart = LYRUIMessagePartWithText(part);
+                } else if ([part isKindOfClass:[UIImage class]]) {
+                    messagePart = LYRUIMessagePartWithJPEGImage(part);
+                } else if ([part isKindOfClass:[CLLocation class]]) {
+                    messagePart = LYRUIMessagePartWithLocation(part);
+                } else {
+                    continue;
+                }
+                NSString *pushText = [self pushNotificationStringForMessagePart:messagePart];
+                NSString *text = [NSString stringWithFormat:@"%@: %@", [sender fullName], pushText];
+                NSDictionary *pushOptions;
+                pushOptions = @{LYRMessageOptionsPushNotificationAlertKey: text,
+                                LYRMessageOptionsPushNotificationSoundNameKey: @"default"};
+                LYRMessage *message = [self.layerClient newMessageWithParts:@[messagePart]
+                                                                    options:pushOptions
+                                                                      error:nil];
+                [messages addObject:message];
+            }
+        }
+    }
+    for (LYRMessage *message in messages) {
+        [self sendMessage:message];
+    }
+    if (self.addressBarController) [self.addressBarController setPermanent];
 }
 
 /**
@@ -968,11 +976,14 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 
 - (NSString *)pushNotificationStringForMessagePart:(LYRMessagePart *)messagePart
 {
-    NSString *pushText;
-    if ([self.dataSource respondsToSelector:@selector(conversationViewController:pushNotificationTextForMessagePart:)]) {
-        pushText = [self.dataSource conversationViewController:self pushNotificationTextForMessagePart:messagePart];
-    } 
-    return pushText;
+    if ([messagePart.MIMEType isEqualToString:LYRUIMIMETypeTextPlain]) {
+        return [[NSString alloc] initWithData:messagePart.data encoding:NSUTF8StringEncoding];
+    } else if ([messagePart.MIMEType isEqualToString:LYRUIMIMETypeImageJPEG] || [messagePart.MIMEType isEqualToString:LYRUIMIMETypeImagePNG]) {
+        return @"Has sent a new image";
+    } else if ([messagePart.MIMEType isEqualToString:LYRUIMIMETypeLocation]) {
+        return @"Has sent a new location";
+    }
+    return nil;
 }
 
 - (void)sendMessage:(LYRMessage *)message
