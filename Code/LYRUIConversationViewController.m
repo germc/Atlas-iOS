@@ -949,18 +949,22 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
         } else if ([part isKindOfClass:[CLLocation class]]) {
             messagePart = LYRUIMessagePartWithLocation(part);
         }
-        NSString *senderName = [[self participantForIdentifier:self.layerClient.authenticatedUserID] fullName];
-        NSDictionary *pushOptions = @{LYRMessageOptionsPushNotificationAlertKey: LYRUIPushTextWithPartAndSenderName(messagePart, senderName),
-                                      LYRMessageOptionsPushNotificationSoundNameKey: @"default"};
-        NSError *error;
-        LYRMessage *message = [self.layerClient newMessageWithParts:@[messagePart] options:pushOptions error:&error];
-        if (error) {
-            NSLog(@"Error creating message: %@", error);
-        } else {
-            [messages addObject:message];
-        }
+        [messages addObject:[self messageForMessagePart:messagePart]];
     }
     return messages;
+}
+
+- (LYRMessage *)messageForMessagePart:(LYRMessagePart *)messagePart
+{
+    NSString *senderName = [[self participantForIdentifier:self.layerClient.authenticatedUserID] fullName];
+    NSDictionary *pushOptions = @{LYRMessageOptionsPushNotificationAlertKey: LYRUIPushTextWithPartAndSenderName(messagePart, senderName),
+                                  LYRMessageOptionsPushNotificationSoundNameKey: @"default"};
+    NSError *error;
+    LYRMessage *message = [self.layerClient newMessageWithParts:@[messagePart] options:pushOptions error:&error];
+    if (error) {
+        return nil;
+    }
+    return message;
 }
 
 - (void)sendMessage:(LYRMessage *)message
