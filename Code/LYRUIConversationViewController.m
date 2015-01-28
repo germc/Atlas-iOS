@@ -173,6 +173,8 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveTypingIndicator:) name:LYRConversationDidReceiveTypingIndicatorNotification object:nil];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleApplicationWillEnterForeground:) name:UIApplicationWillEnterForegroundNotification object:nil];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(layerClientObjectsDidChange:) name:LYRClientObjectsDidChangeNotification object:nil];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -300,6 +302,10 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
     [self updateTypingIndicatorOverlay:NO];
 
     [self configureSendButtonEnablement];
+    [self setConversationViewTitle];
+    [self configureAvatarImageDisplay];
+    [self configureAddressBarForChangedParticipants];
+
     if (conversation) {
         [self fetchLayerMessages];
     } else {
@@ -307,6 +313,8 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
         self.queryController = nil;
         [self.collectionView reloadData];
     }
+
+    [self scrollToBottomOfCollectionViewAnimated:NO];
 }
 
 - (void)configureAvatarImageDisplay
@@ -773,6 +781,28 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
     [self updateTypingIndicatorOverlay:YES];
 }
 
+- (void)layerClientObjectsDidChange:(NSNotification *)notification
+{
+    if (!self.conversation) return;
+    if (!self.layerClient) return;
+    if (!notification.object) return;
+    if (![notification.object isEqual:self.layerClient]) return;
+
+    NSArray *changes = notification.userInfo[LYRClientObjectChangesUserInfoKey];
+    for (NSDictionary *change in changes) {
+        id changedObject = change[LYRObjectChangeObjectKey];
+        if (![changedObject isEqual:self.conversation]) continue;
+
+        LYRObjectChangeType changeType = [change[LYRObjectChangeTypeKey] integerValue];
+        NSString *changedProperty = change[LYRObjectChangePropertyKey];
+
+        if (changeType == LYRObjectChangeTypeUpdate && [changedProperty isEqualToString:@"participants"]) {
+            [self configureForChangedParticipants];
+            break;
+        }
+    }
+}
+
 #pragma mark - Typing Indicator
 
 - (void)updateTypingIndicatorOverlay:(BOOL)animated
@@ -1189,12 +1219,12 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 
 - (void)addressBarViewController:(LYRUIAddressBarViewController *)addressBarViewController didSelectParticipant:(id<LYRUIParticipant>)participant
 {
-    [self configureConversationWithAddressBar:addressBarViewController];
+    [self configureConversationForAddressBar];
 }
 
 - (void)addressBarViewController:(LYRUIAddressBarViewController *)addressBarViewController didRemoveParticipant:(id<LYRUIParticipant>)participant
 {
-    [self configureConversationWithAddressBar:addressBarViewController];
+    [self configureConversationForAddressBar];
 }
 
 #pragma mark - Send Button Enablement
@@ -1338,6 +1368,17 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
     [self.collectionView setContentOffset:[self bottomOffset] animated:animated];
 }
 
+- (NSOrderedSet *)participantsForIdentifiers:(NSOrderedSet *)identifiers
+{
+    NSMutableOrderedSet *participants = [NSMutableOrderedSet new];
+    for (NSString *participantIdentifier in identifiers) {
+        id<LYRUIParticipant> participant = [self participantForIdentifier:participantIdentifier];
+        if (!participant) continue;
+        [participants addObject:participant];
+    }
+    return participants;
+}
+
 - (id<LYRUIParticipant>)participantForIdentifier:(NSString *)identifier
 {
     if ([self.dataSource respondsToSelector:@selector(conversationViewController:participantForIdentifier:)]) {
@@ -1347,15 +1388,14 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
     }
 }
 
-- (void)configureConversationWithAddressBar:(LYRUIAddressBarViewController *)addressBarViewController
+- (void)configureConversationForAddressBar
 {
-    NSSet *participants = addressBarViewController.selectedParticipants;
+    NSSet *participants = self.addressBarController.selectedParticipants.set;
+    NSSet *participantIdentifiers = [participants valueForKey:@"participantIdentifier"];
+    if (!participantIdentifiers && !self.conversation.participants) return;
+    if ([participantIdentifiers isEqual:self.conversation.participants]) return;
     LYRConversation *conversation = [self conversationWithParticipants:participants];
-    if (conversation == self.conversation) return;
     self.conversation = conversation;
-    [self setConversationViewTitle];
-    [self configureAvatarImageDisplay];
-    [self scrollToBottomOfCollectionViewAnimated:NO];
 }
 
 - (LYRConversation *)conversationWithParticipants:(NSSet *)participants
@@ -1386,6 +1426,48 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
     query.predicate = [LYRPredicate predicateWithProperty:@"participants" operator:LYRPredicateOperatorIsEqualTo value:set];
     query.limit = 1;
     return [self.layerClient executeQuery:query error:nil].lastObject;
+}
+
+- (void)configureForChangedParticipants
+{
+    if (self.addressBarController && ![self.addressBarController isPermanent]) {
+        [self configureConversationForAddressBar];
+        return;
+    }
+
+    NSMutableSet *removedParticipantIdentifiers = [NSMutableSet setWithArray:self.typingParticipantIDs];
+    [removedParticipantIdentifiers minusSet:self.conversation.participants];
+    [self.typingParticipantIDs removeObjectsInArray:removedParticipantIdentifiers.allObjects];
+    [self updateTypingIndicatorOverlay:NO];
+    [self configureAddressBarForChangedParticipants];
+    [self setConversationViewTitle];
+    [self configureAvatarImageDisplay];
+    [self.collectionView reloadData];
+}
+
+- (void)configureAddressBarForChangedParticipants
+{
+    if (!self.addressBarController) return;
+
+    NSOrderedSet *existingParticipants = self.addressBarController.selectedParticipants;
+    NSOrderedSet *existingParticipantIdentifiers = [existingParticipants valueForKey:@"participantIdentifier"];
+    if (!existingParticipantIdentifiers && !self.conversation.participants) return;
+    if ([existingParticipantIdentifiers.set isEqual:self.conversation.participants]) return;
+
+    NSMutableOrderedSet *removedIdentifiers = [NSMutableOrderedSet orderedSetWithOrderedSet:existingParticipantIdentifiers];
+    [removedIdentifiers minusSet:self.conversation.participants];
+
+    NSMutableOrderedSet *addedIdentifiers = [NSMutableOrderedSet orderedSetWithSet:self.conversation.participants];
+    [addedIdentifiers minusOrderedSet:existingParticipantIdentifiers];
+    NSString *authenticatedUserID = self.layerClient.authenticatedUserID;
+    if (authenticatedUserID) [addedIdentifiers removeObject:authenticatedUserID];
+
+    NSMutableOrderedSet *participantIdentifiers = [NSMutableOrderedSet orderedSetWithOrderedSet:existingParticipantIdentifiers];
+    [participantIdentifiers minusOrderedSet:removedIdentifiers];
+    [participantIdentifiers unionOrderedSet:addedIdentifiers];
+
+    NSOrderedSet *participants = [self participantsForIdentifiers:participantIdentifiers];
+    self.addressBarController.selectedParticipants = participants;
 }
 
 - (void)configureHeader:(LYRUIConversationCollectionViewHeader *)header atIndexPath:(NSIndexPath *)indexPath

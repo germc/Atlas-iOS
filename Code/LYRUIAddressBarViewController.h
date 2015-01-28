@@ -103,9 +103,9 @@
 @property (nonatomic) LYRUIAddressBarView *addressBarView;
 
 /**
- @abstract The `NSSet` of currently selected participants.
+ @abstract The `NSOrderedSet` of currently selected participants.
  */
-@property (nonatomic, readonly) NSSet *selectedParticipants;
+@property (nonatomic) NSOrderedSet *selectedParticipants;
 
 /**
  @abstract Informs the receiver that a selection occurred outside of the controller and a participant should be added to the address
