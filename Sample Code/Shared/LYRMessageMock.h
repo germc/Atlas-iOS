@@ -21,7 +21,7 @@
 @property (nonatomic, readonly) BOOL isDeleted;
 @property (nonatomic, readonly) BOOL isUnread LYR_QUERYABLE_PROPERTY;
 @property (nonatomic) NSDate *sentAt LYR_QUERYABLE_PROPERTY;
-@property (nonatomic, readonly) NSDate *receivedAt LYR_QUERYABLE_PROPERTY;
+@property (nonatomic) NSDate *receivedAt LYR_QUERYABLE_PROPERTY;
 @property (nonatomic, readonly) NSString *sentByUserID LYR_QUERYABLE_PROPERTY;
 @property (nonatomic) NSDictionary *recipientStatusByUserID;
 

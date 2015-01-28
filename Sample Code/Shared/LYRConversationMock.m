@@ -66,6 +66,7 @@
     }
     message.conversation = self;
     message.sentAt = [NSDate date];
+    message.receivedAt = message.sentAt;
     
     NSMutableDictionary *recipientStatus = [NSMutableDictionary new];
     [self.participants enumerateObjectsUsingBlock:^(id obj, BOOL *stop) {

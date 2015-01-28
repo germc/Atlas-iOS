@@ -38,6 +38,7 @@
 
 - (void)tearDown
 {
+    [self resetAppearance];
     [[LYRMockContentStore sharedStore] resetContentStore];
     self.viewController.queryController = nil;
     self.testInterface = nil;
@@ -290,6 +291,19 @@
     [self.testInterface setRootViewController:controller];
     expect([controller.tableView numberOfRowsInSection:0]).to.equal(0);
     [tester waitForTimeInterval:1];
+}
+
+- (void)resetAppearance
+{
+    [[LYRUIConversationTableViewCell appearance] setConversationLabelFont:[UIFont systemFontOfSize:14]];
+    [[LYRUIConversationTableViewCell appearance] setConversationLabelColor:[UIColor blackColor]];
+    [[LYRUIConversationTableViewCell appearance] setLastMessageLabelFont:[UIFont systemFontOfSize:12]];
+    [[LYRUIConversationTableViewCell appearance] setLastMessageLabelColor:[UIColor grayColor]];
+    [[LYRUIConversationTableViewCell appearance] setDateLabelFont:[UIFont systemFontOfSize:12]];
+    [[LYRUIConversationTableViewCell appearance] setDateLabelColor:[UIColor grayColor]];
+    [[LYRUIConversationTableViewCell appearance] setUnreadMessageIndicatorBackgroundColor:[UIColor cyanColor]];
+    [[LYRUIConversationTableViewCell appearance] setCellBackgroundColor:[UIColor whiteColor]];
+    
 }
 
 @end
