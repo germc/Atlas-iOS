@@ -949,29 +949,18 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
         } else if ([part isKindOfClass:[CLLocation class]]) {
             messagePart = LYRUIMessagePartWithLocation(part);
         }
-        NSDictionary *pushOptions = @{LYRMessageOptionsPushNotificationAlertKey: [self pushNotificationStringForMessagePart:messagePart],
+        NSString *senderName = [[self participantForIdentifier:self.layerClient.authenticatedUserID] fullName];
+        NSDictionary *pushOptions = @{LYRMessageOptionsPushNotificationAlertKey: LYRUIPushTextWithPartAndSenderName(messagePart, senderName),
                                       LYRMessageOptionsPushNotificationSoundNameKey: @"default"};
-        LYRMessage *message = [self.layerClient newMessageWithParts:@[messagePart]
-                                                            options:pushOptions
-                                                              error:nil];
-        [messages addObject:message];
+        NSError *error;
+        LYRMessage *message = [self.layerClient newMessageWithParts:@[messagePart] options:pushOptions error:&error];
+        if (error) {
+            NSLog(@"Error creating message: %@", error);
+        } else {
+            [messages addObject:message];
+        }
     }
-    return [messages copy];
-}
-
-- (NSString *)pushNotificationStringForMessagePart:(LYRMessagePart *)messagePart
-{
-    id<LYRUIParticipant> sender = [self participantForIdentifier:self.layerClient.authenticatedUserID];
-    
-    NSString *pushText;
-    if ([messagePart.MIMEType isEqualToString:LYRUIMIMETypeTextPlain]) {
-        pushText = [[NSString alloc] initWithData:messagePart.data encoding:NSUTF8StringEncoding];
-    } else if ([messagePart.MIMEType isEqualToString:LYRUIMIMETypeImageJPEG] || [messagePart.MIMEType isEqualToString:LYRUIMIMETypeImagePNG]) {
-        pushText = @"Has sent a new image";
-    } else if ([messagePart.MIMEType isEqualToString:LYRUIMIMETypeLocation]) {
-        pushText = @"Has sent a new location";
-    }
-    return [NSString stringWithFormat:@"%@: %@", [sender fullName], pushText];
+    return messages;
 }
 
 - (void)sendMessage:(LYRMessage *)message
