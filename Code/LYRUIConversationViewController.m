@@ -164,7 +164,7 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
     [self updateAutoLayoutConstraints];
     [self updateCollectionViewInsets];
 
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidHide:) name:UIKeyboardDidHideNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
 
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textViewTextDidBeginEditing:) name:UITextViewTextDidBeginEditingNotification object:self.messageInputToolbar.textInputView];
 
@@ -737,26 +737,13 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 
 - (void)keyboardWillShow:(NSNotification *)notification
 {
-    CGRect keyboardFrame = [notification.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
-    keyboardFrame = [self.view convertRect:keyboardFrame fromView:nil];
-    keyboardFrame = CGRectIntersection(self.view.bounds, keyboardFrame);
-    self.keyboardHeight = CGRectGetHeight(keyboardFrame);
-    [self.view layoutIfNeeded];
-    [UIView beginAnimations:nil context:NULL];
-    [UIView setAnimationDuration:[notification.userInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue]];
-    [UIView setAnimationCurve:[notification.userInfo[UIKeyboardAnimationCurveUserInfoKey] integerValue]];
-    [UIView setAnimationBeginsFromCurrentState:YES];
-    [self updateCollectionViewInsets];
-    self.typingIndicatorViewBottomConstraint.constant = -self.collectionView.scrollIndicatorInsets.bottom;
-    [self.view layoutIfNeeded];
-    [UIView commitAnimations];
+    [self configureWithKeyboardNotification:notification];
 }
 
-- (void)keyboardDidHide:(NSNotification *)notification
+- (void)keyboardWillHide:(NSNotification *)notification
 {
-    self.keyboardHeight = 0;
-    [self updateCollectionViewInsets];
-    [self.view setNeedsUpdateConstraints];
+    if (![self.navigationController.viewControllers containsObject:self]) return;
+    [self configureWithKeyboardNotification:notification];
 }
 
 - (void)textViewTextDidBeginEditing:(NSNotification *)notification
@@ -1091,6 +1078,23 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 }
 
 #pragma mark - Collection View Content Inset
+
+- (void)configureWithKeyboardNotification:(NSNotification *)notification
+{
+    CGRect keyboardFrame = [notification.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
+    keyboardFrame = [self.view convertRect:keyboardFrame fromView:nil];
+    keyboardFrame = CGRectIntersection(self.view.bounds, keyboardFrame);
+    self.keyboardHeight = CGRectGetHeight(keyboardFrame);
+    [self.view layoutIfNeeded];
+    [UIView beginAnimations:nil context:NULL];
+    [UIView setAnimationDuration:[notification.userInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue]];
+    [UIView setAnimationCurve:[notification.userInfo[UIKeyboardAnimationCurveUserInfoKey] integerValue]];
+    [UIView setAnimationBeginsFromCurrentState:YES];
+    [self updateCollectionViewInsets];
+    self.typingIndicatorViewBottomConstraint.constant = -self.collectionView.scrollIndicatorInsets.bottom;
+    [self.view layoutIfNeeded];
+    [UIView commitAnimations];
+}
 
 - (void)updateCollectionViewInsets
 {
