@@ -21,8 +21,6 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-        self.messageLinkTextColor = LYRUIBlueColor();
-        self.bubbleViewColor = LYRUILightGrayColor();
 
         [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.avatarImageView
                                                                      attribute:NSLayoutAttributeLeft

@@ -32,7 +32,12 @@ extern CGFloat const LYRUIAvatarImageDiameter;
  @abstract Sets the text color for the avatar initials. Default is black.
  */
 @property (nonatomic) UIColor *initialsColor UI_APPEARANCE_SELECTOR;
- 
+
+/**
+ @abstract Sets the background color for the avatar initials. Default is light gray.
+ */
+@property (nonatomic) UIColor *imageViewBackgroundColor UI_APPEARANCE_SELECTOR;
+
 /*
  @abstract Sets the initials to be displayed in the image view.
  @param fullName The full name string representing a participant in a conversation. 

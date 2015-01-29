@@ -233,24 +233,6 @@ extern NSString *const LYRUIAvatarImageViewAccessibilityLabel;
     expect(imageView.avatarImageViewDiameter).to.equal(40);
 }
 
-- (void)testToVerifyCustomBubbleViewCornerRadius
-{
-    [[LYRUIMessageCollectionViewCell appearance] setBubbleViewCornerRadius:8];
-    
-    LYRMessagePartMock *part = [LYRMessagePartMock messagePartWithText:@"Test"];
-    LYRMessageMock *message = [self.testInterface.layerClient newMessageWithParts:@[part] options:nil error:nil];
-    [self.conversation sendMessage:message error:nil];
-    
-    self.viewController = [LYRUISampleConversationViewController conversationViewControllerWithConversation:(LYRConversation *)self.conversation layerClient:(LYRClient *)self.testInterface.layerClient];
-    [self setRootViewController:self.viewController];
-    
-    NSString *text = [[NSString alloc] initWithData:part.data encoding:NSUTF8StringEncoding];
-    NSString *cellAccessibilityLabel = [NSString stringWithFormat:@"Message: %@", text];
-    
-    LYRUIMessageCollectionViewCell *cell = (LYRUIMessageCollectionViewCell *)[tester waitForViewWithAccessibilityLabel:cellAccessibilityLabel];
-    expect(cell.bubbleViewCornerRadius).to.equal(8);
-}
-
 - (void)sendMessageWithText:(NSString *)messageText
 {
     [tester enterText:messageText intoViewWithAccessibilityLabel:@"Text Input View"];

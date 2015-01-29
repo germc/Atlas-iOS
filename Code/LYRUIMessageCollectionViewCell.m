@@ -28,12 +28,13 @@
         _messageTextFont = [UIFont systemFontOfSize:14];
         _messageTextColor = [UIColor blackColor];
         _messageLinkTextColor = [UIColor blueColor];
-        _bubbleViewColor = [UIColor lightGrayColor];
+        _bubbleViewColor = [UIColor grayColor];
         _bubbleViewCornerRadius = 12;
         
         _bubbleView = [[LYRUIMessageBubbleView alloc] init];
         _bubbleView.translatesAutoresizingMaskIntoConstraints = NO;
         _bubbleView.layer.cornerRadius = _bubbleViewCornerRadius;
+        _bubbleView.backgroundColor = _bubbleViewColor;
         [self.contentView addSubview:_bubbleView];
         
         _avatarImageView = [[LYRUIAvatarImageView alloc] init];

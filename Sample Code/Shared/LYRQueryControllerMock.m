@@ -103,6 +103,7 @@
     if ([self.delegate respondsToSelector:@selector(queryController:didChangeObject:atIndexPath:forChangeType:newIndexPath:)]) {
         switch (changeType) {
             case LYRObjectChangeTypeCreate:
+                if (newIndex == NSNotFound) break;
                 [self.delegate queryController:self didChangeObject:objectMock atIndexPath:nil forChangeType:LYRQueryControllerChangeTypeInsert newIndexPath:[NSIndexPath indexPathForRow:newIndex inSection:0]];
                 break;
             case LYRObjectChangeTypeUpdate:
