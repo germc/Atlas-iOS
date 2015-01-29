@@ -111,18 +111,17 @@ static CGFloat const LYRUIButtonHeight = 28;
     leftButtonFrame.origin.y = CGRectGetHeight(frame) - CGRectGetHeight(leftButtonFrame) - LYRUIVerticalButtonMargin;
     rightButtonFrame.origin.y = CGRectGetHeight(frame) - CGRectGetHeight(rightButtonFrame) - LYRUIVerticalButtonMargin;
 
+    BOOL heightChanged = CGRectGetHeight(textViewFrame) != CGRectGetHeight(self.textInputView.frame);
+
     self.leftAccessoryButton.frame = leftButtonFrame;
     self.rightAccessoryButton.frame = rightButtonFrame;
     self.textInputView.frame = textViewFrame;
 
     // Setting one's own frame like this is a no-no but seems to be the lesser of evils when working around the layout issues mentioned above.
-    CGRect existingFrame = self.frame;
-    if (!CGRectEqualToRect(frame, existingFrame)) {
-        self.frame = frame;
-        BOOL changedHeight = CGRectGetHeight(frame) != CGRectGetHeight(existingFrame);
-        if (changedHeight) {
-            [[NSNotificationCenter defaultCenter] postNotificationName:LYRUIMessageInputToolbarDidChangeHeightNotification object:self];
-        }
+    self.frame = frame;
+
+    if (heightChanged) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:LYRUIMessageInputToolbarDidChangeHeightNotification object:self];
     }
 }
 
