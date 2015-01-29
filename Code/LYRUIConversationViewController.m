@@ -187,6 +187,11 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 
     [self setConversationViewTitle];
     [self configureAvatarImageDisplay];
+
+    // Workaround for a modal dismissal causing the message toolbar to remain offscreen on iOS 8.
+    if (self.presentedViewController) {
+        [self.view becomeFirstResponder];
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated
