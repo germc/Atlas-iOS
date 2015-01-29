@@ -224,7 +224,7 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
     }
 
     // To get the toolbar to slide onscreen with the view controller's content, we have to make the view the first responder here. Even so, it will not animate on iOS 8 the first time.
-    if (!self.presentedViewController && !self.view.inputAccessoryView.superview) {
+    if (!self.presentedViewController && self.navigationController && !self.view.inputAccessoryView.superview) {
         [self.view becomeFirstResponder];
     }
 
