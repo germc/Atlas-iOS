@@ -165,7 +165,7 @@ extern NSString *const LYRUIConversationCollectionViewAccessibilityIdentifier;
 
 - (void)testToVerifyAvatarImageBackgroundColor
 {
-    [[LYRUIAvatarImageView appearance] setBackgroundColor:[UIColor redColor]];
+    [[LYRUIAvatarImageView appearance] setImageViewBackgroundColor:[UIColor redColor]];
     LYRUserMock *mockUser = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameEarl];
     LYRClientMock *layerClient = [LYRClientMock layerClientMockWithAuthenticatedUserID:mockUser.participantIdentifier];
     
@@ -175,7 +175,7 @@ extern NSString *const LYRUIConversationCollectionViewAccessibilityIdentifier;
     
     LYRUIMessageCollectionViewCell *cell = (LYRUIMessageCollectionViewCell *)[tester waitForCellAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:1]
                                                                      inCollectionViewWithAccessibilityIdentifier:LYRUIConversationCollectionViewAccessibilityIdentifier];
-    expect(cell.avatarImageView.avatarImageViewDiameter).to.equal([UIColor redColor]);
+    expect(cell.avatarImageView.imageViewBackgroundColor).to.equal([UIColor redColor]);
 }
 
 - (void)sendMessageWithText:(NSString *)text
