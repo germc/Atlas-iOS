@@ -144,7 +144,6 @@ extern NSString *const LYRUILocationMIMETypePlaceholderText;
     [tester waitForViewWithAccessibilityLabel:LYRUILocationMIMETypePlaceholderText];
 }
 
-
 - (void)createNewConversation
 {
     NSSet *participants = [NSSet setWithObject:[LYRUserMock userWithMockUserName:LYRClientMockFactoryNameBobby].participantIdentifier];
