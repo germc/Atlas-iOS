@@ -97,8 +97,6 @@
     NSDictionary *mockChangeObject = @{LYRMockObjectChangeObjectKey : conversation,
                                        LYRMockObjectChangeChangeTypeKey : [NSNumber numberWithInt:LYRObjectChangeTypeCreate]};
     [self.mockObjectChanges addObject:mockChangeObject];
-    [self broadcastChanges];
-    
 }
 
 - (void)updateConversation:(LYRConversation *)conversation
@@ -106,7 +104,6 @@
     NSDictionary *mockChangeObject = @{LYRMockObjectChangeObjectKey : conversation,
                                        LYRMockObjectChangeChangeTypeKey : [NSNumber numberWithInt:LYRObjectChangeTypeUpdate]};
     [self.mockObjectChanges addObject:mockChangeObject];
-    [self broadcastChanges];
 }
 
 - (void)deleteConversation:(LYRConversation *)conversation
@@ -115,7 +112,6 @@
     NSDictionary *mockChangeObject = @{LYRMockObjectChangeObjectKey : conversation,
                                        LYRMockObjectChangeChangeTypeKey : [NSNumber numberWithInt:LYRObjectChangeTypeDelete]};
     [self.mockObjectChanges addObject:mockChangeObject];
-    [self broadcastChanges];
 }
 
 - (LYRConversationMock *)conversationForIdentifier:(NSURL *)identifier
@@ -183,6 +179,13 @@
 
 - (NSOrderedSet *)fetchObjectsWithClass:(Class)objectClass predicate:(LYRPredicate *)predicate sortDescriptior:(NSArray *)sortDescriptor
 {
+    LYRMessageMock *message;
+    if (self.messages.count) {
+        message = [self.messages allObjects][0];
+    }
+    NSLog(@"Predicate = %@", predicate);
+    NSLog(@"Message's Conversation = %@", message.conversation);
+    NSLog(@"Conversations = %@", self.conversations);
     if ([objectClass isSubclassOfClass:[LYRConversation class]]) {
         NSOrderedSet *filteredSet = [NSOrderedSet new];
         if (predicate) {

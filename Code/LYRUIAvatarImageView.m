@@ -30,7 +30,7 @@ NSString *const LYRUIAvatarImageViewAccessibilityLabel = @"LYRUIAvatarImageViewA
 
         self.accessibilityLabel = LYRUIAvatarImageViewAccessibilityLabel;
         self.clipsToBounds = YES;
-        self.backgroundColor = LYRUILightGrayColor();
+        //self.backgroundColor = LYRUILightGrayColor();
         self.layer.cornerRadius = _avatarImageViewDiameter / 2;
        
         _initialsLabel = [[UILabel alloc] init];
@@ -86,6 +86,13 @@ NSString *const LYRUIAvatarImageViewAccessibilityLabel = @"LYRUIAvatarImageViewA
     self.layer.cornerRadius = avatarImageViewDiameter / 2;
     _avatarImageViewDiameter = avatarImageViewDiameter;
     [self invalidateIntrinsicContentSize];
+}
+
+- (void)setImageViewBackgroundColor:(UIColor *)imageViewBackgroundColor
+{
+    self.backgroundColor = imageViewBackgroundColor;
+    _imageViewBackgroundColor = imageViewBackgroundColor;
+    
 }
 
 @end

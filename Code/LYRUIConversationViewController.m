@@ -275,6 +275,7 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 
 - (void)fetchLayerMessages
 {
+    NSLog(@"Conversation %@", self.conversation);
     LYRQuery *query = [LYRQuery queryWithClass:[LYRMessage class]];
     query.predicate = [LYRPredicate predicateWithProperty:@"conversation" operator:LYRPredicateOperatorIsEqualTo value:self.conversation];
     query.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"index" ascending:YES]];

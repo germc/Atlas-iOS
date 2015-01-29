@@ -22,26 +22,24 @@
 @implementation LYRUIMessageCollectionViewCellTest
 
 NSString *LYRUITestMessageText = @"Test Message Text";
+
 extern NSString *const LYRUIConversationCollectionViewAccessibilityIdentifier;
 
 - (void)setUp
 {
     [super setUp];
+    
     LYRUserMock *mockUser = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameRussell];
     LYRClientMock *layerClient = [LYRClientMock layerClientMockWithAuthenticatedUserID:mockUser.participantIdentifier];
     self.testInterface = [LYRUITestInterface testIntefaceWithLayerClient:layerClient];
-    
-    LYRUserMock *mockUser1 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameMarshawn];
-    self.conversation = [self.testInterface conversationWithParticipants:[NSSet setWithObject:mockUser1.participantIdentifier] lastMessageText:nil];
-    LYRUISampleConversationViewController *controller = [LYRUISampleConversationViewController conversationViewControllerWithConversation:(LYRConversation *)self.conversation
-                                                                                                                              layerClient:(LYRClient *)self.testInterface.layerClient];
-    [self.testInterface setRootViewController:controller];
+    [self setRootViewController];
+   
 }
 
 - (void)tearDown
 {
-    [[LYRMockContentStore sharedStore] resetContentStore];
     [self resetAppearance];
+    [[LYRMockContentStore sharedStore] resetContentStore];
     [super tearDown];
 }
 
@@ -82,80 +80,121 @@ extern NSString *const LYRUIConversationCollectionViewAccessibilityIdentifier;
     expect(cell.bubbleView.bubbleImageView.image).toNot.beNil;
     expect(cell.bubbleView.bubbleViewLabel.text).to.beNil;
 }
-//
-//- (void)testToVerifyMessageBubbleViewWithLocation
-//{
-//    CLLocation *location = [[CLLocation alloc] initWithLatitude:37.7833 longitude:122.4167];
-//    LYRMessagePartMock *part = (LYRMessagePartMock *)LYRUIMessagePartWithLocation(location);
-//    LYRMessageMock *message = [self.testInterface.layerClient newMessageWithParts:@[part] options:nil error:nil];
-//
-//    LYRUIMessageCollectionViewCell *cell = [LYRUIMessageCollectionViewCell new];
-//    [cell presentMessage:(LYRMessage *)message];
-//    expect(cell.bubbleView.bubbleImageView.image).toNot.beNil;
-//    expect(cell.bubbleView.bubbleViewLabel.text).to.beNil;
-//}
-//
-//- (void)testToVerifyCustomMessageTextFont
-//{
-//    UIFont *font = [UIFont systemFontOfSize:16];
-//    [[LYRUIMessageCollectionViewCell appearance] setMessageTextFont:font];
-//    [self sendMessageWithText:LYRUITestMessageText];
-//
-//    LYRUIMessageCollectionViewCell *cell = (LYRUIMessageCollectionViewCell *)[tester waitForCellAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:1]
-//                                                                inCollectionViewWithAccessibilityIdentifier:LYRUIConversationCollectionViewAccessibilityIdentifier];
-//    expect(cell.messageTextFont).to.equal(font);
-//}
-//
-//- (void)testToVerifyCustomMessageTextColor
-//{
-//    UIColor *color = [UIColor redColor];
-//    [[LYRUIMessageCollectionViewCell appearance] setMessageTextColor:color];
-//    [self sendMessageWithText:LYRUITestMessageText];
-//
-//    LYRUIMessageCollectionViewCell *cell = (LYRUIMessageCollectionViewCell *)[tester waitForCellAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:1]
-//                                                                inCollectionViewWithAccessibilityIdentifier:LYRUIConversationCollectionViewAccessibilityIdentifier];
-//    expect(cell.messageTextColor).to.equal(color);
-//}
-//
-//- (void)testToVerifyCustomMessageLinkTextColor
-//{
-//    UIColor *color = [UIColor redColor];
-//    [[LYRUIMessageCollectionViewCell appearance] setMessageLinkTextColor:color];
-//    [self sendMessageWithText:@"www.layer.com"];
-//
-//    LYRUIMessageCollectionViewCell *cell = (LYRUIMessageCollectionViewCell *)[tester waitForCellAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:1]
-//                                                                inCollectionViewWithAccessibilityIdentifier:LYRUIConversationCollectionViewAccessibilityIdentifier];
-//    expect(cell.messageLinkTextColor).to.equal(color);
-//}
-//
-//- (void)testToVerifyCustomBubbleViewColor
-//{
-//     UIColor *color = [UIColor redColor];
-//    [[LYRUIMessageCollectionViewCell appearance] setBubbleViewColor:color];
-//    [self sendMessageWithText:LYRUITestMessageText];
-//
-//    LYRUIMessageCollectionViewCell *cell = (LYRUIMessageCollectionViewCell *)[tester waitForCellAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:1]
-//                                                                inCollectionViewWithAccessibilityIdentifier:LYRUIConversationCollectionViewAccessibilityIdentifier];
-//    expect(cell.bubbleViewColor).to.equal(color);
-//}
-//
-//- (void)testToVerifyCustomBubbleViewCornerRadius
-//{
-//    NSUInteger radius = 4;
-//    [[LYRUIMessageCollectionViewCell appearance] setBubbleViewCornerRadius:4];
-//    [self sendMessageWithText:LYRUITestMessageText];
-//
-//    LYRUIMessageCollectionViewCell *cell = (LYRUIMessageCollectionViewCell *)[tester waitForCellAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:1]
-//                                                                inCollectionViewWithAccessibilityIdentifier:LYRUIConversationCollectionViewAccessibilityIdentifier];
-//    expect(cell.bubbleViewCornerRadius).to.equal(radius);
-//}
-//
+
+- (void)testToVerifyMessageBubbleViewWithLocation
+{
+    CLLocation *location = [[CLLocation alloc] initWithLatitude:37.7833 longitude:122.4167];
+    LYRMessagePartMock *part = (LYRMessagePartMock *)LYRUIMessagePartWithLocation(location);
+    LYRMessageMock *message = [self.testInterface.layerClient newMessageWithParts:@[part] options:nil error:nil];
+
+    LYRUIMessageCollectionViewCell *cell = [LYRUIMessageCollectionViewCell new];
+    [cell presentMessage:(LYRMessage *)message];
+    expect(cell.bubbleView.bubbleImageView.image).toNot.beNil;
+    expect(cell.bubbleView.bubbleViewLabel.text).to.beNil;
+}
+
+- (void)testToVerifyCustomMessageTextFont
+{
+    UIFont *font = [UIFont systemFontOfSize:20];
+    [[LYRUIMessageCollectionViewCell appearance] setMessageTextFont:font];
+    [self sendMessageWithText:LYRUITestMessageText];
+
+    LYRUIMessageCollectionViewCell *cell = (LYRUIMessageCollectionViewCell *)[tester waitForCellAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:1]
+                                                                inCollectionViewWithAccessibilityIdentifier:LYRUIConversationCollectionViewAccessibilityIdentifier];
+    expect(cell.messageTextFont).to.equal(font);
+}
+
+- (void)testToVerifyCustomMessageTextColor
+{
+    UIColor *color = [UIColor redColor];
+    [[LYRUIMessageCollectionViewCell appearance] setMessageTextColor:color];
+    [self sendMessageWithText:LYRUITestMessageText];
+
+    LYRUIMessageCollectionViewCell *cell = (LYRUIMessageCollectionViewCell *)[tester waitForCellAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:1]
+                                                                inCollectionViewWithAccessibilityIdentifier:LYRUIConversationCollectionViewAccessibilityIdentifier];
+    expect(cell.messageTextColor).to.equal(color);
+}
+
+- (void)testToVerifyCustomMessageLinkTextColor
+{
+    UIColor *color = [UIColor redColor];
+    [[LYRUIMessageCollectionViewCell appearance] setMessageLinkTextColor:color];
+    [self sendMessageWithText:@"www.layer.com"];
+
+    LYRUIMessageCollectionViewCell *cell = (LYRUIMessageCollectionViewCell *)[tester waitForCellAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:1]
+                                                                inCollectionViewWithAccessibilityIdentifier:LYRUIConversationCollectionViewAccessibilityIdentifier];
+    expect(cell.messageLinkTextColor).to.equal(color);
+}
+
+- (void)testToVerifyCustomBubbleViewColor
+{
+     UIColor *color = [UIColor redColor];
+    [[LYRUIMessageCollectionViewCell appearance] setBubbleViewColor:color];
+    [self sendMessageWithText:LYRUITestMessageText];
+
+    LYRUIMessageCollectionViewCell *cell = (LYRUIMessageCollectionViewCell *)[tester waitForCellAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:1]
+                                                                inCollectionViewWithAccessibilityIdentifier:LYRUIConversationCollectionViewAccessibilityIdentifier];
+    expect(cell.bubbleViewColor).to.equal(color);
+}
+
+- (void)testToVerifyCustomBubbleViewCornerRadius
+{
+    NSUInteger radius = 4;
+    [[LYRUIMessageCollectionViewCell appearance] setBubbleViewCornerRadius:4];
+    [self sendMessageWithText:LYRUITestMessageText];
+
+    LYRUIMessageCollectionViewCell *cell = (LYRUIMessageCollectionViewCell *)[tester waitForCellAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:1]
+                                                                inCollectionViewWithAccessibilityIdentifier:LYRUIConversationCollectionViewAccessibilityIdentifier];
+    expect(cell.bubbleViewCornerRadius).to.equal(radius);
+}
+
+- (void)testToVerifyAvatarImageDiameter
+{
+    [[LYRUIAvatarImageView appearance] setAvatarImageViewDiameter:40];
+    LYRUserMock *mockUser = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameEarl];
+    LYRClientMock *layerClient = [LYRClientMock layerClientMockWithAuthenticatedUserID:mockUser.participantIdentifier];
+    
+    LYRMessagePartMock *part = [LYRMessagePartMock messagePartWithText:@"test"];
+    LYRMessageMock *message = [layerClient newMessageWithParts:@[part] options:nil error:nil];
+    [self.conversation sendMessage:message error:nil];
+    
+    LYRUIMessageCollectionViewCell *cell = (LYRUIMessageCollectionViewCell *)[tester waitForCellAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:1]
+                                                                     inCollectionViewWithAccessibilityIdentifier:LYRUIConversationCollectionViewAccessibilityIdentifier];
+    expect(cell.avatarImageView.avatarImageViewDiameter).to.equal(40);
+}
+
+- (void)testToVerifyAvatarImageBackgroundColor
+{
+    [[LYRUIAvatarImageView appearance] setBackgroundColor:[UIColor redColor]];
+    LYRUserMock *mockUser = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameEarl];
+    LYRClientMock *layerClient = [LYRClientMock layerClientMockWithAuthenticatedUserID:mockUser.participantIdentifier];
+    
+    LYRMessagePartMock *part = [LYRMessagePartMock messagePartWithText:@"test"];
+    LYRMessageMock *message = [layerClient newMessageWithParts:@[part] options:nil error:nil];
+    [self.conversation sendMessage:message error:nil];
+    
+    LYRUIMessageCollectionViewCell *cell = (LYRUIMessageCollectionViewCell *)[tester waitForCellAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:1]
+                                                                     inCollectionViewWithAccessibilityIdentifier:LYRUIConversationCollectionViewAccessibilityIdentifier];
+    expect(cell.avatarImageView.avatarImageViewDiameter).to.equal([UIColor redColor]);
+}
 
 - (void)sendMessageWithText:(NSString *)text
 {
     LYRMessagePartMock *part = [LYRMessagePartMock messagePartWithText:text];
-    self.message = [self.testInterface.layerClient newMessageWithParts:@[part] options:nil error:nil];
-    [self.conversation sendMessage:self.message error:nil];
+    LYRMessageMock *message = [self.testInterface.layerClient newMessageWithParts:@[part] options:nil error:nil];
+    [self.conversation sendMessage:message error:nil];
+}
+
+- (void)setRootViewController
+{
+    LYRUserMock *mockUser1 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameMarshawn];
+    LYRUserMock *mockUser2 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameEarl];
+    self.conversation = [self.testInterface conversationWithParticipants:[NSSet setWithObjects:mockUser1.participantIdentifier, mockUser2.participantIdentifier, nil] lastMessageText:nil];
+    
+    NSLog(@"Conversation %@", self.conversation);
+    LYRUISampleConversationViewController *controller = [LYRUISampleConversationViewController conversationViewControllerWithConversation:(LYRConversation *)self.conversation
+                                                                                                                              layerClient:(LYRClient *)self.testInterface.layerClient];
+    [self.testInterface setRootViewController:controller];
 }
 
 - (void)resetAppearance
