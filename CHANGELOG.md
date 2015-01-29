@@ -8,6 +8,7 @@
 
 ### Public API Changes
 
+* Added `imageViewBackgroundColor` property to `LYRUIAvatarImageView`.
 * Added `conversationViewController:messagesForContentParts:` to `LYRUIConversationViewController`.
 * Removed `conversationViewController:pushNotificationTextForMessagePart:` from `LYRUIConversationViewController`.
 * Removed `avatarImageViewCornerRadius` property from `LYRUIMessageCollectionViewCell`.
