@@ -22,6 +22,7 @@ NSString *const LYRUIUserDidTapLinkNotification = @"LYRUIUserDidTapLinkNotificat
 @property (nonatomic) UIView *longPressMask;
 @property (nonatomic) MKMapSnapshotter *snapshotter;
 @property (nonatomic) CLLocationCoordinate2D locationShown;
+@property (nonatomic) UITapGestureRecognizer *tapGestureRecognizer;
 @property (nonatomic) NSURL *tappedURL;
 
 @property (nonatomic) NSLayoutConstraint *mapWidthConstraint;
@@ -70,9 +71,9 @@ NSString *const LYRUIUserDidTapLinkNotification = @"LYRUIUserDidTapLinkNotificat
 
         self.mapWidthConstraint = [NSLayoutConstraint constraintWithItem:self.bubbleImageView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:LYRUIMessageBubbleMapWidth];
 
-        UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleLabelTap:)];
-        tapGestureRecognizer.delegate = self;
-        [self.bubbleViewLabel addGestureRecognizer:tapGestureRecognizer];
+        self.tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleLabelTap:)];
+        self.tapGestureRecognizer.delegate = self;
+        [self.bubbleViewLabel addGestureRecognizer:self.tapGestureRecognizer];
         
         UILongPressGestureRecognizer *gestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
         [self addGestureRecognizer:gestureRecognizer];
@@ -248,11 +249,13 @@ NSString *const LYRUIUserDidTapLinkNotification = @"LYRUIUserDidTapLinkNotificat
 
 #pragma mark - UIGestureRecognizerDelegate
 
-- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)tapGestureRecognizer
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
 {
+    if (gestureRecognizer != self.tapGestureRecognizer) return YES;
+
     //http://stackoverflow.com/questions/21349725/character-index-at-touch-point-for-uilabel/26806991#26806991
-    UILabel *textLabel = (UILabel *)tapGestureRecognizer.view;
-    CGPoint tapLocation = [tapGestureRecognizer locationInView:textLabel];
+    UILabel *textLabel = self.bubbleViewLabel;
+    CGPoint tapLocation = [gestureRecognizer locationInView:textLabel];
     
     // init text storage
     NSTextStorage *textStorage = [[NSTextStorage alloc] initWithAttributedString:textLabel.attributedText];
