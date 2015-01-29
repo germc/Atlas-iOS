@@ -34,7 +34,7 @@ extern CGFloat const LYRUIAvatarImageDiameter;
 @property (nonatomic) UIColor *initialsColor UI_APPEARANCE_SELECTOR;
 
 /**
- @abstract Sets the background color for the avatar initials. Default is light gray.
+ @abstract Sets the background color for the avatar image view. Default is light gray.
  */
 @property (nonatomic) UIColor *imageViewBackgroundColor UI_APPEARANCE_SELECTOR;
 

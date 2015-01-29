@@ -22,14 +22,6 @@
 #import "LYRUITestClasses.h"
 #import "LYRMockContentStore.h"
 
-
-typedef NS_ENUM(NSInteger, LYRUITestControllerType) {
-    LYRUITestControllerTypeConversationList,
-    LYRUITestControllerTypeConversation,
-    LYRUITestControllerTypeParticipant
-};
-
-
 @interface LYRUITestInterface : NSObject
 
 @property (nonatomic)LYRClientMock *layerClient;
@@ -39,8 +31,6 @@ typedef NS_ENUM(NSInteger, LYRUITestControllerType) {
 - (LYRConversationMock *)conversationWithParticipants:(NSSet *)participants lastMessageText:(NSString *)lastMessageText;
 
 - (NSString *)conversationLabelForConversation:(LYRConversationMock *)conversation;
-
-- (void)presentControllerWithType:(LYRUITestControllerType)type;
 
 - (void)setRootViewController:(UIViewController *)controller;
 
