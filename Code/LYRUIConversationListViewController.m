@@ -77,6 +77,16 @@ NSString *const LYRUIConversationTableViewAccessibilityIdentifier = @"Conversati
         }
         self.hasAppeared = YES;
     }
+
+    NSIndexPath *selectedIndexPath = [self.tableView indexPathForSelectedRow];
+    if (selectedIndexPath && self.clearsSelectionOnViewWillAppear) {
+        [self.tableView deselectRowAtIndexPath:selectedIndexPath animated:animated];
+        [[self transitionCoordinator] notifyWhenInteractionEndsUsingBlock:^(id<UIViewControllerTransitionCoordinatorContext> context) {
+            if (![context isCancelled]) return;
+            if ([self.tableView indexPathForSelectedRow]) return;
+            [self.tableView selectRowAtIndexPath:selectedIndexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
+        }];
+    }
 }
 
 #pragma mark - Public Setters
