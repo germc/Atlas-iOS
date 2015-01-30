@@ -23,7 +23,7 @@ static NSString *const LYRUIPlaceholderText = @"Enter Message";
     self = [super init];
     if (self) {
         self.textContainerInset = UIEdgeInsetsMake(8, 0, 8, 0);
-        self.font = [UIFont systemFontOfSize:14];
+        self.font = [UIFont systemFontOfSize:17];
         self.dataDetectorTypes = UIDataDetectorTypeLink;
         self.placeholder = LYRUIPlaceholderText;
 

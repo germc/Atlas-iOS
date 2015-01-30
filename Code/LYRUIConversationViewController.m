@@ -100,7 +100,6 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 {
     [super viewDidLoad];
     
-    self.view.backgroundColor = [UIColor whiteColor];
     self.accessibilityLabel = LYRUIConversationViewControllerAccessibilityLabel;
     // Collection View Setup
     self.collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero
@@ -110,6 +109,7 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
     self.collectionView.dataSource = self;
     self.collectionView.alwaysBounceVertical = YES;
     self.collectionView.bounces = YES;
+    self.collectionView.backgroundColor = [UIColor clearColor];
     self.collectionView.accessibilityIdentifier = LYRUIConversationCollectionViewAccessibilityIdentifier;
     self.collectionView.keyboardDismissMode = UIScrollViewKeyboardDismissModeInteractive;
 

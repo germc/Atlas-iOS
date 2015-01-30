@@ -29,7 +29,7 @@ NSString *const LYRUIMessageInputToolbarAccessibilityLabel = @"Message Input Too
 // Compose View Margin Constants
 static CGFloat const LYRUIHorizontalMargin = 6;
 static CGFloat const LYRUIVerticalMargin = 6;
-static CGFloat const LYRUIVerticalButtonMargin = 8;
+static CGFloat const LYRUIVerticalButtonMargin = 10;
 
 // Compose View Button Constants
 static CGFloat const LYRUILeftAccessoryButtonWidth = 40;
