@@ -88,4 +88,10 @@ NSString *const LYRUIAvatarImageViewAccessibilityLabel = @"LYRUIAvatarImageViewA
     [self invalidateIntrinsicContentSize];
 }
 
+- (void)setImageViewBackgroundColor:(UIColor *)imageViewBackgroundColor
+{
+    self.backgroundColor = imageViewBackgroundColor;
+    _imageViewBackgroundColor = imageViewBackgroundColor;
+}
+
 @end

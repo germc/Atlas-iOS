@@ -10,14 +10,19 @@
 
 @implementation LYRUIOutgoingMessageCollectionViewCell
 
++ (void)initialize
+{
+    LYRUIOutgoingMessageCollectionViewCell *proxy = [self appearance];
+    proxy.bubbleViewColor = LYRUIBlueColor();
+    proxy.messageTextColor = [UIColor whiteColor];
+    proxy.messageLinkTextColor = [UIColor whiteColor];
+}
+
 - (id)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
     if (self) {
         self.avatarImageView.hidden = YES;
-        self.messageTextColor = [UIColor whiteColor];
-        self.messageLinkTextColor = [UIColor whiteColor];
-        self.bubbleViewColor = LYRUIBlueColor();
         [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleView
                                                                      attribute:NSLayoutAttributeRight
                                                                      relatedBy:NSLayoutRelationEqual

@@ -8,6 +8,9 @@
 
 ### Public API Changes
 
+* Added `imageViewBackgroundColor` property to `LYRUIAvatarImageView`.
+* Added `conversationViewController:messagesForContentParts:` to `LYRUIConversationViewController`.
+* Removed `conversationViewController:pushNotificationTextForMessagePart:` from `LYRUIConversationViewController`.
 * Removed `avatarImageViewCornerRadius` property from `LYRUIMessageCollectionViewCell`.
 * Added `avatarImageViewDiameter` property to `LYRUIAvatarImageView`.
 * Removed `updateWithMessageSentState:` method from `LYRUIMessagePresenting`. Message sent state can be inferred from the `isSent` property on `LYRMessage`.

@@ -17,12 +17,17 @@
 
 @implementation LYRUIIncomingMessageCollectionViewCell
 
++ (void)initialize
+{
+    LYRUIIncomingMessageCollectionViewCell *proxy = [self appearance];
+    proxy.bubbleViewColor = LYRUILightGrayColor();
+    proxy.messageLinkTextColor = LYRUIBlueColor();
+}
+
 - (id)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
     if (self) {
-        self.messageLinkTextColor = LYRUIBlueColor();
-        self.bubbleViewColor = LYRUILightGrayColor();
 
         [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.avatarImageView
                                                                      attribute:NSLayoutAttributeLeft

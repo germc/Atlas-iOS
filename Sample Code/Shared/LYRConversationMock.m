@@ -59,14 +59,15 @@
 
 - (void)updateMessage:(LYRMessageMock *)message
 {
+    message.conversation = self;
+    message.sentAt = [NSDate date];
+    message.receivedAt = message.sentAt;
+    
     if (!self.lastMessage) {
         message.index = 0;
     } else {
         message.index = ((int)self.lastMessage.index + 1);
     }
-    message.conversation = self;
-    message.sentAt = [NSDate date];
-    message.receivedAt = message.sentAt;
     
     NSMutableDictionary *recipientStatus = [NSMutableDictionary new];
     [self.participants enumerateObjectsUsingBlock:^(id obj, BOOL *stop) {
@@ -132,6 +133,7 @@
 {
     self.isDeleted = YES;
     [[LYRMockContentStore sharedStore] deleteConversation:self];
+    [[LYRMockContentStore sharedStore] broadcastChanges];
     return YES;
 }
 

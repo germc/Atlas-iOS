@@ -33,7 +33,7 @@
         _dataSource = dataSource;
         _allowsMultipleSelection = YES;
         _cellClass = [LYRUIParticipantTableViewCell class];
-        _rowHeight = 40;
+        _rowHeight = 44;
 
         self.title = @"Participants";
         self.accessibilityLabel = @"Participants";
