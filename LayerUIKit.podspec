@@ -16,9 +16,9 @@ Pod::Spec.new do |s|
   s.source           = { :git => "https://github.com/layerhq/LayerUIKit.git", :tag => s.version.to_s }
   s.platform         = :ios, '7.0'
   s.requires_arc     = true
-  s.source_files     = 'Code'
+  s.source_files     = 'Code/**/*.{h,m}'
   s.ios.resource_bundle = {'LayerUIKitResource' => 'Resources/*'}
-
+  s.header_mappings_dir = 'Code'
   s.ios.frameworks = 'UIKit'
   s.ios.deployment_target = '7.0'
 
