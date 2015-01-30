@@ -186,7 +186,7 @@ NSString *const LYRUIConversationTableViewAccessibilityIdentifier = @"Conversati
             id <LYRUIAvatarItem> avatarItem = [self.dataSource conversationListViewController:self avatarItemForConversation:conversation];
             [conversationCell updateWithAvatarItem:avatarItem];
         } else {
-           @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Conversation View Delegate must return an object confroming to the `LYRUIAvatarItem` protocol." userInfo:nil];
+           @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Conversation View Delegate must return an object conforming to the `LYRUIAvatarItem` protocol." userInfo:nil];
         }
     }
     
