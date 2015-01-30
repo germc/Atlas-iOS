@@ -19,9 +19,9 @@
 
 + (void)initialize
 {
-    LYRUIIncomingMessageCollectionViewCell *proxy = [LYRUIIncomingMessageCollectionViewCell appearance];
-    [proxy setBubbleViewColor:LYRUILightGrayColor()];
-    [proxy setMessageLinkTextColor:LYRUIBlueColor()];
+    LYRUIIncomingMessageCollectionViewCell *proxy = [self appearance];
+    proxy.bubbleViewColor = LYRUILightGrayColor();
+    proxy.messageLinkTextColor = LYRUIBlueColor();
 }
 
 - (id)initWithFrame:(CGRect)frame

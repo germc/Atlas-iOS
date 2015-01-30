@@ -12,10 +12,10 @@
 
 + (void)initialize
 {
-    LYRUIOutgoingMessageCollectionViewCell *proxy = [LYRUIOutgoingMessageCollectionViewCell appearance];
-    [proxy setBubbleViewColor:LYRUIBlueColor()];
-    [proxy setMessageTextColor:[UIColor whiteColor]];
-    [proxy setMessageLinkTextColor:[UIColor whiteColor]];
+    LYRUIOutgoingMessageCollectionViewCell *proxy = [self appearance];
+    proxy.bubbleViewColor = LYRUIBlueColor();
+    proxy.messageTextColor = [UIColor whiteColor];
+    proxy.messageLinkTextColor = [UIColor whiteColor];
 }
 
 - (id)initWithFrame:(CGRect)frame
