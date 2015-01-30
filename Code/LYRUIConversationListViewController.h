@@ -119,7 +119,7 @@
 
 /**
  @abstract Sets the height for cells within the receiver.
- @default `62.0`
+ @default `76.0`
  @raises NSInternalInconsistencyException Raised if the value is mutated after the receiver has been presented.
  */
 @property (nonatomic, assign) CGFloat rowHeight;

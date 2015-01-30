@@ -25,7 +25,7 @@
     self = [super initWithFrame:frame];
     if (self) {
         // Default UIAppearance
-        _messageTextFont = [UIFont systemFontOfSize:14];
+        _messageTextFont = [UIFont systemFontOfSize:17];
         _messageTextColor = [UIColor blackColor];
         _messageLinkTextColor = [UIColor blueColor];
         _bubbleViewColor = [UIColor grayColor];

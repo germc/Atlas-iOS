@@ -10,6 +10,7 @@
 #import "LYRUISampleConversationViewController.h"
 #import "LYRClientMock.h"
 #import "LYRUIParticipant.h"
+#import "LYRUISampleUtilities.h"
 
 @interface LYRUISampleConversationListViewController () <LYRUIConversationListViewControllerDelegate, LYRUIConversationListViewControllerDataSource>
 
@@ -27,6 +28,7 @@
     self.rowHeight = 82;
     UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithTitle:@"Hydrate" style:UIBarButtonItemStylePlain target:self action:@selector(hydrate)];
     self.navigationItem.leftBarButtonItem = item;
+    
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -57,7 +59,7 @@
 
 - (UIImage *)conversationListViewController:(LYRUIConversationListViewController *)conversationListViewController imageForConversation:(LYRConversation *)conversation
 {
-    return [UIImage imageNamed:@"test1"];
+    return [UIImage imageNamed:@"download"];
 }
 
 #pragma mark - Conversation List View Controller Data Source Methods

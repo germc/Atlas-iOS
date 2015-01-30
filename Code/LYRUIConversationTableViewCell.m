@@ -57,7 +57,7 @@ static NSDateFormatter *LYRUIShortTimeFormatter()
 
 @implementation LYRUIConversationTableViewCell
 
-static CGFloat const LYRUICellVerticalMargin = 6.0f;
+static CGFloat const LYRUICellVerticalMargin = 10.0f;
 static CGFloat const LYRUIConversationLabelRightPadding = -6.0f;
 static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
 
@@ -69,11 +69,11 @@ NSString *const LYRUILocationMIMETypePlaceholderText = @"Attachment: Location";
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
         // UIAppearance Proxy Defaults
-        _conversationLabelFont = [UIFont boldSystemFontOfSize:14];
+        _conversationLabelFont = [UIFont boldSystemFontOfSize:17];
         _conversationLabelColor = [UIColor blackColor];
-        _lastMessageLabelFont = [UIFont systemFontOfSize:12];
+        _lastMessageLabelFont = [UIFont systemFontOfSize:15];
         _lastMessageLabelColor = [UIColor grayColor];
-        _dateLabelFont = [UIFont systemFontOfSize:12];
+        _dateLabelFont = [UIFont systemFontOfSize:15];
         _dateLabelColor = [UIColor grayColor];
         _unreadMessageIndicatorBackgroundColor = LYRUIBlueColor();
         _cellBackgroundColor = [UIColor whiteColor];
@@ -81,7 +81,6 @@ NSString *const LYRUILocationMIMETypePlaceholderText = @"Attachment: Location";
         // Initialize Avatar Image
         self.conversationImageView = [[UIImageView alloc] init];
         self.conversationImageView.translatesAutoresizingMaskIntoConstraints = NO;
-        self.conversationImageView.backgroundColor = LYRUIGrayColor();
         self.conversationImageView.layer.masksToBounds = YES;
         self.conversationImageView.hidden = YES;
         [self.contentView addSubview:self.conversationImageView];
@@ -394,7 +393,7 @@ NSString *const LYRUILocationMIMETypePlaceholderText = @"Attachment: Location";
                                                                     toItem:self.conversationLabel
                                                                  attribute:NSLayoutAttributeBottom
                                                                 multiplier:1.0
-                                                                  constant:2]];
+                                                                  constant:0]];
     // Bottom
     [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.lastMessageLabel
                                                                  attribute:NSLayoutAttributeBottom
@@ -402,7 +401,7 @@ NSString *const LYRUILocationMIMETypePlaceholderText = @"Attachment: Location";
                                                                     toItem:self.contentView
                                                                  attribute:NSLayoutAttributeBottom
                                                                 multiplier:1.0
-                                                                  constant:-4]];
+                                                                  constant:-8]];
 }
 
 - (void)setUpUnreadMessageIndicatorLayoutConstraints

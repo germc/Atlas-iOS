@@ -69,7 +69,7 @@
     [[LYRUIMessageInputToolbar appearance] setBarTintColor:LFTBackgroundColor()];
     [[LYRUIMessageInputToolbar appearance] setTranslucent:NO];
     
-    [[UIButton appearanceWhenContainedIn:[LYRUIMessageInputToolbar class], nil] setTitleColor:LFTPinkColor() forState:UIControlStateNormal];
+    [[LYRUIAvatarImageView appearance] setBackgroundColor:[UIColor redColor]];
 }
 
 @end

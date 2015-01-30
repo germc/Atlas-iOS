@@ -42,7 +42,7 @@ NSString *const LYRUIConversationTableViewAccessibilityIdentifier = @"Conversati
         _cellClass = [LYRUIConversationTableViewCell class];
         _displaysConversationImage = NO;
         _allowsEditing = YES;
-        _rowHeight = 62.0f;
+        _rowHeight = 76.0f;
     }
     return self;
 }
