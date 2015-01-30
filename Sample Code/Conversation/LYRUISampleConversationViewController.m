@@ -9,6 +9,7 @@
 #import "LYRUISampleConversationViewController.h"
 #import "LYRClientMock.h"
 #import "LYRUIParticipant.h"
+#import "LYRUISampleUtilities.h"
 
 @interface LYRUISampleConversationViewController () <LYRUIConversationViewControllerDataSource>
 
@@ -29,6 +30,9 @@
     self.dateFormatter = [[NSDateFormatter alloc] init];
     self.dateFormatter.dateStyle = NSDateFormatterShortStyle;
     self.dateFormatter.timeStyle = NSDateFormatterShortStyle;
+    
+    [self.messageInputToolbar.rightAccessoryButton setTitleColor:LFTPinkColor() forState:UIControlStateNormal];
+    [self.messageInputToolbar.leftAccessoryButton setImage:[UIImage imageNamed:@"camera"] forState:UIControlStateNormal];
 }
 
 #pragma mark - LYRUIConversationViewControllerDataSource methods
@@ -40,7 +44,9 @@
 
 - (NSAttributedString *)conversationViewController:(LYRUIConversationViewController *)conversationViewController attributedStringForDisplayOfDate:(NSDate *)date
 {
-    return [[NSAttributedString alloc] initWithString:[self.dateFormatter stringFromDate:date]];
+    NSDictionary *attributes = @{NSFontAttributeName : LFTFontWithSize(14),
+                                 NSForegroundColorAttributeName : [UIColor grayColor] };
+    return [[NSAttributedString alloc] initWithString:[self.dateFormatter stringFromDate:date] attributes:attributes];
 }
 
 - (NSAttributedString *)conversationViewController:(LYRUIConversationViewController *)conversationViewController attributedStringForDisplayOfRecipientStatus:(NSDictionary *)recipientStatus
