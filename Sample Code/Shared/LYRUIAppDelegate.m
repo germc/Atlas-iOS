@@ -27,14 +27,13 @@
     LYRClientMock *layerClient = [LYRClientMock layerClientMockWithAuthenticatedUserID:mockUser.participantIdentifier];
     
     LYRUISampleConversationListViewController *controller = [LYRUISampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)layerClient];
-    controller.displaysConversationImage = YES;
     UINavigationController *rootViewController = [[UINavigationController alloc] initWithRootViewController:controller];
     
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     self.window.rootViewController = rootViewController;
     [self.window makeKeyAndVisible];
     
-    [ self configureUserInterface];
+    //[ self configureUserInterface];
     return YES;
 }
 
@@ -66,10 +65,10 @@
     [[LYRUIIncomingMessageCollectionViewCell appearance] setBubbleViewColor:LFTPinkColor()];
     [[LYRUIIncomingMessageCollectionViewCell appearance] setMessageTextColor:[UIColor whiteColor]];
     
-    [[LYRUIMessageInputToolbar appearance] setBarTintColor:LFTBackgroundColor()];
+    [[LYRUIMessageInputToolbar appearance] setBarTintColor:[UIColor redColor]];
     [[LYRUIMessageInputToolbar appearance] setTranslucent:NO];
     
-    [[LYRUIAvatarImageView appearance] setBackgroundColor:[UIColor redColor]];
+    [[LYRUIAvatarImageView appearance] setImageViewBackgroundColor:LYRUILightGrayColor()];
 }
 
 @end

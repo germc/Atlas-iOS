@@ -28,7 +28,7 @@
 
 - (void)updateWithConversationImage:(UIImage *)image
 {
-    [super updateWithConversationImage:image];
+    [super updateWithAvatarItem:nil];
 }
 
 @end
