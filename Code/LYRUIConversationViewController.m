@@ -164,7 +164,9 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
     [self updateAutoLayoutConstraints];
     [self updateCollectionViewInsets];
 
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidHide:) name:UIKeyboardDidHideNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
 
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textViewTextDidBeginEditing:) name:UITextViewTextDidBeginEditingNotification object:self.messageInputToolbar.textInputView];
 
@@ -187,6 +189,11 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 
     [self setConversationViewTitle];
     [self configureAvatarImageDisplay];
+
+    // Workaround for a modal dismissal causing the message toolbar to remain offscreen on iOS 8.
+    if (self.presentedViewController) {
+        [self.view becomeFirstResponder];
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -224,7 +231,7 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
     }
 
     // To get the toolbar to slide onscreen with the view controller's content, we have to make the view the first responder here. Even so, it will not animate on iOS 8 the first time.
-    if (!self.presentedViewController && !self.view.inputAccessoryView.superview) {
+    if (!self.presentedViewController && self.navigationController && !self.view.inputAccessoryView.superview) {
         [self.view becomeFirstResponder];
     }
 
@@ -234,8 +241,6 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 
         // This works around an issue where in some situations iOS 7.1 will crash with 'Auto Layout still required after sending -viewDidLayoutSubviews to the view controller.' apparently due to our usage of the collection view layout's content size when scrolling to the bottom in the above method call.
         [self.view layoutIfNeeded];
-
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
     }
 }
 
@@ -737,26 +742,13 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 
 - (void)keyboardWillShow:(NSNotification *)notification
 {
-    CGRect keyboardFrame = [notification.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
-    keyboardFrame = [self.view convertRect:keyboardFrame fromView:nil];
-    keyboardFrame = CGRectIntersection(self.view.bounds, keyboardFrame);
-    self.keyboardHeight = CGRectGetHeight(keyboardFrame);
-    [self.view layoutIfNeeded];
-    [UIView beginAnimations:nil context:NULL];
-    [UIView setAnimationDuration:[notification.userInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue]];
-    [UIView setAnimationCurve:[notification.userInfo[UIKeyboardAnimationCurveUserInfoKey] integerValue]];
-    [UIView setAnimationBeginsFromCurrentState:YES];
-    [self updateCollectionViewInsets];
-    self.typingIndicatorViewBottomConstraint.constant = -self.collectionView.scrollIndicatorInsets.bottom;
-    [self.view layoutIfNeeded];
-    [UIView commitAnimations];
+    [self configureWithKeyboardNotification:notification];
 }
 
-- (void)keyboardDidHide:(NSNotification *)notification
+- (void)keyboardWillHide:(NSNotification *)notification
 {
-    self.keyboardHeight = 0;
-    [self updateCollectionViewInsets];
-    [self.view setNeedsUpdateConstraints];
+    if (![self.navigationController.viewControllers containsObject:self]) return;
+    [self configureWithKeyboardNotification:notification];
 }
 
 - (void)textViewTextDidBeginEditing:(NSNotification *)notification
@@ -1091,6 +1083,35 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 }
 
 #pragma mark - Collection View Content Inset
+
+- (void)configureWithKeyboardNotification:(NSNotification *)notification
+{
+    CGRect keyboardBeginFrame = [notification.userInfo[UIKeyboardFrameBeginUserInfoKey] CGRectValue];
+    CGRect keyboardBeginFrameInView = [self.view convertRect:keyboardBeginFrame fromView:nil];
+    CGRect keyboardEndFrame = [notification.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
+    CGRect keyboardEndFrameInView = [self.view convertRect:keyboardEndFrame fromView:nil];
+    CGRect keyboardEndFrameIntersectingView = CGRectIntersection(self.view.bounds, keyboardEndFrameInView);
+    self.keyboardHeight = CGRectGetHeight(keyboardEndFrameIntersectingView);
+
+    // Workaround for collection view cell sizes changing/animating when view is first pushed onscreen on iOS 8.
+    if (CGRectEqualToRect(keyboardBeginFrameInView, keyboardEndFrameInView)) {
+        [UIView performWithoutAnimation:^{
+            [self updateCollectionViewInsets];
+            self.typingIndicatorViewBottomConstraint.constant = -self.collectionView.scrollIndicatorInsets.bottom;
+        }];
+        return;
+    }
+
+    [self.view layoutIfNeeded];
+    [UIView beginAnimations:nil context:NULL];
+    [UIView setAnimationDuration:[notification.userInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue]];
+    [UIView setAnimationCurve:[notification.userInfo[UIKeyboardAnimationCurveUserInfoKey] integerValue]];
+    [UIView setAnimationBeginsFromCurrentState:YES];
+    [self updateCollectionViewInsets];
+    self.typingIndicatorViewBottomConstraint.constant = -self.collectionView.scrollIndicatorInsets.bottom;
+    [self.view layoutIfNeeded];
+    [UIView commitAnimations];
+}
 
 - (void)updateCollectionViewInsets
 {
