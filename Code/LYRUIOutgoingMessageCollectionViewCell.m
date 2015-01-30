@@ -10,6 +10,14 @@
 
 @implementation LYRUIOutgoingMessageCollectionViewCell
 
++ (void)initialize
+{
+    LYRUIOutgoingMessageCollectionViewCell *proxy = [LYRUIOutgoingMessageCollectionViewCell appearance];
+    [proxy setBubbleViewColor:LYRUIBlueColor()];
+    [proxy setMessageTextColor:[UIColor whiteColor]];
+    [proxy setMessageLinkTextColor:[UIColor whiteColor]];
+}
+
 - (id)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];

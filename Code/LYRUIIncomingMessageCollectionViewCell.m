@@ -17,6 +17,13 @@
 
 @implementation LYRUIIncomingMessageCollectionViewCell
 
++ (void)initialize
+{
+    LYRUIIncomingMessageCollectionViewCell *proxy = [LYRUIIncomingMessageCollectionViewCell appearance];
+    [proxy setBubbleViewColor:LYRUILightGrayColor()];
+    [proxy setMessageLinkTextColor:LYRUIBlueColor()];
+}
+
 - (id)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
