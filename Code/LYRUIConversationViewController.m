@@ -100,6 +100,7 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 {
     [super viewDidLoad];
     
+    self.view.backgroundColor = [UIColor whiteColor];
     self.accessibilityLabel = LYRUIConversationViewControllerAccessibilityLabel;
     // Collection View Setup
     self.collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero
