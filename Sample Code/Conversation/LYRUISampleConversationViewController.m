@@ -30,10 +30,6 @@
     self.dateFormatter = [[NSDateFormatter alloc] init];
     self.dateFormatter.dateStyle = NSDateFormatterShortStyle;
     self.dateFormatter.timeStyle = NSDateFormatterShortStyle;
-    self.view.backgroundColor = LFTBackgroundColor();
-    
-    [self.messageInputToolbar.rightAccessoryButton setTitleColor:LFTPinkColor() forState:UIControlStateNormal];
-    [self.messageInputToolbar.leftAccessoryButton setImage:[UIImage imageNamed:@"camera"] forState:UIControlStateNormal];
 }
 
 #pragma mark - LYRUIConversationViewControllerDataSource methods

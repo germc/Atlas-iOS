@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <LayerKit/LayerKit.h>
 #import "LYRUIConversationTableViewCell.h"
+#import "LYRUIAvatarItem.h"
 
 @class LYRUIConversationListViewController;
 
@@ -27,8 +28,19 @@
 
 @optional
 
+/**
+ @abstract Informs the delegate that an `LYRConversation` was selected from the conversation list.
+ @param conversationListViewController The `LYRConversationListViewController` in which the selection occurred.
+ @param conversation The `LYRConversation` object that was selected.
+ */
 - (void)conversationListViewController:(LYRUIConversationListViewController *)conversationListViewController didDeleteConversation:(LYRConversation *)conversation deletionMode:(LYRDeletionMode)deletionMode;
 
+/**
+ @abstract Informs the delegate that an `LYRConversation` was selected from the conversation list.
+ @param conversationListViewController The `LYRConversationListViewController` in which the deletion attempt occurred.
+ @param conversation The `LYRConversation` object that failed deletion.
+ @param deletionMode The 
+ */
 - (void)conversationListViewController:(LYRUIConversationListViewController *)conversationListViewController didFailDeletingConversation:(LYRConversation *)conversation deletionMode:(LYRDeletionMode)deletionMode error:(NSError *)error;
 
 @end
@@ -55,7 +67,8 @@
  @param conversation The `LYRConversation` object.
  @return The conversation image to be displayed for a given conversation in the conversation list.
  */
-- (UIImage *)conversationListViewController:(LYRUIConversationListViewController *)conversationListViewController imageForConversation:(LYRConversation *)conversation;
+- (id<LYRUIAvatarItem>)conversationListViewController:(LYRUIConversationListViewController *)conversationListViewController avatarItemForConversation:(LYRConversation *)conversation;
+
 
 @end
 

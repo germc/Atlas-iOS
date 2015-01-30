@@ -142,7 +142,7 @@ NSString *const LYRUIConversationTableViewAccessibilityIdentifier = @"Conversati
     LYRQuery *query = [LYRQuery queryWithClass:[LYRConversation class]];
     query.predicate = [LYRPredicate predicateWithProperty:@"participants" operator:LYRPredicateOperatorIsIn value:self.layerClient.authenticatedUserID];
     query.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"lastMessage.receivedAt" ascending:NO]];
-    
+
     self.queryController = [self.layerClient queryControllerWithQuery:query];
     self.queryController.delegate = self;
     NSError *error;
@@ -182,9 +182,9 @@ NSString *const LYRUIConversationTableViewAccessibilityIdentifier = @"Conversati
     [conversationCell presentConversation:conversation];
     
     if (self.displaysConversationImage) {
-        if ([self.dataSource respondsToSelector:@selector(conversationListViewController:imageForConversation:)]) {
-            UIImage *conversationImage = [self.dataSource conversationListViewController:self imageForConversation:conversation];
-            [conversationCell updateWithConversationImage:conversationImage];
+        if ([self.dataSource respondsToSelector:@selector(conversationListViewController:avatarItemForConversation:)]) {
+            id <LYRUIAvatarItem> avatarItem = [self.dataSource conversationListViewController:self avatarItemForConversation:conversation];
+            [conversationCell updateWithAvatarItem:avatarItem];
         } else {
            @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Conversation View Delegate must return a conversation image" userInfo:nil]; 
         }

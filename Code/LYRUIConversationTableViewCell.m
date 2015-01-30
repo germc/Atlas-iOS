@@ -9,6 +9,7 @@
 #import "LYRUIConversationTableViewCell.h"
 #import "LYRUIConstants.h"
 #import "LYRUIMessagingUtilities.h"
+#import "LYRUIAvatarImageView.h"
 
 static BOOL LYRUIIsDateInToday(NSDate *date)
 {
@@ -47,7 +48,7 @@ static NSDateFormatter *LYRUIShortTimeFormatter()
 @property (nonatomic) NSLayoutConstraint *conversationLabelWithImageLeftConstraint;
 @property (nonatomic) NSLayoutConstraint *conversationLabelWithoutImageLeftConstraint;
 
-@property (nonatomic) UIImageView *conversationImageView;
+@property (nonatomic) LYRUIAvatarImageView *conversationImageView;
 @property (nonatomic) UILabel *conversationLabel;
 @property (nonatomic) UILabel *dateLabel;
 @property (nonatomic) UILabel *lastMessageLabel;
@@ -64,22 +65,26 @@ static CGFloat const LYRUIUnreadMessageCountLabelSize = 14.0f;
 NSString *const LYRUIImageMIMETypePlaceholderText = @"Attachment: Image";
 NSString *const LYRUILocationMIMETypePlaceholderText = @"Attachment: Location";
 
++ (void)initialize
+{
+    // UIAppearance Proxy Defaults
+    LYRUIConversationTableViewCell *proxy = [self appearance];
+    proxy.conversationLabelFont = [UIFont boldSystemFontOfSize:17];
+    proxy.conversationLabelColor = [UIColor blackColor];
+    proxy.lastMessageLabelFont = [UIFont systemFontOfSize:15];
+    proxy.lastMessageLabelColor = [UIColor grayColor];
+    proxy.dateLabelFont = [UIFont systemFontOfSize:15];
+    proxy.dateLabelColor = [UIColor grayColor];
+    proxy.unreadMessageIndicatorBackgroundColor = LYRUIBlueColor();
+    proxy.cellBackgroundColor = [UIColor whiteColor];
+}
+
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
-        // UIAppearance Proxy Defaults
-        _conversationLabelFont = [UIFont boldSystemFontOfSize:17];
-        _conversationLabelColor = [UIColor blackColor];
-        _lastMessageLabelFont = [UIFont systemFontOfSize:15];
-        _lastMessageLabelColor = [UIColor grayColor];
-        _dateLabelFont = [UIFont systemFontOfSize:15];
-        _dateLabelColor = [UIColor grayColor];
-        _unreadMessageIndicatorBackgroundColor = LYRUIBlueColor();
-        _cellBackgroundColor = [UIColor whiteColor];
-        
         // Initialize Avatar Image
-        self.conversationImageView = [[UIImageView alloc] init];
+        self.conversationImageView = [[LYRUIAvatarImageView alloc] init];
         self.conversationImageView.translatesAutoresizingMaskIntoConstraints = NO;
         self.conversationImageView.layer.masksToBounds = YES;
         self.conversationImageView.hidden = YES;
@@ -235,9 +240,14 @@ NSString *const LYRUILocationMIMETypePlaceholderText = @"Attachment: Location";
     [self updateUnreadMessageIndicatorWithConversation:conversation];
 }
 
-- (void)updateWithConversationImage:(UIImage *)image
+- (void)updateWithAvatarItem:(id<LYRUIAvatarItem>)avatarItem
 {
-    self.conversationImageView.image = image;
+    if ([avatarItem avatarItemImage]) {
+        self.conversationImageView.image = [avatarItem avatarItemImage];
+    } else if ([avatarItem avatarItemName]) {
+        [self.conversationImageView setInitialsForFullName:[avatarItem avatarItemName]];
+    }
+
     self.conversationImageView.hidden = NO;
     [self setNeedsUpdateConstraints];
 }

@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import <LayerKit/LayerKit.h>
+#import "LYRUIAvatarItem.h"
 
 /**
  @abstract The `LYRUIConversationPresenting` protocol must be adopted by any view component
@@ -31,6 +32,6 @@
  @abstract Gives the receiver an image to display representing the conversation image
  @param conversation The conversation image to display
  */
-- (void)updateWithConversationImage:(UIImage *)image;
+- (void)updateWithAvatarItem:(id<LYRUIAvatarItem>)avatarItem;
 
 @end
