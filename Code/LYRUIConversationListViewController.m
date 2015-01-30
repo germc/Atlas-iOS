@@ -139,6 +139,7 @@ NSString *const LYRUIConversationTableViewAccessibilityIdentifier = @"Conversati
 - (void)setupConversationDataSource
 {
     LYRQuery *query = [LYRQuery queryWithClass:[LYRConversation class]];
+    query.predicate = [LYRPredicate predicateWithProperty:@"participants" operator:LYRPredicateOperatorIsIn value:self.layerClient.authenticatedUserID];
     query.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"lastMessage.receivedAt" ascending:NO]];
     
     self.queryController = [self.layerClient queryControllerWithQuery:query];
