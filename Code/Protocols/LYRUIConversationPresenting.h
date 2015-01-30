@@ -29,7 +29,7 @@
 - (void)updateWithConversationLabel:(NSString *)conversationLabel;
 
 /**
- @abstract Gives the receiver an object confroming to the `LYRUIAvatarItem protocol.
+ @abstract Gives the receiver an object confroming to the `LYRUIAvatarItem` protocol.
  @param avatarItem The object conforming to `LYRUIAvatarItem` protocol. 
  @discussion  The `avatarItem` is used to display either an image or initials in the `LYRUIAvatarImage`
  property of an `LYRUIConversationTableViewCell`. The image takes precedence over initials if
