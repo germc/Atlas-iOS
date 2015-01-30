@@ -9,7 +9,6 @@
 #import "LYRUISampleConversationViewController.h"
 #import "LYRClientMock.h"
 #import "LYRUIParticipant.h"
-#import "LYRUISampleUtilities.h"
 
 @interface LYRUISampleConversationViewController () <LYRUIConversationViewControllerDataSource>
 
@@ -41,7 +40,7 @@
 
 - (NSAttributedString *)conversationViewController:(LYRUIConversationViewController *)conversationViewController attributedStringForDisplayOfDate:(NSDate *)date
 {
-    NSDictionary *attributes = @{NSFontAttributeName : LFTFontWithSize(14),
+    NSDictionary *attributes = @{NSFontAttributeName : [UIFont systemFontOfSize:14],
                                  NSForegroundColorAttributeName : [UIColor grayColor] };
     return [[NSAttributedString alloc] initWithString:[self.dateFormatter stringFromDate:date] attributes:attributes];
 }

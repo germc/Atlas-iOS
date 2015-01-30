@@ -30,7 +30,6 @@
         _messageLinkTextColor = [UIColor blueColor];
         _bubbleViewColor = [UIColor grayColor];
         _bubbleViewCornerRadius = 12;
-        self.backgroundColor = [UIColor clearColor];
         
         _bubbleView = [[LYRUIMessageBubbleView alloc] init];
         _bubbleView.translatesAutoresizingMaskIntoConstraints = NO;

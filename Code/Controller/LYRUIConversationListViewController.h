@@ -29,9 +29,10 @@
 @optional
 
 /**
- @abstract Informs the delegate that an `LYRConversation` was selected from the conversation list.
- @param conversationListViewController The `LYRConversationListViewController` in which the selection occurred.
- @param conversation The `LYRConversation` object that was selected.
+ @abstract Informs the delegate that an `LYRConversation` was deleted.
+ @param conversationListViewController The `LYRConversationListViewController` in which the deletion occurred.
+ @param conversation The `LYRConversation` object that was deleted.
+ @param deletionMode The `LYRDeletionMode` with which the conversation was deleted.
  */
 - (void)conversationListViewController:(LYRUIConversationListViewController *)conversationListViewController didDeleteConversation:(LYRConversation *)conversation deletionMode:(LYRDeletionMode)deletionMode;
 
@@ -39,7 +40,7 @@
  @abstract Informs the delegate that an `LYRConversation` was selected from the conversation list.
  @param conversationListViewController The `LYRConversationListViewController` in which the deletion attempt occurred.
  @param conversation The `LYRConversation` object that failed deletion.
- @param deletionMode The 
+ @param deletionMode The `LYRDeletionMode` with which the conversation delete attempt was made.
  */
 - (void)conversationListViewController:(LYRUIConversationListViewController *)conversationListViewController didFailDeletingConversation:(LYRConversation *)conversation deletionMode:(LYRDeletionMode)deletionMode error:(NSError *)error;
 
