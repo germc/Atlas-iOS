@@ -43,11 +43,11 @@ static CGFloat const LYRUIButtonHeight = 28;
         self.accessibilityLabel = LYRUIMessageInputToolbarAccessibilityLabel;
         self.translatesAutoresizingMaskIntoConstraints = NO;
         self.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-        self.backgroundColor =  LYRUILightGrayColor();
         self.canEnableSendButton = YES;
 
         self.leftAccessoryButton = [[UIButton alloc] init];
         self.leftAccessoryButton.accessibilityLabel = @"Camera Button";
+        self.leftAccessoryButton.contentMode = UIViewContentModeScaleAspectFit;
         [self.leftAccessoryButton setImage:[UIImage imageNamed:@"LayerUIKitResource.bundle/camera"] forState:UIControlStateNormal];
         [self.leftAccessoryButton addTarget:self action:@selector(leftAccessoryButtonTapped) forControlEvents:UIControlEventTouchUpInside];
         [self addSubview:self.leftAccessoryButton];

@@ -36,7 +36,7 @@ NSString *const LYRUIConversationTableViewAccessibilityIdentifier = @"Conversati
 
 - (id)initConversationlistViewControllerWithLayerClient:(LYRClient *)layerClient
 {
-    self = [super initWithStyle:UITableViewStylePlain];
+    self = [super initWithStyle:UITableViewStyleGrouped];
     if (self)  {
         _layerClient = layerClient;
         _cellClass = [LYRUIConversationTableViewCell class];
@@ -62,6 +62,7 @@ NSString *const LYRUIConversationTableViewAccessibilityIdentifier = @"Conversati
     self.accessibilityLabel = LYRUIConversationListViewControllerTitle;
     self.tableView.accessibilityLabel = LYRUIConversationTableViewAccessibilityLabel;
     self.tableView.accessibilityIdentifier = LYRUIConversationTableViewAccessibilityIdentifier;
+    self.tableView.contentInset = UIEdgeInsetsMake(-1.0f, 0.0f, 0.0f, 0.0);
     [self setupConversationDataSource];
 }
 
@@ -149,6 +150,11 @@ NSString *const LYRUIConversationTableViewAccessibilityIdentifier = @"Conversati
 }
 
 #pragma mark - UITableViewDataSource
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    return 1.0f;
+}
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {

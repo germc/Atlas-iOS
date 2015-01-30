@@ -108,7 +108,6 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
     self.collectionView.translatesAutoresizingMaskIntoConstraints = NO;
     self.collectionView.delegate = self;
     self.collectionView.dataSource = self;
-    self.collectionView.backgroundColor = [UIColor whiteColor];
     self.collectionView.alwaysBounceVertical = YES;
     self.collectionView.bounces = YES;
     self.collectionView.accessibilityIdentifier = LYRUIConversationCollectionViewAccessibilityIdentifier;
