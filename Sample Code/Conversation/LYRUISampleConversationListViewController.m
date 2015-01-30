@@ -10,7 +10,6 @@
 #import "LYRUISampleConversationViewController.h"
 #import "LYRClientMock.h"
 #import "LYRUIParticipant.h"
-#import "LYRUISampleUtilities.h"
 #import "LYRUIConversationAvatarItem.h"
 
 @interface LYRUISampleConversationListViewController () <LYRUIConversationListViewControllerDelegate, LYRUIConversationListViewControllerDataSource>

@@ -12,7 +12,6 @@
 
 + (void)initialize
 {
-    [super initialize];
     LYRUIOutgoingMessageCollectionViewCell *proxy = [self appearance];
     proxy.bubbleViewColor = LYRUIBlueColor();
     proxy.messageTextColor = [UIColor whiteColor];
