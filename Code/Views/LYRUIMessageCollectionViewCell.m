@@ -32,6 +32,7 @@
         _bubbleViewCornerRadius = 12;
         
         _bubbleView = [[LYRUIMessageBubbleView alloc] init];
+        _bubbleView.translatesAutoresizingMaskIntoConstraints = NO;
         _bubbleView.layer.cornerRadius = _bubbleViewCornerRadius;
         _bubbleView.backgroundColor = _bubbleViewColor;
         [self.contentView addSubview:_bubbleView];
