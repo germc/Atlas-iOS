@@ -33,10 +33,10 @@ NSString *const LYRUIConversationTableViewAccessibilityIdentifier = @"Conversati
     NSAssert(layerClient, @"layerClient cannot be nil");
     return [[self alloc] initConversationlistViewControllerWithLayerClient:layerClient];
 }
-
+    
 - (id)initConversationlistViewControllerWithLayerClient:(LYRClient *)layerClient
 {
-    self = [super initWithStyle:UITableViewStyleGrouped];
+    self = [super initWithStyle:UITableViewStylePlain];
     if (self)  {
         _layerClient = layerClient;
         _cellClass = [LYRUIConversationTableViewCell class];
@@ -62,7 +62,7 @@ NSString *const LYRUIConversationTableViewAccessibilityIdentifier = @"Conversati
     self.accessibilityLabel = LYRUIConversationListViewControllerTitle;
     self.tableView.accessibilityLabel = LYRUIConversationTableViewAccessibilityLabel;
     self.tableView.accessibilityIdentifier = LYRUIConversationTableViewAccessibilityIdentifier;
-    self.tableView.contentInset = UIEdgeInsetsMake(-1.0f, 0.0f, 0.0f, 0.0);
+    self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
     [self setupConversationDataSource];
 }
 
@@ -151,11 +151,6 @@ NSString *const LYRUIConversationTableViewAccessibilityIdentifier = @"Conversati
 
 #pragma mark - UITableViewDataSource
 
-- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
-{
-    return 1.0f;
-}
-
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     return [self.queryController numberOfObjectsInSection:section];
@@ -182,7 +177,7 @@ NSString *const LYRUIConversationTableViewAccessibilityIdentifier = @"Conversati
     
     if (self.displaysConversationImage) {
         if ([self.dataSource respondsToSelector:@selector(conversationListViewController:avatarItemForConversation:)]) {
-            id <LYRUIAvatarItem> avatarItem = [self.dataSource conversationListViewController:self avatarItemForConversation:conversation];
+            id<LYRUIAvatarItem> avatarItem = [self.dataSource conversationListViewController:self avatarItemForConversation:conversation];
             [conversationCell updateWithAvatarItem:avatarItem];
         } else {
            @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Conversation View Delegate must return an object conforming to the `LYRUIAvatarItem` protocol." userInfo:nil];
