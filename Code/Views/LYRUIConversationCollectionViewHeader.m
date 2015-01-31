@@ -18,6 +18,8 @@
 
 @implementation LYRUIConversationCollectionViewHeader
 
+NSString *const LYRUIMessageCellHeaderIdentifier = @"LYRUIMessageCellHeaderIdentifier";
+
 - (id)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];

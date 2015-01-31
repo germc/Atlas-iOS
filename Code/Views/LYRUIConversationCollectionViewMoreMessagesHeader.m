@@ -16,6 +16,8 @@
 
 @implementation LYRUIConversationCollectionViewMoreMessagesHeader
 
+NSString *const LYRUIMoreMessagesHeaderIdentifier = @"LYRUIMoreMessagesHeaderIdentifier";
+
 - (id)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];

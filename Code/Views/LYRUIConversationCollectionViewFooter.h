@@ -10,6 +10,8 @@
 
 @class LYRMessage;
 
+extern NSString *const LYRUIMessageCellFooterIdentifier;
+
 /**
  @abstract The `LYRUIConversationCollectionViewFooter` class provides support for displaying
  read receipts below message cells.
