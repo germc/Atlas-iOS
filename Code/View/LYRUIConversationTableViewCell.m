@@ -244,8 +244,8 @@ NSString *const LYRUILocationMIMETypePlaceholderText = @"Attachment: Location";
 {
     if ([avatarItem avatarItemImage]) {
         self.conversationImageView.image = [avatarItem avatarItemImage];
-    } else if ([avatarItem avatarItemName]) {
-        [self.conversationImageView setInitialsForFullName:[avatarItem avatarItemName]];
+    } else if ([avatarItem avatarItemFullName]) {
+        [self.conversationImageView setInitialsForFullName:[avatarItem avatarItemFullName]];
     }
 
     self.conversationImageView.hidden = NO;

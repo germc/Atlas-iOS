@@ -8,7 +8,7 @@
 
 ### Public API Changes
 
-* Changed  `conversationListViewController: imageForConversation:` to `conversationListViewController:avatarItemForConversation:`
+* Changed `conversationListViewController:imageForConversation:` to `conversationListViewController:avatarItemForConversation:`.
 * Added `LYRUIAvatarItem` protocol.
 * Added `imageViewBackgroundColor` property to `LYRUIAvatarImageView`.
 * Added `conversationViewController:messagesForContentParts:` to `LYRUIConversationViewController`.

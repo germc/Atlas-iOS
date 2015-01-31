@@ -37,10 +37,11 @@
 - (void)conversationListViewController:(LYRUIConversationListViewController *)conversationListViewController didDeleteConversation:(LYRConversation *)conversation deletionMode:(LYRDeletionMode)deletionMode;
 
 /**
- @abstract Informs the delegate that an an attempt to delete an `LYRConversation` failed.
+ @abstract Informs the delegate that an attempt to delete an `LYRConversation` failed.
  @param conversationListViewController The `LYRConversationListViewController` in which the deletion attempt occurred.
  @param conversation The `LYRConversation` object that failed deletion.
  @param deletionMode The `LYRDeletionMode` with which the conversation delete attempt was made.
+ @param error an `NSError` object describing the deletion failure.
  */
 - (void)conversationListViewController:(LYRUIConversationListViewController *)conversationListViewController didFailDeletingConversation:(LYRConversation *)conversation deletionMode:(LYRDeletionMode)deletionMode error:(NSError *)error;
 

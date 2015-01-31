@@ -1,6 +1,6 @@
 //
-//  LYRUIAvatarItem.m
-//  
+//  LYRUIAvatarItem.h
+//  LayerUIKit 
 //
 //  Created by Kevin Coleman on 1/30/15.
 //
@@ -12,7 +12,7 @@
 
 @optional
 
-- (NSString *)avatarItemName;
+- (NSString *)avatarItemFullName;
 
 - (UIImage *)avatarItemImage;
 
