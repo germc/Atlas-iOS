@@ -90,38 +90,21 @@ NSString *const LYRUIUserDidTapLinkNotification = @"LYRUIUserDidTapLinkNotificat
 
 - (void)updateWithAttributedText:(NSAttributedString *)text
 {
-    self.bubbleImageView.hidden = YES;
-    self.bubbleViewLabel.hidden = NO;
-    
     self.bubbleViewLabel.attributedText = text;
-    self.bubbleImageView.image = nil;
-    self.locationShown = kCLLocationCoordinate2DInvalid;
-    [self.snapshotter cancel];
-    
     if (self.imageWidthConstraint) [self removeConstraint:self.imageWidthConstraint];
-    [self setNeedsUpdateConstraints];
+    [self setContentType:LYRUIBubbleViewContentTypeText];
 }
 
 - (void)updateWithImage:(UIImage *)image width:(CGFloat)width
 {
-    self.bubbleViewLabel.hidden = YES;
-    self.bubbleImageView.hidden = NO;
     self.bubbleImageView.image = image;
-    self.bubbleImageView.contentMode = UIViewContentModeScaleAspectFill;
-    self.locationShown = kCLLocationCoordinate2DInvalid;
-    self.bubbleViewLabel.text = nil;
-    [self.snapshotter cancel];
-    
     self.imageWidthConstraint.constant = width;
-    [self setNeedsUpdateConstraints];
+    [self setContentType:LYRUIBubbleViewContentTypeImage];
 }
 
 - (void)updateWithLocation:(CLLocationCoordinate2D)location
 {
-    self.bubbleViewLabel.hidden = YES;
-    self.bubbleViewLabel.text = nil;
-    [self.snapshotter cancel];
-    
+
     self.imageWidthConstraint.constant = LYRUIMaxCellWidth();
     [self setNeedsUpdateConstraints];
     
@@ -205,6 +188,35 @@ NSString *const LYRUIUserDidTapLinkNotification = @"LYRUIUserDidTapLinkNotificat
         [menuController setTargetRect:CGRectMake(self.frame.size.width / 2, 0.0f, 0.0f, 0.0f) inView:self];
         [menuController setMenuVisible:YES animated:YES];
     }
+}
+
+- (void)setBubbleViewContentType:(LYRUIBubbleViewContentType)contentType
+{
+    switch (contentType) {
+        case LYRUIBubbleViewContentTypeText:
+            self.bubbleImageView.hidden = YES;
+            self.bubbleViewLabel.hidden = NO;
+            self.bubbleImageView.image = nil;
+            self.locationShown = kCLLocationCoordinate2DInvalid;
+            [self.snapshotter cancel];
+            
+            break;
+        case LYRUIBubbleViewContentTypeImage:
+            self.bubbleViewLabel.hidden = YES;
+            self.bubbleImageView.hidden = NO;
+            self.locationShown = kCLLocationCoordinate2DInvalid;
+            self.bubbleViewLabel.text = nil;
+            [self.snapshotter cancel];
+            break;
+        case LYRUIBubbleViewContentTypeLocation:
+            self.bubbleViewLabel.hidden = YES;
+            self.bubbleViewLabel.text = nil;
+            [self.snapshotter cancel];
+            break;
+        default:
+            break;
+    }
+    [self setNeedsUpdateConstraints];
 }
 
 - (void)copyItem
