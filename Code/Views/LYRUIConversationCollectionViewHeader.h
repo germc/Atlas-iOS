@@ -27,4 +27,5 @@
  */
 - (void)updateWithAttributedStringForParticipantName:(NSAttributedString *)participantName;
 
+
 @end
