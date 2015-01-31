@@ -21,9 +21,10 @@
 @interface LYRUIConversationViewController () <UICollectionViewDataSource, UICollectionViewDelegate, LYRUIMessageInputToolbarDelegate, UIActionSheetDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIGestureRecognizerDelegate, LYRQueryControllerDelegate>
 
 @property (nonatomic) LYRUIConversationCollectionView *collectionView;
-@property (nonatomic) LYRUITypingIndicatorView *typingIndicatorView;
-@property (nonatomic) LYRUIConversationView *view;
 @property (nonatomic) LYRQueryController *queryController;
+@property (nonatomic) LYRUIConversationView *view;
+@property (nonatomic) UILabel *typingIndicatorLabel;
+@property (nonatomic) LYRUITypingIndicatorView *typingIndicatorView;
 @property (nonatomic) CGFloat keyboardHeight;
 @property (nonatomic) BOOL shouldDisplayAvatarImage;
 @property (nonatomic) NSLayoutConstraint *typingIndicatorViewBottomConstraint;
@@ -102,9 +103,6 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
     
     // Set the typing indicator label
     self.typingIndicatorView = [[LYRUITypingIndicatorView alloc] init];
-    self.typingIndicatorView.translatesAutoresizingMaskIntoConstraints = NO;
-    // Make dragging on the typing indicator scroll the scroll view / keyboard.
-    self.typingIndicatorView.userInteractionEnabled = NO;
     self.typingIndicatorView.alpha = 0.0;
     [self.view addSubview:self.typingIndicatorView];
     [self configureTypingIndicatorLayoutConstraints];
@@ -117,7 +115,8 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
         [self.addressBarController didMoveToParentViewController:self];
         [self configureAddressBarLayoutConstraints];
     }
-    [self registerForNotifications];
+
+    [self registerControllerForNotifications];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -159,6 +158,7 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 
     if (self.addressBarController) {
         [self configureScrollIndicatorInset];
+
     }
     // To get the toolbar to slide onscreen with the view controller's content, we have to make the view the
     // first responder here. Even so, it will not animate on iOS 8 the first time.
