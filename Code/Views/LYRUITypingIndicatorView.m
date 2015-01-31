@@ -22,6 +22,10 @@
 {
     self = [super init];
     if (self) {
+        // Make dragging on the typing indicator scroll the scroll view / keyboard.
+        self.userInteractionEnabled = NO;
+        self.translatesAutoresizingMaskIntoConstraints = NO;
+        
         _backgroundGradientLayer = [CAGradientLayer layer];
         _backgroundGradientLayer.frame = self.bounds;
         _backgroundGradientLayer.startPoint = CGPointZero;

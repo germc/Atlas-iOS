@@ -20,6 +20,8 @@
 
 @implementation LYRUIConversationCollectionViewFooter
 
+NSString *const LYRUIMessageCellFooterIdentifier = @"LYUIMessageCellFooterIdentifier";
+
 - (id)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];

@@ -8,6 +8,8 @@
 
 #import "LYRUIMessageCollectionViewCell.h"
 
+extern NSString *const LYRUIIncomingMessageCellIdentifier;
+
 /**
  @abstract The `LYRUIIncomingMessageCollectionViewCell` class provides a lightweight, customizable collection
  view cell for presenting incoming Layer message objects.

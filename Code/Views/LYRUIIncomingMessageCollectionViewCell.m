@@ -17,6 +17,8 @@
 
 @implementation LYRUIIncomingMessageCollectionViewCell
 
+NSString *const LYRUIIncomingMessageCellIdentifier = @"LYRUIIncomingMessageCellIdentifier";
+
 + (void)initialize
 {
     LYRUIIncomingMessageCollectionViewCell *proxy = [self appearance];
