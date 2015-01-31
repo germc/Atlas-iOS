@@ -432,7 +432,6 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     LYRMessage *message = [self messageAtCollectionViewIndexPath:indexPath];
-    
     NSString *reuseIdentifier;
     if ([self.dataSource respondsToSelector:@selector(conversationViewController:reuseIdentifierForMessage:)]) {
         reuseIdentifier = [self.dataSource conversationViewController:self reuseIdentifierForMessage:message];
@@ -446,7 +445,6 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
             reuseIdentifier = LYRUIIncomingMessageCellIdentifier;
         }
     }
-    
     UICollectionViewCell<LYRUIMessagePresenting> *cell =  [self.collectionView dequeueReusableCellWithReuseIdentifier:reuseIdentifier forIndexPath:indexPath];
     [self configureCell:cell forMessage:message indexPath:indexPath];
     return cell;
@@ -520,7 +518,10 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section
 {
     if (section == LYRUIMoreMessagesSection) {
-        return self.showingMoreMessagesIndicator ? CGSizeMake(0, 30) : CGSizeZero;
+        if (self.showingMoreMessagesIndicator) {
+            return CGSizeMake(0, 30);
+        }
+        return CGSizeZero;
     }
 
     CGFloat height = 0;
