@@ -52,11 +52,6 @@
     [super shouldDisplayAvatarImage:shouldDisplayAvatarImage];
 }
 
-- (void)isGroupConversation:(BOOL)isGroupConversation
-{
-    [super isGroupConversation:isGroupConversation];
-}
-
 @end
 
 @implementation LYRUITestParticipantCell

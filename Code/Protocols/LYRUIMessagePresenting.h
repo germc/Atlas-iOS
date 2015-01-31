@@ -31,9 +31,5 @@
  */
 - (void)shouldDisplayAvatarImage:(BOOL)shouldDisplayAvatarImage;
 
-/**
- @abstract Tells the receiver if the cell is in a group conversation.
- */
-- (void)isGroupConversation:(BOOL)isGroupConversation;
 
 @end

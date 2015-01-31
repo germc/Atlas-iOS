@@ -48,7 +48,8 @@ NSString *const LYRUIUserDidTapLinkNotification = @"LYRUIUserDidTapLinkNotificat
     if (self) {
         _locationShown = kCLLocationCoordinate2DInvalid;
         self.clipsToBounds = YES;
-
+        self.translatesAutoresizingMaskIntoConstraints = NO;
+        
         self.bubbleViewLabel = [[UILabel alloc] init];
         self.bubbleViewLabel.numberOfLines = 0;
         self.bubbleViewLabel.userInteractionEnabled = YES;
