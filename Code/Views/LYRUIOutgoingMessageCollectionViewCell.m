@@ -10,6 +10,8 @@
 
 @implementation LYRUIOutgoingMessageCollectionViewCell
 
+NSString *const LYRUIOutgoingMessageCellIdentifier = @"LYRUIOutgoingMessageCellIdentifier";
+
 + (void)initialize
 {
     LYRUIOutgoingMessageCollectionViewCell *proxy = [self appearance];
@@ -22,6 +24,7 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
+        
         self.avatarImageView.hidden = YES;
         [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleView
                                                                      attribute:NSLayoutAttributeRight

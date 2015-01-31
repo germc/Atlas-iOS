@@ -8,6 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
+extern NSString *const LYRUIMessageCellHeaderIdentifier;
+
 /**
  @abstract The `LYRUIConversationCollectionViewHeader` class provides support for displaying
  dates and sender names above message cells.

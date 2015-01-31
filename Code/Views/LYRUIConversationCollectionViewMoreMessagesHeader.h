@@ -8,6 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
+extern NSString *const LYRUIMoreMessagesHeaderIdentifier;
+
 @interface LYRUIConversationCollectionViewMoreMessagesHeader : UICollectionReusableView
 
 @end
