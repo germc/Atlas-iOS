@@ -518,9 +518,7 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section
 {
     if (section == LYRUIMoreMessagesSection) {
-        if (self.showingMoreMessagesIndicator) {
-            return CGSizeMake(0, 30);
-        }
+        if (self.showingMoreMessagesIndicator) return CGSizeMake(0, 30);
         return CGSizeZero;
     }
 
