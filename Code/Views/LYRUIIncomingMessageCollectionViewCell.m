@@ -10,8 +10,8 @@
 
 @interface LYRUIIncomingMessageCollectionViewCell ()
 
-@property (nonatomic) NSLayoutConstraint *bubbleWithAvatarLeftConstraint;
-@property (nonatomic) NSLayoutConstraint *bubbleWithoutAvatarLeftConstraint;
+@property (nonatomic) NSLayoutConstraint *bubbleViewLeftConstraint;
+@property (nonatomic) NSLayoutConstraint *avatarImageLeftConstraint;
 
 @end
 
@@ -28,55 +28,19 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-
-        [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.avatarImageView
-                                                                     attribute:NSLayoutAttributeLeft
-                                                                     relatedBy:NSLayoutRelationEqual
-                                                                        toItem:self.contentView
-                                                                     attribute:NSLayoutAttributeLeft
-                                                                    multiplier:1.0
-                                                                      constant:10]];
-
-        [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.avatarImageView
-                                                                     attribute:NSLayoutAttributeBottom
-                                                                     relatedBy:NSLayoutRelationEqual
-                                                                        toItem:self.contentView
-                                                                     attribute:NSLayoutAttributeBottom
-                                                                    multiplier:1.0
-                                                                      constant:0]];
-
-        self.bubbleWithAvatarLeftConstraint = [NSLayoutConstraint constraintWithItem:self.bubbleView
-                                                                           attribute:NSLayoutAttributeLeft
-                                                                           relatedBy:NSLayoutRelationEqual
-                                                                              toItem:self.avatarImageView
-                                                                           attribute:NSLayoutAttributeRight
-                                                                          multiplier:1.0
-                                                                            constant:10];
-        [self.contentView addConstraint:self.bubbleWithAvatarLeftConstraint];
-
-        self.bubbleWithoutAvatarLeftConstraint = [NSLayoutConstraint constraintWithItem:self.bubbleView
-                                                                              attribute:NSLayoutAttributeLeft
-                                                                              relatedBy:NSLayoutRelationEqual
-                                                                                 toItem:self.avatarImageView
-                                                                              attribute:NSLayoutAttributeLeft
-                                                                             multiplier:1.0
-                                                                               constant:0];
+        [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.avatarImageView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0]];
+        self.avatarImageLeftConstraint = [NSLayoutConstraint constraintWithItem:self.avatarImageView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0];
+        [self.contentView addConstraint:self.avatarImageLeftConstraint];
+        self.bubbleViewLeftConstraint = [NSLayoutConstraint constraintWithItem:self.bubbleView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.avatarImageView attribute:NSLayoutAttributeRight multiplier:1.0 constant:0];
+        [self.contentView addConstraint:self.bubbleViewLeftConstraint];
     }
     return self;
 }
 
 - (void)shouldDisplayAvatarImage:(BOOL)shouldDisplayAvatarImage
 {
-    NSArray *constraints = [self.contentView constraints];
-    if (shouldDisplayAvatarImage) {
-        if ([constraints containsObject:self.bubbleWithAvatarLeftConstraint]) return;
-        [self.contentView removeConstraint:self.bubbleWithoutAvatarLeftConstraint];
-        [self.contentView addConstraint:self.bubbleWithAvatarLeftConstraint];
-    } else {
-        if ([constraints containsObject:self.bubbleWithoutAvatarLeftConstraint]) return;
-        [self.contentView removeConstraint:self.bubbleWithAvatarLeftConstraint];
-        [self.contentView addConstraint:self.bubbleWithoutAvatarLeftConstraint];
-    }
+    self.bubbleViewLeftConstraint.constant = shouldDisplayAvatarImage ? 0 : 0;
+    self.avatarImageLeftConstraint.constant = shouldDisplayAvatarImage ? 0 : 0;
     [self setNeedsUpdateConstraints];
 }
 
@@ -92,6 +56,11 @@
     } else {
         self.avatarImageView.hidden = YES;
     }
+}
+
+- (void)layoutSubviews
+{
+    
 }
 
 @end

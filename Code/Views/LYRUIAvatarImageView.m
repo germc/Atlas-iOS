@@ -38,7 +38,8 @@ NSString *const LYRUIAvatarImageViewAccessibilityLabel = @"LYRUIAvatarImageViewA
         self.clipsToBounds = YES;
         self.layer.cornerRadius = _avatarImageViewDiameter / 2;
         self.contentMode = UIViewContentModeScaleAspectFill;
-
+        self.translatesAutoresizingMaskIntoConstraints = NO;
+        
         _initialsLabel = [[UILabel alloc] init];
         _initialsLabel.translatesAutoresizingMaskIntoConstraints = NO;
         _initialsLabel.textAlignment = NSTextAlignmentCenter;

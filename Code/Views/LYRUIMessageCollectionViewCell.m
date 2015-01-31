@@ -32,80 +32,68 @@
         _bubbleViewCornerRadius = 12;
         
         _bubbleView = [[LYRUIMessageBubbleView alloc] init];
-        _bubbleView.translatesAutoresizingMaskIntoConstraints = NO;
         _bubbleView.layer.cornerRadius = _bubbleViewCornerRadius;
         _bubbleView.backgroundColor = _bubbleViewColor;
         [self.contentView addSubview:_bubbleView];
         
         _avatarImageView = [[LYRUIAvatarImageView alloc] init];
-        _avatarImageView.translatesAutoresizingMaskIntoConstraints = NO;
         [self.contentView addSubview:_avatarImageView];
 
-        [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleView
-                                                                     attribute:NSLayoutAttributeHeight
-                                                                     relatedBy:NSLayoutRelationEqual
-                                                                        toItem:self.contentView
-                                                                     attribute:NSLayoutAttributeHeight
-                                                                    multiplier:1.0
-                                                                      constant:0]];
-
-        [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleView
-                                                                     attribute:NSLayoutAttributeTop
-                                                                     relatedBy:NSLayoutRelationEqual
-                                                                        toItem:self.contentView
-                                                                     attribute:NSLayoutAttributeTop
-                                                                    multiplier:1.0
-                                                                      constant:0]];
-
-        CGFloat maxBubbleWidth = LYRUIMaxCellWidth() + LYRUIMessageBubbleLabelHorizontalPadding * 2;
-        [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleView
-                                                                     attribute:NSLayoutAttributeWidth
-                                                                     relatedBy:NSLayoutRelationLessThanOrEqual
-                                                                        toItem:nil
-                                                                     attribute:NSLayoutAttributeNotAnAttribute
-                                                                    multiplier:1.0
-                                                                      constant:maxBubbleWidth]];
+        [self configureLayoutConstraints];
     }
     return self;
 }
 
-- (void)updateWithParticipant:(id<LYRUIParticipant>)participant
-{
-
-}
-
-- (void)shouldDisplayAvatarImage:(BOOL)shouldDisplayAvatarImage
-{
-
-}
-
-- (void)isGroupConversation:(BOOL)isGroupConversation
-{
-
-}
-
 - (void)presentMessage:(LYRMessage *)message
 {
-    _message = message;
     LYRMessagePart *messagePart = message.parts.firstObject;
-    if (!messagePart.data.length) {
-        [self.bubbleView displayDownloadActivityIndicator];
-        return;
-    }
-    if ([self hasTextContent]) {
-        [self configureTextContent];
-    } else if ([messagePart.MIMEType isEqualToString:LYRUIMIMETypeImageJPEG] || [messagePart.MIMEType isEqualToString:LYRUIMIMETypeImagePNG]) {
-        UIImage *image = [UIImage imageWithData:messagePart.data];
-        [self.bubbleView updateWithImage:image];
-        self.accessibilityLabel = [NSString stringWithFormat:@"Message: Photo"];
+    if ([messagePart.MIMEType isEqualToString:LYRUIMIMETypeTextPlain]) {
+        [self configureBubbleViewTextWithMessagePart:messagePart];
+    } else if ([messagePart.MIMEType isEqualToString:LYRUIMIMETypeImageJPEG]) {
+        [self configureBubbleViewImageWithMessagePart:messagePart];
+    }else if ([messagePart.MIMEType isEqualToString:LYRUIMIMETypeImagePNG]) {
+        [self configureBubbleViewImageWithMessagePart:messagePart];
     } else if ([messagePart.MIMEType isEqualToString:LYRUIMIMETypeLocation]) {
-        NSDictionary *dictionary = [NSJSONSerialization JSONObjectWithData:messagePart.data
-                                                                   options:NSJSONReadingAllowFragments
-                                                                     error:nil];
-        double lat = [dictionary[@"lat"] doubleValue];
-        double lon = [dictionary[@"lon"] doubleValue];
-        [self.bubbleView updateWithLocation:CLLocationCoordinate2DMake(lat, lon)];
+        [self configureBubbleViewLocationWithMessagePart:messagePart];
     }
+    _message = message;
+}
+
+- (void)configureBubbleViewTextWithMessagePart:(LYRMessagePart *)messagePart
+{
+    NSString *text = [[NSString alloc] initWithData:messagePart.data encoding:NSUTF8StringEncoding];
+    [self.bubbleView updateWithAttributedText:[self attributedStringForText:text]];
+    self.accessibilityLabel = [NSString stringWithFormat:@"Message: %@", text];
+}
+
+- (void)configureBubbleViewImageWithMessagePart:(LYRMessagePart *)messagePart
+{
+    UIImage *image = [UIImage imageWithData:messagePart.data];
+    [self.bubbleView updateWithImage:image];
+    self.accessibilityLabel = [NSString stringWithFormat:@"Message: Photo"];
+}
+
+- (void)configureBubbleViewLocationWithMessagePart:(LYRMessagePart *)messagePart
+{
+    NSDictionary *dictionary = [NSJSONSerialization JSONObjectWithData:messagePart.data
+                                                               options:NSJSONReadingAllowFragments
+                                                                 error:nil];
+    double lat = [dictionary[@"lat"] doubleValue];
+    double lon = [dictionary[@"lon"] doubleValue];
+    [self.bubbleView updateWithLocation:CLLocationCoordinate2DMake(lat, lon)];
+}
+
+- (NSAttributedString *)attributedStringForText:(NSString *)text
+{
+    NSDictionary *attributes = @{NSFontAttributeName : self.messageTextFont, NSForegroundColorAttributeName : self.messageTextColor};
+    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:text attributes:attributes];
+    NSArray *linkResults = LYRUILinkResultsForText(text);
+    for (NSTextCheckingResult *result in linkResults) {
+        NSDictionary *linkAttributes = @{NSForegroundColorAttributeName : self.messageLinkTextColor,
+                                         NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle)};
+        [attributedString addAttributes:linkAttributes range:result.range];
+    }
+    return attributedString;
 }
 
 - (void)setMessageTextFont:(UIFont *)messageTextFont
@@ -155,6 +143,7 @@
 }
 
 - (NSAttributedString *)attributedStringForText:(NSString *)text
+- (void)configureLayoutConstraints
 {
     NSDictionary *attributes = @{NSFontAttributeName : self.messageTextFont, NSForegroundColorAttributeName : self.messageTextColor};
     NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:text attributes:attributes];
@@ -165,6 +154,20 @@
         [attributedString addAttributes:linkAttributes range:result.range];
     }
     return attributedString;
+    CGFloat maxBubbleWidth = LYRUIMaxCellWidth() + LYRUIMessageBubbleLabelHorizontalPadding * 2;
+    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationLessThanOrEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:maxBubbleWidth]];
+    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeHeight multiplier:1.0 constant:0]];
+    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeTop multiplier:1.0 constant:0]];
+}
+
+- (void)updateWithParticipant:(id<LYRUIParticipant>)participant
+{
+    // Implemented by subclass
+}
+
+- (void)shouldDisplayAvatarImage:(BOOL)shouldDisplayAvatarImage
+{
+    // Implemented by subclass
 }
 
 @end
