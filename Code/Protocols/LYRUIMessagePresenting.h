@@ -31,5 +31,4 @@
  */
 - (void)shouldDisplayAvatarImage:(BOOL)shouldDisplayAvatarImage;
 
-
 @end
