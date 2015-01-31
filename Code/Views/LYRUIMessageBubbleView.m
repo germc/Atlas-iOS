@@ -38,7 +38,6 @@ NSString *const LYRUIUserDidTapLinkNotification = @"LYRUIUserDidTapLinkNotificat
     if (self) {
         _locationShown = kCLLocationCoordinate2DInvalid;
         self.clipsToBounds = YES;
-        self.translatesAutoresizingMaskIntoConstraints = NO;
         
         self.bubbleViewLabel = [[UILabel alloc] init];
         self.bubbleViewLabel.numberOfLines = 0;
@@ -46,12 +45,12 @@ NSString *const LYRUIUserDidTapLinkNotification = @"LYRUIUserDidTapLinkNotificat
         self.bubbleViewLabel.translatesAutoresizingMaskIntoConstraints = NO;
         [self.bubbleViewLabel setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh + 1 forAxis:UILayoutConstraintAxisHorizontal];
         [self addSubview:self.bubbleViewLabel];
-
+        
         self.bubbleImageView = [[UIImageView alloc] init];
         self.bubbleImageView.translatesAutoresizingMaskIntoConstraints = NO;
         self.bubbleImageView.contentMode = UIViewContentModeScaleAspectFill;
         [self addSubview:self.bubbleImageView];
-
+        
         self.activityIndicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
         self.activityIndicator.color = [UIColor grayColor];
         self.activityIndicator.translatesAutoresizingMaskIntoConstraints = NO;
@@ -61,7 +60,7 @@ NSString *const LYRUIUserDidTapLinkNotification = @"LYRUIUserDidTapLinkNotificat
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleViewLabel attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1.0 constant:LYRUIMessageBubbleLabelHorizontalPadding]];
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleViewLabel attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeRight multiplier:1.0 constant:-LYRUIMessageBubbleLabelHorizontalPadding]];
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleViewLabel attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeBottom multiplier:1.0 constant:-LYRUIMessageBubbleLabelVerticalPadding]];
-
+        
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleImageView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0]];
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleImageView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeHeight multiplier:1.0 constant:0]];
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleImageView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0]];
@@ -69,9 +68,9 @@ NSString *const LYRUIUserDidTapLinkNotification = @"LYRUIUserDidTapLinkNotificat
         
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.activityIndicator attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0]];
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.activityIndicator attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0]];
-
+        
         self.mapWidthConstraint = [NSLayoutConstraint constraintWithItem:self.bubbleImageView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:LYRUIMessageBubbleMapWidth];
-
+        
         self.tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleLabelTap:)];
         self.tapGestureRecognizer.delegate = self;
         [self.bubbleViewLabel addGestureRecognizer:self.tapGestureRecognizer];
@@ -95,12 +94,12 @@ NSString *const LYRUIUserDidTapLinkNotification = @"LYRUIUserDidTapLinkNotificat
     self.activityIndicator.hidden = YES;
     self.bubbleImageView.hidden = YES;
     self.bubbleViewLabel.hidden = NO;
-
+    
     self.bubbleViewLabel.attributedText = text;
     self.bubbleImageView.image = nil;
     self.locationShown = kCLLocationCoordinate2DInvalid;
     [self.snapshotter cancel];
-
+    
     [self removeConstraint:self.mapWidthConstraint];
     [self removeConstraint:self.imageWidthConstraint];
     [self setNeedsUpdateConstraints];
@@ -116,10 +115,10 @@ NSString *const LYRUIUserDidTapLinkNotification = @"LYRUIUserDidTapLinkNotificat
     self.locationShown = kCLLocationCoordinate2DInvalid;
     self.bubbleViewLabel.text = nil;
     [self.snapshotter cancel];
-
+    
     [self removeConstraint:self.mapWidthConstraint];
     [self removeConstraint:self.imageWidthConstraint];
-
+    
     CGFloat imageAspectRatio = image.size.width/image.size.height;
     self.imageWidthConstraint = [NSLayoutConstraint constraintWithItem:self.bubbleImageView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.bubbleImageView attribute:NSLayoutAttributeHeight multiplier:imageAspectRatio constant:0];
     // When the cell is being reused and configured again, it might temporarily still be the size for its prior content. So we need a less than required priority.
@@ -134,7 +133,7 @@ NSString *const LYRUIUserDidTapLinkNotification = @"LYRUIUserDidTapLinkNotificat
     self.bubbleViewLabel.hidden = YES;
     self.bubbleViewLabel.text = nil;
     [self.snapshotter cancel];
-
+    
     [self removeConstraint:self.imageWidthConstraint];
     [self addConstraint:self.mapWidthConstraint];
     [self setNeedsUpdateConstraints];
@@ -144,18 +143,18 @@ NSString *const LYRUIUserDidTapLinkNotification = @"LYRUIUserDidTapLinkNotificat
         self.bubbleImageView.hidden = NO;
         return;
     }
-
+    
     self.bubbleImageView.hidden = YES;
     self.bubbleImageView.image = nil;
     self.locationShown = kCLLocationCoordinate2DInvalid;
-
+    
     MKMapSnapshotOptions *options = [[MKMapSnapshotOptions alloc] init];
     MKCoordinateSpan span = MKCoordinateSpanMake(0.005, 0.005);
     options.region = MKCoordinateRegionMake(location, span);
     options.scale = [UIScreen mainScreen].scale;
     options.size = CGSizeMake(200, 200);
     self.snapshotter = [[MKMapSnapshotter alloc] initWithOptions:options];
-
+    
     __weak typeof(self) weakSelf = self;
     [self.snapshotter startWithCompletionHandler:^(MKMapSnapshot *snapshot, NSError *error) {
         typeof(self) strongSelf = weakSelf;
@@ -188,7 +187,7 @@ NSString *const LYRUIUserDidTapLinkNotification = @"LYRUIUserDidTapLinkNotificat
         }
         strongSelf.bubbleImageView.hidden = NO;
         strongSelf.bubbleImageView.alpha = 0.0;
-
+        
         // Animate into view.
         [UIView animateWithDuration:0.2 animations:^{
             strongSelf.bubbleImageView.alpha = 1.0;
@@ -253,7 +252,7 @@ NSString *const LYRUIUserDidTapLinkNotification = @"LYRUIUserDidTapLinkNotificat
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
 {
     if (gestureRecognizer != self.tapGestureRecognizer) return YES;
-
+    
     //http://stackoverflow.com/questions/21349725/character-index-at-touch-point-for-uilabel/26806991#26806991
     UILabel *textLabel = self.bubbleViewLabel;
     CGPoint tapLocation = [gestureRecognizer locationInView:textLabel];
@@ -280,7 +279,7 @@ NSString *const LYRUIUserDidTapLinkNotification = @"LYRUIUserDidTapLinkNotificat
             return YES;
         }
     }
-
+    
     return NO;
 }
 
