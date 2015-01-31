@@ -31,8 +31,8 @@
 /**
  @abstract Gives the receiver an object conforming to the `LYRUIAvatarItem` protocol.
  @param avatarItem The object conforming to `LYRUIAvatarItem` protocol.
- @discussion The avatarItem is used to display either an image or initials with a LYRUIAvatarImageView 
- in an LYRUIConversationTableViewCell.
+ @discussion The avatarItem is used to display either an image or initials with an `LYRUIAvatarImageView`
+ in an `LYRUIConversationTableViewCell.`
  */
 - (void)updateWithAvatarItem:(id<LYRUIAvatarItem>)avatarItem;
 
