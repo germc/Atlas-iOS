@@ -86,15 +86,14 @@
 
 - (void)presentMessage:(LYRMessage *)message
 {
+    _message = message;
     LYRMessagePart *messagePart = message.parts.firstObject;
     if (!messagePart.data.length) {
         [self.bubbleView displayDownloadActivityIndicator];
         return;
     }
-    if ([messagePart.MIMEType isEqualToString:LYRUIMIMETypeTextPlain]) {
-        NSString *text = [[NSString alloc] initWithData:messagePart.data encoding:NSUTF8StringEncoding];
-        [self.bubbleView updateWithAttributedText:[self attributedStringForText:text]];
-        self.accessibilityLabel = [NSString stringWithFormat:@"Message: %@", text];
+    if ([self hasTextContent]) {
+        [self configureTextContent];
     } else if ([messagePart.MIMEType isEqualToString:LYRUIMIMETypeImageJPEG] || [messagePart.MIMEType isEqualToString:LYRUIMIMETypeImagePNG]) {
         UIImage *image = [UIImage imageWithData:messagePart.data];
         [self.bubbleView updateWithImage:image];
@@ -107,25 +106,24 @@
         double lon = [dictionary[@"lon"] doubleValue];
         [self.bubbleView updateWithLocation:CLLocationCoordinate2DMake(lat, lon)];
     }
-    _message = message;
 }
 
 - (void)setMessageTextFont:(UIFont *)messageTextFont
 {
     _messageTextFont = messageTextFont;
-    if (self.message) [self presentMessage:self.message];
+    if ([self hasTextContent]) [self configureTextContent];
 }
 
 - (void)setMessageTextColor:(UIColor *)messageTextColor
 {
     _messageTextColor = messageTextColor;
-    if (self.message) [self presentMessage:self.message];
+    if ([self hasTextContent]) [self configureTextContent];
 }
 
 - (void)setMessageLinkTextColor:(UIColor *)messageLinkTextColor
 {
     _messageLinkTextColor = messageLinkTextColor;
-    if (self.message) [self presentMessage:self.message];
+    if ([self hasTextContent]) [self configureTextContent];
 }
 
 - (void)setBubbleViewColor:(UIColor *)bubbleViewColor
@@ -138,6 +136,22 @@
 {
     _bubbleViewCornerRadius = bubbleViewCornerRadius;
     self.bubbleView.layer.cornerRadius = bubbleViewCornerRadius;
+}
+
+#pragma mark - Helpers
+
+- (BOOL)hasTextContent
+{
+    LYRMessagePart *messagePart = self.message.parts.firstObject;
+    return [messagePart.MIMEType isEqualToString:LYRUIMIMETypeTextPlain];
+}
+
+- (void)configureTextContent
+{
+    LYRMessagePart *messagePart = self.message.parts.firstObject;
+    NSString *text = [[NSString alloc] initWithData:messagePart.data encoding:NSUTF8StringEncoding];
+    [self.bubbleView updateWithAttributedText:[self attributedStringForText:text]];
+    self.accessibilityLabel = [NSString stringWithFormat:@"Message: %@", text];
 }
 
 - (NSAttributedString *)attributedStringForText:(NSString *)text
