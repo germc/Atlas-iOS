@@ -41,7 +41,7 @@
  @param conversationListViewController The `LYRConversationListViewController` in which the deletion attempt occurred.
  @param conversation The `LYRConversation` object that failed deletion.
  @param deletionMode The `LYRDeletionMode` with which the conversation delete attempt was made.
- @param error an `NSError` object describing the deletion failure.
+ @param error An `NSError` object describing the deletion failure.
  */
 - (void)conversationListViewController:(LYRUIConversationListViewController *)conversationListViewController didFailDeletingConversation:(LYRConversation *)conversation deletionMode:(LYRDeletionMode)deletionMode error:(NSError *)error;
 
