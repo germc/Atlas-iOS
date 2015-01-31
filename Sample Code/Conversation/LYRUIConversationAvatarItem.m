@@ -10,7 +10,7 @@
 
 @implementation LYRUIConversationAvatarItem 
 
-- (NSString *)avatarItemName
+- (NSString *)avatarItemFullName
 {
     return @"Kevin Coleman";
 }
