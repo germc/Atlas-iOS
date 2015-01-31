@@ -10,11 +10,13 @@
 #import "LYRUIMessagingUtilities.h"
 #import "LYRUIIncomingMessageCollectionViewCell.h"
 #import "LYRUIOutgoingMessageCollectionViewCell.h"
+#import <LayerKit/LayerKit.h> 
 
 @interface LYRUIMessageCollectionViewCell ()
 
 @property (nonatomic) BOOL messageSentState;
 @property (nonatomic) LYRMessage *message;
+@property (nonatomic) LYRProgress *progress;
 
 @end
 
@@ -32,7 +34,6 @@
         _bubbleViewCornerRadius = 12;
         
         _bubbleView = [[LYRUIMessageBubbleView alloc] init];
-        _bubbleView.translatesAutoresizingMaskIntoConstraints = NO;
         _bubbleView.layer.cornerRadius = _bubbleViewCornerRadius;
         _bubbleView.backgroundColor = _bubbleViewColor;
         [self.contentView addSubview:_bubbleView];
@@ -45,56 +46,73 @@
     return self;
 }
 
-- (void)presentMessage:(LYRMessage *)message
+- (void)presentMessage:(LYRMessage *)message;
 {
-    LYRMessagePart *messagePart = message.parts.firstObject;
-    if ([messagePart.MIMEType isEqualToString:LYRUIMIMETypeTextPlain]) {
-        [self configureBubbleViewTextWithMessagePart:messagePart];
+    self.message = message;
+    LYRMessagePart *messagePart = message.parts[0];
+    
+    if ([self hasTextContent]) {
+        [self configureTextContent];
     } else if ([messagePart.MIMEType isEqualToString:LYRUIMIMETypeImageJPEG]) {
-        [self configureBubbleViewImageWithMessagePart:messagePart];
+        [self configureImageContent];
     }else if ([messagePart.MIMEType isEqualToString:LYRUIMIMETypeImagePNG]) {
-        [self configureBubbleViewImageWithMessagePart:messagePart];
+        [self configureImageContent];
     } else if ([messagePart.MIMEType isEqualToString:LYRUIMIMETypeLocation]) {
-        [self configureBubbleViewLocationWithMessagePart:messagePart];
+        [self configureLocationContent];
     }
-    _message = message;
 }
 
-- (void)configureBubbleViewTextWithMessagePart:(LYRMessagePart *)messagePart
+- (void)configureTextContent
 {
+    LYRMessagePart *messagePart = self.message.parts.firstObject;
     NSString *text = [[NSString alloc] initWithData:messagePart.data encoding:NSUTF8StringEncoding];
     [self.bubbleView updateWithAttributedText:[self attributedStringForText:text]];
     self.accessibilityLabel = [NSString stringWithFormat:@"Message: %@", text];
 }
 
-- (void)configureBubbleViewImageWithMessagePart:(LYRMessagePart *)messagePart
+- (void)configureImageContent
 {
-    UIImage *image = [UIImage imageWithData:messagePart.data];
-    [self.bubbleView updateWithImage:image];
     self.accessibilityLabel = [NSString stringWithFormat:@"Message: Photo"];
+    
+    if (self.message.parts.count == 1) {
+        LYRMessagePart *imagePart = self.message.parts[0];
+        CGSize size = LYRUIImageSizeForData(imagePart.data);
+        [self.bubbleView updateWithImage:[UIImage imageWithData:imagePart.data] width:size.width];
+        return;
+    }
+    
+    LYRMessagePart *dimensionPart = self.message.parts[2];
+    CGSize size = LYRUIImageSizeForJSONData(dimensionPart.data);
+    
+    LYRMessagePart *imagePart = self.message.parts[0];
+    if (imagePart.isDownloaded) {
+        [self.bubbleView updateWithImage:[UIImage imageWithData:imagePart.data] width:size.width];
+        return;
+    } else {
+        [self downloadContentForMessagePart:imagePart];
+    }
+    
+    LYRMessagePart *previewPart;
+    if (self.message.parts.count > 1) previewPart = self.message.parts[1];
+    if (previewPart.isDownloaded) {
+        [self.bubbleView updateWithImage:[UIImage imageWithData:previewPart.data] width:size.width];
+        return;
+    } else {
+        [self downloadContentForMessagePart:previewPart];
+    }
+    
+    [self.bubbleView updateWithImage:nil width:size.width];
 }
 
-- (void)configureBubbleViewLocationWithMessagePart:(LYRMessagePart *)messagePart
+- (void)configureLocationContent
 {
+    LYRMessagePart *messagePart = self.message.parts.firstObject;
     NSDictionary *dictionary = [NSJSONSerialization JSONObjectWithData:messagePart.data
                                                                options:NSJSONReadingAllowFragments
                                                                  error:nil];
     double lat = [dictionary[@"lat"] doubleValue];
     double lon = [dictionary[@"lon"] doubleValue];
     [self.bubbleView updateWithLocation:CLLocationCoordinate2DMake(lat, lon)];
-}
-
-- (NSAttributedString *)attributedStringForText:(NSString *)text
-{
-    NSDictionary *attributes = @{NSFontAttributeName : self.messageTextFont, NSForegroundColorAttributeName : self.messageTextColor};
-    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:text attributes:attributes];
-    NSArray *linkResults = LYRUILinkResultsForText(text);
-    for (NSTextCheckingResult *result in linkResults) {
-        NSDictionary *linkAttributes = @{NSForegroundColorAttributeName : self.messageLinkTextColor,
-                                         NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle)};
-        [attributedString addAttributes:linkAttributes range:result.range];
-    }
-    return attributedString;
 }
 
 - (void)setMessageTextFont:(UIFont *)messageTextFont
@@ -129,22 +147,7 @@
 
 #pragma mark - Helpers
 
-- (BOOL)hasTextContent
-{
-    LYRMessagePart *messagePart = self.message.parts.firstObject;
-    return [messagePart.MIMEType isEqualToString:LYRUIMIMETypeTextPlain];
-}
-
-- (void)configureTextContent
-{
-    LYRMessagePart *messagePart = self.message.parts.firstObject;
-    NSString *text = [[NSString alloc] initWithData:messagePart.data encoding:NSUTF8StringEncoding];
-    [self.bubbleView updateWithAttributedText:[self attributedStringForText:text]];
-    self.accessibilityLabel = [NSString stringWithFormat:@"Message: %@", text];
-}
-
 - (NSAttributedString *)attributedStringForText:(NSString *)text
-- (void)configureLayoutConstraints
 {
     NSDictionary *attributes = @{NSFontAttributeName : self.messageTextFont, NSForegroundColorAttributeName : self.messageTextColor};
     NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:text attributes:attributes];
@@ -155,6 +158,25 @@
         [attributedString addAttributes:linkAttributes range:result.range];
     }
     return attributedString;
+}
+
+- (BOOL)hasTextContent
+{
+    LYRMessagePart *messagePart = self.message.parts.firstObject;
+    return [messagePart.MIMEType isEqualToString:LYRUIMIMETypeTextPlain];
+}
+
+- (void)downloadContentForMessagePart:(LYRMessagePart *)part
+{
+    NSError *error;
+    self.progress = [part downloadContent:&error];
+    if (error) {
+        NSLog(@"Download failed with error: %@", error);
+    }
+}
+
+- (void)configureLayoutConstraints
+{
     CGFloat maxBubbleWidth = LYRUIMaxCellWidth() + LYRUIMessageBubbleLabelHorizontalPadding * 2;
     [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationLessThanOrEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:maxBubbleWidth]];
     [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeHeight multiplier:1.0 constant:0]];

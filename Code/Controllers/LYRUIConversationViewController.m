@@ -671,9 +671,7 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
     LYRMessage *message = [self messageAtCollectionViewIndexPath:indexPath];
     LYRMessagePart *part = message.parts.firstObject;
     // Guarding against external content in old SDKs
-    if (!part.data.length) {
-        return 48;
-    }
+
     CGFloat height;
     if ([part.MIMEType isEqualToString:LYRUIMIMETypeTextPlain]) {
         NSString *text = [[NSString alloc] initWithData:part.data encoding:NSUTF8StringEncoding];
@@ -681,8 +679,14 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
         CGSize size = LYRUITextPlainSize(text, font);
         height = size.height + LYRUIMessageBubbleLabelVerticalPadding * 2;
     } else if ([part.MIMEType isEqualToString:LYRUIMIMETypeImageJPEG] || [part.MIMEType isEqualToString:LYRUIMIMETypeImagePNG]) {
-        UIImage *image = [UIImage imageWithData:part.data];
-        CGSize size = LYRUIImageSize(image);
+        CGSize size;
+        if (part.isDownloaded) {
+            UIImage *image = [UIImage imageWithData:part.data];
+            size = LYRUIImageSize(image);
+        } else {
+            LYRMessagePart *sizePart = message.parts[2];
+            size = LYRUIImageSizeForJSONData(sizePart.data);
+        }
         height = size.height;
     } else if ([part.MIMEType isEqualToString:LYRUIMIMETypeLocation]) {
         height = LYRUIMessageBubbleMapHeight;
@@ -968,27 +972,34 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 {
     NSMutableOrderedSet *messages = [NSMutableOrderedSet new];
     for (id part in messageParts){
-        LYRMessagePart *messagePart;
+        NSString *pushText;
+        NSMutableArray *parts = [NSMutableArray new];
         if ([part isKindOfClass:[NSString class]]) {
-            messagePart = LYRUIMessagePartWithText(part);
+            pushText = part;
+            [parts addObject:LYRUIMessagePartWithText(part) ];
         } else if ([part isKindOfClass:[UIImage class]]) {
-            messagePart = LYRUIMessagePartWithJPEGImage(part);
+            pushText = @"Attachement: Image";
+            UIImage *image = part;
+            [parts addObject:LYRUIMessagePartWithJPEGImage(image, NO)];
+            [parts addObject:LYRUIMessagePartWithJPEGImage(image, YES)];
+            [parts addObject:LYRUIMEssagePartForImageSize(image)];
         } else if ([part isKindOfClass:[CLLocation class]]) {
-            messagePart = LYRUIMessagePartWithLocation(part);
+            pushText = @"Attachement: Location";
+            [parts addObject:LYRUIMessagePartWithLocation(part)];
         }
-        LYRMessage *message = [self messageForMessagePart:messagePart];
+        LYRMessage *message = [self messageForMessageParts:parts pushText:@""];
         if (message)[messages addObject:message];
     }
     return messages;
 }
 
-- (LYRMessage *)messageForMessagePart:(LYRMessagePart *)messagePart
+- (LYRMessage *)messageForMessageParts:(NSArray *)parts pushText:(NSString *)pushText;
 {
     NSString *senderName = [[self participantForIdentifier:self.layerClient.authenticatedUserID] fullName];
-    NSDictionary *pushOptions = @{LYRMessageOptionsPushNotificationAlertKey: LYRUIPushTextWithPartAndSenderName(messagePart, senderName),
+    NSDictionary *pushOptions = @{LYRMessageOptionsPushNotificationAlertKey: [NSString stringWithFormat:@"%@: %@", senderName, pushText],
                                   LYRMessageOptionsPushNotificationSoundNameKey: @"default"};
     NSError *error;
-    LYRMessage *message = [self.layerClient newMessageWithParts:@[messagePart] options:pushOptions error:&error];
+    LYRMessage *message = [self.layerClient newMessageWithParts:parts options:pushOptions error:&error];
     if (error) {
         return nil;
     }

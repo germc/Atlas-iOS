@@ -8,6 +8,7 @@
 
 #import "LYRUIMessageBubbleView.h"
 #import "LYRUIMessagingUtilities.h"
+#import "LYRUIProgressView.h"
 
 CGFloat const LYRUIMessageBubbleLabelHorizontalPadding = 12;
 CGFloat const LYRUIMessageBubbleLabelVerticalPadding = 8;
@@ -18,14 +19,12 @@ NSString *const LYRUIUserDidTapLinkNotification = @"LYRUIUserDidTapLinkNotificat
 
 @interface LYRUIMessageBubbleView () <UIGestureRecognizerDelegate>
 
-@property (nonatomic) UIActivityIndicatorView *activityIndicator;
+@property (nonatomic) LYRUIProgressView *progressView;
 @property (nonatomic) UIView *longPressMask;
 @property (nonatomic) MKMapSnapshotter *snapshotter;
 @property (nonatomic) CLLocationCoordinate2D locationShown;
 @property (nonatomic) UITapGestureRecognizer *tapGestureRecognizer;
 @property (nonatomic) NSURL *tappedURL;
-
-@property (nonatomic) NSLayoutConstraint *mapWidthConstraint;
 @property (nonatomic) NSLayoutConstraint *imageWidthConstraint;
 
 @end
@@ -38,6 +37,7 @@ NSString *const LYRUIUserDidTapLinkNotification = @"LYRUIUserDidTapLinkNotificat
     if (self) {
         _locationShown = kCLLocationCoordinate2DInvalid;
         self.clipsToBounds = YES;
+        self.translatesAutoresizingMaskIntoConstraints = NO;
         
         self.bubbleViewLabel = [[UILabel alloc] init];
         self.bubbleViewLabel.numberOfLines = 0;
@@ -51,10 +51,9 @@ NSString *const LYRUIUserDidTapLinkNotification = @"LYRUIUserDidTapLinkNotificat
         self.bubbleImageView.contentMode = UIViewContentModeScaleAspectFill;
         [self addSubview:self.bubbleImageView];
         
-        self.activityIndicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
-        self.activityIndicator.color = [UIColor grayColor];
-        self.activityIndicator.translatesAutoresizingMaskIntoConstraints = NO;
-        [self addSubview:self.activityIndicator];
+        self.progressView = [[LYRUIProgressView alloc] initWithFrame:CGRectMake(0, 0, 128.0f, 128.0f)];
+        self.progressView.translatesAutoresizingMaskIntoConstraints = NO;
+        [self addSubview:self.progressView];
         
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleViewLabel attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1.0 constant:LYRUIMessageBubbleLabelVerticalPadding]];
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleViewLabel attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1.0 constant:LYRUIMessageBubbleLabelHorizontalPadding]];
@@ -65,11 +64,13 @@ NSString *const LYRUIUserDidTapLinkNotification = @"LYRUIUserDidTapLinkNotificat
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleImageView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeHeight multiplier:1.0 constant:0]];
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleImageView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0]];
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleImageView attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0]];
+        self.imageWidthConstraint = [NSLayoutConstraint constraintWithItem:self.bubbleImageView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:0];
+        [self addConstraint:self.imageWidthConstraint];
         
-        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.activityIndicator attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0]];
-        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.activityIndicator attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0]];
-        
-        self.mapWidthConstraint = [NSLayoutConstraint constraintWithItem:self.bubbleImageView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:LYRUIMessageBubbleMapWidth];
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.progressView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0]];
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.progressView attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0]];
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.progressView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeWidth multiplier:1.0 constant:64.0]];
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.progressView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeHeight multiplier:1.0 constant:64.0]];
         
         self.tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleLabelTap:)];
         self.tapGestureRecognizer.delegate = self;
@@ -81,17 +82,14 @@ NSString *const LYRUIUserDidTapLinkNotification = @"LYRUIUserDidTapLinkNotificat
     return self;
 }
 
-- (void)displayDownloadActivityIndicator
+- (void)updateDownloadActivityIndicatorWithProgress:(float)progress options:(LYRUIDownloadProgressViewOptions)options
 {
-    self.activityIndicator.hidden = NO;
-    self.bubbleImageView.hidden = YES;
-    self.bubbleViewLabel.hidden = YES;
-    [self.activityIndicator startAnimating];
+    self.progressView.hidden = !(options & LYRUIDownloadProgressViewOptionShowProgress);
+    self.progressView.progress = progress;
 }
 
 - (void)updateWithAttributedText:(NSAttributedString *)text
 {
-    self.activityIndicator.hidden = YES;
     self.bubbleImageView.hidden = YES;
     self.bubbleViewLabel.hidden = NO;
     
@@ -100,14 +98,12 @@ NSString *const LYRUIUserDidTapLinkNotification = @"LYRUIUserDidTapLinkNotificat
     self.locationShown = kCLLocationCoordinate2DInvalid;
     [self.snapshotter cancel];
     
-    [self removeConstraint:self.mapWidthConstraint];
-    [self removeConstraint:self.imageWidthConstraint];
+    if (self.imageWidthConstraint) [self removeConstraint:self.imageWidthConstraint];
     [self setNeedsUpdateConstraints];
 }
 
-- (void)updateWithImage:(UIImage *)image
+- (void)updateWithImage:(UIImage *)image width:(CGFloat)width
 {
-    self.activityIndicator.hidden = YES;
     self.bubbleViewLabel.hidden = YES;
     self.bubbleImageView.hidden = NO;
     self.bubbleImageView.image = image;
@@ -116,26 +112,17 @@ NSString *const LYRUIUserDidTapLinkNotification = @"LYRUIUserDidTapLinkNotificat
     self.bubbleViewLabel.text = nil;
     [self.snapshotter cancel];
     
-    [self removeConstraint:self.mapWidthConstraint];
-    [self removeConstraint:self.imageWidthConstraint];
-    
-    CGFloat imageAspectRatio = image.size.width/image.size.height;
-    self.imageWidthConstraint = [NSLayoutConstraint constraintWithItem:self.bubbleImageView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.bubbleImageView attribute:NSLayoutAttributeHeight multiplier:imageAspectRatio constant:0];
-    // When the cell is being reused and configured again, it might temporarily still be the size for its prior content. So we need a less than required priority.
-    self.imageWidthConstraint.priority = UILayoutPriorityDefaultHigh;
-    [self addConstraint:self.imageWidthConstraint];
+    self.imageWidthConstraint.constant = width;
     [self setNeedsUpdateConstraints];
 }
 
 - (void)updateWithLocation:(CLLocationCoordinate2D)location
 {
-    self.activityIndicator.hidden = YES;
     self.bubbleViewLabel.hidden = YES;
     self.bubbleViewLabel.text = nil;
     [self.snapshotter cancel];
     
-    [self removeConstraint:self.imageWidthConstraint];
-    [self addConstraint:self.mapWidthConstraint];
+    self.imageWidthConstraint.constant = LYRUIMaxCellWidth();
     [self setNeedsUpdateConstraints];
     
     BOOL alreadyShowingLocation = self.locationShown.latitude == location.latitude && self.locationShown.longitude == location.longitude;
@@ -279,7 +266,6 @@ NSString *const LYRUIUserDidTapLinkNotification = @"LYRUIUserDidTapLinkNotificat
             return YES;
         }
     }
-    
     return NO;
 }
 
