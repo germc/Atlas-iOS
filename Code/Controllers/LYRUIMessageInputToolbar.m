@@ -29,7 +29,7 @@ NSString *const LYRUIMessageInputToolbarAccessibilityLabel = @"Message Input Too
 // Compose View Margin Constants
 static CGFloat const LYRUIHorizontalMargin = 6;
 static CGFloat const LYRUIVerticalMargin = 6;
-static CGFloat const LYRUIVerticalButtonMargin = 8;
+static CGFloat const LYRUIVerticalButtonMargin = 10;
 
 // Compose View Button Constants
 static CGFloat const LYRUILeftAccessoryButtonWidth = 40;
@@ -43,11 +43,11 @@ static CGFloat const LYRUIButtonHeight = 28;
         self.accessibilityLabel = LYRUIMessageInputToolbarAccessibilityLabel;
         self.translatesAutoresizingMaskIntoConstraints = NO;
         self.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-        self.backgroundColor =  LYRUILightGrayColor();
         self.canEnableSendButton = YES;
 
         self.leftAccessoryButton = [[UIButton alloc] init];
         self.leftAccessoryButton.accessibilityLabel = @"Camera Button";
+        self.leftAccessoryButton.contentMode = UIViewContentModeScaleAspectFit;
         [self.leftAccessoryButton setImage:[UIImage imageNamed:@"LayerUIKitResource.bundle/camera"] forState:UIControlStateNormal];
         [self.leftAccessoryButton addTarget:self action:@selector(leftAccessoryButtonTapped) forControlEvents:UIControlEventTouchUpInside];
         [self addSubview:self.leftAccessoryButton];

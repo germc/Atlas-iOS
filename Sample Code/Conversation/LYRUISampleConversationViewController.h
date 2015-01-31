@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <LayerUIKit/LYRUIConversationViewController.h>
+#import <LayerUIKit/LayerUIKit.h>
 
 @interface LYRUISampleConversationViewController : LYRUIConversationViewController
 

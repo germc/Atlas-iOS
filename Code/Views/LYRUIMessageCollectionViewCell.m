@@ -25,7 +25,7 @@
     self = [super initWithFrame:frame];
     if (self) {
         // Default UIAppearance
-        _messageTextFont = [UIFont systemFontOfSize:14];
+        _messageTextFont = [UIFont systemFontOfSize:17];
         _messageTextColor = [UIColor blackColor];
         _messageLinkTextColor = [UIColor blueColor];
         _bubbleViewColor = [UIColor grayColor];
@@ -38,7 +38,6 @@
         [self.contentView addSubview:_bubbleView];
         
         _avatarImageView = [[LYRUIAvatarImageView alloc] init];
-        _avatarImageView.backgroundColor = LYRUILightGrayColor();
         _avatarImageView.translatesAutoresizingMaskIntoConstraints = NO;
         [self.contentView addSubview:_avatarImageView];
 

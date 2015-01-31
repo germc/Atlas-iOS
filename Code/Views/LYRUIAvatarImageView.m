@@ -19,6 +19,12 @@
 
 NSString *const LYRUIAvatarImageViewAccessibilityLabel = @"LYRUIAvatarImageViewAccessibilityLabel";
 
++ (void)initialize
+{
+    LYRUIAvatarImageView *proxy = [self appearance];
+    proxy.backgroundColor = [UIColor whiteColor];
+}
+
 - (id)init
 {
     self = [super init];
@@ -30,9 +36,9 @@ NSString *const LYRUIAvatarImageViewAccessibilityLabel = @"LYRUIAvatarImageViewA
 
         self.accessibilityLabel = LYRUIAvatarImageViewAccessibilityLabel;
         self.clipsToBounds = YES;
-        self.backgroundColor = LYRUILightGrayColor();
         self.layer.cornerRadius = _avatarImageViewDiameter / 2;
-       
+        self.contentMode = UIViewContentModeScaleAspectFill;
+
         _initialsLabel = [[UILabel alloc] init];
         _initialsLabel.translatesAutoresizingMaskIntoConstraints = NO;
         _initialsLabel.textAlignment = NSTextAlignmentCenter;

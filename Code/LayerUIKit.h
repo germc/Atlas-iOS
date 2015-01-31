@@ -17,6 +17,7 @@
 #import "LYRUIIncomingMessageCollectionViewCell.h"
 #import "LYRUIConversationTableViewCell.h"
 #import "LYRUIMessagingUtilities.h"
+#import "LYRUIParticipant.h"
 
 /**
  @abstract Returns the version of the Layer UIKit as a string.

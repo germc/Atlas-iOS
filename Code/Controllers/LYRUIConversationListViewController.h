@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <LayerKit/LayerKit.h>
 #import "LYRUIConversationTableViewCell.h"
+#import "LYRUIAvatarItem.h"
 
 @class LYRUIConversationListViewController;
 
@@ -27,8 +28,21 @@
 
 @optional
 
+/**
+ @abstract Informs the delegate that an `LYRConversation` was deleted.
+ @param conversationListViewController The `LYRConversationListViewController` in which the deletion occurred.
+ @param conversation The `LYRConversation` object that was deleted.
+ @param deletionMode The `LYRDeletionMode` with which the conversation was deleted.
+ */
 - (void)conversationListViewController:(LYRUIConversationListViewController *)conversationListViewController didDeleteConversation:(LYRConversation *)conversation deletionMode:(LYRDeletionMode)deletionMode;
 
+/**
+ @abstract Informs the delegate that an attempt to delete an `LYRConversation` failed.
+ @param conversationListViewController The `LYRConversationListViewController` in which the deletion attempt occurred.
+ @param conversation The `LYRConversation` object that failed deletion.
+ @param deletionMode The `LYRDeletionMode` with which the conversation delete attempt was made.
+ @param error An `NSError` object describing the deletion failure.
+ */
 - (void)conversationListViewController:(LYRUIConversationListViewController *)conversationListViewController didFailDeletingConversation:(LYRConversation *)conversation deletionMode:(LYRDeletionMode)deletionMode error:(NSError *)error;
 
 @end
@@ -50,12 +64,13 @@
 @optional
 
 /**
- @abstract Asks the delegate for an image to display for a given conversation.
- @param conversationListViewController The `LYRConversationListViewController` in which the image will appear.
+ @abstract Asks the delegate for an avatar item representing a conversation.
+ @param conversationListViewController The `LYRConversationListViewController` in which the item's data will appear.
  @param conversation The `LYRConversation` object.
- @return The conversation image to be displayed for a given conversation in the conversation list.
+ @return An object conforming to the `LYRUIAvatarItem` protocol. 
+ @discussion The data provided by the object conforming to the `LYRUIAvatarItem` protocol will be displayed in an `LYRAvatarImageView`.
  */
-- (UIImage *)conversationListViewController:(LYRUIConversationListViewController *)conversationListViewController imageForConversation:(LYRConversation *)conversation;
+- (id<LYRUIAvatarItem>)conversationListViewController:(LYRUIConversationListViewController *)conversationListViewController avatarItemForConversation:(LYRConversation *)conversation;
 
 @end
 
@@ -119,7 +134,7 @@
 
 /**
  @abstract Sets the height for cells within the receiver.
- @default `62.0`
+ @default `76.0`
  @raises NSInternalInconsistencyException Raised if the value is mutated after the receiver has been presented.
  */
 @property (nonatomic, assign) CGFloat rowHeight;

@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
-#import <LayerUIKit/LYRUIParticipant.h>
+#import <LayerUIKit/LayerUIKit.h>
 
 typedef NS_ENUM(NSUInteger, LYRClientMockUserName){
     LYRClientMockFactoryNameMarshawn,

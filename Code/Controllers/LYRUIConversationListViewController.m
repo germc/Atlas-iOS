@@ -33,7 +33,7 @@ NSString *const LYRUIConversationTableViewAccessibilityIdentifier = @"Conversati
     NSAssert(layerClient, @"layerClient cannot be nil");
     return [[self alloc] initConversationlistViewControllerWithLayerClient:layerClient];
 }
-
+    
 - (id)initConversationlistViewControllerWithLayerClient:(LYRClient *)layerClient
 {
     self = [super initWithStyle:UITableViewStylePlain];
@@ -42,7 +42,7 @@ NSString *const LYRUIConversationTableViewAccessibilityIdentifier = @"Conversati
         _cellClass = [LYRUIConversationTableViewCell class];
         _displaysConversationImage = NO;
         _allowsEditing = YES;
-        _rowHeight = 62.0f;
+        _rowHeight = 76.0f;
     }
     return self;
 }
@@ -62,6 +62,7 @@ NSString *const LYRUIConversationTableViewAccessibilityIdentifier = @"Conversati
     self.accessibilityLabel = LYRUIConversationListViewControllerTitle;
     self.tableView.accessibilityLabel = LYRUIConversationTableViewAccessibilityLabel;
     self.tableView.accessibilityIdentifier = LYRUIConversationTableViewAccessibilityIdentifier;
+    self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
     [self setupConversationDataSource];
 }
 
@@ -141,7 +142,7 @@ NSString *const LYRUIConversationTableViewAccessibilityIdentifier = @"Conversati
     LYRQuery *query = [LYRQuery queryWithClass:[LYRConversation class]];
     query.predicate = [LYRPredicate predicateWithProperty:@"participants" operator:LYRPredicateOperatorIsIn value:self.layerClient.authenticatedUserID];
     query.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"lastMessage.receivedAt" ascending:NO]];
-    
+
     self.queryController = [self.layerClient queryControllerWithQuery:query];
     self.queryController.delegate = self;
     NSError *error;
@@ -176,11 +177,11 @@ NSString *const LYRUIConversationTableViewAccessibilityIdentifier = @"Conversati
     [conversationCell presentConversation:conversation];
     
     if (self.displaysConversationImage) {
-        if ([self.dataSource respondsToSelector:@selector(conversationListViewController:imageForConversation:)]) {
-            UIImage *conversationImage = [self.dataSource conversationListViewController:self imageForConversation:conversation];
-            [conversationCell updateWithConversationImage:conversationImage];
+        if ([self.dataSource respondsToSelector:@selector(conversationListViewController:avatarItemForConversation:)]) {
+            id<LYRUIAvatarItem> avatarItem = [self.dataSource conversationListViewController:self avatarItemForConversation:conversation];
+            [conversationCell updateWithAvatarItem:avatarItem];
         } else {
-           @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Conversation View Delegate must return a conversation image" userInfo:nil]; 
+           @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Conversation View Delegate must return an object conforming to the `LYRUIAvatarItem` protocol." userInfo:nil];
         }
     }
     

@@ -10,6 +10,7 @@
 #import "LYRUISampleConversationViewController.h"
 #import "LYRClientMock.h"
 #import "LYRUIParticipant.h"
+#import "LYRUIConversationAvatarItem.h"
 
 @interface LYRUISampleConversationListViewController () <LYRUIConversationListViewControllerDelegate, LYRUIConversationListViewControllerDataSource>
 
@@ -24,9 +25,14 @@
     [super viewDidLoad];
     self.dataSource = self;
     self.delegate = self;
-    
     UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithTitle:@"Hydrate" style:UIBarButtonItemStylePlain target:self action:@selector(hydrate)];
-    self.navigationItem.rightBarButtonItem = item;
+    self.navigationItem.leftBarButtonItem = item;
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    [self.tableView reloadData];
 }
 
 - (void)hydrate
@@ -48,6 +54,11 @@
 - (void)conversationListViewController:(LYRUIConversationListViewController *)conversationListViewController didFailDeletingConversation:(LYRConversation *)conversation deletionMode:(LYRDeletionMode)deletionMode error:(NSError *)error
 {
     NSLog(@"Failed to delete conversation with error: %@", error);
+}
+
+- (id<LYRUIAvatarItem>)conversationListViewController:(LYRUIConversationListViewController *)conversationListViewController avatarItemForConversation:(LYRConversation *)conversation
+{
+    return [LYRUIConversationAvatarItem new];
 }
 
 #pragma mark - Conversation List View Controller Data Source Methods

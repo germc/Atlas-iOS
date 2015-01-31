@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import <LayerKit/LayerKit.h>
+#import "LYRUIAvatarItem.h"
 
 /**
  @abstract The `LYRUIConversationPresenting` protocol must be adopted by any view component
@@ -28,9 +29,11 @@
 - (void)updateWithConversationLabel:(NSString *)conversationLabel;
 
 /**
- @abstract Gives the receiver an image to display representing the conversation image
- @param conversation The conversation image to display
+ @abstract Gives the receiver an object conforming to the `LYRUIAvatarItem` protocol.
+ @param avatarItem The object conforming to `LYRUIAvatarItem` protocol.
+ @discussion The avatarItem is used to display either an image or initials with an `LYRUIAvatarImageView`
+ in an `LYRUIConversationTableViewCell.`
  */
-- (void)updateWithConversationImage:(UIImage *)image;
+- (void)updateWithAvatarItem:(id<LYRUIAvatarItem>)avatarItem;
 
 @end

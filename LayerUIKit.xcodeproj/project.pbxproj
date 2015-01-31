@@ -31,6 +31,7 @@
 		D667F8D81A411FC100D44699 /* LYRUISampleConversationListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D0D778C41A02EAEE000A5F51 /* LYRUISampleConversationListViewController.m */; };
 		D67922101A77137B008BE823 /* LYRUIMessageCollectionViewCellTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D679220F1A77137B008BE823 /* LYRUIMessageCollectionViewCellTest.m */; };
 		D689C6771A7834E100BE1A60 /* LYRUIConversationTableViewCellTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D689C6761A7834E100BE1A60 /* LYRUIConversationTableViewCellTest.m */; };
+		D6A8485E1A7C33080026DAC8 /* LYRUIConversationAvatarItem.m in Sources */ = {isa = PBXBuildFile; fileRef = D6A8485D1A7C33080026DAC8 /* LYRUIConversationAvatarItem.m */; };
 		D6B282601A368065001DC713 /* LYRMockContentStore.m in Sources */ = {isa = PBXBuildFile; fileRef = D6B2825F1A368065001DC713 /* LYRMockContentStore.m */; };
 		D6DE58771A37651100FA9375 /* LYRMessagePartMock.m in Sources */ = {isa = PBXBuildFile; fileRef = D6DE58761A37651100FA9375 /* LYRMessagePartMock.m */; };
 		F309E194D1651CC5D4FEA717 /* libPods-Conversation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D9A79E80B908428B22486437 /* libPods-Conversation.a */; };
@@ -88,6 +89,8 @@
 		D667F8D61A4101DB00D44699 /* LYRUIConversationListTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIConversationListTest.m; sourceTree = "<group>"; };
 		D679220F1A77137B008BE823 /* LYRUIMessageCollectionViewCellTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIMessageCollectionViewCellTest.m; sourceTree = "<group>"; };
 		D689C6761A7834E100BE1A60 /* LYRUIConversationTableViewCellTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIConversationTableViewCellTest.m; sourceTree = "<group>"; };
+		D6A8485C1A7C33080026DAC8 /* LYRUIConversationAvatarItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUIConversationAvatarItem.h; sourceTree = "<group>"; };
+		D6A8485D1A7C33080026DAC8 /* LYRUIConversationAvatarItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIConversationAvatarItem.m; sourceTree = "<group>"; };
 		D6B2825E1A368065001DC713 /* LYRMockContentStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRMockContentStore.h; sourceTree = "<group>"; };
 		D6B2825F1A368065001DC713 /* LYRMockContentStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRMockContentStore.m; sourceTree = "<group>"; };
 		D6DE58751A37651100FA9375 /* LYRMessagePartMock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRMessagePartMock.h; sourceTree = "<group>"; };
@@ -173,6 +176,8 @@
 				D0D778C41A02EAEE000A5F51 /* LYRUISampleConversationListViewController.m */,
 				D0AF56BF1A08383F0093D5A5 /* LYRUISampleConversationViewController.h */,
 				D0AF56C01A08383F0093D5A5 /* LYRUISampleConversationViewController.m */,
+				D6A8485C1A7C33080026DAC8 /* LYRUIConversationAvatarItem.h */,
+				D6A8485D1A7C33080026DAC8 /* LYRUIConversationAvatarItem.m */,
 			);
 			name = "Sample App";
 			path = "Sample Code/Conversation";
@@ -186,8 +191,6 @@
 				D67922111A77137F008BE823 /* Controller */,
 				0A1B02B21A6DB23700D5DA8E /* LYRUITestClasses.m */,
 				D6A025751A420744003C6513 /* Test Utilities */,
-				D667F8CE1A40F63000D44699 /* LYRUITestInterface.h */,
-				D667F8CF1A40F63000D44699 /* LYRUITestInterface.m */,
 				D0D778D51A02EB83000A5F51 /* Supporting Files */,
 			);
 			path = Tests;
@@ -260,6 +263,8 @@
 		D6A025751A420744003C6513 /* Test Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				D667F8CE1A40F63000D44699 /* LYRUITestInterface.h */,
+				D667F8CF1A40F63000D44699 /* LYRUITestInterface.m */,
 				0A1B02B41A6DB2AA00D5DA8E /* test.png */,
 			);
 			name = "Test Utilities";
@@ -431,6 +436,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0A1B02B31A6DB23700D5DA8E /* LYRUITestClasses.m in Sources */,
+				D6A8485E1A7C33080026DAC8 /* LYRUIConversationAvatarItem.m in Sources */,
 				D0AF56C11A08383F0093D5A5 /* LYRUISampleConversationViewController.m in Sources */,
 				D667D0671A36561F00D63546 /* LYRMessageMock.m in Sources */,
 				D6B282601A368065001DC713 /* LYRMockContentStore.m in Sources */,

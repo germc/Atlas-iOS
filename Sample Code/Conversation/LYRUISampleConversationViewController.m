@@ -40,7 +40,9 @@
 
 - (NSAttributedString *)conversationViewController:(LYRUIConversationViewController *)conversationViewController attributedStringForDisplayOfDate:(NSDate *)date
 {
-    return [[NSAttributedString alloc] initWithString:[self.dateFormatter stringFromDate:date]];
+    NSDictionary *attributes = @{NSFontAttributeName : [UIFont systemFontOfSize:14],
+                                 NSForegroundColorAttributeName : [UIColor grayColor] };
+    return [[NSAttributedString alloc] initWithString:[self.dateFormatter stringFromDate:date] attributes:attributes];
 }
 
 - (NSAttributedString *)conversationViewController:(LYRUIConversationViewController *)conversationViewController attributedStringForDisplayOfRecipientStatus:(NSDictionary *)recipientStatus
