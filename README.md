@@ -7,7 +7,7 @@ LayerUIKit can be easily installed via Cocoapods. Include the following in your 
 pod 'LayerUIKit', git: 'git@github.com:layerhq/LayerUIKit'
 ```
 
-Please not that LayerUIKit must be used in conjunction with the `LayerKit` SDK . It will be installed as a dependency
+Please note that LayerUIKit must be used in conjunction with the `LayerKit` SDK . It will be installed as a dependency
 
 ##What's Included
 LayerUIKit provides the following components that must be used in conjunction with LayerKit.
