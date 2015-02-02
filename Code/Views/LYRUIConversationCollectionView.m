@@ -42,10 +42,10 @@ NSString *const LYRUIConversationCollectionViewAccessibilityIdentifier = @"Conve
     
     [self registerClass:[LYRUIConversationCollectionViewHeader class]
             forSupplementaryViewOfKind:UICollectionElementKindSectionHeader
-                   withReuseIdentifier:LYRUIMessageCellHeaderIdentifier];
+                   withReuseIdentifier:LYRUIConversationViewHeaderIdentifier];
     
     [self registerClass:[LYRUIConversationCollectionViewFooter class]
             forSupplementaryViewOfKind:UICollectionElementKindSectionFooter
-                   withReuseIdentifier:LYRUIMessageCellFooterIdentifier];
+                   withReuseIdentifier:LYRUIConversationViewFooterIdentifier];
 }
 @end
