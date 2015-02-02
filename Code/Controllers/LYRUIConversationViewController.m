@@ -119,17 +119,15 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
         [self configureAddressBarLayoutConstraints];
     }
 
-    [self registerControllerForNotifications];
+    [self registerForNotifications];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
     [self fetchLayerMessages];
-    [self setConversationViewTitle];
-    [self configureAvatarImageDisplay];
     [self updateCollectionViewInsets];
-    [self configureSendButtonEnablement];
+    [self configureControllerForConversation];
     
     // Workaround for a modal dismissal causing the message toolbar to remain offscreen on iOS 8.
     if (self.presentedViewController) {
@@ -187,8 +185,36 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
     }
 }
 
-// TODO - Encapsulate this in teh collection view
+- (void)dealloc
+{
+    self.collectionView.delegate = nil;
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
 
+#pragma mark - Public Method Implementation
+
+- (void)registerClass:(Class<LYRUIMessagePresenting>)cellClass forMessageCellWithReuseIdentifier:(NSString *)reuseIdentifier
+{
+    [self.collectionView registerClass:cellClass forCellWithReuseIdentifier:reuseIdentifier];
+}
+
+- (UICollectionViewCell<LYRUIMessagePresenting> *)collectionViewCellForMessage:(LYRMessage *)message
+{
+    NSIndexPath *indexPath = [self.queryController indexPathForObject:message];
+    if (indexPath) {
+        UICollectionViewCell *cell = [self.collectionView cellForItemAtIndexPath:[self collectionViewIndexPathForQueryControllerIndexPath:indexPath]];
+        if (cell) return (UICollectionViewCell<LYRUIMessagePresenting> *)cell;
+    }
+    return nil;
+}
+
+- (CGFloat)cellHeightForItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    LYRMessage *message = [self messageAtCollectionViewIndexPath:indexPath];
+    return [LYRUIMessageCollectionViewCell cellHeightForMessage:message];
+}
+
+#warning TODO - Encapsulate this in the collection view
 - (void)configureScrollIndicatorInset
 {
     UIEdgeInsets contentInset = self.collectionView.contentInset;
@@ -213,23 +239,6 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
     self.typingIndicatorViewBottomConstraint.constant = typingIndicatorBottomConstraintConstant;
 
     [super updateViewConstraints];
-}
-
-- (void)dealloc
-{
-    self.collectionView.delegate = nil;
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
-- (void)handleApplicationWillEnterForeground:(NSNotification *)notification
-{
-    if (self.conversation) {
-        NSError *error;
-        BOOL success = [self.conversation markAllMessagesAsRead:&error];
-        if (!success) {
-            NSLog(@"Failed to mark all messages as read with error: %@", error);
-        }
-    }
 }
 
 #pragma mark - Conversation Setup
@@ -265,9 +274,7 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
     [self.typingParticipantIDs removeAllObjects];
     [self updateTypingIndicatorOverlay:NO];
 
-    [self configureSendButtonEnablement];
-    [self setConversationViewTitle];
-    [self configureAvatarImageDisplay];
+    [self configureControllerForConversation];
     [self configureAddressBarForChangedParticipants];
 
     if (conversation) {
@@ -277,8 +284,14 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
         self.queryController = nil;
         [self.collectionView reloadData];
     }
-
     [self scrollToBottomOfCollectionViewAnimated:NO];
+}
+
+- (void)configureControllerForConversation
+{
+    [self configureAvatarImageDisplay];
+    [self setConversationViewTitle];
+    [self configureSendButtonEnablement];
 }
 
 - (void)configureAvatarImageDisplay
@@ -376,10 +389,7 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
  */
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
 {
-    // Messages correspond to sections
-    NSInteger numberOfSections = [self.queryController numberOfObjectsInSection:0];
-    numberOfSections += LYRUINumberOfSectionsBeforeFirstMessageSection;
-    return numberOfSections;
+    return [self.queryController numberOfObjectsInSection:0] +  LYRUINumberOfSectionsBeforeFirstMessageSection;
 }
 
 /**
@@ -391,19 +401,8 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     LYRMessage *message = [self messageAtCollectionViewIndexPath:indexPath];
-    NSString *reuseIdentifier;
-    if ([self.dataSource respondsToSelector:@selector(conversationViewController:reuseIdentifierForMessage:)]) {
-        reuseIdentifier = [self.dataSource conversationViewController:self reuseIdentifierForMessage:message];
-    }
-    if (!reuseIdentifier) {
-        if ([self.layerClient.authenticatedUserID isEqualToString:message.sentByUserID]) {
-            // If the message was sent by the currently authenticated user, it is outgoing
-            reuseIdentifier = LYRUIOutgoingMessageCellIdentifier;
-        } else {
-            // If the message was sent by someone other than the currently authenticated user, it is incoming
-            reuseIdentifier = LYRUIIncomingMessageCellIdentifier;
-        }
-    }
+    NSString *reuseIdentifier = [self reuseIdentifierForMessage:message atIndexPath:indexPath];
+    
     UICollectionViewCell<LYRUIMessagePresenting> *cell =  [self.collectionView dequeueReusableCellWithReuseIdentifier:reuseIdentifier forIndexPath:indexPath];
     [self configureCell:cell forMessage:message indexPath:indexPath];
     return cell;
@@ -418,8 +417,8 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 {
     [cell presentMessage:message];
     [cell shouldDisplayAvatarImage:self.shouldDisplayAvatarImage];
-
-    if ([self shouldDisplayParticipantInfoAtIndexPath:indexPath]) {
+    
+    if ([self shouldDisplayAvatarImageAtIndexPath:indexPath]) {
         [cell updateWithParticipant:[self participantForIdentifier:message.sentByUserID]];
     } else {
         [cell updateWithParticipant:nil];
@@ -461,13 +460,12 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
         LYRUIConversationCollectionViewMoreMessagesHeader *header = [self.collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:LYRUIMoreMessagesHeaderIdentifier forIndexPath:indexPath];
         return header;
     }
-
     if (kind == UICollectionElementKindSectionHeader) {
-        LYRUIConversationCollectionViewHeader *header = [self.collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:LYRUIMessageCellHeaderIdentifier forIndexPath:indexPath];
+        LYRUIConversationCollectionViewHeader *header = [self.collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:LYRUIConversationViewHeaderIdentifier forIndexPath:indexPath];
         [self configureHeader:header atIndexPath:indexPath];
         return header;
     } else {
-        LYRUIConversationCollectionViewFooter *footer = [self.collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:LYRUIMessageCellFooterIdentifier forIndexPath:indexPath];
+        LYRUIConversationCollectionViewFooter *footer = [self.collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:LYRUIConversationViewFooterIdentifier forIndexPath:indexPath];
         [self configureFooter:footer atIndexPath:indexPath];
         [self.sectionFooters addObject:footer];
         return footer;
@@ -477,41 +475,99 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section
 {
     if (section == LYRUIMoreMessagesSection) {
-        if (self.showingMoreMessagesIndicator) return CGSizeMake(0, 30);
-        return CGSizeZero;
+        return self.showingMoreMessagesIndicator ? CGSizeMake(0, 30) : CGSizeZero;
     }
-
-    CGFloat height = 0;
-    LYRMessage *message = [self messageAtCollectionViewSection:section];
-    NSUInteger firstMessageSection = LYRUINumberOfSectionsBeforeFirstMessageSection;
-    if (section > firstMessageSection) {
-        // 1. If previous message was sent by a different user, add 10px
-        LYRMessage *previousMessage = [self messageAtCollectionViewSection:section - 1];
-        if (![message.sentByUserID isEqualToString:previousMessage.sentByUserID]) {
-            height += 10;
-        }
-    }
-    // 2. If date label is shown, add 30px
+    
+    NSAttributedString *dateString;
+    NSString *participantName;
+    
     if ([self shouldDisplayDateLabelForSection:section]) {
-        height += 30;
+        dateString = [self.dataSource conversationViewController:self attributedStringForDisplayOfDate:[NSDate date]];
     }
-    // 3. If sender label is shown, add 30px
+    
     if ([self shouldDisplaySenderLabelForSection:section]) {
-        height += 30;
+        participantName = [self participantNameForMessage:[self messageAtCollectionViewSection:section]];
+    }
+    
+    CGFloat height = [LYRUIConversationCollectionViewHeader headerHeightWithDateString:dateString participantName:participantName];
+    return CGSizeMake(CGRectGetWidth(collectionView.frame), height);
+}
+
+#warning TODO - Encapsulate in Footer
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForFooterInSection:(NSInteger)section
+{
+    if (section == LYRUIMoreMessagesSection) return CGSizeZero;
+    if (section == self.collectionView.numberOfSections - 1) return CGSizeZero;
+    
+    CGFloat height = 0;
+    if ([self shouldDisplayReadReceiptForSection:section]) {
+            height += 8;
+    }
+    
+    LYRMessage *message = [self messageAtCollectionViewSection:section];
+    LYRMessage *nextMessage = [self messageAtCollectionViewSection:section + 1];
+    
+    if (![message.sentByUserID isEqualToString:nextMessage.sentByUserID]) {
+        height += 22;
     }
     return CGSizeMake(CGRectGetWidth(collectionView.frame), height);
 }
 
-- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForFooterInSection:(NSInteger)section
-{
-    if (section == LYRUIMoreMessagesSection) return CGSizeZero;
+#pragma mark - Header and Footer Configuration
 
-    // If we display a read receipt...
-    if ([self shouldDisplayReadReceiptForSection:section]) {
-        return CGSizeMake(CGRectGetWidth(collectionView.frame), 28);
+- (void)configureHeader:(LYRUIConversationCollectionViewHeader *)header atIndexPath:(NSIndexPath *)indexPath
+{
+    LYRMessage *message = [self messageAtCollectionViewIndexPath:indexPath];
+    if ([self shouldDisplayDateLabelForSection:indexPath.section]) {
+        [header updateWithAttributedStringForDate:[self attributedStringForMessageDate:message]];
     }
-    return CGSizeMake(CGRectGetWidth(collectionView.frame), 6);
+    if ([self shouldDisplaySenderLabelForSection:indexPath.section]) {
+        [header updateWithParticipantName:[self participantNameForMessage:message]];
+    }
 }
+
+- (void)configureFooter:(LYRUIConversationCollectionViewFooter *)footer atIndexPath:(NSIndexPath *)indexPath
+{
+    LYRMessage *message = [self messageAtCollectionViewIndexPath:indexPath];
+    footer.message = message;
+    if ([self shouldDisplayReadReceiptForSection:indexPath.section]) {
+        [footer updateWithAttributedStringForRecipientStatus:[self attributedStringForRecipientStatusOfMessage:message]];
+    } else {
+        [footer updateWithAttributedStringForRecipientStatus:nil];
+    }
+}
+- (NSAttributedString *)attributedStringForMessageDate:(LYRMessage *)message
+{
+    NSAttributedString *dateString;
+    if ([self.dataSource respondsToSelector:@selector(conversationViewController:attributedStringForDisplayOfDate:)]) {
+        NSDate *date = message.sentAt ?: [NSDate date];
+        dateString = [self.dataSource conversationViewController:self attributedStringForDisplayOfDate:date];
+        NSAssert([dateString isKindOfClass:[NSAttributedString class]], @"Date string must be an attributed string");
+    } else {
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"LYRUIConversationViewControllerDataSource must return an attributed string for Date" userInfo:nil];
+    }
+    return dateString;
+}
+
+- (NSString *)participantNameForMessage:(LYRMessage *)message
+{
+    id<LYRUIParticipant> participant = [self participantForIdentifier:message.sentByUserID];
+    NSString *participantName = participant.fullName ?: @"Unknown User";
+    return participantName;
+}
+
+- (NSAttributedString *)attributedStringForRecipientStatusOfMessage:(LYRMessage *)message
+{
+    NSAttributedString *recipientStatusString;
+    if ([self.dataSource respondsToSelector:@selector(conversationViewController:attributedStringForDisplayOfRecipientStatus:)]) {
+        recipientStatusString = [self.dataSource conversationViewController:self attributedStringForDisplayOfRecipientStatus:message.recipientStatusByUserID];
+        NSAssert([recipientStatusString isKindOfClass:[NSAttributedString class]], @"Recipient String must be an attributed string");
+    } else {
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"LYRUIConversationViewControllerDataSource must return an attributed string for recipient status" userInfo:nil];
+    }
+    return recipientStatusString;
+}
+
 
 #pragma mark - Recipient Status
 
@@ -524,9 +580,7 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
     if (recipientStatus != LYRRecipientStatusRead) {
         NSError *error;
         BOOL success = [message markAsRead:&error];
-        if (success) {
-            NSLog(@"Message successfully marked as read");
-        } else {
+        if (!success) {
             NSLog(@"Failed to mark message as read with error %@", error);
         }
     }
@@ -534,46 +588,50 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 
 #pragma mark - UI Configuration
 
-- (BOOL)shouldDisplayDateLabelForSection:(NSUInteger)section
+- (NSString *)reuseIdentifierForMessage:(LYRMessage *)message atIndexPath:(NSIndexPath *)indexPath
 {
-    // Always show date label for the first section
-    NSUInteger firstMessageSection = LYRUINumberOfSectionsBeforeFirstMessageSection;
-    if (section == firstMessageSection) return YES;
-    LYRMessage *message = [self messageAtCollectionViewSection:section];
-    if (section > firstMessageSection) {
-        LYRMessage *previousMessage = [self messageAtCollectionViewSection:section - 1];
-        NSTimeInterval interval = [message.receivedAt timeIntervalSinceDate:previousMessage.receivedAt];
-        // If it has been 60min since last message, show date label
-        if (interval > self.dateDisplayTimeInterval) {
-            return YES;
+    NSString *reuseIdentifier;
+    if ([self.dataSource respondsToSelector:@selector(conversationViewController:reuseIdentifierForMessage:)]) {
+        reuseIdentifier = [self.dataSource conversationViewController:self reuseIdentifierForMessage:message];
+    }
+    if (!reuseIdentifier) {
+        if ([self.layerClient.authenticatedUserID isEqualToString:message.sentByUserID]) {
+            reuseIdentifier = LYRUIOutgoingMessageCellIdentifier;
+        } else {
+            reuseIdentifier = LYRUIIncomingMessageCellIdentifier;
         }
     }
-    // Otherwise, don't show date label
+    return reuseIdentifier;
+}
+
+- (BOOL)shouldDisplayDateLabelForSection:(NSUInteger)section
+{
+    if(section == 0) return NO;
+    if (section == LYRUINumberOfSectionsBeforeFirstMessageSection) return YES;
+    
+    LYRMessage *message = [self messageAtCollectionViewSection:section];
+    LYRMessage *previousMessage = [self messageAtCollectionViewSection:section - 1];
+    
+    NSTimeInterval interval = [message.receivedAt timeIntervalSinceDate:previousMessage.receivedAt];
+    if (interval > self.dateDisplayTimeInterval) {
+        return YES;
+    }
     return NO;
 }
 
 - (BOOL)shouldDisplaySenderLabelForSection:(NSUInteger)section
 {
-    // 1. If the conversation only has 2 participants, don't show sender label
-    if (self.conversation.participants.count <= 2) {
-        return NO;
-    }
+    if (self.conversation.participants.count <= 2) return NO;
     
-    // 2. If the message is from the current user, don't show sender label
     LYRMessage *message = [self messageAtCollectionViewSection:section];
-    if ([message.sentByUserID isEqualToString:self.layerClient.authenticatedUserID]) {
-        return NO;
-    }
+    if ([message.sentByUserID isEqualToString:self.layerClient.authenticatedUserID]) return NO;
 
-    // 3. If the previous message was sent by the same user, don't show label
-    NSUInteger firstMessageSection = LYRUINumberOfSectionsBeforeFirstMessageSection;
-    if (section > firstMessageSection) {
+    if (section > LYRUINumberOfSectionsBeforeFirstMessageSection) {
         LYRMessage *previousMessage = [self messageAtCollectionViewSection:section - 1];
         if ([previousMessage.sentByUserID isEqualToString:message.sentByUserID]) {
             return NO;
         }
     }
-
     return YES;
 }
 
@@ -585,13 +643,12 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
     if (section != lastSection) return NO;
 
     LYRMessage *message = [self messageAtCollectionViewSection:section];
-    if ([message.sentByUserID isEqualToString:self.layerClient.authenticatedUserID]) {
-        return YES;
-    }
+    if (![message.sentByUserID isEqualToString:self.layerClient.authenticatedUserID])return NO;
+    
     return NO;
 }
 
-- (BOOL)shouldDisplayParticipantInfoAtIndexPath:(NSIndexPath *)indexPath
+- (BOOL)shouldDisplayAvatarImageAtIndexPath:(NSIndexPath *)indexPath
 {
     if (!self.shouldDisplayAvatarImage) return NO;
    
@@ -610,27 +667,6 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
         }
     }
     return YES;
-}
-
-- (void)registerClass:(Class<LYRUIMessagePresenting>)cellClass forMessageCellWithReuseIdentifier:(NSString *)reuseIdentifier
-{
-    [self.collectionView registerClass:cellClass forCellWithReuseIdentifier:reuseIdentifier];
-}
-
-- (UICollectionViewCell<LYRUIMessagePresenting> *)collectionViewCellForMessage:(LYRMessage *)message
-{
-    NSIndexPath *indexPath = [self.queryController indexPathForObject:message];
-    if (indexPath) {
-        UICollectionViewCell *cell = [self.collectionView cellForItemAtIndexPath:[self collectionViewIndexPathForQueryControllerIndexPath:indexPath]];
-        if (cell) return (UICollectionViewCell<LYRUIMessagePresenting> *)cell;
-    }
-    return nil;
-}
-
-- (CGFloat)cellHeightForItemAtIndexPath:(NSIndexPath *)indexPath
-{
-    LYRMessage *message = [self messageAtCollectionViewIndexPath:indexPath];
-    return [LYRUIMessageCollectionViewCell cellHeightForMessage:message];
 }
 
 #pragma mark - Notification Handlers
@@ -706,6 +742,17 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
         if (changeType == LYRObjectChangeTypeUpdate && [changedProperty isEqualToString:@"participants"]) {
             [self configureForChangedParticipants];
             break;
+        }
+    }
+}
+
+- (void)handleApplicationWillEnterForeground:(NSNotification *)notification
+{
+    if (self.conversation) {
+        NSError *error;
+        BOOL success = [self.conversation markAllMessagesAsRead:&error];
+        if (!success) {
+            NSLog(@"Failed to mark all messages as read with error: %@", error);
         }
     }
 }
@@ -843,8 +890,7 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 
 - (void)messageInputToolbar:(LYRUIMessageInputToolbar *)messageInputToolbar didTapRightAccessoryButton:(UIButton *)rightAccessoryButton
 {
-    if (!self.conversation) return;
-    if (!messageInputToolbar.messageParts.count) return;
+    if (!self.conversation || !messageInputToolbar.messageParts.count) return;
     
     NSOrderedSet *messages;
     if ([self.delegate respondsToSelector:@selector(conversationViewController:messagesForContentParts:)]) {
@@ -852,16 +898,12 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
         // If delegate returns an empty set, don't send any messages.
         if (messages && !messages.count) return;
     }
-    
     // If delegate returns nil, we fall back to default behavior.
-    if (!messages) {
-        messages = [self messagesForMessageParts:messageInputToolbar.messageParts];
-    }
+    if (!messages) messages = [self messagesForMessageParts:messageInputToolbar.messageParts];
     
     for (LYRMessage *message in messages) {
         [self sendMessage:message];
     }
-    
     if (self.addressBarController) [self.addressBarController setPermanent];
 }
 
@@ -1133,6 +1175,7 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
         LYRMessage *message = [self messageAtCollectionViewIndexPath:indexPath];
         [self configureCell:cell forMessage:message indexPath:indexPath];
     }
+    
     for (LYRUIConversationCollectionViewFooter *footer in self.sectionFooters) {
         NSIndexPath *queryControllerIndexPath = [self.queryController indexPathForObject:footer.message];
         if (!queryControllerIndexPath) continue;
@@ -1334,59 +1377,6 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
     self.addressBarController.selectedParticipants = participants;
 }
 
-- (void)configureHeader:(LYRUIConversationCollectionViewHeader *)header atIndexPath:(NSIndexPath *)indexPath
-{
-    LYRMessage *message = [self messageAtCollectionViewIndexPath:indexPath];
-    
-    if ([self shouldDisplayDateLabelForSection:indexPath.section]) {
-        NSAttributedString *dateString = [self attributedStringForMessageDate:message];
-        [header updateWithAttributedStringForDate:dateString];
-    }
-    if ([self shouldDisplaySenderLabelForSection:indexPath.section]) {
-        NSAttributedString *participantString = [self attributedStringForMessageSender:message];
-        [header updateWithAttributedStringForParticipantName:participantString];
-    }
-}
-
-- (void)configureFooter:(LYRUIConversationCollectionViewFooter *)footer atIndexPath:(NSIndexPath *)indexPath
-{
-    LYRMessage *message = [self messageAtCollectionViewIndexPath:indexPath];
-    footer.message = message;
-    if ([self shouldDisplayReadReceiptForSection:indexPath.section]) {
-        if ([self.dataSource respondsToSelector:@selector(conversationViewController:attributedStringForDisplayOfRecipientStatus:)]) {
-            NSAttributedString *recipientStatusString = [self.dataSource conversationViewController:self attributedStringForDisplayOfRecipientStatus:message.recipientStatusByUserID];
-            NSAssert([recipientStatusString isKindOfClass:[NSAttributedString class]], @"Recipient String must be an attributed string");
-            [footer updateWithAttributedStringForRecipientStatus:recipientStatusString];
-        } else {
-            @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"LYRUIConversationViewControllerDataSource must return an attributed string for recipient status" userInfo:nil];
-        }
-    } else {
-        [footer updateWithAttributedStringForRecipientStatus:nil];
-    }
-}
-
-- (NSAttributedString *)attributedStringForMessageDate:(LYRMessage *)message
-{
-    NSAttributedString *dateString;
-    if ([self.dataSource respondsToSelector:@selector(conversationViewController:attributedStringForDisplayOfDate:)]) {
-        NSDate *date = message.sentAt ?: [NSDate date];
-        dateString = [self.dataSource conversationViewController:self attributedStringForDisplayOfDate:date];
-        NSAssert([dateString isKindOfClass:[NSAttributedString class]], @"Date string must be an attributed string");
-    } else {
-        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"LYRUIConversationViewControllerDataSource must return an attributed string for Date" userInfo:nil];
-    }
-    return dateString;
-}
-
-- (NSAttributedString *)attributedStringForMessageSender:(LYRMessage *)message
-{
-    NSAttributedString *participantString;
-    id<LYRUIParticipant> participant = [self participantForIdentifier:message.sentByUserID];
-    NSString *participantName = participant.fullName ?: @"Unknown User";
-    participantString = [[NSAttributedString alloc] initWithString:participantName];
-    return participantString;
-}
-
 #pragma mark - Query Controller
 
 - (NSIndexPath *)queryControllerIndexPathForCollectionViewIndexPath:(NSIndexPath *)collectionViewIndexPath
@@ -1441,7 +1431,6 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 
 - (void)configureCollectionViewLayoutConstraints
 {
-    //********** Collection View Constraints **********//
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.collectionView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0]];
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.collectionView attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeRight multiplier:1.0 constant:0]];
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.collectionView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeTop multiplier:1.0 constant:0]];
@@ -1467,7 +1456,7 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 
 #pragma mark - NSNotification Center Registration
 
-- (void)registerControllerForNotifications
+- (void)registerForNotifications
 {
     // Keyboard Notifications
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];

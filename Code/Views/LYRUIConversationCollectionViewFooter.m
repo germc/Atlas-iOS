@@ -20,7 +20,8 @@
 
 @implementation LYRUIConversationCollectionViewFooter
 
-NSString *const LYRUIMessageCellFooterIdentifier = @"LYUIMessageCellFooterIdentifier";
+NSString *const LYRUIConversationViewFooterIdentifier = @"LYRUIConversationViewFooterIdentifier";
+CGFloat const LYRUIConversationViewViewFooterVericalPadding = 6;
 
 - (id)initWithFrame:(CGRect)frame
 {

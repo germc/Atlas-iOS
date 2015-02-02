@@ -10,7 +10,7 @@
 
 @class LYRMessage;
 
-extern NSString *const LYRUIMessageCellFooterIdentifier;
+extern NSString *const LYRUIConversationViewFooterIdentifier;
 
 /**
  @abstract The `LYRUIConversationCollectionViewFooter` class provides support for displaying
