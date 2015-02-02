@@ -670,7 +670,6 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 {
     LYRMessage *message = [self messageAtCollectionViewIndexPath:indexPath];
     LYRMessagePart *part = message.parts.firstObject;
-    // Guarding against external content in old SDKs
 
     CGFloat height = 0;
     if ([part.MIMEType isEqualToString:LYRUIMIMETypeTextPlain]) {
