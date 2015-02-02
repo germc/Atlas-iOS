@@ -66,4 +66,5 @@
         self.avatarImageView.hidden = YES;
     }
 }
+
 @end

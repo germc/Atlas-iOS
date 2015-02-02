@@ -19,12 +19,18 @@ extern NSString *const LYRUIMIMETypeImageSize;          // application/json+imag
 extern NSString *const LYRUIMIMETypeLocation;           // location/coordinate
 extern NSString *const LYRUIMIMETypeDate;               // text/date
 
-NSString *const LYRUIImagePreviewWidthKey;
-NSString *const LYRUIImagePreviewHeightKey;
+extern NSString *const LYRUIImagePreviewWidthKey;
+extern NSString *const LYRUIImagePreviewHeightKey;
+extern NSString *const LYRUILocationLatitudeKey;
+extern NSString *const LYRUILocationLongitudeKey;
 
-
+//****************************
+// Max Cell Dimensions
+//****************************
 
 CGFloat LYRUIMaxCellWidth();
+
+CGFloat LYRUIMaxCellHeight();
 
 //****************************
 // Image Utilities
@@ -40,18 +46,17 @@ CGSize LYRUITextPlainSize(NSString *string, UIFont *font);
 
 CGRect LYRUIImageRectConstrainedToSize(CGSize imageSize, CGSize maxSize);
 
-
 //****************************
 // Message Part Constructors
 //****************************
-
-LYRMessagePart *LYRUIMessagePartWithLocation(CLLocation *location);
 
 LYRMessagePart *LYRUIMessagePartWithText(NSString *text);
 
 LYRMessagePart *LYRUIMessagePartWithJPEGImage(UIImage *image, BOOL isPreview);
 
 LYRMessagePart *LYRUIMessagePartForImageSize(UIImage *image);
+
+LYRMessagePart *LYRUIMessagePartWithLocation(CLLocation *location);
 
 //****************************
 // Image Capture Utilities

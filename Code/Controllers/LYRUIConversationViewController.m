@@ -672,7 +672,7 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
     LYRMessagePart *part = message.parts.firstObject;
     // Guarding against external content in old SDKs
 
-    CGFloat height;
+    CGFloat height = 0;
     if ([part.MIMEType isEqualToString:LYRUIMIMETypeTextPlain]) {
         NSString *text = [[NSString alloc] initWithData:part.data encoding:NSUTF8StringEncoding];
         UIFont *font = [self messageCellFontForMessage:message];
@@ -682,17 +682,19 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
         CGSize size;
         if (part.isDownloaded) {
             UIImage *image = [UIImage imageWithData:part.data];
-            size = image ? LYRUIImageSize(image) : CGSizeMake(40, 40);
+            if (image) size = LYRUIImageSize(image);
         } else {
             LYRMessagePart *sizePart = message.parts[2];
-            size = LYRUIImageSizeForJSONData(sizePart.data);
+            if (sizePart.MIMEType == LYRUIMIMETypeImageSize) {
+                size = LYRUIImageSizeForJSONData(sizePart.data);
+            }
         }
         height = size.height;
     } else if ([part.MIMEType isEqualToString:LYRUIMIMETypeLocation]) {
         height = LYRUIMessageBubbleMapHeight;
-    } else {
-        height = 10;
     }
+    
+    if (!height) height = LYRUIMessageBubbleDefaultHeight;
     height = ceil(height);
     return height;
 }
@@ -980,13 +982,13 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
             pushText = part;
             [parts addObject:LYRUIMessagePartWithText(part) ];
         } else if ([part isKindOfClass:[UIImage class]]) {
-            pushText = @"Attachement: Image";
+            pushText = @"Attachment: Image";
             UIImage *image = part;
             [parts addObject:LYRUIMessagePartWithJPEGImage(image, NO)];
             [parts addObject:LYRUIMessagePartWithJPEGImage(image, YES)];
             [parts addObject:LYRUIMessagePartForImageSize(image)];
         } else if ([part isKindOfClass:[CLLocation class]]) {
-            pushText = @"Attachement: Location";
+            pushText = @"Attachment: Location";
             [parts addObject:LYRUIMessagePartWithLocation(part)];
         }
         LYRMessage *message = [self messageForMessageParts:parts pushText:pushText];

@@ -18,22 +18,21 @@ NSString *LYRUIProgressViewStringForIconStyle(LYRUIProgressViewIconStyle iconSty
     switch (iconStyle) {
         case LYRUIProgressViewIconStyleDownload:
             return @"▼";
-            break;
+
         case LYRUIProgressViewIconStylePause:
             return @"❚❚";
-            break;
+
         case LYRUIProgressViewIconStyleStop:
             return @"⬛︎";
-            break;
+
         case LYRUIProgressViewIconStylePlay:
             return @"▶︎";
-            break;
+
         case LYRUIProgressViewIconStyleError:
             return @"✕";
-            break;
+
         default:
             return nil;
-            break;
     }
 }
 
@@ -43,10 +42,10 @@ NSString *LYRUIProgressViewStringForIconStyle(LYRUIProgressViewIconStyle iconSty
 @property (nonatomic) CAShapeLayer *progressRingLayer;
 @property (nonatomic) CATextLayer *iconLayer;
 @property (nonatomic) UIBezierPath *progressArcPath;
-@property (nonatomic) float borderWidth;
+@property (nonatomic) CGFloat borderWidth;
 @property (nonatomic, readonly) float radius;
 @property (nonatomic) NSTimeInterval animationDuration;
-@property (nonatomic) float progress;
+@property (nonatomic) double progress;
 
 @end
 
@@ -99,7 +98,7 @@ NSString *LYRUIProgressViewStringForIconStyle(LYRUIProgressViewIconStyle iconSty
     _iconLayer.frame = CGRectOffset(self.bounds, 0, (self.bounds.size.height / 5.5));
     _iconLayer.anchorPoint = CGPointMake(0.5, 0.5);
     _iconLayer.foregroundColor = [UIColor colorWithWhite:1.0f alpha:0.3f].CGColor;
-    _iconLayer.alignmentMode = @"center";
+    _iconLayer.alignmentMode = kCAAlignmentCenter;
     _iconLayer.opacity = self.iconStyle == LYRUIProgressViewIconStyleNone ? 0.0f : 1.0f;
     _iconLayer.string = LYRUIProgressViewStringForIconStyle(self.iconStyle) ?: @"";
 }
@@ -109,19 +108,8 @@ NSString *LYRUIProgressViewStringForIconStyle(LYRUIProgressViewIconStyle iconSty
     return MIN(self.bounds.size.width, self.bounds.size.height);
 }
 
-- (void)setProgress:(float)newProgress animated:(BOOL)animated
+- (void)setProgress:(double)newProgress animated:(BOOL)animated
 {
-    // Do not animate if going backwards.
-//    if (animated) {
-//        CABasicAnimation *strokeEndAnimation = [CABasicAnimation animationWithKeyPath:@"strokeEnd"];
-//        strokeEndAnimation.duration = self.animationDuration;
-//        [strokeEndAnimation setFillMode:kCAFillModeForwards];
-//        strokeEndAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear];
-//        strokeEndAnimation.removedOnCompletion = YES;
-//        strokeEndAnimation.fromValue = [NSNumber numberWithFloat:self.progress];
-//        strokeEndAnimation.toValue = [NSNumber numberWithFloat:newProgress];
-//        [self.progressRingLayer addAnimation:strokeEndAnimation forKey:@"progressStatus"];
-//    }
     self.progressRingLayer.strokeEnd = newProgress;
     _progress = newProgress;
 }
@@ -131,7 +119,7 @@ NSString *LYRUIProgressViewStringForIconStyle(LYRUIProgressViewIconStyle iconSty
     if (self.iconStyle == LYRUIProgressViewIconStyleNone && iconStyle != LYRUIProgressViewIconStyleNone) {
         CABasicAnimation *fadeInAnimation = [CABasicAnimation animationWithKeyPath:@"opacity"];
         fadeInAnimation.duration = self.animationDuration;
-        [fadeInAnimation setFillMode:kCAFillModeForwards];
+        fadeInAnimation.fillMode = kCAFillModeForwards;
         fadeInAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear];
         fadeInAnimation.removedOnCompletion = NO;
         fadeInAnimation.fromValue = [NSNumber numberWithFloat:0.0f];
@@ -141,7 +129,7 @@ NSString *LYRUIProgressViewStringForIconStyle(LYRUIProgressViewIconStyle iconSty
     } else if (self.iconStyle != LYRUIProgressViewIconStyleNone && iconStyle == LYRUIProgressViewIconStyleNone) {
         CABasicAnimation *fadeOutAnimation = [CABasicAnimation animationWithKeyPath:@"opacity"];
         fadeOutAnimation.duration = self.animationDuration;
-        [fadeOutAnimation setFillMode:kCAFillModeForwards];
+        fadeOutAnimation.fillMode = kCAFillModeForwards;
         fadeOutAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear];
         fadeOutAnimation.removedOnCompletion = NO;
         fadeOutAnimation.fromValue = [NSNumber numberWithFloat:1.0f];

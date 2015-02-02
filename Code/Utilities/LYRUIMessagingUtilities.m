@@ -21,7 +21,10 @@ NSString *const LYRUIMIMETypeDate = @"text/date";
 
 NSString *const LYRUIImagePreviewWidthKey = @"width";
 NSString *const LYRUIImagePreviewHeightKey = @"height";
+NSString *const LYRUILocationLatitudeKey = @"latitude";
+NSString *const LYRUILocationLongitudeKey = @"longitude";
 
+#pragma mark - Max Cell Dimensions
 
 CGFloat LYRUIMaxCellWidth()
 {
@@ -33,29 +36,7 @@ CGFloat LYRUIMaxCellHeight()
     return 300;
 }
 
-CGSize LYRUITextPlainSize(NSString *text, UIFont *font)
-{
-    CGRect rect = [text boundingRectWithSize:CGSizeMake(LYRUIMaxCellWidth(), CGFLOAT_MAX)
-                                     options:NSStringDrawingUsesLineFragmentOrigin
-                                  attributes:@{NSFontAttributeName: font}
-                                     context:nil];
-    return rect.size;
-}
-
-
-CGSize LYRUIImageSizeForData(NSData *data)
-{
-    UIImage *image = [UIImage imageWithData:data];
-    return LYRUIImageSize(image);
-}
-
-CGSize LYRUIImageSizeForJSONData(NSData *data)
-{
-    NSDictionary *sizeDictionary = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:nil];
-    CGFloat width = [sizeDictionary[LYRUIImagePreviewWidthKey] floatValue];;
-    CGFloat height = [sizeDictionary[LYRUIImagePreviewHeightKey] floatValue];
-    return CGSizeMake(width, height);
-}
+#pragma mark - Private Image Utilities
 
 CGSize LYRUISizeProportionallyConstrainedToSize(CGSize nativeSize, CGSize maxSize)
 {
@@ -70,20 +51,6 @@ CGSize LYRUISizeProportionallyConstrainedToSize(CGSize nativeSize, CGSize maxSiz
     return itemSize;
 }
 
-CGSize LYRUIImageSize(UIImage *image)
-{
-    CGSize maxSize = CGSizeMake(LYRUIMaxCellWidth(), LYRUIMaxCellHeight());
-    CGSize itemSize = LYRUISizeProportionallyConstrainedToSize(image.size, maxSize);
-    return itemSize;
-}
-
-CGRect LYRUIImageRectConstrainedToSize(CGSize imageSize, CGSize maxSize)
-{
-    CGSize itemSize = LYRUISizeProportionallyConstrainedToSize(imageSize, maxSize);
-    CGRect thumbRect = {0, 0, itemSize};
-    return thumbRect;
-}
-
 UIImage *LYRUIAdjustOrientationForImage(UIImage *originalImage)
 {
     UIGraphicsBeginImageContextWithOptions(originalImage.size, NO, originalImage.scale);
@@ -93,20 +60,57 @@ UIImage *LYRUIAdjustOrientationForImage(UIImage *originalImage)
     return fixedImage;
 }
 
-LYRMessagePart *LYRUIMessagePartWithText(NSString *text)
+#pragma mark - Image Utilities
+
+CGSize LYRUIImageSizeForData(NSData *data)
 {
-    return [LYRMessagePart messagePartWithMIMEType:@"text/plain" data:[text dataUsingEncoding:NSUTF8StringEncoding]];
+    UIImage *image = [UIImage imageWithData:data];
+    return LYRUIImageSize(image);
 }
 
-LYRMessagePart *LYRUIMessagePartWithLocation(CLLocation *location)
+CGSize LYRUIImageSizeForJSONData(NSData *data)
 {
-    NSNumber *lat = @(location.coordinate.latitude);
-    NSNumber *lon = @(location.coordinate.longitude);
-    NSData *data = [NSJSONSerialization dataWithJSONObject:@{@"lat": lat, @"lon": lon} options:0 error:nil];
-    return [LYRMessagePart messagePartWithMIMEType:LYRUIMIMETypeLocation data:data];
+    NSDictionary *sizeDictionary = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:nil];
+    CGFloat width = [sizeDictionary[LYRUIImagePreviewWidthKey] floatValue];
+    CGFloat height = [sizeDictionary[LYRUIImagePreviewHeightKey] floatValue];
+    return CGSizeMake(width, height);
 }
 
-// Photo Resizing
+CGSize LYRUIImageSize(UIImage *image)
+{
+    CGSize maxSize = CGSizeMake(LYRUIMaxCellWidth(), LYRUIMaxCellHeight());
+    CGSize itemSize = LYRUISizeProportionallyConstrainedToSize(image.size, maxSize);
+    return itemSize;
+}
+
+CGSize LYRUITextPlainSize(NSString *text, UIFont *font)
+{
+    CGRect rect = [text boundingRectWithSize:CGSizeMake(LYRUIMaxCellWidth(), CGFLOAT_MAX)
+                                     options:NSStringDrawingUsesLineFragmentOrigin
+                                  attributes:@{NSFontAttributeName: font}
+                                     context:nil];
+    return rect.size;
+}
+
+CGRect LYRUIImageRectConstrainedToSize(CGSize imageSize, CGSize maxSize)
+{
+    CGSize itemSize = LYRUISizeProportionallyConstrainedToSize(imageSize, maxSize);
+    CGRect thumbRect = {0, 0, itemSize};
+    return thumbRect;
+}
+
+#pragma mark - Private Message Part Helpers
+
+NSData *LYRUIJPEGDataForImageWithConstraint(UIImage *image, CGFloat constraint, CGFloat quality)
+{
+    NSData *pngData = UIImagePNGRepresentation(image);
+    CGImageSourceRef source = CGImageSourceCreateWithData((CFDataRef)pngData, NULL);
+    CGImageRef resizedImage = CGImageSourceCreateThumbnailAtIndex(source, 0, (CFDictionaryRef)@{ (NSString *)kCGImageSourceThumbnailMaxPixelSize: @(constraint),
+                                                                                                 (NSString *)kCGImageSourceCreateThumbnailFromImageIfAbsent: @(YES) });
+    UIImage *resizedUIImage = [UIImage imageWithCGImage:resizedImage];
+    return UIImageJPEGRepresentation(resizedUIImage, quality);
+}
+
 CGSize  LYRUISizeFromOriginalSizeWithConstraint(CGSize originalSize, CGFloat constraint)
 {
     if (originalSize.height > constraint && (originalSize.height > originalSize.width)) {
@@ -119,14 +123,11 @@ CGSize  LYRUISizeFromOriginalSizeWithConstraint(CGSize originalSize, CGFloat con
     return originalSize;
 }
 
-NSData *LYRUIJPEGDataForImageWithConstraint(UIImage *image, CGFloat constraint, float quality)
+#pragma mark - Message Parts Constructors
+
+LYRMessagePart *LYRUIMessagePartWithText(NSString *text)
 {
-    NSData* pngData =  UIImagePNGRepresentation(image);
-    CGImageSourceRef source = CGImageSourceCreateWithData((CFDataRef)pngData, NULL);
-    CGImageRef resizedImage = CGImageSourceCreateThumbnailAtIndex(source, 0, (CFDictionaryRef)@{ (NSString *)kCGImageSourceThumbnailMaxPixelSize: @(constraint),
-                                                                                                 (NSString *)kCGImageSourceCreateThumbnailFromImageIfAbsent: @(YES) });
-    UIImage *resizedUIImage = [UIImage imageWithCGImage:resizedImage];
-    return UIImageJPEGRepresentation(resizedUIImage, quality);
+    return [LYRMessagePart messagePartWithMIMEType:@"text/plain" data:[text dataUsingEncoding:NSUTF8StringEncoding]];
 }
 
 LYRMessagePart *LYRUIMessagePartWithJPEGImage(UIImage *image, BOOL isPreview)
@@ -150,6 +151,16 @@ LYRMessagePart *LYRUIMessagePartForImageSize(UIImage *image)
                                                          error:nil];
     return [LYRMessagePart messagePartWithMIMEType:LYRUIMIMETypeImageSize data:jsonData];
 }
+
+LYRMessagePart *LYRUIMessagePartWithLocation(CLLocation *location)
+{
+    NSNumber *lat = @(location.coordinate.latitude);
+    NSNumber *lon = @(location.coordinate.longitude);
+    NSData *data = [NSJSONSerialization dataWithJSONObject:@{LYRUILocationLatitudeKey: lat, LYRUILocationLongitudeKey: lon} options:0 error:nil];
+    return [LYRMessagePart messagePartWithMIMEType:LYRUIMIMETypeLocation data:data];
+}
+
+#pragma mark - Image Capture Utilities
 
 void LYRUILastPhotoTaken(void(^completionHandler)(UIImage *image, NSError *error))
 {

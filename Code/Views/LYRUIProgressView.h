@@ -9,19 +9,20 @@
 #import <UIKit/UIKit.h>
 
 typedef NS_ENUM(NSInteger, LYRUIProgressViewIconStyle) {
-    LYRUIProgressViewIconStyleNone            = 0,
-    LYRUIProgressViewIconStyleDownload        = 1,
-    LYRUIProgressViewIconStyleStop            = 2,
-    LYRUIProgressViewIconStylePause           = 3,
-    LYRUIProgressViewIconStylePlay            = 4,
-    LYRUIProgressViewIconStyleError           = 5,
+    LYRUIProgressViewIconStyleNone,
+    LYRUIProgressViewIconStyleDownload,
+    LYRUIProgressViewIconStyleStop,
+    LYRUIProgressViewIconStylePause,
+    LYRUIProgressViewIconStylePlay,
+    LYRUIProgressViewIconStyleError,
 };
 
 @interface LYRUIProgressView : UIView
 
-@property (nonatomic, readonly) float progress;
+@property (nonatomic, readonly) double progress;
+
 @property (nonatomic) LYRUIProgressViewIconStyle iconStyle;
 
-- (void)setProgress:(float)newProgress animated:(BOOL)animated;
+- (void)setProgress:(double)newProgress animated:(BOOL)animated;
 
 @end
