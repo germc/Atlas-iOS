@@ -121,7 +121,6 @@ NSString *const LYRUIUserDidTapLinkNotification = @"LYRUIUserDidTapLinkNotificat
 
 - (void)updateWithLocation:(CLLocationCoordinate2D)location
 {
-
     self.imageWidthConstraint.constant = LYRUIMaxCellWidth();
     [self applyImageWidthConstraint:YES];
     [self setBubbleViewContentType:LYRUIBubbleViewContentTypeLocation];
@@ -153,7 +152,7 @@ NSString *const LYRUIUserDidTapLinkNotification = @"LYRUIUserDidTapLinkNotificat
             self.bubbleImageView.contentMode = UIViewContentModeScaleAspectFill;
             self.bubbleImageView.image = image;
             self.locationShown = location;
-			[[[self class] sharedCache] setObject:finalImage forKey:cachedImageIdentifier];
+			[[[self class] sharedCache] setObject:image forKey:cachedImageIdentifier];
         }
         self.bubbleImageView.hidden = NO;
         self.bubbleImageView.alpha = 0.0;
