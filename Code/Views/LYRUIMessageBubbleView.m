@@ -140,7 +140,7 @@ NSString *const LYRUIUserDidTapLinkNotification = @"LYRUIUserDidTapLinkNotificat
             self.bubbleImageView.contentMode = UIViewContentModeScaleAspectFill;
             self.bubbleImageView.image = image;
             self.locationShown = location;
-			[[[self class] sharedCache] setObject:image forKey:cachedImageIdentifier];
+            [[[self class] sharedCache] setObject:image forKey:cachedImageIdentifier];
         }
         self.bubbleImageView.hidden = NO;
         self.bubbleImageView.alpha = 0.0;
