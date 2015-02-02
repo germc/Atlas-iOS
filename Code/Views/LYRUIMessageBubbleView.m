@@ -106,19 +106,6 @@ NSString *const LYRUIUserDidTapLinkNotification = @"LYRUIUserDidTapLinkNotificat
     [self setBubbleViewContentType:LYRUIBubbleViewContentTypeImage];
 }
 
-- (void)applyImageWidthConstraint:(BOOL)applyImageWidthConstraint
-{
-    if (applyImageWidthConstraint) {
-        if (![self.constraints containsObject:self.imageWidthConstraint]) {
-            [self addConstraint:self.imageWidthConstraint];
-        }
-    } else {
-        if ([self.constraints containsObject:self.imageWidthConstraint]) {
-            [self removeConstraint:self.imageWidthConstraint];
-        }
-    }
-}
-
 - (void)updateWithLocation:(CLLocationCoordinate2D)location
 {
     self.imageWidthConstraint.constant = LYRUIMaxCellWidth();
@@ -196,6 +183,19 @@ NSString *const LYRUIUserDidTapLinkNotification = @"LYRUIUserDidTapLinkNotificat
             break;
     }
     [self setNeedsUpdateConstraints];
+}
+
+- (void)applyImageWidthConstraint:(BOOL)applyImageWidthConstraint
+{
+    if (applyImageWidthConstraint) {
+        if (![self.constraints containsObject:self.imageWidthConstraint]) {
+            [self addConstraint:self.imageWidthConstraint];
+        }
+    } else {
+        if ([self.constraints containsObject:self.imageWidthConstraint]) {
+            [self removeConstraint:self.imageWidthConstraint];
+        }
+    }
 }
 
 #pragma mark - Activity Indicator 
