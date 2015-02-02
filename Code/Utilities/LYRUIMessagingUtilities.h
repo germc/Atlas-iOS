@@ -23,7 +23,12 @@ NSString *const LYRUIImagePreviewWidthKey;
 NSString *const LYRUIImagePreviewHeightKey;
 
 
+
 CGFloat LYRUIMaxCellWidth();
+
+//****************************
+// Image Utilities
+//****************************
 
 CGSize LYRUIImageSizeForData(NSData *data);
 
@@ -33,11 +38,12 @@ CGSize LYRUIImageSize(UIImage *image);
 
 CGSize LYRUITextPlainSize(NSString *string, UIFont *font);
 
-CGSize LYRUISizeProportionallyConstrainedToSize(CGSize nativeSize, CGSize maxSize);
-
 CGRect LYRUIImageRectConstrainedToSize(CGSize imageSize, CGSize maxSize);
 
-UIImage *LYRUIAdjustOrientationForImage(UIImage *originalImage);
+
+//****************************
+// Message Part Constructors
+//****************************
 
 LYRMessagePart *LYRUIMessagePartWithLocation(CLLocation *location);
 
@@ -47,6 +53,12 @@ LYRMessagePart *LYRUIMessagePartWithJPEGImage(UIImage *image, BOOL isPreview);
 
 LYRMessagePart *LYRUIMEssagePartForImageSize(UIImage *image);
 
+//****************************
+// Image Capture Utilities
+//****************************
+
 void LYRUILastPhotoTaken(void(^completionHandler)(UIImage *image, NSError *error));
+
+void LYRUIPhotoForLocation(CLLocation *location, void(^completionHandler)(UIImage *image, NSError *error));
 
 NSArray *LYRUILinkResultsForText(NSString *text);

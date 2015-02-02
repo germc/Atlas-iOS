@@ -76,7 +76,6 @@ NSString *const LYRUIUserDidTapLinkNotification = @"LYRUIUserDidTapLinkNotificat
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleImageView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0]];
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleImageView attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0]];
         self.imageWidthConstraint = [NSLayoutConstraint constraintWithItem:self.bubbleImageView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:0];
-        [self addConstraint:self.imageWidthConstraint];
         
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.progressView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0]];
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.progressView attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0]];
@@ -93,51 +92,40 @@ NSString *const LYRUIUserDidTapLinkNotification = @"LYRUIUserDidTapLinkNotificat
     return self;
 }
 
-- (void)updateActivityIndicatorWithProgress:(float)progress options:(LYRUIProgressViewOptions)options
-{
-    BOOL shouldBeVisible = (options & LYRUIProgressViewOptionShowProgress);
-    NSLog(@"visible:%d progress:%.2f: %@", shouldBeVisible, progress, [NSThread callStackSymbols]);
-    if (options & LYRUIProgressViewOptionAnimated) {
-        [UIView animateWithDuration:0.50f animations:^{
-            self.progressView.alpha = shouldBeVisible ? 1.0f : 0.0f;
-        } completion:^(BOOL finished) {
-        }];
-    } else {
-        self.progressView.alpha = shouldBeVisible ? 1.0f : 0.0f;
-    }
-    if (options & LYRUIProgressViewOptionButtonStyleNone) {
-        self.progressView.iconStyle = LYRUIProgressViewIconStyleNone;
-    } else if (options & LYRUIProgressViewOptionButtonStyleDownload) {
-        self.progressView.iconStyle = LYRUIProgressViewIconStyleDownload;
-    } else if (options & LYRUIProgressViewOptionButtonStylePlay) {
-        self.progressView.iconStyle = LYRUIProgressViewIconStylePlay;
-    } else if (options & LYRUIProgressViewOptionButtonStylePause) {
-        self.progressView.iconStyle = LYRUIProgressViewIconStylePause;
-    } else if (options & LYRUIProgressViewOptionButtonStyleStop) {
-        self.progressView.iconStyle = LYRUIProgressViewIconStyleStop;
-    }
-    
-    [self.progressView setProgress:progress animated:(options & LYRUIProgressViewOptionAnimated)];
-}
-
 - (void)updateWithAttributedText:(NSAttributedString *)text
 {
     self.bubbleViewLabel.attributedText = text;
-    if (self.imageWidthConstraint) [self removeConstraint:self.imageWidthConstraint];
-    [self setContentType:LYRUIBubbleViewContentTypeText];
+    [self applyImageWidthConstraint:NO];
+    [self setBubbleViewContentType:LYRUIBubbleViewContentTypeText];
 }
 
 - (void)updateWithImage:(UIImage *)image width:(CGFloat)width
 {
     self.bubbleImageView.image = image;
     self.imageWidthConstraint.constant = width;
-    [self setContentType:LYRUIBubbleViewContentTypeImage];
+    [self applyImageWidthConstraint:YES];
+    [self setBubbleViewContentType:LYRUIBubbleViewContentTypeImage];
+}
+
+- (void)applyImageWidthConstraint:(BOOL)applyImageWidthConstraint
+{
+    if (applyImageWidthConstraint) {
+        if (![self.constraints containsObject:self.imageWidthConstraint]) {
+            [self addConstraint:self.imageWidthConstraint];
+        }
+    } else {
+        if ([self.constraints containsObject:self.imageWidthConstraint]) {
+            [self removeConstraint:self.imageWidthConstraint];
+        }
+    }
 }
 
 - (void)updateWithLocation:(CLLocationCoordinate2D)location
 {
 
     self.imageWidthConstraint.constant = LYRUIMaxCellWidth();
+    [self applyImageWidthConstraint:YES];
+    [self setBubbleViewContentType:LYRUIBubbleViewContentTypeLocation];
     [self setNeedsUpdateConstraints];
     
     BOOL alreadyShowingLocation = self.locationShown.latitude == location.latitude && self.locationShown.longitude == location.longitude;
@@ -207,6 +195,93 @@ NSString *const LYRUIUserDidTapLinkNotification = @"LYRUIUserDidTapLinkNotificat
     }];
 }
 
+- (void)setBubbleViewContentType:(LYRUIBubbleViewContentType)contentType
+{
+    switch (contentType) {
+        case LYRUIBubbleViewContentTypeText:
+            self.bubbleImageView.hidden = YES;
+            self.bubbleViewLabel.hidden = NO;
+            self.bubbleImageView.image = nil;
+            self.progressView.hidden = YES;
+            self.locationShown = kCLLocationCoordinate2DInvalid;
+            [self.snapshotter cancel];
+            
+            break;
+        case LYRUIBubbleViewContentTypeImage:
+            self.bubbleViewLabel.hidden = YES;
+            self.bubbleImageView.hidden = NO;
+            self.progressView.hidden = NO;
+            self.locationShown = kCLLocationCoordinate2DInvalid;
+            self.bubbleViewLabel.text = nil;
+            [self.snapshotter cancel];
+            break;
+        case LYRUIBubbleViewContentTypeLocation:
+            self.bubbleImageView.hidden = YES;
+            self.bubbleImageView.image = nil;
+            self.bubbleViewLabel.hidden = YES;
+            self.progressView.hidden = YES;
+            self.bubbleViewLabel.text = nil;
+            [self.snapshotter cancel];
+            break;
+        default:
+            break;
+    }
+    [self setNeedsUpdateConstraints];
+}
+
+#pragma mark - Activity Indicator 
+
+- (void)updateActivityIndicatorWithProgress:(float)progress options:(LYRUIProgressViewOptions)options
+{
+    BOOL shouldBeVisible = (options & LYRUIProgressViewOptionShowProgress);
+    if (options & LYRUIProgressViewOptionAnimated) {
+        [UIView animateWithDuration:0.50f animations:^{
+            self.progressView.alpha = shouldBeVisible ? 1.0f : 0.0f;
+        } completion:nil];
+    } else {
+        self.progressView.alpha = shouldBeVisible ? 1.0f : 0.0f;
+    }
+    if (options & LYRUIProgressViewOptionButtonStyleNone) {
+        self.progressView.iconStyle = LYRUIProgressViewIconStyleNone;
+    } else if (options & LYRUIProgressViewOptionButtonStyleDownload) {
+        self.progressView.iconStyle = LYRUIProgressViewIconStyleDownload;
+    } else if (options & LYRUIProgressViewOptionButtonStylePlay) {
+        self.progressView.iconStyle = LYRUIProgressViewIconStylePlay;
+    } else if (options & LYRUIProgressViewOptionButtonStylePause) {
+        self.progressView.iconStyle = LYRUIProgressViewIconStylePause;
+    } else if (options & LYRUIProgressViewOptionButtonStyleStop) {
+        self.progressView.iconStyle = LYRUIProgressViewIconStyleStop;
+    }
+    
+    [self.progressView setProgress:progress animated:(options & LYRUIProgressViewOptionAnimated)];
+}
+
+#pragma mark - Copy / Paste Support
+
+- (void)copyItem
+{
+    UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+    if (!self.bubbleViewLabel.isHidden) {
+        pasteboard.string = self.bubbleViewLabel.text;
+    } else {
+        pasteboard.image = self.bubbleImageView.image;
+    }
+}
+
+- (void)menuControllerDisappeared
+{
+    [self.longPressMask removeFromSuperview];
+    self.longPressMask = nil;
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (BOOL)canBecomeFirstResponder
+{
+    return YES;
+}
+
+#pragma mark - Gesture Recognizer Handlers
+
 - (void)handleLongPress:(UILongPressGestureRecognizer *)recognizer
 {
     if ([recognizer state] == UIGestureRecognizerStateBegan) {
@@ -232,68 +307,12 @@ NSString *const LYRUIUserDidTapLinkNotification = @"LYRUIUserDidTapLinkNotificat
     }
 }
 
-- (void)setBubbleViewContentType:(LYRUIBubbleViewContentType)contentType
-{
-    switch (contentType) {
-        case LYRUIBubbleViewContentTypeText:
-            self.bubbleImageView.hidden = YES;
-            self.bubbleViewLabel.hidden = NO;
-            self.bubbleImageView.image = nil;
-            self.locationShown = kCLLocationCoordinate2DInvalid;
-            [self.snapshotter cancel];
-            
-            break;
-        case LYRUIBubbleViewContentTypeImage:
-            self.bubbleViewLabel.hidden = YES;
-            self.bubbleImageView.hidden = NO;
-            self.locationShown = kCLLocationCoordinate2DInvalid;
-            self.bubbleViewLabel.text = nil;
-            [self.snapshotter cancel];
-            break;
-        case LYRUIBubbleViewContentTypeLocation:
-            self.bubbleViewLabel.hidden = YES;
-            self.bubbleViewLabel.text = nil;
-            [self.snapshotter cancel];
-            break;
-        default:
-            break;
-    }
-    [self setNeedsUpdateConstraints];
-}
-
-- (void)copyItem
-{
-    UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-    if (!self.bubbleViewLabel.isHidden) {
-        pasteboard.string = self.bubbleViewLabel.text;
-    } else {
-        pasteboard.image = self.bubbleImageView.image;
-    }
-}
-
-- (void)menuControllerDisappeared
-{
-    [self.longPressMask removeFromSuperview];
-    self.longPressMask = nil;
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
-- (BOOL)canBecomeFirstResponder
-{
-    return YES;
-}
-
-- (void)dealloc
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
 #pragma mark - UIGestureRecognizerDelegate
 
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
 {
     if (gestureRecognizer != self.tapGestureRecognizer) return YES;
-
+    
     //http://stackoverflow.com/questions/21349725/character-index-at-touch-point-for-uilabel/26806991#26806991
     UILabel *textLabel = self.bubbleViewLabel;
     CGPoint tapLocation = [gestureRecognizer locationInView:textLabel];
@@ -329,6 +348,11 @@ NSString *const LYRUIUserDidTapLinkNotification = @"LYRUIUserDidTapLinkNotificat
 {
     [[NSNotificationCenter defaultCenter] postNotificationName:LYRUIUserDidTapLinkNotification object:self.tappedURL];
     self.tappedURL = nil;
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 @end

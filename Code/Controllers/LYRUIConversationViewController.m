@@ -682,7 +682,7 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
         CGSize size;
         if (part.isDownloaded) {
             UIImage *image = [UIImage imageWithData:part.data];
-            size = LYRUIImageSize(image);
+            size = image ? LYRUIImageSize(image) : CGSizeMake(40, 40);
         } else {
             LYRMessagePart *sizePart = message.parts[2];
             size = LYRUIImageSizeForJSONData(sizePart.data);
@@ -699,7 +699,9 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 
 - (UIFont *)messageCellFontForMessage:(LYRMessage *)message
 {
-    // The font is customizable via UIAppearance and the system doesn't set the custom value until a view is added to the hierarchy. So we create dummy cells and add them to the hierarchy temporarily. We only add them once (not on every use) assuming that the font won't be changed later.
+    // The font is customizable via UIAppearance and the system doesn't set the custom value until a view is added to the hierarchy.
+    // So we create dummy cells and add them to the hierarchy temporarily. We only add them once (not on every use) assuming that
+    // the font won't be changed later.
     LYRUIMessageCollectionViewCell<LYRUIMessagePresenting> *cell;
     BOOL firstUse = NO;
     if ([self.layerClient.authenticatedUserID isEqualToString:message.sentByUserID]) {
