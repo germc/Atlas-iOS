@@ -51,7 +51,7 @@ LYRMessagePart *LYRUIMessagePartWithText(NSString *text);
 
 LYRMessagePart *LYRUIMessagePartWithJPEGImage(UIImage *image, BOOL isPreview);
 
-LYRMessagePart *LYRUIMEssagePartForImageSize(UIImage *image);
+LYRMessagePart *LYRUIMessagePartForImageSize(UIImage *image);
 
 //****************************
 // Image Capture Utilities
@@ -59,6 +59,6 @@ LYRMessagePart *LYRUIMEssagePartForImageSize(UIImage *image);
 
 void LYRUILastPhotoTaken(void(^completionHandler)(UIImage *image, NSError *error));
 
-void LYRUIPhotoForLocation(CLLocation *location, void(^completionHandler)(UIImage *image, NSError *error));
+void LYRUIPhotoForLocation(CLLocationCoordinate2D location, void(^completion)(UIImage *image, NSError *error));
 
 NSArray *LYRUILinkResultsForText(NSString *text);
