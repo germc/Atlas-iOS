@@ -10,9 +10,6 @@
 
 @interface LYRUIIncomingMessageCollectionViewCell ()
 
-@property (nonatomic) NSLayoutConstraint *bubbleViewLeftConstraint;
-@property (nonatomic) NSLayoutConstraint *avatarImageLeftConstraint;
-
 @property (nonatomic) NSLayoutConstraint *bubbleWithAvatarLeftConstraint;
 @property (nonatomic) NSLayoutConstraint *bubbleWithoutAvatarLeftConstraint;
 
@@ -69,4 +66,5 @@
         self.avatarImageView.hidden = YES;
     }
 }
+
 @end
