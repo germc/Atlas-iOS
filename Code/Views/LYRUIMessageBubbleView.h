@@ -18,13 +18,15 @@ extern CGFloat const LYRUIMessageBubbleMapHeight;
  @abstract The LYRUIMessageBubbleViewDownloadActivityOptions describes
  avaialble display options for download activity.
  */
-typedef NS_ENUM(NSInteger, LYRUIDownloadProgressViewOptions) {
-    LYRUIDownloadProgressViewOptionButtonStyleNone        = 0,
-    LYRUIDownloadProgressViewOptionButtonStyleStart       = 1,
-    LYRUIDownloadProgressViewOptionButtonStylePause       = 2,
-    LYRUIDownloadProgressViewOptionButtonStyleStop        = 3,
-    LYRUIDownloadProgressViewOptionShowProgress           = (1 << 5),
-    LYRUIDownloadProgressViewOptionEnableBlurring         = (1 << 6),
+typedef NS_ENUM(NSInteger, LYRUIProgressViewOptions) {
+    LYRUIProgressViewOptionButtonStyleNone        = 1,
+    LYRUIProgressViewOptionButtonStyleDownload    = 2,
+    LYRUIProgressViewOptionButtonStylePlay        = 3,
+    LYRUIProgressViewOptionButtonStylePause       = 4,
+    LYRUIProgressViewOptionButtonStyleStop        = 5,
+    LYRUIProgressViewOptionShowProgress           = (1 << 6),
+    LYRUIProgressViewOptionEnableBlurring         = (1 << 7),
+    LYRUIProgressViewOptionAnimated               = (1 << 8),
 };
 
 typedef NS_ENUM(NSInteger, LYRUIBubbleViewContentType) {
@@ -44,7 +46,7 @@ typedef NS_ENUM(NSInteger, LYRUIBubbleViewContentType) {
 /**
  @abstract Tells the bubble view to display a download indicator on top of content.
  */
-- (void)updateDownloadActivityIndicatorWithProgress:(float)progress options:(LYRUIDownloadProgressViewOptions)options;
+- (void)updateActivityIndicatorWithProgress:(float)progress options:(LYRUIProgressViewOptions)options;
 
 /**
  @abstract Tells the bubble view to display a given string.

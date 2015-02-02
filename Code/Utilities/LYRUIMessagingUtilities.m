@@ -190,6 +190,8 @@ void LYRUILastPhotoTaken(void(^completionHandler)(UIImage *image, NSError *error
 
 NSArray *LYRUILinkResultsForText(NSString *text)
 {
+    if (!text) return nil;
+    
     NSError *error;
     NSDataDetector *detector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeLink
                                                                error:&error];

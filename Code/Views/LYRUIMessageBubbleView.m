@@ -63,6 +63,7 @@ NSString *const LYRUIUserDidTapLinkNotification = @"LYRUIUserDidTapLinkNotificat
         
         self.progressView = [[LYRUIProgressView alloc] initWithFrame:CGRectMake(0, 0, 128.0f, 128.0f)];
         self.progressView.translatesAutoresizingMaskIntoConstraints = NO;
+        self.progressView.alpha = 1.0f;
         [self addSubview:self.progressView];
         
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleViewLabel attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1.0 constant:LYRUIMessageBubbleLabelVerticalPadding]];
@@ -92,10 +93,31 @@ NSString *const LYRUIUserDidTapLinkNotification = @"LYRUIUserDidTapLinkNotificat
     return self;
 }
 
-- (void)updateDownloadActivityIndicatorWithProgress:(float)progress options:(LYRUIDownloadProgressViewOptions)options
+- (void)updateActivityIndicatorWithProgress:(float)progress options:(LYRUIProgressViewOptions)options
 {
-    self.progressView.hidden = !(options & LYRUIDownloadProgressViewOptionShowProgress);
-    self.progressView.progress = progress;
+    BOOL shouldBeVisible = (options & LYRUIProgressViewOptionShowProgress);
+    NSLog(@"visible:%d progress:%.2f: %@", shouldBeVisible, progress, [NSThread callStackSymbols]);
+    if (options & LYRUIProgressViewOptionAnimated) {
+        [UIView animateWithDuration:0.50f animations:^{
+            self.progressView.alpha = shouldBeVisible ? 1.0f : 0.0f;
+        } completion:^(BOOL finished) {
+        }];
+    } else {
+        self.progressView.alpha = shouldBeVisible ? 1.0f : 0.0f;
+    }
+    if (options & LYRUIProgressViewOptionButtonStyleNone) {
+        self.progressView.iconStyle = LYRUIProgressViewIconStyleNone;
+    } else if (options & LYRUIProgressViewOptionButtonStyleDownload) {
+        self.progressView.iconStyle = LYRUIProgressViewIconStyleDownload;
+    } else if (options & LYRUIProgressViewOptionButtonStylePlay) {
+        self.progressView.iconStyle = LYRUIProgressViewIconStylePlay;
+    } else if (options & LYRUIProgressViewOptionButtonStylePause) {
+        self.progressView.iconStyle = LYRUIProgressViewIconStylePause;
+    } else if (options & LYRUIProgressViewOptionButtonStyleStop) {
+        self.progressView.iconStyle = LYRUIProgressViewIconStyleStop;
+    }
+    
+    [self.progressView setProgress:progress animated:(options & LYRUIProgressViewOptionAnimated)];
 }
 
 - (void)updateWithAttributedText:(NSAttributedString *)text
