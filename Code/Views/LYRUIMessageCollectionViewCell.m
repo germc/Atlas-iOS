@@ -91,14 +91,15 @@
         [self.bubbleView updateActivityIndicatorWithProgress:1.00 options:LYRUIProgressViewOptionButtonStyleNone | LYRUIProgressViewOptionAnimated];
         return;
     } else {
-        [self downloadContentForMessagePart:imagePart];
+        [self downloadContentForMessagePart:imagePart trackProgress:YES];
     }
     
-    LYRMessagePart *previewPart;
-    if (self.message.parts.count > 1) previewPart = self.message.parts[1];
+    LYRMessagePart *previewPart = self.message.parts[1];
     if (previewPart.isDownloaded) {
         [self.bubbleView updateWithImage:[UIImage imageWithData:previewPart.data] width:size.width];
         return;
+    } else {
+        [self downloadContentForMessagePart:imagePart trackProgress:NO];
     }
 }
 
@@ -164,7 +165,7 @@
     return [messagePart.MIMEType isEqualToString:LYRUIMIMETypeTextPlain];
 }
 
-- (void)downloadContentForMessagePart:(LYRMessagePart *)part
+- (void)downloadContentForMessagePart:(LYRMessagePart *)part trackProgress:(BOOL)trackProgress
 {
     NSError *error;
     self.progress = [part downloadContent:&error];
@@ -172,12 +173,14 @@
         NSLog(@"Download failed with error: %@", error);
         return;
     }
-    self.progress.userInfo = @{ @"cell" : self };
-    self.progress.delegate = self;
-    if (self.progress.fractionCompleted == 0.0) {
-        [self.bubbleView updateActivityIndicatorWithProgress:self.progress.fractionCompleted options:LYRUIProgressViewOptionShowProgress | LYRUIProgressViewOptionButtonStyleDownload];
-    } else if (self.progress.fractionCompleted < 1.0f) {
-        [self.bubbleView updateActivityIndicatorWithProgress:self.progress.fractionCompleted options:LYRUIProgressViewOptionShowProgress];
+    if (trackProgress) {
+        self.progress.userInfo = @{ @"cell" : self };
+        self.progress.delegate = self;
+        if (self.progress.fractionCompleted == 0.0) {
+            [self.bubbleView updateActivityIndicatorWithProgress:self.progress.fractionCompleted options:LYRUIProgressViewOptionShowProgress | LYRUIProgressViewOptionButtonStyleDownload];
+        } else if (self.progress.fractionCompleted < 1.0f) {
+            [self.bubbleView updateActivityIndicatorWithProgress:self.progress.fractionCompleted options:LYRUIProgressViewOptionShowProgress];
+        }
     }
 }
 
