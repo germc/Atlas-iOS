@@ -980,7 +980,7 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
         NSMutableArray *parts = [NSMutableArray new];
         if ([part isKindOfClass:[NSString class]]) {
             pushText = part;
-            [parts addObject:LYRUIMessagePartWithText(part) ];
+            [parts addObject:LYRUIMessagePartWithText(part)];
         } else if ([part isKindOfClass:[UIImage class]]) {
             pushText = @"Attachment: Image";
             UIImage *image = part;
