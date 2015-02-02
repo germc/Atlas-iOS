@@ -51,18 +51,18 @@
     self.message = message;
     LYRMessagePart *messagePart = message.parts[0];
     
-    if ([self hasTextContent]) {
-        [self configureTextContent];
+    if ([self messageContainsTextContent]) {
+        [self configureBubbleViewForTextContent];
     } else if ([messagePart.MIMEType isEqualToString:LYRUIMIMETypeImageJPEG]) {
-        [self configureImageContent];
+        [self configureBubbleViewForImageContent];
     }else if ([messagePart.MIMEType isEqualToString:LYRUIMIMETypeImagePNG]) {
-        [self configureImageContent];
+        [self configureBubbleViewForImageContent];
     } else if ([messagePart.MIMEType isEqualToString:LYRUIMIMETypeLocation]) {
-        [self configureLocationContent];
+        [self configureBubbleViewForLocationContent];
     }
 }
 
-- (void)configureTextContent
+- (void)configureBubbleViewForTextContent
 {
     LYRMessagePart *messagePart = self.message.parts.firstObject;
     NSString *text = [[NSString alloc] initWithData:messagePart.data encoding:NSUTF8StringEncoding];
@@ -70,7 +70,7 @@
     self.accessibilityLabel = [NSString stringWithFormat:@"Message: %@", text];
 }
 
-- (void)configureImageContent
+- (void)configureBubbleViewForImageContent
 {
     self.accessibilityLabel = [NSString stringWithFormat:@"Message: Photo"];
     
@@ -91,17 +91,7 @@
         [self.bubbleView updateActivityIndicatorWithProgress:1.00 options:LYRUIProgressViewOptionButtonStyleNone | LYRUIProgressViewOptionAnimated];
         return;
     } else {
-        id objectContext = [imagePart performSelector:@selector(objectContext) withObject:nil];
-        id layerClient = [objectContext performSelector:@selector(delegate) withObject:nil];
-        id tranfserProgressManager = [layerClient performSelector:@selector(externalContentProgressManager) withObject:nil];
-        LYRProgress *progress = [tranfserProgressManager performSelector:@selector(downloadProgressForMessagePart:) withObject:imagePart];
-        progress.userInfo = @{ @"cell" : self };
-        progress.delegate = self;
-        if (progress.fractionCompleted == 0.0) {
-            [self.bubbleView updateActivityIndicatorWithProgress:progress.fractionCompleted options:LYRUIProgressViewOptionShowProgress | LYRUIProgressViewOptionButtonStyleDownload];
-        } else if (progress.fractionCompleted < 1.0f) {
-            [self.bubbleView updateActivityIndicatorWithProgress:progress.fractionCompleted options:LYRUIProgressViewOptionShowProgress];
-        }
+        [self downloadContentForMessagePart:imagePart];
     }
     
     LYRMessagePart *previewPart;
@@ -112,7 +102,7 @@
     }
 }
 
-- (void)configureLocationContent
+- (void)configureBubbleViewForLocationContent
 {
     LYRMessagePart *messagePart = self.message.parts.firstObject;
     NSDictionary *dictionary = [NSJSONSerialization JSONObjectWithData:messagePart.data
@@ -123,40 +113,22 @@
     [self.bubbleView updateWithLocation:CLLocationCoordinate2DMake(lat, lon)];
 }
 
-- (void)progressDidChange:(LYRProgress *)progress
-{
-    LYRUIMessageCollectionViewCell *cell = progress.userInfo[@"cell"];
-    if (cell) {
-        dispatch_sync(dispatch_get_main_queue(), ^{
-            if (progress.fractionCompleted < 1.00f && progress.fractionCompleted > 0.00f) {
-                [cell.bubbleView updateActivityIndicatorWithProgress:progress.fractionCompleted options:LYRUIProgressViewOptionShowProgress | LYRUIProgressViewOptionButtonStyleNone | LYRUIProgressViewOptionAnimated];
-                return;
-            }
-            if (progress.fractionCompleted == 1.0f) {
-                [cell.bubbleView updateActivityIndicatorWithProgress:1.00 options:LYRUIProgressViewOptionButtonStyleNone | LYRUIProgressViewOptionAnimated];
-                progress.userInfo = nil;
-                progress.delegate = nil;
-            }
-        });
-    }
-}
-
 - (void)setMessageTextFont:(UIFont *)messageTextFont
 {
     _messageTextFont = messageTextFont;
-    if ([self hasTextContent]) [self configureTextContent];
+    if ([self messageContainsTextContent]) [self configureBubbleViewForTextContent];
 }
 
 - (void)setMessageTextColor:(UIColor *)messageTextColor
 {
     _messageTextColor = messageTextColor;
-    if ([self hasTextContent]) [self configureTextContent];
+    if ([self messageContainsTextContent]) [self configureBubbleViewForTextContent];
 }
 
 - (void)setMessageLinkTextColor:(UIColor *)messageLinkTextColor
 {
     _messageLinkTextColor = messageLinkTextColor;
-    if ([self hasTextContent]) [self configureTextContent];
+    if ([self messageContainsTextContent]) [self configureBubbleViewForTextContent];
 }
 
 - (void)setBubbleViewColor:(UIColor *)bubbleViewColor
@@ -186,7 +158,7 @@
     return attributedString;
 }
 
-- (BOOL)hasTextContent
+- (BOOL)messageContainsTextContent
 {
     LYRMessagePart *messagePart = self.message.parts.firstObject;
     return [messagePart.MIMEType isEqualToString:LYRUIMIMETypeTextPlain];
@@ -198,8 +170,35 @@
     self.progress = [part downloadContent:&error];
     if (error) {
         NSLog(@"Download failed with error: %@", error);
+        return;
+    }
+    self.progress.userInfo = @{ @"cell" : self };
+    self.progress.delegate = self;
+    if (self.progress.fractionCompleted == 0.0) {
+        [self.bubbleView updateActivityIndicatorWithProgress:self.progress.fractionCompleted options:LYRUIProgressViewOptionShowProgress | LYRUIProgressViewOptionButtonStyleDownload];
+    } else if (self.progress.fractionCompleted < 1.0f) {
+        [self.bubbleView updateActivityIndicatorWithProgress:self.progress.fractionCompleted options:LYRUIProgressViewOptionShowProgress];
     }
 }
+
+- (void)progressDidChange:(LYRProgress *)progress
+{
+    LYRUIMessageCollectionViewCell *cell = progress.userInfo[@"cell"];
+    if (cell) {
+        dispatch_sync(dispatch_get_main_queue(), ^{
+            if (progress.fractionCompleted < 1.00f && progress.fractionCompleted > 0.00f) {
+                [cell.bubbleView updateActivityIndicatorWithProgress:progress.fractionCompleted options:LYRUIProgressViewOptionShowProgress | LYRUIProgressViewOptionButtonStyleNone | LYRUIProgressViewOptionAnimated];
+                return;
+            }
+            if (progress.fractionCompleted == 1.0f) {
+                [cell.bubbleView updateActivityIndicatorWithProgress:1.00 options:LYRUIProgressViewOptionButtonStyleNone | LYRUIProgressViewOptionAnimated];
+                progress.userInfo = nil;
+                progress.delegate = nil;
+            }
+        });
+    }
+}
+
 
 - (void)configureLayoutConstraints
 {

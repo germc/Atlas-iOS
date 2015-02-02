@@ -57,13 +57,6 @@ CGSize LYRUIImageSizeForJSONData(NSData *data)
     return CGSizeMake(width, height);
 }
 
-CGSize LYRUIImageSize(UIImage *image)
-{
-    CGSize maxSize = CGSizeMake(LYRUIMaxCellWidth(), LYRUIMaxCellHeight());
-    CGSize itemSize = LYRUISizeProportionallyConstrainedToSize(image.size, maxSize);
-    return itemSize;
-}
-
 CGSize LYRUISizeProportionallyConstrainedToSize(CGSize nativeSize, CGSize maxSize)
 {
     CGSize itemSize;
@@ -74,6 +67,13 @@ CGSize LYRUISizeProportionallyConstrainedToSize(CGSize nativeSize, CGSize maxSiz
     } else {
         itemSize = CGSizeMake(maxSize.width, nativeSize.height * widthScale);
     }
+    return itemSize;
+}
+
+CGSize LYRUIImageSize(UIImage *image)
+{
+    CGSize maxSize = CGSizeMake(LYRUIMaxCellWidth(), LYRUIMaxCellHeight());
+    CGSize itemSize = LYRUISizeProportionallyConstrainedToSize(image.size, maxSize);
     return itemSize;
 }
 
@@ -188,6 +188,10 @@ void LYRUILastPhotoTaken(void(^completionHandler)(UIImage *image, NSError *error
     }];
 }
 
+void LYRUIPhotoForLocation(CLLocation *location, void(^completionHandler)(UIImage *image, NSError *error))
+{
+    
+}
 NSArray *LYRUILinkResultsForText(NSString *text)
 {
     if (!text) return nil;
