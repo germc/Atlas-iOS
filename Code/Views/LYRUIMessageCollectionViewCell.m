@@ -12,7 +12,7 @@
 #import "LYRUIOutgoingMessageCollectionViewCell.h"
 #import <LayerKit/LayerKit.h> 
 
-@interface LYRUIMessageCollectionViewCell ()
+@interface LYRUIMessageCollectionViewCell () <LYRProgressDelegate>
 
 @property (nonatomic) BOOL messageSentState;
 @property (nonatomic) LYRMessage *message;
@@ -78,6 +78,7 @@
         LYRMessagePart *imagePart = self.message.parts[0];
         CGSize size = LYRUIImageSizeForData(imagePart.data);
         [self.bubbleView updateWithImage:[UIImage imageWithData:imagePart.data] width:size.width];
+        [self.bubbleView updateActivityIndicatorWithProgress:1.0f options:LYRUIProgressViewOptionButtonStyleNone];
         return;
     }
     
@@ -87,9 +88,20 @@
     LYRMessagePart *imagePart = self.message.parts[0];
     if (imagePart.isDownloaded) {
         [self.bubbleView updateWithImage:[UIImage imageWithData:imagePart.data] width:size.width];
+        [self.bubbleView updateActivityIndicatorWithProgress:1.00 options:LYRUIProgressViewOptionButtonStyleNone | LYRUIProgressViewOptionAnimated];
         return;
     } else {
-        [self downloadContentForMessagePart:imagePart];
+        id objectContext = [imagePart performSelector:@selector(objectContext) withObject:nil];
+        id layerClient = [objectContext performSelector:@selector(delegate) withObject:nil];
+        id tranfserProgressManager = [layerClient performSelector:@selector(externalContentProgressManager) withObject:nil];
+        LYRProgress *progress = [tranfserProgressManager performSelector:@selector(downloadProgressForMessagePart:) withObject:imagePart];
+        progress.userInfo = @{ @"cell" : self };
+        progress.delegate = self;
+        if (progress.fractionCompleted == 0.0) {
+            [self.bubbleView updateActivityIndicatorWithProgress:progress.fractionCompleted options:LYRUIProgressViewOptionShowProgress | LYRUIProgressViewOptionButtonStyleDownload];
+        } else if (progress.fractionCompleted < 1.0f) {
+            [self.bubbleView updateActivityIndicatorWithProgress:progress.fractionCompleted options:LYRUIProgressViewOptionShowProgress];
+        }
     }
     
     LYRMessagePart *previewPart;
@@ -97,11 +109,7 @@
     if (previewPart.isDownloaded) {
         [self.bubbleView updateWithImage:[UIImage imageWithData:previewPart.data] width:size.width];
         return;
-    } else {
-        [self downloadContentForMessagePart:previewPart];
     }
-    
-    [self.bubbleView updateWithImage:nil width:size.width];
 }
 
 - (void)configureLocationContent
@@ -113,6 +121,24 @@
     double lat = [dictionary[@"lat"] doubleValue];
     double lon = [dictionary[@"lon"] doubleValue];
     [self.bubbleView updateWithLocation:CLLocationCoordinate2DMake(lat, lon)];
+}
+
+- (void)progressDidChange:(LYRProgress *)progress
+{
+    LYRUIMessageCollectionViewCell *cell = progress.userInfo[@"cell"];
+    if (cell) {
+        dispatch_sync(dispatch_get_main_queue(), ^{
+            if (progress.fractionCompleted < 1.00f && progress.fractionCompleted > 0.00f) {
+                [cell.bubbleView updateActivityIndicatorWithProgress:progress.fractionCompleted options:LYRUIProgressViewOptionShowProgress | LYRUIProgressViewOptionButtonStyleNone | LYRUIProgressViewOptionAnimated];
+                return;
+            }
+            if (progress.fractionCompleted == 1.0f) {
+                [cell.bubbleView updateActivityIndicatorWithProgress:1.00 options:LYRUIProgressViewOptionButtonStyleNone | LYRUIProgressViewOptionAnimated];
+                progress.userInfo = nil;
+                progress.delegate = nil;
+            }
+        });
+    }
 }
 
 - (void)setMessageTextFont:(UIFont *)messageTextFont
