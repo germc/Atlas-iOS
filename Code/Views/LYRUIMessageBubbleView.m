@@ -17,6 +17,12 @@ CGFloat const LYRUIMessageBubbleDefaultHeight = 40;
 
 NSString *const LYRUIUserDidTapLinkNotification = @"LYRUIUserDidTapLinkNotification";
 
+typedef NS_ENUM(NSInteger, LYRUIBubbleViewContentType) {
+    LYRUIBubbleViewContentTypeText,
+    LYRUIBubbleViewContentTypeImage,
+    LYRUIBubbleViewContentTypeLocation,
+};
+
 @interface LYRUIMessageBubbleView () <UIGestureRecognizerDelegate>
 
 @property (nonatomic) LYRUIProgressView *progressView;
@@ -112,12 +118,6 @@ NSString *const LYRUIUserDidTapLinkNotification = @"LYRUIUserDidTapLinkNotificat
     [self applyImageWidthConstraint:YES];
     [self setBubbleViewContentType:LYRUIBubbleViewContentTypeLocation];
     [self setNeedsUpdateConstraints];
-    
-    BOOL alreadyShowingLocation = self.locationShown.latitude == location.latitude && self.locationShown.longitude == location.longitude;
-    if (alreadyShowingLocation) {
-        self.bubbleImageView.hidden = NO;
-        return;
-    }
 
     NSString *cachedImageIdentifier = [NSString stringWithFormat:@"%f,%f", location.latitude, location.longitude];
     UIImage *cachedImage = [[[self class] sharedCache] objectForKey:cachedImageIdentifier];

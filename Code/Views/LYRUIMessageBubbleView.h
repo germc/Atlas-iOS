@@ -16,12 +16,6 @@ extern CGFloat const LYRUIMessageBubbleMapWidth;
 extern CGFloat const LYRUIMessageBubbleMapHeight;
 extern CGFloat const LYRUIMessageBubbleDefaultHeight;
 
-typedef NS_ENUM(NSInteger, LYRUIBubbleViewContentType) {
-    LYRUIBubbleViewContentTypeText,
-    LYRUIBubbleViewContentTypeImage,
-    LYRUIBubbleViewContentTypeLocation,
-};
-
 /**
  @abstract The `LYRUIMessageBubbleView` class provides a lightweight, customizable view that 
  handles displaying the actual message content within a collection view cell.
