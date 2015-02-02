@@ -116,8 +116,8 @@ NSString *const LYRUIUserDidTapLinkNotification = @"LYRUIUserDidTapLinkNotificat
     self.bubbleViewLabel.text = nil;
     [self.snapshotter cancel];
 
-    [self removeConstraint:self.mapWidthConstraint];
-    [self removeConstraint:self.imageWidthConstraint];
+//    [self removeConstraint:self.mapWidthConstraint];
+//    [self removeConstraint:self.imageWidthConstraint];
 
     CGFloat imageAspectRatio = image.size.width/image.size.height;
     self.imageWidthConstraint = [NSLayoutConstraint constraintWithItem:self.bubbleImageView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.bubbleImageView attribute:NSLayoutAttributeHeight multiplier:imageAspectRatio constant:0];

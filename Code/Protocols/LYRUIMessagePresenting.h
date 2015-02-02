@@ -22,7 +22,7 @@
 - (void)presentMessage:(LYRMessage *)message;
 
 /**
- @abstract Informs the receiver of its participant.
+ @abstract Informs the receiver that it should diplay an avatar image for its participant.
  */
 - (void)updateWithParticipant:(id<LYRUIParticipant>)participant;
 
