@@ -32,6 +32,16 @@ NSString *const LYRUIUserDidTapLinkNotification = @"LYRUIUserDidTapLinkNotificat
 
 @implementation LYRUIMessageBubbleView 
 
++ (NSCache *)sharedCache
+{
+    static NSCache *_sharedCache;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        _sharedCache = [NSCache new];
+    });
+    return _sharedCache;
+}
+
 - (id)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
@@ -144,6 +154,15 @@ NSString *const LYRUIUserDidTapLinkNotification = @"LYRUIUserDidTapLinkNotificat
         return;
     }
 
+    NSString *cachedImageIdentifier = [NSString stringWithFormat:@"%f,%f", location.latitude, location.longitude];
+    UIImage *cachedImage = [[[self class] sharedCache] objectForKey:cachedImageIdentifier];
+    if (cachedImage) {
+        self.bubbleImageView.image = cachedImage;
+        self.bubbleImageView.contentMode = UIViewContentModeScaleAspectFill;
+        self.bubbleImageView.hidden = NO;
+        return;
+    }
+
     self.bubbleImageView.hidden = YES;
     self.bubbleImageView.image = nil;
     self.locationShown = kCLLocationCoordinate2DInvalid;
@@ -184,6 +203,7 @@ NSString *const LYRUIUserDidTapLinkNotification = @"LYRUIUserDidTapLinkNotificat
             // Set image.
             strongSelf.bubbleImageView.image = finalImage;
             strongSelf.locationShown = location;
+            [[[strongSelf class] sharedCache] setObject:finalImage forKey:cachedImageIdentifier];
         }
         strongSelf.bubbleImageView.hidden = NO;
         strongSelf.bubbleImageView.alpha = 0.0;
