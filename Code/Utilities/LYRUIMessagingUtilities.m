@@ -142,7 +142,7 @@ LYRMessagePart *LYRUIMessagePartWithJPEGImage(UIImage *image, BOOL isPreview)
                                               data:imageData];
 }
 
-LYRMessagePart *LYRUIMEssagePartForImageSize(UIImage *image)
+LYRMessagePart *LYRUIMessagePartForImageSize(UIImage *image)
 {
     CGSize size = LYRUIImageSize(image);
     NSData *jsonData = [NSJSONSerialization dataWithJSONObject:@{LYRUIImagePreviewWidthKey : @(size.width), LYRUIImagePreviewHeightKey : @(size.height)}
@@ -188,10 +188,39 @@ void LYRUILastPhotoTaken(void(^completionHandler)(UIImage *image, NSError *error
     }];
 }
 
-void LYRUIPhotoForLocation(CLLocation *location, void(^completionHandler)(UIImage *image, NSError *error))
+void LYRUIPhotoForLocation(CLLocationCoordinate2D location, void(^completion)(UIImage *image, NSError *error))
 {
-    
+    MKMapSnapshotOptions *options = [[MKMapSnapshotOptions alloc] init];
+    MKCoordinateSpan span = MKCoordinateSpanMake(0.005, 0.005);
+    options.region = MKCoordinateRegionMake(location, span);
+    options.scale = [UIScreen mainScreen].scale;
+    options.size = CGSizeMake(200, 200);
+    MKMapSnapshotter *snapshotter = [[MKMapSnapshotter alloc] initWithOptions:options];
+    [snapshotter startWithCompletionHandler:^(MKMapSnapshot *snapshot, NSError *error) {
+        if (error) {
+            NSLog(@"Error generating map snapshot: %@", error);
+            completion(nil, error);
+        } else {
+            // Create a pin image.
+            MKAnnotationView *pin = [[MKPinAnnotationView alloc] initWithAnnotation:nil reuseIdentifier:@""];
+            UIImage *pinImage = pin.image;
+            
+            // Draw the image.
+            UIImage *image = snapshot.image;
+            UIGraphicsBeginImageContextWithOptions(image.size, YES, image.scale);
+            [image drawAtPoint:CGPointMake(0, 0)];
+            
+            // Draw the pin.
+            CGPoint point = [snapshot pointForCoordinate:location];
+            [pinImage drawAtPoint:CGPointMake(point.x, point.y - pinImage.size.height)];
+            UIImage *finalImage = UIGraphicsGetImageFromCurrentImageContext();
+            UIGraphicsEndImageContext();
+            
+            completion(finalImage, nil);
+        }
+    }];
 }
+
 NSArray *LYRUILinkResultsForText(NSString *text)
 {
     if (!text) return nil;

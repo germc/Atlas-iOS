@@ -21,7 +21,6 @@ NSString *const LYRUIUserDidTapLinkNotification = @"LYRUIUserDidTapLinkNotificat
 
 @property (nonatomic) LYRUIProgressView *progressView;
 @property (nonatomic) UIView *longPressMask;
-@property (nonatomic) MKMapSnapshotter *snapshotter;
 @property (nonatomic) CLLocationCoordinate2D locationShown;
 @property (nonatomic) UITapGestureRecognizer *tapGestureRecognizer;
 @property (nonatomic) NSURL *tappedURL;
@@ -125,56 +124,28 @@ NSString *const LYRUIUserDidTapLinkNotification = @"LYRUIUserDidTapLinkNotificat
     }
 
     self.locationShown = kCLLocationCoordinate2DInvalid;
-    
-    MKMapSnapshotOptions *options = [[MKMapSnapshotOptions alloc] init];
-    MKCoordinateSpan span = MKCoordinateSpanMake(0.005, 0.005);
-    options.region = MKCoordinateRegionMake(location, span);
-    options.scale = [UIScreen mainScreen].scale;
-    options.size = CGSizeMake(200, 200);
-    self.snapshotter = [[MKMapSnapshotter alloc] initWithOptions:options];
-    
-    __weak typeof(self) weakSelf = self;
-    [self.snapshotter startWithCompletionHandler:^(MKMapSnapshot *snapshot, NSError *error) {
-        typeof(self) strongSelf = weakSelf;
-        if (!strongSelf) return;
-        
+    LYRUIPhotoForLocation(location, ^(UIImage *image, NSError *error) {
         if (error) {
-            NSLog(@"Error generating map snapshot: %@", error);
             self.bubbleImageView.image = [UIImage imageNamed:@"LayerUIKitResource.bundle/warning-black"];
             self.bubbleImageView.contentMode = UIViewContentModeCenter;
         } else {
             self.bubbleImageView.contentMode = UIViewContentModeScaleAspectFill;
-            // Create a pin image.
-            MKAnnotationView *pin = [[MKPinAnnotationView alloc] initWithAnnotation:nil reuseIdentifier:@""];
-            UIImage *pinImage = pin.image;
-            
-            // Draw the image.
-            UIImage *image = snapshot.image;
-            UIGraphicsBeginImageContextWithOptions(image.size, YES, image.scale);
-            [image drawAtPoint:CGPointMake(0, 0)];
-            
-            // Draw the pin.
-            CGPoint point = [snapshot pointForCoordinate:location];
-            [pinImage drawAtPoint:CGPointMake(point.x, point.y - pinImage.size.height)];
-            UIImage *finalImage = UIGraphicsGetImageFromCurrentImageContext();
-            UIGraphicsEndImageContext();
-            
-            // Set image.
-            strongSelf.bubbleImageView.image = finalImage;
-            strongSelf.locationShown = location;
+            self.bubbleImageView.image = image;
+            self.locationShown = location;
         }
-        strongSelf.bubbleImageView.hidden = NO;
-        strongSelf.bubbleImageView.alpha = 0.0;
+        self.bubbleImageView.hidden = NO;
+        self.bubbleImageView.alpha = 0.0;
         
         // Animate into view.
         [UIView animateWithDuration:0.2 animations:^{
-            strongSelf.bubbleImageView.alpha = 1.0;
+            self.bubbleImageView.alpha = 1.0;
         }];
-    }];
+    });
 }
 
 - (void)setBubbleViewContentType:(LYRUIBubbleViewContentType)contentType
 {
+    _contentType = contentType;
     switch (contentType) {
         case LYRUIBubbleViewContentTypeText:
             self.bubbleImageView.hidden = YES;
@@ -182,24 +153,23 @@ NSString *const LYRUIUserDidTapLinkNotification = @"LYRUIUserDidTapLinkNotificat
             self.bubbleImageView.image = nil;
             self.progressView.hidden = YES;
             self.locationShown = kCLLocationCoordinate2DInvalid;
-            [self.snapshotter cancel];
-            
             break;
+            
         case LYRUIBubbleViewContentTypeImage:
             self.bubbleViewLabel.hidden = YES;
             self.bubbleImageView.hidden = NO;
             self.progressView.hidden = NO;
             self.locationShown = kCLLocationCoordinate2DInvalid;
             self.bubbleViewLabel.text = nil;
-            [self.snapshotter cancel];
             break;
+            
         case LYRUIBubbleViewContentTypeLocation:
             self.bubbleImageView.hidden = YES;
             self.bubbleImageView.image = nil;
             self.bubbleViewLabel.hidden = YES;
             self.progressView.hidden = YES;
             self.bubbleViewLabel.text = nil;
-            [self.snapshotter cancel];
+
             break;
         default:
             break;

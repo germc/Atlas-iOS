@@ -984,12 +984,12 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
             UIImage *image = part;
             [parts addObject:LYRUIMessagePartWithJPEGImage(image, NO)];
             [parts addObject:LYRUIMessagePartWithJPEGImage(image, YES)];
-            [parts addObject:LYRUIMEssagePartForImageSize(image)];
+            [parts addObject:LYRUIMessagePartForImageSize(image)];
         } else if ([part isKindOfClass:[CLLocation class]]) {
             pushText = @"Attachement: Location";
             [parts addObject:LYRUIMessagePartWithLocation(part)];
         }
-        LYRMessage *message = [self messageForMessageParts:parts pushText:@""];
+        LYRMessage *message = [self messageForMessageParts:parts pushText:pushText];
         if (message)[messages addObject:message];
     }
     return messages;
