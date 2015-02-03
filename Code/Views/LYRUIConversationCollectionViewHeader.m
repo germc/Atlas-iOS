@@ -86,6 +86,18 @@ CGFloat const LYRUIConversationViewViewHeaderVericalPadding = 6;
     }
 }
 
+- (void)setParticipantLabelFont:(UIFont *)participantLabelFont
+{
+    _participantLabelFont = participantLabelFont;
+    self.participantLabel.font = participantLabelFont;
+}
+
+- (void)setParticipantLabelTextColor:(UIColor *)participantLabelTextColor
+{
+    _participantLabelTextColor = participantLabelTextColor;
+    self.participantLabel.textColor = participantLabelTextColor;
+}
+
 + (CGFloat)headerHeightWithDateString:(NSAttributedString *)dateString participantName:(NSString *)participantName
 {
     LYRUIConversationCollectionViewHeader *header = [[self alloc] init];
