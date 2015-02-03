@@ -103,7 +103,7 @@ NSString *LYRUIProgressViewStringForIconStyle(LYRUIProgressViewIconStyle iconSty
     _iconLayer.string = LYRUIProgressViewStringForIconStyle(self.iconStyle) ?: @"";
 }
 
-- (float)radius
+- (CGFloat)radius
 {
     return MIN(self.bounds.size.width, self.bounds.size.height);
 }
