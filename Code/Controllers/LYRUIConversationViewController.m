@@ -21,10 +21,9 @@
 @interface LYRUIConversationViewController () <UICollectionViewDataSource, UICollectionViewDelegate, LYRUIMessageInputToolbarDelegate, UIActionSheetDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIGestureRecognizerDelegate, LYRQueryControllerDelegate>
 
 @property (nonatomic) LYRUIConversationCollectionView *collectionView;
-@property (nonatomic) LYRQueryController *queryController;
-@property (nonatomic) LYRUIConversationView *view;
-@property (nonatomic) UILabel *typingIndicatorLabel;
 @property (nonatomic) LYRUITypingIndicatorView *typingIndicatorView;
+@property (nonatomic) LYRUIConversationView *view;
+@property (nonatomic) LYRQueryController *queryController;
 @property (nonatomic) CGFloat keyboardHeight;
 @property (nonatomic) BOOL shouldDisplayAvatarImage;
 @property (nonatomic) NSLayoutConstraint *typingIndicatorViewBottomConstraint;
@@ -118,7 +117,6 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
         [self.addressBarController didMoveToParentViewController:self];
         [self configureAddressBarLayoutConstraints];
     }
-
     [self registerForNotifications];
 }
 
@@ -161,26 +159,18 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 
     if (self.addressBarController) {
         [self configureScrollIndicatorInset];
-
     }
-
-    /* 
-     * To get the toolbar to slide onscreen with the view controller's content, we have to make the view the 
-     * first responder here. Even so, it will not animate on iOS 8 the first time.
-     */
+    // To get the toolbar to slide onscreen with the view controller's content, we have to make the view the
+    // first responder here. Even so, it will not animate on iOS 8 the first time.
     if (!self.presentedViewController && self.navigationController && !self.view.inputAccessoryView.superview) {
         [self.view becomeFirstResponder];
     }
-
     if (self.isFirstAppearance) {
         self.firstAppearance = NO;
         [self scrollToBottomOfCollectionViewAnimated:NO];
-
-        /*
-         * This works around an issue where in some situations iOS 7.1 will crash with 'Auto Layout still required after
-         * sending -viewDidLayoutSubviews to the view controller.' apparently due to our usage of the collection view
-         * layout's content size when scrolling to the bottom in the above method call.
-         */
+        // This works around an issue where in some situations iOS 7.1 will crash with 'Auto Layout still required after
+        // sending -viewDidLayoutSubviews to the view controller.' apparently due to our usage of the collection view
+        // layout's content size when scrolling to the bottom in the above method call.
         [self.view layoutIfNeeded];
     }
 }
@@ -206,12 +196,6 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
         if (cell) return (UICollectionViewCell<LYRUIMessagePresenting> *)cell;
     }
     return nil;
-}
-
-- (CGFloat)cellHeightForItemAtIndexPath:(NSIndexPath *)indexPath
-{
-    LYRMessage *message = [self messageAtCollectionViewIndexPath:indexPath];
-    return [LYRUIMessageCollectionViewCell cellHeightForMessage:message];
 }
 
 #warning TODO - Encapsulate this in the collection view
@@ -369,11 +353,7 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 
 # pragma mark - UICollectionViewDataSource
 
-/**
- 
- LAYER - The `LYRUIConversationViewController` component uses one `LYRMessage` to represent each row.
- 
- */
+// LAYER - The `LYRUIConversationViewController` component uses one `LYRMessage` to represent each row.
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
     if (section == LYRUIMoreMessagesSection) return 0;
@@ -381,23 +361,15 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
     // Each message is represented by one cell no matter how many parts it has.
     return 1;
 }
-
-/**
  
- LAYER - The `LYRUIConversationViewController` component uses `LYRMessages` to represent sections.
- 
- */
+// LAYER - The `LYRUIConversationViewController` component uses `LYRMessages` to represent sections.
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
 {
     return [self.queryController numberOfObjectsInSection:0] +  LYRUINumberOfSectionsBeforeFirstMessageSection;
 }
 
-/**
- 
- LAYER - Configuring a subclass of `LYRUIMessageCollectionViewCell` to be displayed on screen. `LayerUIKit` supports both
- `LYRUIIncomingMessageCollectionViewCell` and `LYRUIOutgoingMessageCollectionViewCell`.
- 
- */
+// LAYER - Configuring a subclass of `LYRUIMessageCollectionViewCell` to be displayed on screen. `LayerUIKit` supports both
+// `LYRUIIncomingMessageCollectionViewCell` and `LYRUIOutgoingMessageCollectionViewCell`.
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     LYRMessage *message = [self messageAtCollectionViewIndexPath:indexPath];
@@ -408,11 +380,7 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
     return cell;
 }
 
-/**
- 
- LAYER - Extracting the proper message part and analyzing its properties to determine the cell configuration.
- 
- */
+// LAYER - Extracting the proper message part and analyzing its properties to determine the cell configuration.
 - (void)configureCell:(UICollectionViewCell<LYRUIMessagePresenting> *)cell forMessage:(LYRMessage *)message indexPath:(NSIndexPath *)indexPath
 {
     [cell presentMessage:message];
@@ -430,7 +398,7 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
     }
 }
 
-#pragma mark - UICollectionViewDelegateFlowLayout
+#pragma mark - UICollectionViewDelegate
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -439,6 +407,8 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
         [self.delegate conversationViewController:self didSelectMessage:message];
     }
 }
+
+#pragma mark - UICollectionViewDelegateFlowLayout
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -477,43 +447,37 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
     if (section == LYRUIMoreMessagesSection) {
         return self.showingMoreMessagesIndicator ? CGSizeMake(0, 30) : CGSizeZero;
     }
-    
     NSAttributedString *dateString;
     NSString *participantName;
-    
     if ([self shouldDisplayDateLabelForSection:section]) {
         dateString = [self.dataSource conversationViewController:self attributedStringForDisplayOfDate:[NSDate date]];
     }
-    
     if ([self shouldDisplaySenderLabelForSection:section]) {
         participantName = [self participantNameForMessage:[self messageAtCollectionViewSection:section]];
     }
-    
     CGFloat height = [LYRUIConversationCollectionViewHeader headerHeightWithDateString:dateString participantName:participantName];
     return CGSizeMake(CGRectGetWidth(collectionView.frame), height);
 }
 
-#warning TODO - Encapsulate in Footer
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForFooterInSection:(NSInteger)section
 {
     if (section == LYRUIMoreMessagesSection) return CGSizeZero;
     if (section == self.collectionView.numberOfSections - 1) return CGSizeZero;
-    
-    CGFloat height = 0;
+    NSAttributedString *readReceipt;
     if ([self shouldDisplayReadReceiptForSection:section]) {
-            height += 8;
+        readReceipt = [self attributedStringForRecipientStatusOfMessage:[self messageAtCollectionViewSection:section]];
     }
-    
-    LYRMessage *message = [self messageAtCollectionViewSection:section];
-    LYRMessage *nextMessage = [self messageAtCollectionViewSection:section + 1];
-    
-    if (![message.sentByUserID isEqualToString:nextMessage.sentByUserID]) {
-        height += 22;
-    }
+    CGFloat height = [LYRUIConversationCollectionViewFooter footerHeightWithRecipientStatus:readReceipt];
     return CGSizeMake(CGRectGetWidth(collectionView.frame), height);
 }
 
-#pragma mark - Header and Footer Configuration
+#pragma mark - Layout Congfiguration
+
+- (CGFloat)cellHeightForItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    LYRMessage *message = [self messageAtCollectionViewIndexPath:indexPath];
+    return [LYRUIMessageCollectionViewCell cellHeightForMessage:message];
+}
 
 - (void)configureHeader:(LYRUIConversationCollectionViewHeader *)header atIndexPath:(NSIndexPath *)indexPath
 {
@@ -567,7 +531,6 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
     }
     return recipientStatusString;
 }
-
 
 #pragma mark - Recipient Status
 
@@ -925,27 +888,34 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 {
     NSMutableOrderedSet *messages = [NSMutableOrderedSet new];
     for (id part in messageParts){
-        LYRMessagePart *messagePart;
+        NSString *pushText;
+        NSMutableArray *parts = [NSMutableArray new];
         if ([part isKindOfClass:[NSString class]]) {
-            messagePart = LYRUIMessagePartWithText(part);
+            pushText = part;
+            [parts addObject:LYRUIMessagePartWithText(part)];
         } else if ([part isKindOfClass:[UIImage class]]) {
-            messagePart = LYRUIMessagePartWithJPEGImage(part);
+            pushText = @"Attachment: Image";
+            UIImage *image = part;
+            [parts addObject:LYRUIMessagePartWithJPEGImage(image, NO)];
+            [parts addObject:LYRUIMessagePartWithJPEGImage(image, YES)];
+            [parts addObject:LYRUIMessagePartForImageSize(image)];
         } else if ([part isKindOfClass:[CLLocation class]]) {
-            messagePart = LYRUIMessagePartWithLocation(part);
+            pushText = @"Attachment: Location";
+            [parts addObject:LYRUIMessagePartWithLocation(part)];
         }
-        LYRMessage *message = [self messageForMessagePart:messagePart];
+        LYRMessage *message = [self messageForMessageParts:parts pushText:pushText];
         if (message)[messages addObject:message];
     }
     return messages;
 }
 
-- (LYRMessage *)messageForMessagePart:(LYRMessagePart *)messagePart
+- (LYRMessage *)messageForMessageParts:(NSArray *)parts pushText:(NSString *)pushText;
 {
     NSString *senderName = [[self participantForIdentifier:self.layerClient.authenticatedUserID] fullName];
-    NSDictionary *pushOptions = @{LYRMessageOptionsPushNotificationAlertKey: LYRUIPushTextWithPartAndSenderName(messagePart, senderName),
+    NSDictionary *pushOptions = @{LYRMessageOptionsPushNotificationAlertKey: [NSString stringWithFormat:@"%@: %@", senderName, pushText],
                                   LYRMessageOptionsPushNotificationSoundNameKey: @"default"};
     NSError *error;
-    LYRMessage *message = [self.layerClient newMessageWithParts:@[messagePart] options:pushOptions error:&error];
+    LYRMessage *message = [self.layerClient newMessageWithParts:parts options:pushOptions error:&error];
     if (error) {
         return nil;
     }
