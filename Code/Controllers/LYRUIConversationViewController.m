@@ -670,32 +670,39 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 {
     LYRMessage *message = [self messageAtCollectionViewIndexPath:indexPath];
     LYRMessagePart *part = message.parts.firstObject;
-    // Guarding against external content in old SDKs
-    if (!part.data.length) {
-        return 48;
-    }
-    CGFloat height;
+
+    CGFloat height = 0;
     if ([part.MIMEType isEqualToString:LYRUIMIMETypeTextPlain]) {
         NSString *text = [[NSString alloc] initWithData:part.data encoding:NSUTF8StringEncoding];
         UIFont *font = [self messageCellFontForMessage:message];
         CGSize size = LYRUITextPlainSize(text, font);
         height = size.height + LYRUIMessageBubbleLabelVerticalPadding * 2;
     } else if ([part.MIMEType isEqualToString:LYRUIMIMETypeImageJPEG] || [part.MIMEType isEqualToString:LYRUIMIMETypeImagePNG]) {
-        UIImage *image = [UIImage imageWithData:part.data];
-        CGSize size = LYRUIImageSize(image);
+        CGSize size;
+        if (part.isDownloaded) {
+            UIImage *image = [UIImage imageWithData:part.data];
+            if (image) size = LYRUIImageSize(image);
+        } else if (message.parts.count > 2) {
+            LYRMessagePart *sizePart = message.parts[2];
+            if ([sizePart.MIMEType isEqualToString:LYRUIMIMETypeImageSize]) {
+                size = LYRUIImageSizeForJSONData(sizePart.data);
+            }
+        }
         height = size.height;
     } else if ([part.MIMEType isEqualToString:LYRUIMIMETypeLocation]) {
         height = LYRUIMessageBubbleMapHeight;
-    } else {
-        height = 10;
     }
+    
+    if (!height) height = LYRUIMessageBubbleDefaultHeight;
     height = ceil(height);
     return height;
 }
 
 - (UIFont *)messageCellFontForMessage:(LYRMessage *)message
 {
-    // The font is customizable via UIAppearance and the system doesn't set the custom value until a view is added to the hierarchy. So we create dummy cells and add them to the hierarchy temporarily. We only add them once (not on every use) assuming that the font won't be changed later.
+    // The font is customizable via UIAppearance and the system doesn't set the custom value until a view is added to the hierarchy.
+    // So we create dummy cells and add them to the hierarchy temporarily. We only add them once (not on every use) assuming that
+    // the font won't be changed later.
     LYRUIMessageCollectionViewCell<LYRUIMessagePresenting> *cell;
     BOOL firstUse = NO;
     if ([self.layerClient.authenticatedUserID isEqualToString:message.sentByUserID]) {
@@ -968,27 +975,34 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 {
     NSMutableOrderedSet *messages = [NSMutableOrderedSet new];
     for (id part in messageParts){
-        LYRMessagePart *messagePart;
+        NSString *pushText;
+        NSMutableArray *parts = [NSMutableArray new];
         if ([part isKindOfClass:[NSString class]]) {
-            messagePart = LYRUIMessagePartWithText(part);
+            pushText = part;
+            [parts addObject:LYRUIMessagePartWithText(part)];
         } else if ([part isKindOfClass:[UIImage class]]) {
-            messagePart = LYRUIMessagePartWithJPEGImage(part);
+            pushText = @"Attachment: Image";
+            UIImage *image = part;
+            [parts addObject:LYRUIMessagePartWithJPEGImage(image, NO)];
+            [parts addObject:LYRUIMessagePartWithJPEGImage(image, YES)];
+            [parts addObject:LYRUIMessagePartForImageSize(image)];
         } else if ([part isKindOfClass:[CLLocation class]]) {
-            messagePart = LYRUIMessagePartWithLocation(part);
+            pushText = @"Attachment: Location";
+            [parts addObject:LYRUIMessagePartWithLocation(part)];
         }
-        LYRMessage *message = [self messageForMessagePart:messagePart];
+        LYRMessage *message = [self messageForMessageParts:parts pushText:pushText];
         if (message)[messages addObject:message];
     }
     return messages;
 }
 
-- (LYRMessage *)messageForMessagePart:(LYRMessagePart *)messagePart
+- (LYRMessage *)messageForMessageParts:(NSArray *)parts pushText:(NSString *)pushText;
 {
     NSString *senderName = [[self participantForIdentifier:self.layerClient.authenticatedUserID] fullName];
-    NSDictionary *pushOptions = @{LYRMessageOptionsPushNotificationAlertKey: LYRUIPushTextWithPartAndSenderName(messagePart, senderName),
+    NSDictionary *pushOptions = @{LYRMessageOptionsPushNotificationAlertKey: [NSString stringWithFormat:@"%@: %@", senderName, pushText],
                                   LYRMessageOptionsPushNotificationSoundNameKey: @"default"};
     NSError *error;
-    LYRMessage *message = [self.layerClient newMessageWithParts:@[messagePart] options:pushOptions error:&error];
+    LYRMessage *message = [self.layerClient newMessageWithParts:parts options:pushOptions error:&error];
     if (error) {
         return nil;
     }

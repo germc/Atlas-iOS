@@ -8,6 +8,10 @@
 
 ### Public API Changes
 
+* Added `LYRUIProgressView`.
+* Removed method `isGroupConversation:` from `LYRUIMessagePresenting`.
+* Added `LYRUIMIMETypeImageJPEGPreview` and `LYRUIMIMETypeImageSize` to `LYRUIMessagingUtilities`.
+* Added `LYRUIPhotoForLocation` to `LYRUIMessagingUtilities`.
 * Changed `conversationListViewController:imageForConversation:` to `conversationListViewController:avatarItemForConversation:`.
 * Added `LYRUIAvatarItem` protocol.
 * Added `imageViewBackgroundColor` property to `LYRUIAvatarImageView`.
@@ -73,6 +77,7 @@
 
 ### Enhancements
 
+* Implemented progress view in `LYRUIBubbleView`.
 * Implemented pagination in the `LYRUIConversationViewController`.
 * `LYRUIConversationTableViewCell` no longer shows conversation image by default.
 * Implemented `LayerUIKit` unit test suite.

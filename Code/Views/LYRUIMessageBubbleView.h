@@ -8,11 +8,13 @@
 
 #import <UIKit/UIKit.h>
 #import <MapKit/MapKit.h>
+#import "LYRUIProgressView.h"
 
 extern CGFloat const LYRUIMessageBubbleLabelHorizontalPadding;
 extern CGFloat const LYRUIMessageBubbleLabelVerticalPadding;
 extern CGFloat const LYRUIMessageBubbleMapWidth;
 extern CGFloat const LYRUIMessageBubbleMapHeight;
+extern CGFloat const LYRUIMessageBubbleDefaultHeight;
 
 /**
  @abstract The `LYRUIMessageBubbleView` class provides a lightweight, customizable view that 
@@ -23,9 +25,9 @@ extern CGFloat const LYRUIMessageBubbleMapHeight;
 @interface LYRUIMessageBubbleView : UIView <UIAppearanceContainer>
 
 /**
- @abstract Tells the bubble view to display a UIActivityIndicator to indicate external content is downloading.
+ @abstract Tells the bubble view to display a download indicator on top of content.
  */
-- (void)displayDownloadActivityIndicator;
+- (void)updateActivityIndicatorWithProgress:(double)progress style:(LYRUIProgressViewIconStyle)style;
 
 /**
  @abstract Tells the bubble view to display a given string.
@@ -35,7 +37,7 @@ extern CGFloat const LYRUIMessageBubbleMapHeight;
 /**
  @abstract Tells the bubble view to display a given image.
  */
-- (void)updateWithImage:(UIImage *)image;
+- (void)updateWithImage:(UIImage *)image width:(CGFloat)width;
 
 /**
  @abstract Tells the bubble view to display a map image for a given location.
