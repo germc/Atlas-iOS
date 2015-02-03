@@ -103,6 +103,7 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
     
     // Set the typing indicator label
     self.typingIndicatorView = [[LYRUITypingIndicatorView alloc] init];
+    self.typingIndicatorView.translatesAutoresizingMaskIntoConstraints = NO;
     self.typingIndicatorView.alpha = 0.0;
     [self.view addSubview:self.typingIndicatorView];
     [self configureTypingIndicatorLayoutConstraints];
@@ -115,8 +116,7 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
         [self.addressBarController didMoveToParentViewController:self];
         [self configureAddressBarLayoutConstraints];
     }
-
-    [self registerControllerForNotifications];
+    [self registerForNotifications];
 }
 
 - (void)viewWillAppear:(BOOL)animated
