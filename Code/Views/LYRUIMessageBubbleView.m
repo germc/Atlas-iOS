@@ -129,16 +129,13 @@ typedef NS_ENUM(NSInteger, LYRUIBubbleViewContentType) {
         return;
     }
     
-    self.bubbleImageView.hidden = YES;
-    self.bubbleImageView.image = nil;
-    self.locationShown = kCLLocationCoordinate2DInvalid;
-    
+    self.bubbleImageView.hidden = NO;
     self.snapshotter = [self snapshotterForLocation:location];
     [self.snapshotter startWithCompletionHandler:^(MKMapSnapshot *snapshot, NSError *error) {
         if (error) {
             self.bubbleImageView.image = [UIImage imageNamed:@"LayerUIKitResource.bundle/warning-black"];
             self.bubbleImageView.contentMode = UIViewContentModeCenter;
-            NSLog(@"Error generating map snapshot: %@", error);
+            return;
         }
         self.bubbleImageView.contentMode = UIViewContentModeScaleAspectFill;
         self.bubbleImageView.image = LYRUIPinPhotoForSnapshot(snapshot, location);
@@ -146,6 +143,7 @@ typedef NS_ENUM(NSInteger, LYRUIBubbleViewContentType) {
         [[[self class] sharedCache] setObject:self.bubbleImageView.image forKey:cachedImageIdentifier];
       
         // Animate into view.
+        self.bubbleImageView.alpha = 0.0;
         [UIView animateWithDuration:0.2 animations:^{
             self.bubbleImageView.alpha = 1.0;
         }];
@@ -185,6 +183,7 @@ typedef NS_ENUM(NSInteger, LYRUIBubbleViewContentType) {
             break;
             
         case LYRUIBubbleViewContentTypeLocation:
+            self.locationShown = kCLLocationCoordinate2DInvalid;
             self.bubbleImageView.hidden = YES;
             self.bubbleImageView.image = nil;
             self.bubbleViewLabel.hidden = YES;
