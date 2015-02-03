@@ -19,16 +19,21 @@ extern NSString *const LYRUIConversationViewFooterIdentifier;
 @interface LYRUIConversationCollectionViewFooter : UICollectionReusableView
 
 /**
+ @abstract The message associated with the footer.
+ */
+@property (nonatomic) LYRMessage *message;
+
+/**
  @abstract Displays a string of text representing the read status of a message.
  @param recipientStatus The string representing the status.
  */
 - (void)updateWithAttributedStringForRecipientStatus:(NSAttributedString *)recipientStatus;
 
-+ (CGFloat)footerHeightWithRecipientStatus:(NSAttributedString *)recipientStatus;
-
 /**
- @abstract The message associated with the footer.
+ @abstract Performs calculations to determine the footer height.
+ @param recipientStatus An `NSAttributedString` containing attributes that will be used in the calculation.
+ @return The height for the footer.
  */
-@property (nonatomic) LYRMessage *message;
++ (CGFloat)footerHeightWithRecipientStatus:(NSAttributedString *)recipientStatus;
 
 @end

@@ -17,7 +17,6 @@ NSString *const LYRUIConversationCollectionViewAccessibilityIdentifier = @"Conve
 {
     self = [super initWithFrame:frame collectionViewLayout:layout];
     if (self) {
-        self.translatesAutoresizingMaskIntoConstraints = NO;
         self.backgroundColor = [UIColor clearColor];
         self.alwaysBounceVertical = YES;
         self.bounces = YES;
