@@ -6,9 +6,9 @@
 //  Copyright (c) 2014 Layer, Inc. All rights reserved.
 //
 
-#import "LYRUIConversationViewController.h"
 #import <AssetsLibrary/AssetsLibrary.h>
 #import <MobileCoreServices/MobileCoreServices.h>
+#import "LYRUIConversationViewController.h"
 #import "LYRUIConversationCollectionView.h"
 #import "LYRUIConstants.h"
 #import "LYRUIDataSourceChange.h"
@@ -23,7 +23,6 @@
 @property (nonatomic) LYRUIConversationCollectionView *collectionView;
 @property (nonatomic) LYRQueryController *queryController;
 @property (nonatomic) LYRUIConversationView *view;
-@property (nonatomic) UILabel *typingIndicatorLabel;
 @property (nonatomic) LYRUITypingIndicatorView *typingIndicatorView;
 @property (nonatomic) CGFloat keyboardHeight;
 @property (nonatomic) BOOL shouldDisplayAvatarImage;
@@ -64,7 +63,6 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
         _sectionFooters = [NSHashTable weakObjectsHashTable];
         _firstAppearance = YES;
         _objectChanges = [NSMutableArray new];
-        self.view.backgroundColor = [UIColor whiteColor];
     }
     return self;
 }
@@ -85,12 +83,14 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-
+    self.view.backgroundColor = [UIColor whiteColor];
+    
     // Collection View Setup
     self.collectionView = [[LYRUIConversationCollectionView alloc] initWithFrame:CGRectZero
                                                             collectionViewLayout:[[UICollectionViewFlowLayout alloc] init]];
     self.collectionView.delegate = self;
     self.collectionView.dataSource = self;
+    self.collectionView.translatesAutoresizingMaskIntoConstraints = NO;
     [self.view addSubview:self.collectionView];
     [self configureCollectionViewLayoutConstraints];
     
@@ -158,7 +158,6 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 
     if (self.addressBarController) {
         [self configureScrollIndicatorInset];
-
     }
     // To get the toolbar to slide onscreen with the view controller's content, we have to make the view the
     // first responder here. Even so, it will not animate on iOS 8 the first time.
@@ -198,7 +197,8 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
     return nil;
 }
 
-#warning TODO - Encapsulate this in the collection view
+#pragma mark - Collection View Configuration
+
 - (void)configureScrollIndicatorInset
 {
     UIEdgeInsets contentInset = self.collectionView.contentInset;
@@ -608,7 +608,7 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
     LYRMessage *message = [self messageAtCollectionViewSection:section];
     if (![message.sentByUserID isEqualToString:self.layerClient.authenticatedUserID])return NO;
     
-    return NO;
+    return YES;
 }
 
 - (BOOL)shouldDisplayAvatarImageAtIndexPath:(NSIndexPath *)indexPath
