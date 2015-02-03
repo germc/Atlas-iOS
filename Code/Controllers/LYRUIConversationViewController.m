@@ -723,7 +723,7 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 - (void)messageInputToolbarDidChangeHeight:(NSNotification *)notification
 {
     CGPoint existingOffset = self.collectionView.contentOffset;
-    CGPoint bottomOffset = [self bottomOffset];
+    CGPoint bottomOffset = [self bottomOffsetForContentSize:self.collectionView.contentSize];
     CGFloat distanceToBottom = bottomOffset.y - existingOffset.y;
     BOOL shouldScrollToBottom = distanceToBottom <= 50;
 
@@ -1124,9 +1124,9 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
     self.collectionView.contentInset = insets;
 }
 
-- (CGPoint)bottomOffset
+- (CGPoint)bottomOffsetForContentSize:(CGSize)contentSize
 {
-    CGFloat contentSizeHeight = self.collectionView.collectionViewLayout.collectionViewContentSize.height;
+    CGFloat contentSizeHeight = contentSize.height;
     CGFloat collectionViewFrameHeight = self.collectionView.frame.size.height;
     CGFloat collectionViewBottomInset = self.collectionView.contentInset.bottom;
     CGFloat collectionViewTopInset = self.collectionView.contentInset.top;
@@ -1170,7 +1170,8 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
         return;
     }
 
-    CGPoint bottomOffset = [self bottomOffset];
+    // If we were to use the collection view layout's content size here, it appears that at times it can trigger the layout to contact the data source to update its sections, rows and cells which leads to an 'invalide update' crash because the layout has already been updated with the new data prior to the performBatchUpdates:completion: call.
+    CGPoint bottomOffset = [self bottomOffsetForContentSize:self.collectionView.contentSize];
     CGFloat distanceToBottom = bottomOffset.y - self.collectionView.contentOffset.y;
     BOOL shouldScrollToBottom = distanceToBottom <= 50 && !self.collectionView.isTracking && !self.collectionView.isDragging && !self.collectionView.isDecelerating;
 
@@ -1203,7 +1204,9 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
      [self configureCollectionViewElements];
 
     if (shouldScrollToBottom)  {
-        [self scrollToBottomOfCollectionViewAnimated:YES];
+        // We can't get the content size from the collection view because it will be out-of-date due to the above updates, but we can get the update-to-date size from the layout.
+        CGSize contentSize = self.collectionView.collectionViewLayout.collectionViewContentSize;
+        [self.collectionView setContentOffset:[self bottomOffsetForContentSize:contentSize] animated:YES];
     } else {
         [self configurePaginationWindow];
         [self configureMoreMessagesIndicatorVisibility];
@@ -1374,7 +1377,7 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 
 - (void)reloadCollectionViewAdjustingForContentHeightChange
 {
-    CGFloat priorContentHeight = self.collectionView.collectionViewLayout.collectionViewContentSize.height;
+    CGFloat priorContentHeight = self.collectionView.contentSize.height;
     [self.collectionView reloadData];
     CGFloat contentHeightDifference = self.collectionView.collectionViewLayout.collectionViewContentSize.height - priorContentHeight;
     CGFloat adjustment = contentHeightDifference;
@@ -1386,7 +1389,8 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 
 - (void)scrollToBottomOfCollectionViewAnimated:(BOOL)animated
 {
-    [self.collectionView setContentOffset:[self bottomOffset] animated:animated];
+    CGSize contentSize = self.collectionView.contentSize;
+    [self.collectionView setContentOffset:[self bottomOffsetForContentSize:contentSize] animated:animated];
 }
 
 - (NSOrderedSet *)participantsForIdentifiers:(NSOrderedSet *)identifiers
