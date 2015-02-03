@@ -238,13 +238,23 @@
         CGSize size = LYRUITextPlainSize(text, font);
         height = size.height + LYRUIMessageBubbleLabelVerticalPadding * 2;
     } else if ([part.MIMEType isEqualToString:LYRUIMIMETypeImageJPEG] || [part.MIMEType isEqualToString:LYRUIMIMETypeImagePNG]) {
-        UIImage *image = [UIImage imageWithData:part.data];
-        CGSize size = LYRUIImageSize(image);
-        height = size.height;
+        if (part.isDownloaded) {
+            UIImage *image = [UIImage imageWithData:part.data];
+            CGSize size = LYRUIImageSize(image);
+            height = size.height;
+        } else {
+            LYRMessagePart *dimensionPart = message.parts[2];
+            if ([dimensionPart.MIMEType isEqualToString:LYRUIMIMETypeImageSize]) {
+                CGSize size = LYRUIImageSizeForJSONData(dimensionPart.data);
+                height = size.height;
+            } else {
+                height = 0;
+            }
+        }
     } else if ([part.MIMEType isEqualToString:LYRUIMIMETypeLocation]) {
         height = LYRUIMessageBubbleMapHeight;
     } else {
-        height = 10;
+        height = 0;
     }
     height = ceil(height);
     
