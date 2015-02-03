@@ -104,7 +104,6 @@
     }
     [self downloadContentForMessagePart:imagePart trackProgress:YES];
     
-    
     LYRMessagePart *previewPart = self.message.parts[1];
     if (![previewPart.MIMEType isEqualToString:LYRUIMIMETypeImageJPEGPreview]) return;
     if (previewPart.isDownloaded) {
