@@ -43,7 +43,7 @@ NSString *LYRUIProgressViewStringForIconStyle(LYRUIProgressViewIconStyle iconSty
 @property (nonatomic) CATextLayer *iconLayer;
 @property (nonatomic) UIBezierPath *progressArcPath;
 @property (nonatomic) CGFloat borderWidth;
-@property (nonatomic, readonly) double radius;
+@property (nonatomic, readonly) CGFloat radius;
 @property (nonatomic) NSTimeInterval animationDuration;
 @property (nonatomic) double progress;
 

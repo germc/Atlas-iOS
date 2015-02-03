@@ -39,6 +39,7 @@ NSString *const LYRUIAvatarImageViewAccessibilityLabel = @"LYRUIAvatarImageViewA
         self.contentMode = UIViewContentModeScaleAspectFill;
         
         _initialsLabel = [[UILabel alloc] init];
+        _initialsLabel.translatesAutoresizingMaskIntoConstraints = NO;
         _initialsLabel.textAlignment = NSTextAlignmentCenter;
         _initialsLabel.adjustsFontSizeToFitWidth = YES;
         _initialsLabel.minimumScaleFactor = 0.75;
