@@ -129,9 +129,9 @@ typedef NS_ENUM(NSInteger, LYRUIBubbleViewContentType) {
         return;
     }
     
-    self.bubbleImageView.hidden = NO;
     self.snapshotter = [self snapshotterForLocation:location];
     [self.snapshotter startWithCompletionHandler:^(MKMapSnapshot *snapshot, NSError *error) {
+        self.bubbleImageView.hidden = NO;
         if (error) {
             self.bubbleImageView.image = [UIImage imageNamed:@"LayerUIKitResource.bundle/warning-black"];
             self.bubbleImageView.contentMode = UIViewContentModeCenter;
@@ -170,7 +170,6 @@ typedef NS_ENUM(NSInteger, LYRUIBubbleViewContentType) {
             self.bubbleImageView.image = nil;
             self.progressView.hidden = YES;
             self.locationShown = kCLLocationCoordinate2DInvalid;
-            [self.snapshotter cancel];
             break;
             
         case LYRUIBubbleViewContentTypeImage:
@@ -179,7 +178,6 @@ typedef NS_ENUM(NSInteger, LYRUIBubbleViewContentType) {
             self.progressView.hidden = NO;
             self.locationShown = kCLLocationCoordinate2DInvalid;
             self.bubbleViewLabel.text = nil;
-            [self.snapshotter cancel];
             break;
             
         case LYRUIBubbleViewContentTypeLocation:
@@ -194,6 +192,7 @@ typedef NS_ENUM(NSInteger, LYRUIBubbleViewContentType) {
         default:
             break;
     }
+    [self.snapshotter cancel];
     [self setNeedsUpdateConstraints];
 }
 
