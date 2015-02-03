@@ -682,7 +682,7 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
         if (part.isDownloaded) {
             UIImage *image = [UIImage imageWithData:part.data];
             if (image) size = LYRUIImageSize(image);
-        } else if (message.parts[2]) {
+        } else if (message.parts.count > 2) {
             LYRMessagePart *sizePart = message.parts[2];
             if ([sizePart.MIMEType isEqualToString:LYRUIMIMETypeImageSize]) {
                 size = LYRUIImageSizeForJSONData(sizePart.data);

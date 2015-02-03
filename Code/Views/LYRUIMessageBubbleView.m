@@ -32,6 +32,7 @@ typedef NS_ENUM(NSInteger, LYRUIBubbleViewContentType) {
 @property (nonatomic) UITapGestureRecognizer *tapGestureRecognizer;
 @property (nonatomic) NSURL *tappedURL;
 @property (nonatomic) NSLayoutConstraint *imageWidthConstraint;
+@property (nonatomic) MKMapSnapshotter *snapshotter;
 
 @end
 
@@ -127,28 +128,38 @@ typedef NS_ENUM(NSInteger, LYRUIBubbleViewContentType) {
         self.bubbleImageView.hidden = NO;
         return;
     }
-
+    
     self.bubbleImageView.hidden = YES;
     self.bubbleImageView.image = nil;
     self.locationShown = kCLLocationCoordinate2DInvalid;
-    LYRUIPhotoForLocation(location, ^(UIImage *image, NSError *error) {
+    
+    self.snapshotter = [self snapshotterForLocation:location];
+    [self.snapshotter startWithCompletionHandler:^(MKMapSnapshot *snapshot, NSError *error) {
         if (error) {
             self.bubbleImageView.image = [UIImage imageNamed:@"LayerUIKitResource.bundle/warning-black"];
             self.bubbleImageView.contentMode = UIViewContentModeCenter;
-        } else {
-            self.bubbleImageView.contentMode = UIViewContentModeScaleAspectFill;
-            self.bubbleImageView.image = image;
-            self.locationShown = location;
-            [[[self class] sharedCache] setObject:image forKey:cachedImageIdentifier];
+            NSLog(@"Error generating map snapshot: %@", error);
         }
-        self.bubbleImageView.hidden = NO;
-        self.bubbleImageView.alpha = 0.0;
-        
+        self.bubbleImageView.contentMode = UIViewContentModeScaleAspectFill;
+        self.bubbleImageView.image = LYRUIPinPhotoForSnapshot(snapshot, location);
+        self.locationShown = location;
+        [[[self class] sharedCache] setObject:self.bubbleImageView.image forKey:cachedImageIdentifier];
+      
         // Animate into view.
         [UIView animateWithDuration:0.2 animations:^{
             self.bubbleImageView.alpha = 1.0;
         }];
-    });
+    }];
+}
+
+- (MKMapSnapshotter *)snapshotterForLocation:(CLLocationCoordinate2D)location
+{
+    MKMapSnapshotOptions *options = [[MKMapSnapshotOptions alloc] init];
+    MKCoordinateSpan span = MKCoordinateSpanMake(0.005, 0.005);
+    options.region = MKCoordinateRegionMake(location, span);
+    options.scale = [UIScreen mainScreen].scale;
+    options.size = CGSizeMake(200, 200);
+    return  [[MKMapSnapshotter alloc] initWithOptions:options];
 }
 
 - (void)setBubbleViewContentType:(LYRUIBubbleViewContentType)contentType
@@ -161,6 +172,7 @@ typedef NS_ENUM(NSInteger, LYRUIBubbleViewContentType) {
             self.bubbleImageView.image = nil;
             self.progressView.hidden = YES;
             self.locationShown = kCLLocationCoordinate2DInvalid;
+            [self.snapshotter cancel];
             break;
             
         case LYRUIBubbleViewContentTypeImage:
@@ -169,6 +181,7 @@ typedef NS_ENUM(NSInteger, LYRUIBubbleViewContentType) {
             self.progressView.hidden = NO;
             self.locationShown = kCLLocationCoordinate2DInvalid;
             self.bubbleViewLabel.text = nil;
+            [self.snapshotter cancel];
             break;
             
         case LYRUIBubbleViewContentTypeLocation:
@@ -200,7 +213,7 @@ typedef NS_ENUM(NSInteger, LYRUIBubbleViewContentType) {
 
 #pragma mark - Activity Indicator 
 
-- (void)updateActivityIndicatorWithProgress:(float)progress style:(LYRUIProgressViewIconStyle)style;
+- (void)updateActivityIndicatorWithProgress:(double)progress style:(LYRUIProgressViewIconStyle)style
 {
     if (style == LYRUIProgressViewIconStyleNone) {
         self.progressView.hidden = YES;

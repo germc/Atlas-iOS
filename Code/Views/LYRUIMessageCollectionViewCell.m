@@ -48,6 +48,12 @@
     return self;
 }
 
+- (void)prepareForReuse
+{
+    [super prepareForReuse];
+    self.progress = nil;
+}
+
 - (void)presentMessage:(LYRMessage *)message;
 {
     self.message = message;
@@ -100,12 +106,12 @@
     
     
     LYRMessagePart *previewPart = self.message.parts[1];
-    if ([previewPart.MIMEType isEqualToString:LYRUIMIMETypeImageJPEGPreview]) return;
+    if (![previewPart.MIMEType isEqualToString:LYRUIMIMETypeImageJPEGPreview]) return;
     if (previewPart.isDownloaded) {
         [self.bubbleView updateWithImage:[UIImage imageWithData:previewPart.data] width:size.width];
         return;
     }
-    [self downloadContentForMessagePart:imagePart trackProgress:NO];
+    [self downloadContentForMessagePart:previewPart trackProgress:NO];
 }
 
 - (void)configureBubbleViewForLocationContent
@@ -192,11 +198,11 @@
 {
     dispatch_sync(dispatch_get_main_queue(), ^{
         if (progress.fractionCompleted < 1.00f && progress.fractionCompleted > 0.00f) {
-        [self.bubbleView updateActivityIndicatorWithProgress:self.progress.fractionCompleted style:LYRUIProgressViewIconStyleDownload];
+            [self.bubbleView updateActivityIndicatorWithProgress:self.progress.fractionCompleted style:LYRUIProgressViewIconStyleDownload];
             return;
         }
         if (progress.fractionCompleted == 1.0f) {
-        [self.bubbleView updateActivityIndicatorWithProgress:self.progress.fractionCompleted style:LYRUIProgressViewIconStyleNone];
+            [self.bubbleView updateActivityIndicatorWithProgress:self.progress.fractionCompleted style:LYRUIProgressViewIconStyleNone];
             progress.delegate = nil;
         }
     });

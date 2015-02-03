@@ -64,6 +64,6 @@ LYRMessagePart *LYRUIMessagePartWithLocation(CLLocation *location);
 
 void LYRUILastPhotoTaken(void(^completionHandler)(UIImage *image, NSError *error));
 
-void LYRUIPhotoForLocation(CLLocationCoordinate2D location, void(^completion)(UIImage *image, NSError *error));
+UIImage *LYRUIPinPhotoForSnapshot(MKMapSnapshot *snapshot, CLLocationCoordinate2D location);
 
 NSArray *LYRUILinkResultsForText(NSString *text);
