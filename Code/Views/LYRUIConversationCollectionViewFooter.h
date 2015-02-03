@@ -24,6 +24,8 @@ extern NSString *const LYRUIConversationViewFooterIdentifier;
  */
 - (void)updateWithAttributedStringForRecipientStatus:(NSAttributedString *)recipientStatus;
 
++ (CGFloat)footerHeightWithRecipientStatus:(NSAttributedString *)recipientStatus;
+
 /**
  @abstract The message associated with the footer.
  */
