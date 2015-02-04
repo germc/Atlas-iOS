@@ -102,7 +102,6 @@ typedef NS_ENUM(NSInteger, LYRUIBubbleViewContentType) {
 {
     self.progressView.alpha = 0.0f;
     self.bubbleImageView.image = nil;
-    self.imageWidthConstraint.constant = 0;
     [self applyImageWidthConstraint:NO];
     [self setBubbleViewContentType:LYRUIBubbleViewContentTypeText];
 }
