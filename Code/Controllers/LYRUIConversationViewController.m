@@ -53,7 +53,6 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 {
     self = [super init];
     if (self) {
-        [[LYRUIConversationCollectionViewHeader appearanceWhenContainedIn:[LYRUIConversationCollectionView class], nil] setParticipantLabelFont:[UIFont systemFontOfSize:28]];
          // Set properties from designated initializer
         _conversation = conversation;
         _layerClient = layerClient;

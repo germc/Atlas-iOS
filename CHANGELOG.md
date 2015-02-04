@@ -8,6 +8,7 @@
 
 ### Public API Changes
 
+* Changed `LYRUITypingIndicatorView` to `LYRUITypingIndicatorViewController`.
 * Added `LYRUIProgressView`.
 * Removed method `isGroupConversation:` from `LYRUIMessagePresenting`.
 * Added `LYRUIMIMETypeImageJPEGPreview` and `LYRUIMIMETypeImageSize` to `LYRUIMessagingUtilities`.
