@@ -38,7 +38,7 @@ NSInteger const LYRUIQueryControllerPaginationWindow = 30;
         _queryController = [layerClient queryControllerWithQuery:query];
         _queryController.paginationWindow = -numberOfMessagesToDisplay;
         NSError *error = nil;
-        BOOL success = [self.queryController execute:&error];
+        BOOL success = [_queryController execute:&error];
         if (!success) NSLog(@"LayerKit failed to execute query with error: %@", error);
     }
     return self;
@@ -51,7 +51,7 @@ NSInteger const LYRUIQueryControllerPaginationWindow = 30;
     BOOL moreMessagesAvailable = self.queryController.totalNumberOfObjects > ABS(self.queryController.paginationWindow);
     if (!moreMessagesAvailable) return;
     
-    NSUInteger numberOfMessagesToDisplay = MIN(-self.queryController.paginationWindow + self.paginationWindow, self.queryController.totalNumberOfObjects);
+    NSUInteger numberOfMessagesToDisplay = MIN(-self.queryController.paginationWindow + LYRUIQueryControllerPaginationWindow, self.queryController.totalNumberOfObjects);
     self.queryController.paginationWindow = -numberOfMessagesToDisplay;
 }
 

@@ -1198,7 +1198,7 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
     if (!nearTop) return;
 
     self.expandingPaginationWindow = YES;
-    [self.conversationDataSource configurePaginationWindow];
+    [self.conversationDataSource incrementPaginationWindow];
     self.expandingPaginationWindow = NO;
 }
 
