@@ -33,8 +33,6 @@ CGFloat const LYRUIConversationViewHeaderVerticalPadding = 10;
 {
     self = [super initWithFrame:frame];
     if (self) {
-
-        
         self.dateLabel = [[UILabel alloc] init];
         self.dateLabel.textAlignment = NSTextAlignmentCenter;
         self.dateLabel.translatesAutoresizingMaskIntoConstraints = NO;
