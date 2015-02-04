@@ -53,7 +53,6 @@ CGFloat const LYRUIConversationViewFooterVericalPadding = 6;
     self.recipientStatusLabel.attributedText = recipientStatus;
 }
 
-
 + (CGFloat)footerHeightWithRecipientStatus:(NSAttributedString *)recipientStatus
 {
     if (!recipientStatus) return 0;

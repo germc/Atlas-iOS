@@ -20,18 +20,22 @@
 @implementation LYRUIConversationCollectionViewHeader
 
 NSString *const LYRUIConversationViewHeaderIdentifier = @"LYRUIConversationViewHeaderIdentifier";
-CGFloat const LYRUIConversationViewHeaderVericalPadding = 6;
+CGFloat const LYRUIConversationViewHeaderVerticalPadding = 10;
+
++ (void)initialize
+{
+    LYRUIConversationCollectionViewHeader *proxy = [self appearance];
+    proxy.participantLabelTextColor = [UIColor blackColor];
+    proxy.participantLabelFont = [UIFont systemFontOfSize:14];
+}
 
 - (id)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
     if (self) {
 
-        _participantLabelFont = [UIFont systemFontOfSize:12];
-        _participantLabelTextColor = [UIColor grayColor];
+        
         self.dateLabel = [[UILabel alloc] init];
-        self.dateLabel.font = [UIFont systemFontOfSize:12];
-        self.dateLabel.textColor = [UIColor grayColor];
         self.dateLabel.textAlignment = NSTextAlignmentCenter;
         self.dateLabel.translatesAutoresizingMaskIntoConstraints = NO;
         [self addSubview:self.dateLabel];
@@ -42,7 +46,7 @@ CGFloat const LYRUIConversationViewHeaderVericalPadding = 6;
         self.participantLabel.translatesAutoresizingMaskIntoConstraints = NO;
         [self addSubview:self.participantLabel];
 
-        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.dateLabel attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1.0 constant:LYRUIConversationViewHeaderVericalPadding]];
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.dateLabel attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1.0 constant:LYRUIConversationViewHeaderVerticalPadding]];
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.dateLabel attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0]];
 
         // To work around an apparent system bug that initially requires the view to have zero width, instead of a required priority, we use a priority one higher than the content compression resistance.
@@ -54,7 +58,7 @@ CGFloat const LYRUIConversationViewHeaderVericalPadding = 6;
         dateLabelRightConstraint.priority = UILayoutPriorityDefaultHigh + 1;
         [self addConstraint:dateLabelRightConstraint];
 
-        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.participantLabel attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeBottom multiplier:1.0 constant:-LYRUIConversationViewHeaderVericalPadding]];
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.participantLabel attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeBottom multiplier:1.0 constant:-LYRUIConversationViewHeaderVerticalPadding]];
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.participantLabel attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1.0 constant:50]];
 
         NSLayoutConstraint *participantLabelRightConstraint = [NSLayoutConstraint constraintWithItem:self.participantLabel attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationLessThanOrEqual toItem:self attribute:NSLayoutAttributeRight multiplier:1.0 constant:-10];
@@ -100,15 +104,14 @@ CGFloat const LYRUIConversationViewHeaderVericalPadding = 6;
 
 + (CGFloat)headerHeightWithDateString:(NSAttributedString *)dateString participantName:(NSString *)participantName
 {
-    LYRUIConversationCollectionViewHeader *header = [[self alloc] init];
     CGFloat height = 0.0;
-    if (participantName) height += LYRUIConversationViewHeaderVericalPadding;
-    if (dateString) height += LYRUIConversationViewHeaderVericalPadding;
+    if (participantName) height += LYRUIConversationViewHeaderVerticalPadding;
+    if (dateString) height += LYRUIConversationViewHeaderVerticalPadding;
     
-    CGSize participantNameSize = LYRUITextPlainSize(participantName, header.participantLabelFont);
+    CGSize participantNameSize = LYRUITextPlainSize(participantName, [[self appearance] participantLabelFont]);
     CGFloat dateHeight = [self heightForAttributedString:dateString];
     
-    return (dateHeight + participantNameSize.height + LYRUIConversationViewHeaderVericalPadding + height);
+    return (dateHeight + participantNameSize.height + LYRUIConversationViewHeaderVerticalPadding + height);
 }
 
 + (CGFloat)heightForAttributedString:(NSAttributedString *)attributedString

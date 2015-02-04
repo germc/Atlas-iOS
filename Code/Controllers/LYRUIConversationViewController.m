@@ -365,7 +365,7 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 // LAYER - The `LYRUIConversationViewController` component uses `LYRMessages` to represent sections.
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
 {
-    return [self.queryController numberOfObjectsInSection:0] +  LYRUINumberOfSectionsBeforeFirstMessageSection;
+    return [self.queryController numberOfObjectsInSection:0] + LYRUINumberOfSectionsBeforeFirstMessageSection;
 }
 
 // LAYER - Configuring a subclass of `LYRUIMessageCollectionViewCell` to be displayed on screen. `LayerUIKit` supports both
@@ -456,27 +456,26 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
         participantName = [self participantNameForMessage:[self messageAtCollectionViewSection:section]];
     }
     CGFloat height = [LYRUIConversationCollectionViewHeader headerHeightWithDateString:dateString participantName:participantName];
-    return CGSizeMake(CGRectGetWidth(collectionView.frame), height);
+    return CGSizeMake(0, height);
 }
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForFooterInSection:(NSInteger)section
 {
     if (section == LYRUIMoreMessagesSection) return CGSizeZero;
-    if (section == self.collectionView.numberOfSections - 1) return CGSizeZero;
     NSAttributedString *readReceipt;
     if ([self shouldDisplayReadReceiptForSection:section]) {
         readReceipt = [self attributedStringForRecipientStatusOfMessage:[self messageAtCollectionViewSection:section]];
     }
     CGFloat height = [LYRUIConversationCollectionViewFooter footerHeightWithRecipientStatus:readReceipt];
-    return CGSizeMake(CGRectGetWidth(collectionView.frame), height);
+    return CGSizeMake(0, height);
 }
 
-#pragma mark - Layout Congfiguration
+#pragma mark - Layout Configuration
 
 - (CGFloat)cellHeightForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     LYRMessage *message = [self messageAtCollectionViewIndexPath:indexPath];
-    return [LYRUIMessageCollectionViewCell cellHeightForMessage:message];
+    return [LYRUIMessageCollectionViewCell cellHeightForMessage:message inView:self.view];
 }
 
 - (void)configureHeader:(LYRUIConversationCollectionViewHeader *)header atIndexPath:(NSIndexPath *)indexPath
@@ -569,11 +568,11 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 
 - (BOOL)shouldDisplayDateLabelForSection:(NSUInteger)section
 {
-    if(section == 0) return NO;
+    if (section < LYRUINumberOfSectionsBeforeFirstMessageSection) return NO;
     if (section == LYRUINumberOfSectionsBeforeFirstMessageSection) return YES;
     
     LYRMessage *message = [self messageAtCollectionViewSection:section];
-    LYRMessage *previousMessage = [self messageAtCollectionViewSection:section - 1];
+    LYRMessage *previousMessage = [self messageAtCollectionViewSection:section ];
     
     NSTimeInterval interval = [message.receivedAt timeIntervalSinceDate:previousMessage.receivedAt];
     if (interval > self.dateDisplayTimeInterval) {
@@ -606,7 +605,7 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
     if (section != lastSection) return NO;
 
     LYRMessage *message = [self messageAtCollectionViewSection:section];
-    if (![message.sentByUserID isEqualToString:self.layerClient.authenticatedUserID])return NO;
+    if (![message.sentByUserID isEqualToString:self.layerClient.authenticatedUserID]) return NO;
     
     return YES;
 }

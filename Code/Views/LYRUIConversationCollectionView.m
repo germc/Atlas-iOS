@@ -47,4 +47,5 @@ NSString *const LYRUIConversationCollectionViewAccessibilityIdentifier = @"Conve
             forSupplementaryViewOfKind:UICollectionElementKindSectionFooter
                    withReuseIdentifier:LYRUIConversationViewFooterIdentifier];
 }
+
 @end
