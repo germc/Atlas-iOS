@@ -8,8 +8,10 @@
 
 #import <UIKit/UIKit.h>
 
-@interface LYRUITypingIndicatorView : UIView
+@interface LYRUITypingIndicatorViewController : UIViewController
 
 @property (nonatomic) UILabel *label;
+
+- (void)updateWithParticipants:(NSMutableArray *)participants animated:(BOOL)animated;
 
 @end

@@ -13,17 +13,18 @@
 #import "LYRUIConstants.h"
 #import "LYRUIDataSourceChange.h"
 #import "LYRUIMessagingUtilities.h"
-#import "LYRUITypingIndicatorView.h"
+#import "LYRUITypingIndicatorViewController.h"
 #import "LYRQueryController.h"
 #import "LYRUIDataSourceChange.h"
 #import "LYRUIConversationView.h"
+#import "LYRUIParticipantChange.h"
 
 @interface LYRUIConversationViewController () <UICollectionViewDataSource, UICollectionViewDelegate, LYRUIMessageInputToolbarDelegate, UIActionSheetDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIGestureRecognizerDelegate, LYRQueryControllerDelegate>
 
 @property (nonatomic) LYRUIConversationCollectionView *collectionView;
 @property (nonatomic) LYRQueryController *queryController;
 @property (nonatomic) LYRUIConversationView *view;
-@property (nonatomic) LYRUITypingIndicatorView *typingIndicatorView;
+@property (nonatomic) LYRUITypingIndicatorViewController *typingIndicatorViewController;
 @property (nonatomic) CGFloat keyboardHeight;
 @property (nonatomic) BOOL shouldDisplayAvatarImage;
 @property (nonatomic) NSLayoutConstraint *typingIndicatorViewBottomConstraint;
@@ -94,20 +95,21 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
     [self.view addSubview:self.collectionView];
     [self configureCollectionViewLayoutConstraints];
     
-    // Set the accessoryView to be a Message Input Toolbar
+    // Add message input tool bar
     self.messageInputToolbar = [LYRUIMessageInputToolbar new];
     self.messageInputToolbar.inputToolBarDelegate = self;
     // An apparent system bug causes a view controller to not be deallocated
     // if the view controller's own inputAccessoryView property is used.
     self.view.inputAccessoryView = self.messageInputToolbar;
     
-    // Set the typing indicator label
-    self.typingIndicatorView = [[LYRUITypingIndicatorView alloc] init];
-    self.typingIndicatorView.translatesAutoresizingMaskIntoConstraints = NO;
-    self.typingIndicatorView.alpha = 0.0;
-    [self.view addSubview:self.typingIndicatorView];
+    // Add typing indicator
+    self.typingIndicatorViewController = [[LYRUITypingIndicatorViewController alloc] init];
+    [self addChildViewController:self.typingIndicatorViewController];
+    [self.view addSubview:self.typingIndicatorViewController.view];
+    [self.typingIndicatorViewController didMoveToParentViewController:self];
     [self configureTypingIndicatorLayoutConstraints];
     
+    // Add address bar if needed
     if (!self.conversation && self.showsAddressBar) {
         self.addressBarController = [[LYRUIAddressBarViewController alloc] init];
         self.addressBarController.delegate = self;
@@ -255,12 +257,11 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 
     _conversation = conversation;
 
-    [self.typingParticipantIDs removeAllObjects];
-    [self updateTypingIndicatorOverlay:NO];
-
     [self configureControllerForConversation];
     [self configureAddressBarForChangedParticipants];
-
+    [self.typingParticipantIDs removeAllObjects];
+    [self updateTypingIndicatorOverlay:NO];
+    
     if (conversation) {
         [self fetchLayerMessages];
     } else {
@@ -724,117 +725,11 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 - (void)updateTypingIndicatorOverlay:(BOOL)animated
 {
     NSMutableArray *knownParticipantsTyping = [NSMutableArray array];
-    __block NSUInteger unknownParticipantsTypingCount = 0;
     [self.typingParticipantIDs enumerateObjectsUsingBlock:^(NSString *participantID, NSUInteger idx, BOOL *stop) {
         id<LYRUIParticipant> participant = [self participantForIdentifier:participantID];
-        if (!participant) {
-            unknownParticipantsTypingCount++;
-            return;
-        }
-        [knownParticipantsTyping addObject:participant];
+        if (participant) [knownParticipantsTyping addObject:participant];
     }];
-
-    BOOL visible = knownParticipantsTyping.count + unknownParticipantsTypingCount > 0;
-    if (visible) {
-        NSString *text = [self typingIndicatorTextWithKnownParticipants:knownParticipantsTyping unknownParticipantsCount:unknownParticipantsTypingCount];
-        self.typingIndicatorView.label.text = text;
-    }
-
-    NSTimeInterval duration;
-    if (!animated) {
-        duration = 0;
-    } else if (visible) {
-        duration = 0.3;
-    } else {
-        duration = 0.1;
-    }
-
-    [UIView animateWithDuration:duration animations:^{
-        self.typingIndicatorView.alpha = visible ? 1.0 : 0.0;
-    }];
-}
-
-- (NSString *)typingIndicatorTextWithKnownParticipants:(NSArray *)knownParticipants unknownParticipantsCount:(NSUInteger)unknownParticipantsCount
-{
-    NSUInteger participantsCount = knownParticipants.count + unknownParticipantsCount;
-    if (participantsCount == 0) return nil;
-
-    NSString *unknownParticipantsSummary;
-    if (unknownParticipantsCount == 1) {
-        unknownParticipantsSummary = @"Unknown";
-    } else if (unknownParticipantsCount > 1) {
-        unknownParticipantsSummary = [NSString stringWithFormat:@"%ld unknowns", (unsigned long)unknownParticipantsCount];
-    }
-
-    NSMutableArray *fullNameComponents = [[knownParticipants valueForKey:@"fullName"] mutableCopy];
-    if (unknownParticipantsSummary) {
-        [fullNameComponents addObject:unknownParticipantsSummary];
-    }
-    NSString *fullNamesText = [self typingIndicatorTextWithParticipantStrings:fullNameComponents participantsCount:participantsCount];
-    if ([self typingIndicatorLabelHasSpaceForText:fullNamesText]) return fullNamesText;
-
-    NSArray *firstNames = [knownParticipants valueForKey:@"firstName"];
-    NSMutableArray *firstNameComponents = [firstNames mutableCopy];
-    if (unknownParticipantsSummary) {
-        [firstNameComponents addObject:unknownParticipantsSummary];
-    }
-    NSString *firstNamesText = [self typingIndicatorTextWithParticipantStrings:firstNameComponents participantsCount:participantsCount];
-    if ([self typingIndicatorLabelHasSpaceForText:firstNamesText]) return firstNamesText;
-
-    NSMutableArray *strings = [NSMutableArray new];
-    for (NSInteger displayedFirstNamesCount = knownParticipants.count; displayedFirstNamesCount >= 0; displayedFirstNamesCount--) {
-        [strings removeAllObjects];
-
-        NSRange displayedRange = NSMakeRange(0, displayedFirstNamesCount);
-        NSArray *displayedFirstNames = [firstNames subarrayWithRange:displayedRange];
-        [strings addObjectsFromArray:displayedFirstNames];
-
-        NSUInteger undisplayedCount = participantsCount - displayedRange.length;
-        NSMutableString *textForUndisplayedParticipants = [NSMutableString new];;
-        [textForUndisplayedParticipants appendFormat:@"%ld", (unsigned long)undisplayedCount];
-        if (displayedFirstNamesCount > 0 && undisplayedCount == 1) {
-            [textForUndisplayedParticipants appendString:@" other"];
-        } else if (displayedFirstNamesCount > 0) {
-            [textForUndisplayedParticipants appendString:@" others"];
-        }
-        [strings addObject:textForUndisplayedParticipants];
-
-        NSString *proposedSummary = [self typingIndicatorTextWithParticipantStrings:strings participantsCount:participantsCount];
-        if ([self typingIndicatorLabelHasSpaceForText:proposedSummary]) {
-            return proposedSummary;
-        }
-    }
-
-    return nil;
-}
-
-- (NSString *)typingIndicatorTextWithParticipantStrings:(NSArray *)participantStrings participantsCount:(NSUInteger)participantsCount
-{
-    NSMutableString *text = [NSMutableString new];
-    NSUInteger lastIndex = participantStrings.count - 1;
-    [participantStrings enumerateObjectsUsingBlock:^(NSString *participantString, NSUInteger index, BOOL *stop) {
-        if (index == lastIndex && participantStrings.count == 2) {
-            [text appendString:@" and "];
-        } else if (index == lastIndex && participantStrings.count > 2) {
-            [text appendString:@", and "];
-        } else if (index > 0) {
-            [text appendString:@", "];
-        }
-        [text appendString:participantString];
-    }];
-    if (participantsCount == 1) {
-        [text appendString:@" is typing…"];
-    } else {
-        [text appendString:@" are typing…"];
-    }
-    return text;
-}
-
-- (BOOL)typingIndicatorLabelHasSpaceForText:(NSString *)text
-{
-    UILabel *label = self.typingIndicatorView.label;
-    CGSize fittedSize = [text sizeWithAttributes:@{NSFontAttributeName: label.font}];
-    return fittedSize.width <= CGRectGetWidth(label.frame);
+    [self.typingIndicatorViewController updateWithParticipants:knownParticipantsTyping animated:animated];
 }
 
 #pragma mark - LYRUIMessageInputToolbarDelegate
@@ -1287,7 +1182,6 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
         conversation = [self.dataSource conversationViewController:self conversationWithParticipants:participants];
         if (conversation) return conversation;
     }
-
     NSSet *participantIdentifiers = [participants valueForKey:@"participantIdentifier"];
     conversation = [self existingConversationWithParticipantIdentifiers:participantIdentifiers];
     if (conversation) return conversation;
@@ -1412,10 +1306,10 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 
 - (void)configureTypingIndicatorLayoutConstraints
 {
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.typingIndicatorView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0]];
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.typingIndicatorView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0]];
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.typingIndicatorView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:LYRUITypingIndicatorHeight]];
-    self.typingIndicatorViewBottomConstraint = [NSLayoutConstraint constraintWithItem:self.typingIndicatorView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0];
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.typingIndicatorViewController.view attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0]];
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.typingIndicatorViewController.view attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0]];
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.typingIndicatorViewController.view attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:LYRUITypingIndicatorHeight]];
+    self.typingIndicatorViewBottomConstraint = [NSLayoutConstraint constraintWithItem:self.typingIndicatorViewController.view attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0];
     [self.view addConstraint:self.typingIndicatorViewBottomConstraint];
 }
 
