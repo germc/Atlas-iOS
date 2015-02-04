@@ -11,7 +11,6 @@
 @interface LYRUIConversationDataSource ()
 
 @property (nonatomic) BOOL expandingPaginationWindow;
-@property (nonatomic, readwrite) NSInteger paginationWindow;
 
 @end
 
@@ -34,8 +33,7 @@ NSInteger const LYRUIQueryControllerPaginationWindow = 30;
         query.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"index" ascending:YES]];
        
         NSUInteger numberOfMessagesAvailable = [layerClient countForQuery:query error:nil];
-        self.paginationWindow = LYRUIQueryControllerPaginationWindow;
-        NSUInteger numberOfMessagesToDisplay = MIN(numberOfMessagesAvailable, self.paginationWindow);
+        NSUInteger numberOfMessagesToDisplay = MIN(numberOfMessagesAvailable, LYRUIQueryControllerPaginationWindow);
     
         _queryController = [layerClient queryControllerWithQuery:query];
         _queryController.paginationWindow = -numberOfMessagesToDisplay;

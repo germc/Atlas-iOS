@@ -46,11 +46,6 @@ NSInteger const LYRUIQueryControllerPaginationWindow;
 ///---------------------------------------
 
 /*
- @abstract The pagination window used by the `LYRQueryController` property. Set to 30.
- */
-@property (nonatomic, readonly) NSInteger paginationWindow;
-
-/*
  @abstracts Asks the receiver if its `queryController` has more messages to display than are currently displayed on screen.
  @return `YES` if there are more messages to display.
  */
