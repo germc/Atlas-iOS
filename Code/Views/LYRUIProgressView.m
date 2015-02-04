@@ -76,7 +76,7 @@ NSString *LYRUIProgressViewStringForIconStyle(LYRUIProgressViewIconStyle iconSty
         _backgroundRingColorUpload = [UIColor colorWithRed:0.8f green:0.0f blue:0.0f alpha:0.3f];
         _foregroundRingColorUpload = [UIColor colorWithRed:0.8f green:0.0f blue:0.0f alpha:0.5f];
         _iconColorUpload = [UIColor colorWithRed:0.8f green:0.0f blue:0.0f alpha:0.3f];
-        _backgroundRingColorDownload = [UIColor colorWithWhite:0.8f alpha:0.8f];
+        _backgroundRingColorDownload = [UIColor colorWithWhite:0.8f alpha:0.7f];
         _foregroundRingColorDownload = [UIColor colorWithWhite:1.0f alpha:0.9f];
         _iconColorDownload = [UIColor colorWithWhite:0.8f alpha:0.9f];
     }
