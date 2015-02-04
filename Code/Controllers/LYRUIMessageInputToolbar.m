@@ -103,7 +103,7 @@ static CGFloat const LYRUIButtonHeight = 28;
     self.dummyTextView.font = self.textInputView.font;
     self.dummyTextView.attributedText = self.textInputView.attributedText;
     CGSize fittedTextViewSize = [self.dummyTextView sizeThatFits:CGSizeMake(CGRectGetWidth(textViewFrame), MAXFLOAT)];
-    textViewFrame.size.height = MIN(fittedTextViewSize.height, self.textViewMaxHeight);
+    textViewFrame.size.height = ceil(MIN(fittedTextViewSize.height, self.textViewMaxHeight));
 
     frame.size.height = CGRectGetHeight(textViewFrame) + LYRUIVerticalMargin * 2;
     frame.origin.y -= frame.size.height - CGRectGetHeight(self.frame);
