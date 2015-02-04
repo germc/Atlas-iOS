@@ -81,7 +81,7 @@
 @interface LYRUIConversationListViewController : UITableViewController
 
 ///---------------------------------------
-/// @name Initializing a Controller
+/// @name Designated Initializer
 ///---------------------------------------
 
 /**
