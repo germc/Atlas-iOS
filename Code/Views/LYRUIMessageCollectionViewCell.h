@@ -20,7 +20,7 @@
 @interface LYRUIMessageCollectionViewCell : UICollectionViewCell <LYRUIMessagePresenting>
 
 /**
- @abstract The font for text displayed in the cell. Default is 14pt sytsem font.
+ @abstract The font for text displayed in the cell. Default is 14pt system font.
  */
 @property (nonatomic) UIFont *messageTextFont UI_APPEARANCE_SELECTOR;
 
