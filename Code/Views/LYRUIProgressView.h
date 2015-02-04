@@ -11,6 +11,7 @@
 typedef NS_ENUM(NSInteger, LYRUIProgressViewIconStyle) {
     LYRUIProgressViewIconStyleNone,
     LYRUIProgressViewIconStyleDownload,
+    LYRUIProgressViewIconStyleUpload,
     LYRUIProgressViewIconStyleStop,
     LYRUIProgressViewIconStylePause,
     LYRUIProgressViewIconStylePlay,

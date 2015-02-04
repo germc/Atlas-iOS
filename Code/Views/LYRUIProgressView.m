@@ -19,6 +19,9 @@ NSString *LYRUIProgressViewStringForIconStyle(LYRUIProgressViewIconStyle iconSty
         case LYRUIProgressViewIconStyleDownload:
             return @"▼";
 
+        case LYRUIProgressViewIconStyleUpload:
+            return @"▲";
+
         case LYRUIProgressViewIconStylePause:
             return @"❚❚";
 
@@ -32,7 +35,7 @@ NSString *LYRUIProgressViewStringForIconStyle(LYRUIProgressViewIconStyle iconSty
             return @"✕";
 
         default:
-            return nil;
+            return @"";
     }
 }
 
@@ -46,6 +49,12 @@ NSString *LYRUIProgressViewStringForIconStyle(LYRUIProgressViewIconStyle iconSty
 @property (nonatomic, readonly) CGFloat radius;
 @property (nonatomic) NSTimeInterval animationDuration;
 @property (nonatomic) double progress;
+@property (nonatomic) UIColor *backgroundRingColorUpload;
+@property (nonatomic) UIColor *foregroundRingColorUpload;
+@property (nonatomic) UIColor *iconColorUpload;
+@property (nonatomic) UIColor *backgroundRingColorDownload;
+@property (nonatomic) UIColor *foregroundRingColorDownload;
+@property (nonatomic) UIColor *iconColorDownload;
 
 @end
 
@@ -64,6 +73,12 @@ NSString *LYRUIProgressViewStringForIconStyle(LYRUIProgressViewIconStyle iconSty
         [self.layer addSublayer:_backRingLayer];
         [self.layer addSublayer:_progressRingLayer];
         [self.layer addSublayer:_iconLayer];
+        _backgroundRingColorUpload = [UIColor colorWithRed:0.8f green:0.0f blue:0.0f alpha:0.3f];
+        _foregroundRingColorUpload = [UIColor colorWithRed:0.8f green:0.0f blue:0.0f alpha:0.5f];
+        _iconColorUpload = [UIColor colorWithRed:0.8f green:0.0f blue:0.0f alpha:0.3f];
+        _backgroundRingColorDownload = [UIColor colorWithWhite:0.8f alpha:0.8f];
+        _foregroundRingColorDownload = [UIColor colorWithWhite:1.0f alpha:0.9f];
+        _iconColorDownload = [UIColor colorWithWhite:0.8f alpha:0.9f];
     }
     return self;
 }
@@ -78,7 +93,6 @@ NSString *LYRUIProgressViewStringForIconStyle(LYRUIProgressViewIconStyle iconSty
                                                       endAngle:LYRUIDegreeToRadians(360 - 90)
                                                      clockwise:YES];
     _progressRingLayer.frame = self.bounds;
-    _progressRingLayer.strokeColor = [UIColor colorWithWhite:1.0f alpha:0.7f].CGColor;
     _progressRingLayer.lineWidth = self.borderWidth;
     _progressRingLayer.path = path.CGPath;
     _progressRingLayer.anchorPoint = CGPointMake(0.5, 0.5);
@@ -87,7 +101,7 @@ NSString *LYRUIProgressViewStringForIconStyle(LYRUIProgressViewIconStyle iconSty
     _progressRingLayer.strokeEnd = self.progress;
 
     _backRingLayer.frame = self.bounds;
-    _backRingLayer.strokeColor = [UIColor colorWithWhite:1.0f alpha:0.3f].CGColor;
+    _backRingLayer.strokeColor = [UIColor colorWithWhite:0.8f alpha:0.5f].CGColor;
     _backRingLayer.lineWidth = self.borderWidth;
     _backRingLayer.path = path.CGPath;
     _backRingLayer.anchorPoint = CGPointMake(0.5, 0.5);
@@ -97,10 +111,19 @@ NSString *LYRUIProgressViewStringForIconStyle(LYRUIProgressViewIconStyle iconSty
 
     _iconLayer.frame = CGRectOffset(self.bounds, 0, (self.bounds.size.height / 5.5));
     _iconLayer.anchorPoint = CGPointMake(0.5, 0.5);
-    _iconLayer.foregroundColor = [UIColor colorWithWhite:1.0f alpha:0.3f].CGColor;
     _iconLayer.alignmentMode = kCAAlignmentCenter;
     _iconLayer.opacity = self.iconStyle == LYRUIProgressViewIconStyleNone ? 0.0f : 1.0f;
-    _iconLayer.string = LYRUIProgressViewStringForIconStyle(self.iconStyle) ?: @"";
+    _iconLayer.string = LYRUIProgressViewStringForIconStyle(self.iconStyle);
+
+    if (self.iconStyle == LYRUIProgressViewIconStyleUpload) {
+        _backRingLayer.strokeColor = _backgroundRingColorUpload.CGColor;
+        _progressRingLayer.strokeColor = _foregroundRingColorUpload.CGColor;
+        _iconLayer.foregroundColor = _iconColorUpload.CGColor;
+    } else {
+        _backRingLayer.strokeColor = _backgroundRingColorDownload.CGColor;
+        _progressRingLayer.strokeColor = _foregroundRingColorDownload.CGColor;
+        _iconLayer.foregroundColor = _iconColorDownload.CGColor;
+    }
 }
 
 - (CGFloat)radius
@@ -116,6 +139,17 @@ NSString *LYRUIProgressViewStringForIconStyle(LYRUIProgressViewIconStyle iconSty
 
 - (void)setIconStyle:(LYRUIProgressViewIconStyle)iconStyle
 {
+    // Set the color based on the icon type (it it's upload or anything else)
+    if (iconStyle == LYRUIProgressViewIconStyleUpload) {
+        _backRingLayer.strokeColor = _backgroundRingColorUpload.CGColor;
+        _progressRingLayer.strokeColor = _foregroundRingColorUpload.CGColor;
+        _iconLayer.foregroundColor = _iconColorUpload.CGColor;
+    } else {
+        _backRingLayer.strokeColor = _backgroundRingColorDownload.CGColor;
+        _progressRingLayer.strokeColor = _foregroundRingColorDownload.CGColor;
+        _iconLayer.foregroundColor = _iconColorDownload.CGColor;
+    }
+
     if (self.iconStyle == LYRUIProgressViewIconStyleNone && iconStyle != LYRUIProgressViewIconStyleNone) {
         CABasicAnimation *fadeInAnimation = [CABasicAnimation animationWithKeyPath:@"opacity"];
         fadeInAnimation.duration = self.animationDuration;

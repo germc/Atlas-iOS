@@ -135,7 +135,7 @@ LYRMessagePart *LYRUIMessagePartWithJPEGImage(UIImage *image, BOOL isPreview)
     UIImage *adjustedImage = LYRUIAdjustOrientationForImage(image);
     NSData *imageData;
     if (isPreview) {
-        imageData = LYRUIJPEGDataForImageWithConstraint(adjustedImage, 128, 0.2f);
+        imageData = LYRUIJPEGDataForImageWithConstraint(adjustedImage, 768, 0.8f);
     } else {
         imageData = UIImageJPEGRepresentation(adjustedImage, 0.8f);
     }

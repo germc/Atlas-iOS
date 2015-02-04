@@ -51,6 +51,7 @@
 - (void)prepareForReuse
 {
     [super prepareForReuse];
+    [self.bubbleView prepareForReuse];
     self.progress = nil;
 }
 
@@ -97,20 +98,30 @@
     }
    
     LYRMessagePart *imagePart = self.message.parts.firstObject;
-    if (imagePart.isDownloaded) {
-        [self.bubbleView updateWithImage:[UIImage imageWithData:imagePart.data] width:size.width];
+    if (imagePart.transferStatus == LYRContentTransferAwaitingUpload ||
+        imagePart.transferStatus == LYRContentTransferUploading) {
+        // Is uploading
+        [self trackProgressForMessagePart:imagePart];
+    } else if (imagePart.transferStatus == LYRContentTransferReadyForDownload ||
+               imagePart.transferStatus == LYRContentTransferDownloading) {
+        // Is downloading
+        [self trackProgressForMessagePart:imagePart];
+    } else {
+        // Image already uploaded or downloaded
         [self.bubbleView updateActivityIndicatorWithProgress:1.0f style:LYRUIProgressViewIconStyleNone];
-        return;
     }
-    [self downloadContentForMessagePart:imagePart trackProgress:YES];
     
     LYRMessagePart *previewPart = self.message.parts[1];
     if (![previewPart.MIMEType isEqualToString:LYRUIMIMETypeImageJPEGPreview]) return;
-    if (previewPart.isDownloaded) {
+    if (previewPart.transferStatus == LYRContentTransferComplete ||
+        previewPart.transferStatus == LYRContentTransferAwaitingUpload ||
+        previewPart.transferStatus == LYRContentTransferUploading) {
+        // Always displaying the preview image.
         [self.bubbleView updateWithImage:[UIImage imageWithData:previewPart.data] width:size.width];
         return;
+    } else if (previewPart.transferStatus ){
+        [self.bubbleView updateWithImage:[[UIImage alloc] init] width:size.width];
     }
-    [self downloadContentForMessagePart:previewPart trackProgress:NO];
 }
 
 - (void)configureBubbleViewForLocationContent
@@ -175,36 +186,38 @@
     return [messagePart.MIMEType isEqualToString:LYRUIMIMETypeTextPlain];
 }
 
-- (void)downloadContentForMessagePart:(LYRMessagePart *)part trackProgress:(BOOL)trackProgress
+- (void)trackProgressForMessagePart:(LYRMessagePart *)messagePart
 {
-    NSError *error;
-    self.progress = [part downloadContent:&error];
-    if (error) {
-        NSLog(@"Download failed with error: %@", error);
-        return;
+    self.progress = [messagePart progress];
+    self.progress.delegate = self;
+    if (messagePart.transferStatus == LYRContentTransferAwaitingUpload ||
+        messagePart.transferStatus == LYRContentTransferUploading) {
+        self.progress.userInfo = @{ @"transferType": @(LYRContentTransferTypeUpload) };
+    } else {
+        self.progress.userInfo = @{ @"transferType": @(LYRContentTransferTypeDownload) };
     }
-    if (trackProgress) {
-        self.progress.delegate = self;
-        if (self.progress.fractionCompleted == 0.0) {
-            [self.bubbleView updateActivityIndicatorWithProgress:self.progress.fractionCompleted style:LYRUIProgressViewIconStyleDownload];
-        } else if (self.progress.fractionCompleted < 1.0f) {
-            [self.bubbleView updateActivityIndicatorWithProgress:self.progress.fractionCompleted style:LYRUIProgressViewIconStyleDownload];
-        }
-    }
+    [self progressDidChange:self.progress];
 }
 
 - (void)progressDidChange:(LYRProgress *)progress
 {
-    dispatch_sync(dispatch_get_main_queue(), ^{
-        if (progress.fractionCompleted < 1.00f && progress.fractionCompleted > 0.00f) {
-            [self.bubbleView updateActivityIndicatorWithProgress:self.progress.fractionCompleted style:LYRUIProgressViewIconStyleDownload];
+    void (^progressUpdateUIBlock)(void) = ^{
+        if (progress.fractionCompleted < 1.00f) {
+            LYRContentTransferType transferType = [progress.userInfo[@"transferType"] integerValue];
+            [self.bubbleView updateActivityIndicatorWithProgress:self.progress.fractionCompleted style:transferType == LYRContentTransferTypeDownload ? LYRUIProgressViewIconStyleDownload : LYRUIProgressViewIconStyleUpload];
             return;
-        }
-        if (progress.fractionCompleted == 1.0f) {
+        } else {
             [self.bubbleView updateActivityIndicatorWithProgress:self.progress.fractionCompleted style:LYRUIProgressViewIconStyleNone];
             progress.delegate = nil;
         }
-    });
+    };
+    if ([NSThread isMainThread]) {
+        // Make sure not to cause a dead-lock, so we don't dispatching_sync
+        // onto the main queue while already in main queue.
+        progressUpdateUIBlock();
+    } else {
+        dispatch_sync(dispatch_get_main_queue(), progressUpdateUIBlock);
+    }
 }
 
 - (void)configureLayoutConstraints

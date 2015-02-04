@@ -679,7 +679,9 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
         height = size.height + LYRUIMessageBubbleLabelVerticalPadding * 2;
     } else if ([part.MIMEType isEqualToString:LYRUIMIMETypeImageJPEG] || [part.MIMEType isEqualToString:LYRUIMIMETypeImagePNG]) {
         CGSize size;
-        if (part.isDownloaded) {
+        if (part.transferStatus == LYRContentTransferComplete ||
+            part.transferStatus == LYRContentTransferAwaitingUpload ||
+            part.transferStatus == LYRContentTransferUploading ) {
             UIImage *image = [UIImage imageWithData:part.data];
             if (image) size = LYRUIImageSize(image);
         } else if (message.parts.count > 2) {

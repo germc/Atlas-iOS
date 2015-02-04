@@ -45,6 +45,11 @@ extern CGFloat const LYRUIMessageBubbleDefaultHeight;
 - (void)updateWithLocation:(CLLocationCoordinate2D)location;
 
 /**
+ @abstract Tells the bubble view to clear out the content and prepare it for reuse.
+ */
+- (void)prepareForReuse;
+
+/**
  @abstract The view that handles displaying text.
  */
 @property (nonatomic) UILabel *bubbleViewLabel;

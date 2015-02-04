@@ -98,6 +98,15 @@ typedef NS_ENUM(NSInteger, LYRUIBubbleViewContentType) {
     return self;
 }
 
+- (void)prepareForReuse
+{
+    self.progressView.alpha = 0.0f;
+    self.bubbleImageView.image = nil;
+    self.imageWidthConstraint.constant = 0;
+    [self applyImageWidthConstraint:NO];
+    [self setBubbleViewContentType:LYRUIBubbleViewContentTypeText];
+}
+
 - (void)updateWithAttributedText:(NSAttributedString *)text
 {
     self.bubbleViewLabel.attributedText = text;
@@ -214,9 +223,13 @@ typedef NS_ENUM(NSInteger, LYRUIBubbleViewContentType) {
 - (void)updateActivityIndicatorWithProgress:(double)progress style:(LYRUIProgressViewIconStyle)style
 {
     if (style == LYRUIProgressViewIconStyleNone) {
-        self.progressView.hidden = YES;
+        [UIView animateWithDuration:0.25 animations:^{
+            self.progressView.alpha = 0.0f;
+        }];
     } else {
-        self.progressView.hidden = NO;
+        [UIView animateWithDuration:0.25 animations:^{
+            self.progressView.alpha = 1.0f;
+        }];
     }
     self.progressView.iconStyle = style;
     [self.progressView setProgress:progress animated:YES];
