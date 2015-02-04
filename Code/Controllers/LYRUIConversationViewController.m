@@ -122,7 +122,9 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [self fetchLayerMessages];
+    if (!self.conversationDataSource) {
+        [self fetchLayerMessages];
+    }
     [self updateCollectionViewInsets];
     [self configureControllerForConversation];
     
@@ -230,8 +232,7 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
 
 - (void)fetchLayerMessages
 {
-    if (!self.conversation || self.conversationDataSource.queryController) return;
-
+    if (!self.conversation) return;
     self.conversationDataSource = [LYRUIConversationDataSource initWithLayerClient:self.layerClient conversation:self.conversation];
     self.conversationDataSource.queryController.delegate = self;
     self.showingMoreMessagesIndicator = [self.conversationDataSource moreMessagesAvailable];
@@ -258,7 +259,8 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
         self.conversationDataSource.queryController = nil;
         [self.collectionView reloadData];
     }
-    [self scrollToBottomOfCollectionViewAnimated:NO];
+    CGSize contentSize = self.collectionView.collectionViewLayout.collectionViewContentSize;
+    [self.collectionView setContentOffset:[self bottomOffsetForContentSize:contentSize] animated:NO];
 }
 
 - (void)configureControllerForConversation
