@@ -46,7 +46,7 @@ NSInteger const LYRUIQueryControllerPaginationWindow = 30;
     return self;
 }
 
-- (void)configurePaginationWindow
+- (void)incrementPaginationWindow
 {
     if (!self.queryController) return;
     
