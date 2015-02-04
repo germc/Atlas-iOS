@@ -17,11 +17,12 @@
 #import "LYRQueryController.h"
 #import "LYRUIDataSourceChange.h"
 #import "LYRUIConversationView.h"
+#import "LYRUIConversationDataSource.h"
 
 @interface LYRUIConversationViewController () <UICollectionViewDataSource, UICollectionViewDelegate, LYRUIMessageInputToolbarDelegate, UIActionSheetDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIGestureRecognizerDelegate, LYRQueryControllerDelegate>
 
 @property (nonatomic) LYRUIConversationCollectionView *collectionView;
-@property (nonatomic) LYRQueryController *queryController;
+@property (nonatomic) LYRUIConversationDataSource *conversationDataSource;
 @property (nonatomic) LYRUIConversationView *view;
 @property (nonatomic) LYRUITypingIndicatorView *typingIndicatorView;
 @property (nonatomic) CGFloat keyboardHeight;
@@ -40,7 +41,6 @@
 
 static CGFloat const LYRUITypingIndicatorHeight = 20;
 static NSInteger const LYRUIMoreMessagesSection = 0;
-static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 
 + (instancetype)conversationViewControllerWithConversation:(LYRConversation *)conversation layerClient:(LYRClient *)layerClient;
 {
@@ -52,7 +52,6 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 {
     self = [super init];
     if (self) {
-        [[LYRUIConversationCollectionViewHeader appearanceWhenContainedIn:[LYRUIConversationCollectionView class], nil] setParticipantLabelFont:[UIFont systemFontOfSize:28]];
          // Set properties from designated initializer
         _conversation = conversation;
         _layerClient = layerClient;
@@ -190,9 +189,10 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 
 - (UICollectionViewCell<LYRUIMessagePresenting> *)collectionViewCellForMessage:(LYRMessage *)message
 {
-    NSIndexPath *indexPath = [self.queryController indexPathForObject:message];
+    NSIndexPath *indexPath = [self.conversationDataSource.queryController indexPathForObject:message];
     if (indexPath) {
-        UICollectionViewCell *cell = [self.collectionView cellForItemAtIndexPath:[self collectionViewIndexPathForQueryControllerIndexPath:indexPath]];
+        NSIndexPath *collectionViewIndexPath = [self.conversationDataSource collectionViewIndexPathForQueryControllerIndexPath:indexPath];
+        UICollectionViewCell *cell = [self.collectionView cellForItemAtIndexPath:collectionViewIndexPath];
         if (cell) return (UICollectionViewCell<LYRUIMessagePresenting> *)cell;
     }
     return nil;
@@ -230,22 +230,11 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 
 - (void)fetchLayerMessages
 {
-    if (!self.conversation || self.queryController) return;
-    
-    LYRQuery *query = [LYRQuery queryWithClass:[LYRMessage class]];
-    query.predicate = [LYRPredicate predicateWithProperty:@"conversation" operator:LYRPredicateOperatorIsEqualTo value:self.conversation];
-    query.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"index" ascending:YES]];
-    NSUInteger numberOfMessagesAvailable = [self.layerClient countForQuery:query error:nil];
-    NSUInteger numberOfMessagesToDisplay = MIN(numberOfMessagesAvailable, 30);
-    
-    self.queryController = [self.layerClient queryControllerWithQuery:query];
-    self.queryController.paginationWindow = -numberOfMessagesToDisplay;
-    self.queryController.delegate = self;
-   
-    NSError *error = nil;
-    BOOL success = [self.queryController execute:&error];
-    if (!success) NSLog(@"LayerKit failed to execute query with error: %@", error);
-    self.showingMoreMessagesIndicator = [self moreMessagesAvailable];
+    if (!self.conversation || self.conversationDataSource.queryController) return;
+
+    self.conversationDataSource = [LYRUIConversationDataSource initWithLayerClient:self.layerClient conversation:self.conversation];
+    self.conversationDataSource.queryController.delegate = self;
+    self.showingMoreMessagesIndicator = [self.conversationDataSource moreMessagesAvailable];
     [self.collectionView reloadData];
 }
 
@@ -265,8 +254,8 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
     if (conversation) {
         [self fetchLayerMessages];
     } else {
-        self.queryController.delegate = nil;
-        self.queryController = nil;
+        self.conversationDataSource.queryController.delegate = nil;
+        self.conversationDataSource.queryController = nil;
         [self.collectionView reloadData];
     }
     [self scrollToBottomOfCollectionViewAnimated:NO];
@@ -366,14 +355,14 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 // LAYER - The `LYRUIConversationViewController` component uses `LYRMessages` to represent sections.
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
 {
-    return [self.queryController numberOfObjectsInSection:0] + LYRUINumberOfSectionsBeforeFirstMessageSection;
+    return [self.conversationDataSource.queryController numberOfObjectsInSection:0] + LYRUINumberOfSectionsBeforeFirstMessageSection;
 }
 
 // LAYER - Configuring a subclass of `LYRUIMessageCollectionViewCell` to be displayed on screen. `LayerUIKit` supports both
 // `LYRUIIncomingMessageCollectionViewCell` and `LYRUIOutgoingMessageCollectionViewCell`.
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    LYRMessage *message = [self messageAtCollectionViewIndexPath:indexPath];
+    LYRMessage *message = [self.conversationDataSource messageAtCollectionViewIndexPath:indexPath];
     NSString *reuseIdentifier = [self reuseIdentifierForMessage:message atIndexPath:indexPath];
     
     UICollectionViewCell<LYRUIMessagePresenting> *cell =  [self.collectionView dequeueReusableCellWithReuseIdentifier:reuseIdentifier forIndexPath:indexPath];
@@ -404,7 +393,7 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
     if ([self.delegate respondsToSelector:@selector(conversationViewController:didSelectMessage:)]) {
-        LYRMessage *message = [self messageAtCollectionViewIndexPath:indexPath];
+        LYRMessage *message = [self.conversationDataSource messageAtCollectionViewIndexPath:indexPath];
         [self.delegate conversationViewController:self didSelectMessage:message];
     }
 }
@@ -416,7 +405,7 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
     CGFloat width = self.collectionView.bounds.size.width;
     CGFloat height = 0;
     if ([self.delegate respondsToSelector:@selector(conversationViewController:heightForMessage:withCellWidth:)]) {
-        LYRMessage *message = [self messageAtCollectionViewIndexPath:indexPath];
+        LYRMessage *message = [self.conversationDataSource messageAtCollectionViewIndexPath:indexPath];
         height = [self.delegate conversationViewController:self heightForMessage:message withCellWidth:width];
     }
     if (!height) {
@@ -454,7 +443,7 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
         dateString = [self.dataSource conversationViewController:self attributedStringForDisplayOfDate:[NSDate date]];
     }
     if ([self shouldDisplaySenderLabelForSection:section]) {
-        participantName = [self participantNameForMessage:[self messageAtCollectionViewSection:section]];
+        participantName = [self participantNameForMessage:[self.conversationDataSource messageAtCollectionViewSection:section]];
     }
     CGFloat height = [LYRUIConversationCollectionViewHeader headerHeightWithDateString:dateString participantName:participantName inView:self.collectionView];
     return CGSizeMake(0, height);
@@ -465,7 +454,7 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
     if (section == LYRUIMoreMessagesSection) return CGSizeZero;
     NSAttributedString *readReceipt;
     if ([self shouldDisplayReadReceiptForSection:section]) {
-        readReceipt = [self attributedStringForRecipientStatusOfMessage:[self messageAtCollectionViewSection:section]];
+        readReceipt = [self attributedStringForRecipientStatusOfMessage:[self.conversationDataSource messageAtCollectionViewSection:section]];
     }
     CGFloat height = [LYRUIConversationCollectionViewFooter footerHeightWithRecipientStatus:readReceipt];
     return CGSizeMake(0, height);
@@ -475,13 +464,13 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 
 - (CGFloat)cellHeightForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    LYRMessage *message = [self messageAtCollectionViewIndexPath:indexPath];
-    return [LYRUIMessageCollectionViewCell cellHeightForMessage:message inView:self.collectionView];
+    LYRMessage *message = [self.conversationDataSource messageAtCollectionViewIndexPath:indexPath];
+    return [LYRUIMessageCollectionViewCell cellHeightForMessage:message inView:self.view];
 }
 
 - (void)configureHeader:(LYRUIConversationCollectionViewHeader *)header atIndexPath:(NSIndexPath *)indexPath
 {
-    LYRMessage *message = [self messageAtCollectionViewIndexPath:indexPath];
+    LYRMessage *message = [self.conversationDataSource messageAtCollectionViewIndexPath:indexPath];
     if ([self shouldDisplayDateLabelForSection:indexPath.section]) {
         [header updateWithAttributedStringForDate:[self attributedStringForMessageDate:message]];
     }
@@ -492,7 +481,7 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 
 - (void)configureFooter:(LYRUIConversationCollectionViewFooter *)footer atIndexPath:(NSIndexPath *)indexPath
 {
-    LYRMessage *message = [self messageAtCollectionViewIndexPath:indexPath];
+    LYRMessage *message = [self.conversationDataSource messageAtCollectionViewIndexPath:indexPath];
     footer.message = message;
     if ([self shouldDisplayReadReceiptForSection:indexPath.section]) {
         [footer updateWithAttributedStringForRecipientStatus:[self attributedStringForRecipientStatusOfMessage:message]];
@@ -572,8 +561,8 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
     if (section < LYRUINumberOfSectionsBeforeFirstMessageSection) return NO;
     if (section == LYRUINumberOfSectionsBeforeFirstMessageSection) return YES;
     
-    LYRMessage *message = [self messageAtCollectionViewSection:section];
-    LYRMessage *previousMessage = [self messageAtCollectionViewSection:section];
+    LYRMessage *message = [self.conversationDataSource messageAtCollectionViewSection:section];
+    LYRMessage *previousMessage = [self.conversationDataSource messageAtCollectionViewSection:section ];
     
     NSTimeInterval interval = [message.receivedAt timeIntervalSinceDate:previousMessage.receivedAt];
     if (interval > self.dateDisplayTimeInterval) {
@@ -586,11 +575,11 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 {
     if (self.conversation.participants.count <= 2) return NO;
     
-    LYRMessage *message = [self messageAtCollectionViewSection:section];
+    LYRMessage *message = [self.conversationDataSource messageAtCollectionViewSection:section];
     if ([message.sentByUserID isEqualToString:self.layerClient.authenticatedUserID]) return NO;
 
     if (section > LYRUINumberOfSectionsBeforeFirstMessageSection) {
-        LYRMessage *previousMessage = [self messageAtCollectionViewSection:section - 1];
+        LYRMessage *previousMessage = [self.conversationDataSource messageAtCollectionViewSection:section - 1];
         if ([previousMessage.sentByUserID isEqualToString:message.sentByUserID]) {
             return NO;
         }
@@ -601,11 +590,11 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 - (BOOL)shouldDisplayReadReceiptForSection:(NSUInteger)section
 {
     // Only show read receipt if last message was sent by currently authenticated user
-    NSInteger lastQueryControllerRow = [self.queryController numberOfObjectsInSection:0] - 1;
-    NSInteger lastSection = [self collectionViewSectionForQueryControllerRow:lastQueryControllerRow];
+    NSInteger lastQueryControllerRow = [self.conversationDataSource.queryController numberOfObjectsInSection:0] - 1;
+    NSInteger lastSection = [self.conversationDataSource collectionViewSectionForQueryControllerRow:lastQueryControllerRow];
     if (section != lastSection) return NO;
 
-    LYRMessage *message = [self messageAtCollectionViewSection:section];
+    LYRMessage *message = [self.conversationDataSource messageAtCollectionViewSection:section];
     if (![message.sentByUserID isEqualToString:self.layerClient.authenticatedUserID]) return NO;
     
     return YES;
@@ -615,15 +604,15 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 {
     if (!self.shouldDisplayAvatarImage) return NO;
    
-    LYRMessage *message = [self messageAtCollectionViewIndexPath:indexPath];
+    LYRMessage *message = [self.conversationDataSource messageAtCollectionViewIndexPath:indexPath];
     if ([message.sentByUserID isEqualToString:self.layerClient.authenticatedUserID]) {
         return NO;
     }
    
-    NSInteger lastQueryControllerRow = [self.queryController numberOfObjectsInSection:0] - 1;
-    NSInteger lastSection = [self collectionViewSectionForQueryControllerRow:lastQueryControllerRow];
+    NSInteger lastQueryControllerRow = [self.conversationDataSource.queryController numberOfObjectsInSection:0] - 1;
+    NSInteger lastSection = [self.conversationDataSource collectionViewSectionForQueryControllerRow:lastQueryControllerRow];
     if (indexPath.section < lastSection) {
-        LYRMessage *nextMessage = [self messageAtCollectionViewSection:indexPath.section + 1];
+        LYRMessage *nextMessage = [self.conversationDataSource messageAtCollectionViewSection:indexPath.section + 1];
         // If the next message is sent by the same user, no
         if ([nextMessage.sentByUserID isEqualToString:message.sentByUserID]) {
             return NO;
@@ -1078,15 +1067,15 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
            newIndexPath:(NSIndexPath *)newIndexPath
 {
     if (self.expandingPaginationWindow) return;
-    NSInteger currentIndex = indexPath ? [self collectionViewSectionForQueryControllerRow:indexPath.row] : NSNotFound;
-    NSInteger newIndex = newIndexPath ? [self collectionViewSectionForQueryControllerRow:newIndexPath.row] : NSNotFound;
+    NSInteger currentIndex = indexPath ? [self.conversationDataSource collectionViewSectionForQueryControllerRow:indexPath.row] : NSNotFound;
+    NSInteger newIndex = newIndexPath ? [self.conversationDataSource collectionViewSectionForQueryControllerRow:newIndexPath.row] : NSNotFound;
     [self.objectChanges addObject:[LYRUIDataSourceChange changeObjectWithType:type newIndex:newIndex currentIndex:currentIndex]];
 }
 
 - (void)queryControllerDidChangeContent:(LYRQueryController *)queryController
 {
     if (self.expandingPaginationWindow) {
-        self.showingMoreMessagesIndicator = [self moreMessagesAvailable];
+        self.showingMoreMessagesIndicator = [self.conversationDataSource moreMessagesAvailable];
         [self reloadCollectionViewAdjustingForContentHeightChange];
         return;
     }
@@ -1145,14 +1134,14 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
     // Since each section's content depends on other messages, we need to update each visible section even when a section's corresponding message has not changed. This also solves the issue with LYRQueryControllerChangeTypeUpdate (see above).
     for (UICollectionViewCell<LYRUIMessagePresenting> *cell in [self.collectionView visibleCells]) {
         NSIndexPath *indexPath = [self.collectionView indexPathForCell:cell];
-        LYRMessage *message = [self messageAtCollectionViewIndexPath:indexPath];
+        LYRMessage *message = [self.conversationDataSource messageAtCollectionViewIndexPath:indexPath];
         [self configureCell:cell forMessage:message indexPath:indexPath];
     }
     
     for (LYRUIConversationCollectionViewFooter *footer in self.sectionFooters) {
-        NSIndexPath *queryControllerIndexPath = [self.queryController indexPathForObject:footer.message];
+        NSIndexPath *queryControllerIndexPath = [self.conversationDataSource.queryController indexPathForObject:footer.message];
         if (!queryControllerIndexPath) continue;
-        NSIndexPath *collectionViewIndexPath = [self collectionViewIndexPathForQueryControllerIndexPath:queryControllerIndexPath];
+        NSIndexPath *collectionViewIndexPath = [self.conversationDataSource collectionViewIndexPathForQueryControllerIndexPath:queryControllerIndexPath];
         [self configureFooter:footer atIndexPath:collectionViewIndexPath];
     }
 }
@@ -1196,7 +1185,6 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 
 - (void)configurePaginationWindow
 {
-    if (!self.queryController) return;
     if (CGRectEqualToRect(self.collectionView.frame, CGRectZero)) return;
     if (self.collectionView.isDragging) return;
     if (self.collectionView.isDecelerating) return;
@@ -1207,12 +1195,8 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
     BOOL nearTop = distanceFromTop <= minimumDistanceFromTopToTriggerLoadingMore;
     if (!nearTop) return;
 
-    BOOL moreMessagesAvailable = self.queryController.totalNumberOfObjects > ABS(self.queryController.paginationWindow);
-    if (!moreMessagesAvailable) return;
-
     self.expandingPaginationWindow = YES;
-    NSUInteger numberOfMessagesToDisplay = MIN(-self.queryController.paginationWindow + 30, self.queryController.totalNumberOfObjects);
-    self.queryController.paginationWindow = -numberOfMessagesToDisplay;
+    [self.conversationDataSource configurePaginationWindow];
     self.expandingPaginationWindow = NO;
 }
 
@@ -1220,15 +1204,10 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 {
     if (self.collectionView.isDragging) return;
     if (self.collectionView.isDecelerating) return;
-    BOOL moreMessagesAvailable = [self moreMessagesAvailable];
+    BOOL moreMessagesAvailable = [self.conversationDataSource moreMessagesAvailable];
     if (moreMessagesAvailable == self.showingMoreMessagesIndicator) return;
-    self.showingMoreMessagesIndicator = [self moreMessagesAvailable];
+    self.showingMoreMessagesIndicator = moreMessagesAvailable;
     [self reloadCollectionViewAdjustingForContentHeightChange];
-}
-
-- (BOOL)moreMessagesAvailable
-{
-    return self.queryController.totalNumberOfObjects > ABS(self.queryController.count);
 }
 
 - (void)reloadCollectionViewAdjustingForContentHeightChange
@@ -1349,56 +1328,6 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 
     NSOrderedSet *participants = [self participantsForIdentifiers:participantIdentifiers];
     self.addressBarController.selectedParticipants = participants;
-}
-
-#pragma mark - Query Controller
-
-- (NSIndexPath *)queryControllerIndexPathForCollectionViewIndexPath:(NSIndexPath *)collectionViewIndexPath
-{
-    return [self queryControllerIndexPathForCollectionViewSection:collectionViewIndexPath.section];
-}
-
-- (NSIndexPath *)queryControllerIndexPathForCollectionViewSection:(NSInteger)collectionViewSection
-{
-    NSInteger queryControllerRow = [self queryControllerRowForCollectionViewSection:collectionViewSection];
-    NSIndexPath *queryControllerIndexPath = [NSIndexPath indexPathForRow:queryControllerRow inSection:0];
-    return queryControllerIndexPath;
-}
-
-- (NSInteger)queryControllerRowForCollectionViewSection:(NSInteger)collectionViewSection
-{
-    return collectionViewSection - LYRUINumberOfSectionsBeforeFirstMessageSection;
-}
-
-- (NSIndexPath *)collectionViewIndexPathForQueryControllerIndexPath:(NSIndexPath *)queryControllerIndexPath
-{
-    return [self collectionViewIndexPathForQueryControllerRow:queryControllerIndexPath.row];
-}
-
-- (NSIndexPath *)collectionViewIndexPathForQueryControllerRow:(NSInteger)queryControllerRow
-{
-    NSInteger collectionViewSection = [self collectionViewSectionForQueryControllerRow:queryControllerRow];
-    NSIndexPath *collectionViewIndexPath = [NSIndexPath indexPathForRow:0 inSection:collectionViewSection];
-    return collectionViewIndexPath;
-}
-
-- (NSInteger)collectionViewSectionForQueryControllerRow:(NSInteger)queryControllerRow
-{
-    return queryControllerRow + LYRUINumberOfSectionsBeforeFirstMessageSection;
-}
-
-- (LYRMessage *)messageAtCollectionViewIndexPath:(NSIndexPath *)collectionViewIndexPath
-{
-    NSIndexPath *queryControllerIndexPath = [self queryControllerIndexPathForCollectionViewIndexPath:collectionViewIndexPath];
-    LYRMessage *message = [self.queryController objectAtIndexPath:queryControllerIndexPath];
-    return message;
-}
-
-- (LYRMessage *)messageAtCollectionViewSection:(NSInteger)collectionViewSection
-{
-    NSIndexPath *queryControllerIndexPath = [self queryControllerIndexPathForCollectionViewSection:collectionViewSection];
-    LYRMessage *message = [self.queryController objectAtIndexPath:queryControllerIndexPath];
-    return message;
 }
 
 #pragma mark - Auto Layout Configuration
