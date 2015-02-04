@@ -22,6 +22,16 @@
 NSString *const LYRUIConversationViewHeaderIdentifier = @"LYRUIConversationViewHeaderIdentifier";
 CGFloat const LYRUIConversationViewHeaderVerticalPadding = 10;
 
++ (LYRUIConversationCollectionViewHeader *)sharedHeader
+{
+    static LYRUIConversationCollectionViewHeader *_sharedHeader;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        _sharedHeader = [LYRUIConversationCollectionViewHeader new];
+    });
+    return _sharedHeader;
+}
+
 + (void)initialize
 {
     LYRUIConversationCollectionViewHeader *proxy = [self appearance];
@@ -100,8 +110,12 @@ CGFloat const LYRUIConversationViewHeaderVerticalPadding = 10;
     self.participantLabel.textColor = participantLabelTextColor;
 }
 
-+ (CGFloat)headerHeightWithDateString:(NSAttributedString *)dateString participantName:(NSString *)participantName
++ (CGFloat)headerHeightWithDateString:(NSAttributedString *)dateString participantName:(NSString *)participantName inView:(UIView *)view
 {
+    LYRUIConversationCollectionViewHeader *header = [self sharedHeader];
+    [view addSubview:header];
+    [header removeFromSuperview];
+    
     CGFloat height = 0.0;
     if (participantName) height += LYRUIConversationViewHeaderVerticalPadding;
     if (dateString) height += LYRUIConversationViewHeaderVerticalPadding;

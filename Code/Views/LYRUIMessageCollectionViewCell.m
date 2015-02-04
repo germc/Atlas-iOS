@@ -103,7 +103,7 @@
     [self trackProgressIfNeededForMessagePart:imagePart];
     
     CGSize size;
-    if (self.message.parts.count > 1){
+    if (self.message.parts.count > 1) {
         LYRMessagePart *dimensionPart = self.message.parts[2];
         if ([dimensionPart.MIMEType isEqualToString:LYRUIMIMETypeImageSize]) {
             size = LYRUIImageSizeForJSONData(dimensionPart.data);
@@ -198,21 +198,26 @@
             trackProgress = YES;
             transferType = LYRContentTransferTypeUpload;
             break;
+            
         case LYRContentTransferUploading:
             trackProgress = YES;
             transferType = LYRContentTransferTypeUpload;
             break;
+            
         case LYRContentTransferReadyForDownload:
             trackProgress = YES;
             transferType = LYRContentTransferTypeDownload;
             break;
+            
         case LYRContentTransferDownloading:
             trackProgress = YES;
             transferType = LYRContentTransferTypeDownload;
             break;
+            
         case LYRContentTransferComplete:
             [self.bubbleView updateActivityIndicatorWithProgress:1.0f style:LYRUIProgressViewIconStyleNone];
-            break;              
+            break;
+            
         default:
             break;
     }
@@ -224,9 +229,11 @@
             case LYRContentTransferTypeDownload:
                 self.progress.userInfo = @{ @"transferType": @(LYRContentTransferTypeDownload) };
                 break;
+                
             case LYRContentTransferTypeUpload:
                 self.progress.userInfo = @{ @"transferType": @(LYRContentTransferTypeUpload) };
                 break;
+                
             default:
                 break;
         }
@@ -236,7 +243,6 @@
 
 - (void)progressDidChange:(LYRProgress *)progress
 {
-    NSLog(@"progress update %f", progress.fractionCompleted);
     void (^progressUpdateUIBlock)(void) = ^{
         if (progress.fractionCompleted < 1.00f) {
             LYRContentTransferType transferType = [progress.userInfo[@"transferType"] integerValue];

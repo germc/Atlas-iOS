@@ -52,6 +52,7 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 {
     self = [super init];
     if (self) {
+        [[LYRUIConversationCollectionViewHeader appearanceWhenContainedIn:[LYRUIConversationCollectionView class], nil] setParticipantLabelFont:[UIFont systemFontOfSize:28]];
          // Set properties from designated initializer
         _conversation = conversation;
         _layerClient = layerClient;
@@ -455,7 +456,7 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
     if ([self shouldDisplaySenderLabelForSection:section]) {
         participantName = [self participantNameForMessage:[self messageAtCollectionViewSection:section]];
     }
-    CGFloat height = [LYRUIConversationCollectionViewHeader headerHeightWithDateString:dateString participantName:participantName];
+    CGFloat height = [LYRUIConversationCollectionViewHeader headerHeightWithDateString:dateString participantName:participantName inView:self.collectionView];
     return CGSizeMake(0, height);
 }
 
@@ -475,7 +476,7 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 - (CGFloat)cellHeightForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     LYRMessage *message = [self messageAtCollectionViewIndexPath:indexPath];
-    return [LYRUIMessageCollectionViewCell cellHeightForMessage:message inView:self.view];
+    return [LYRUIMessageCollectionViewCell cellHeightForMessage:message inView:self.collectionView];
 }
 
 - (void)configureHeader:(LYRUIConversationCollectionViewHeader *)header atIndexPath:(NSIndexPath *)indexPath
@@ -572,7 +573,7 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
     if (section == LYRUINumberOfSectionsBeforeFirstMessageSection) return YES;
     
     LYRMessage *message = [self messageAtCollectionViewSection:section];
-    LYRMessage *previousMessage = [self messageAtCollectionViewSection:section ];
+    LYRMessage *previousMessage = [self messageAtCollectionViewSection:section];
     
     NSTimeInterval interval = [message.receivedAt timeIntervalSinceDate:previousMessage.receivedAt];
     if (interval > self.dateDisplayTimeInterval) {

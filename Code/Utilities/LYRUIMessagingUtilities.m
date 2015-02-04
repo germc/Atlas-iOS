@@ -21,8 +21,8 @@ NSString *const LYRUIMIMETypeDate = @"text/date";
 
 NSString *const LYRUIImagePreviewWidthKey = @"width";
 NSString *const LYRUIImagePreviewHeightKey = @"height";
-NSString *const LYRUILocationLatitudeKey = @"latitude";
-NSString *const LYRUILocationLongitudeKey = @"longitude";
+NSString *const LYRUILocationLatitudeKey = @"lat";
+NSString *const LYRUILocationLongitudeKey = @"lon";
 
 #pragma mark - Max Cell Dimensions
 

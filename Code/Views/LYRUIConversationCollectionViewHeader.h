@@ -43,8 +43,9 @@ extern NSString *const LYRUIConversationViewHeaderIdentifier;
  @abstract Performs calculations to determine the header height.
  @param dateString An `NSAttributedString` containing attributes that will be used in the calculation.
  @param participantName An `NSString` to which UIAppearance defaults will be applied and used in the calculation.
+ @param view The superview for the header.
  @return The height for the header.
  */
-+ (CGFloat)headerHeightWithDateString:(NSAttributedString *)dateString participantName:(NSString *)participantName;
++ (CGFloat)headerHeightWithDateString:(NSAttributedString *)dateString participantName:(NSString *)participantName inView:(UIView *)view;
 
 @end
