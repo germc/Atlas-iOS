@@ -22,6 +22,16 @@
 
 @implementation LYRUIMessageCollectionViewCell
 
++ (LYRUIMessageCollectionViewCell *)sharedCell
+{
+    static LYRUIMessageCollectionViewCell *_sharedCell;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        _sharedCell = [LYRUIMessageCollectionViewCell new];
+    });
+    return _sharedCell;
+}
+
 - (id)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
@@ -83,45 +93,37 @@
 {
     self.accessibilityLabel = [NSString stringWithFormat:@"Message: Photo"];
     
-    if (self.message.parts.count == 1) {
-        LYRMessagePart *imagePart = self.message.parts.firstObject;
+    LYRMessagePart *imagePart = self.message.parts.firstObject;
+    if ([self canDisplayImageDataForMessagePart:imagePart]) {
         CGSize size = LYRUIImageSizeForData(imagePart.data);
         [self.bubbleView updateWithImage:[UIImage imageWithData:imagePart.data] width:size.width];
         [self.bubbleView updateActivityIndicatorWithProgress:1.0f style:LYRUIProgressViewIconStyleNone];
         return;
     }
+    [self trackProgressIfNeededForMessagePart:imagePart];
     
     CGSize size;
-    LYRMessagePart *dimensionPart = self.message.parts[2];
-    if ([dimensionPart.MIMEType isEqualToString:LYRUIMIMETypeImageSize]) {
-        size = LYRUIImageSizeForJSONData(dimensionPart.data);
+    if (self.message.parts.count > 1) {
+        LYRMessagePart *dimensionPart = self.message.parts[2];
+        if ([dimensionPart.MIMEType isEqualToString:LYRUIMIMETypeImageSize]) {
+            size = LYRUIImageSizeForJSONData(dimensionPart.data);
+        }
     }
-   
-    LYRMessagePart *imagePart = self.message.parts.firstObject;
-    if (imagePart.transferStatus == LYRContentTransferAwaitingUpload ||
-        imagePart.transferStatus == LYRContentTransferUploading) {
-        // Is uploading
-        [self trackProgressForMessagePart:imagePart];
-    } else if (imagePart.transferStatus == LYRContentTransferReadyForDownload ||
-               imagePart.transferStatus == LYRContentTransferDownloading) {
-        // Is downloading
-        [self trackProgressForMessagePart:imagePart];
-    } else {
-        // Image already uploaded or downloaded
-        [self.bubbleView updateActivityIndicatorWithProgress:1.0f style:LYRUIProgressViewIconStyleNone];
-    }
-    
+
     LYRMessagePart *previewPart = self.message.parts[1];
-    if (![previewPart.MIMEType isEqualToString:LYRUIMIMETypeImageJPEGPreview]) return;
-    if (previewPart.transferStatus == LYRContentTransferComplete ||
-        previewPart.transferStatus == LYRContentTransferAwaitingUpload ||
-        previewPart.transferStatus == LYRContentTransferUploading) {
-        // Always displaying the preview image.
+    if ([previewPart.MIMEType isEqualToString:LYRUIMIMETypeImageJPEGPreview] && [self canDisplayImageDataForMessagePart:previewPart]) {
         [self.bubbleView updateWithImage:[UIImage imageWithData:previewPart.data] width:size.width];
         return;
-    } else if (previewPart.transferStatus ){
-        [self.bubbleView updateWithImage:[[UIImage alloc] init] width:size.width];
     }
+    [self.bubbleView updateWithImage:[UIImage new] width:size.width];
+}
+
+- (BOOL)canDisplayImageDataForMessagePart:(LYRMessagePart *)messagePart
+{
+    BOOL transferComplete = messagePart.transferStatus == LYRContentTransferComplete;
+    BOOL awaitingUpload = messagePart.transferStatus == LYRContentTransferAwaitingUpload;
+    BOOL uploading = messagePart.transferStatus == LYRContentTransferUploading;
+    return (transferComplete || awaitingUpload || uploading);
 }
 
 - (void)configureBubbleViewForLocationContent
@@ -186,17 +188,57 @@
     return [messagePart.MIMEType isEqualToString:LYRUIMIMETypeTextPlain];
 }
 
-- (void)trackProgressForMessagePart:(LYRMessagePart *)messagePart
+- (void)trackProgressIfNeededForMessagePart:(LYRMessagePart *)messagePart
 {
-    self.progress = [messagePart progress];
-    self.progress.delegate = self;
-    if (messagePart.transferStatus == LYRContentTransferAwaitingUpload ||
-        messagePart.transferStatus == LYRContentTransferUploading) {
-        self.progress.userInfo = @{ @"transferType": @(LYRContentTransferTypeUpload) };
-    } else {
-        self.progress.userInfo = @{ @"transferType": @(LYRContentTransferTypeDownload) };
+    BOOL trackProgress = NO;
+    LYRContentTransferType transferType;
+    
+    switch (messagePart.transferStatus) {
+        case LYRContentTransferAwaitingUpload:
+            trackProgress = YES;
+            transferType = LYRContentTransferTypeUpload;
+            break;
+            
+        case LYRContentTransferUploading:
+            trackProgress = YES;
+            transferType = LYRContentTransferTypeUpload;
+            break;
+            
+        case LYRContentTransferReadyForDownload:
+            trackProgress = YES;
+            transferType = LYRContentTransferTypeDownload;
+            break;
+            
+        case LYRContentTransferDownloading:
+            trackProgress = YES;
+            transferType = LYRContentTransferTypeDownload;
+            break;
+            
+        case LYRContentTransferComplete:
+            [self.bubbleView updateActivityIndicatorWithProgress:1.0f style:LYRUIProgressViewIconStyleNone];
+            break;
+            
+        default:
+            break;
     }
-    [self progressDidChange:self.progress];
+    if (trackProgress) {
+        NSError *error;
+        self.progress = [messagePart downloadContent:&error];
+        self.progress.delegate = self;
+        switch (transferType) {
+            case LYRContentTransferTypeDownload:
+                self.progress.userInfo = @{ @"transferType": @(LYRContentTransferTypeDownload) };
+                break;
+                
+            case LYRContentTransferTypeUpload:
+                self.progress.userInfo = @{ @"transferType": @(LYRContentTransferTypeUpload) };
+                break;
+                
+            default:
+                break;
+        }
+        [self progressDidChange:self.progress];
+    }
 }
 
 - (void)progressDidChange:(LYRProgress *)progress
@@ -207,13 +249,11 @@
             [self.bubbleView updateActivityIndicatorWithProgress:self.progress.fractionCompleted style:transferType == LYRContentTransferTypeDownload ? LYRUIProgressViewIconStyleDownload : LYRUIProgressViewIconStyleUpload];
             return;
         } else {
-            [self.bubbleView updateActivityIndicatorWithProgress:self.progress.fractionCompleted style:LYRUIProgressViewIconStyleNone];
+            [self.bubbleView updateActivityIndicatorWithProgress:1.0f style:LYRUIProgressViewIconStyleNone];
             progress.delegate = nil;
         }
     };
     if ([NSThread isMainThread]) {
-        // Make sure not to cause a dead-lock, so we don't dispatching_sync
-        // onto the main queue while already in main queue.
         progressUpdateUIBlock();
     } else {
         dispatch_sync(dispatch_get_main_queue(), progressUpdateUIBlock);
@@ -236,6 +276,44 @@
 - (void)shouldDisplayAvatarImage:(BOOL)shouldDisplayAvatarImage
 {
     // Implemented by subclass
+}
+
++ (CGFloat)cellHeightForMessage:(LYRMessage *)message inView:(UIView *)view
+{
+    LYRMessagePart *part = message.parts.firstObject;
+
+    CGFloat height;
+    if ([part.MIMEType isEqualToString:LYRUIMIMETypeTextPlain]) {
+        // Temporarily adding  the view to the hierarchy so that UIAppearance property values will be set based on containment.
+        LYRUIMessageCollectionViewCell *cell = [self sharedCell];
+        [view addSubview:cell];
+        [cell removeFromSuperview];
+        NSString *text = [[NSString alloc] initWithData:part.data encoding:NSUTF8StringEncoding];
+        UIFont *font = cell.messageTextFont;
+        CGSize size = LYRUITextPlainSize(text, font);
+        height = size.height + LYRUIMessageBubbleLabelVerticalPadding * 2;
+    } else if ([part.MIMEType isEqualToString:LYRUIMIMETypeImageJPEG] || [part.MIMEType isEqualToString:LYRUIMIMETypeImagePNG]) {
+        if (part.transferStatus == LYRContentTransferComplete) {
+            UIImage *image = [UIImage imageWithData:part.data];
+            CGSize size = LYRUIImageSize(image);
+            height = size.height;
+        } else {
+            LYRMessagePart *dimensionPart = message.parts[2];
+            if ([dimensionPart.MIMEType isEqualToString:LYRUIMIMETypeImageSize]) {
+                CGSize size = LYRUIImageSizeForJSONData(dimensionPart.data);
+                height = size.height;
+            } else {
+                height = 0;
+            }
+        }
+    } else if ([part.MIMEType isEqualToString:LYRUIMIMETypeLocation]) {
+        height = LYRUIMessageBubbleMapHeight;
+    } else {
+        height = 10;
+    }
+    height = ceil(height);
+    
+    return height;
 }
 
 @end

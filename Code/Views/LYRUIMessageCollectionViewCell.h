@@ -54,4 +54,6 @@
  */
 @property (nonatomic) LYRUIAvatarImageView *avatarImageView;
 
++ (CGFloat)cellHeightForMessage:(LYRMessage *)message inView:(UIView *)view;
+
 @end

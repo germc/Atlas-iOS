@@ -10,11 +10,18 @@
 
 @class LYRMessage;
 
+extern NSString *const LYRUIConversationViewFooterIdentifier;
+
 /**
  @abstract The `LYRUIConversationCollectionViewFooter` class provides support for displaying
  read receipts below message cells.
  */
 @interface LYRUIConversationCollectionViewFooter : UICollectionReusableView
+
+/**
+ @abstract The message associated with the footer.
+ */
+@property (nonatomic) LYRMessage *message;
 
 /**
  @abstract Displays a string of text representing the read status of a message.
@@ -23,8 +30,10 @@
 - (void)updateWithAttributedStringForRecipientStatus:(NSAttributedString *)recipientStatus;
 
 /**
- @abstract The message associated with the footer.
+ @abstract Performs calculations to determine the footer height.
+ @param recipientStatus An `NSAttributedString` containing attributes that will be used in the calculation.
+ @return The height for the footer.
  */
-@property (nonatomic) LYRMessage *message;
++ (CGFloat)footerHeightWithRecipientStatus:(NSAttributedString *)recipientStatus;
 
 @end

@@ -8,6 +8,7 @@
 
 #import "LYRUIConversationCollectionViewFooter.h"
 #import "LYRUIConstants.h"
+#import "LYRUIMessagingUtilities.h"
 
 @interface LYRUIConversationCollectionViewFooter ()
 
@@ -19,6 +20,9 @@
 @end
 
 @implementation LYRUIConversationCollectionViewFooter
+
+NSString *const LYRUIConversationViewFooterIdentifier = @"LYRUIConversationViewFooterIdentifier";
+CGFloat const LYRUIConversationViewFooterVerticalPadding = 6;
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -47,6 +51,22 @@
 - (void)updateWithAttributedStringForRecipientStatus:(NSAttributedString *)recipientStatus
 {
     self.recipientStatusLabel.attributedText = recipientStatus;
+}
+
++ (CGFloat)footerHeightWithRecipientStatus:(NSAttributedString *)recipientStatus
+{
+    if (!recipientStatus) return 0;
+    CGFloat recipientStringSize = [self heightForAttributedString:recipientStatus];
+    return (recipientStringSize + LYRUIConversationViewFooterVerticalPadding * 2);
+}
+
++ (CGFloat)heightForAttributedString:(NSAttributedString *)attributedString
+{
+    CGRect rect = [attributedString.string boundingRectWithSize:CGSizeMake(LYRUIMaxCellWidth(), CGFLOAT_MAX)
+                                                        options:NSStringDrawingUsesLineFragmentOrigin
+                                                     attributes:[attributedString attributesAtIndex:0 effectiveRange:nil]
+                                                        context:nil];
+    return rect.size.height;
 }
 
 @end

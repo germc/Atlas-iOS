@@ -10,6 +10,8 @@
 
 @implementation LYRUIOutgoingMessageCollectionViewCell
 
+NSString *const LYRUIOutgoingMessageCellIdentifier = @"LYRUIOutgoingMessageCellIdentifier";
+
 + (void)initialize
 {
     LYRUIOutgoingMessageCollectionViewCell *proxy = [self appearance];
