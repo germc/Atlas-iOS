@@ -6,7 +6,8 @@ source 'https://github.com/CocoaPods/Specs.git'
 
 target 'Conversation' do
   pod 'LayerUIKit', path: '.'
-  pod 'LayerKit', '0.9.5'
+  pod 'LayerKit', git: 'git@github.com:layerhq/LayerKit.git'
+  #pod 'LayerKit', '0.9.5'
 end
 
 target 'Unit Tests' do

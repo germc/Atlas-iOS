@@ -116,11 +116,11 @@ CGFloat const LYRUIConversationViewHeaderVerticalPadding = 10;
     [view addSubview:header];
     [header removeFromSuperview];
     
-    CGFloat height = 0.0;
+    CGFloat height = 0.0;c
     if (participantName) height += LYRUIConversationViewHeaderVerticalPadding;
     if (dateString) height += LYRUIConversationViewHeaderVerticalPadding;
     
-    CGSize participantNameSize = LYRUITextPlainSize(participantName, [[self appearance] participantLabelFont]);
+    CGSize participantNameSize = LYRUITextPlainSize(participantName, header.participantLabelFont);
     CGFloat dateHeight = [self heightForAttributedString:dateString];
     
     return (dateHeight + participantNameSize.height + LYRUIConversationViewHeaderVerticalPadding + height);
