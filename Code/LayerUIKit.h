@@ -11,10 +11,14 @@
 
 #import "LYRUIConversationListViewController.h"
 #import "LYRUIConversationViewController.h"
-#import "LYRUIMessageInputToolbar.h"
 #import "LYRUIParticipantPickerController.h"
+#import "LYRUIMessageInputToolbar.h"
+#import "LYRUIAddressBarViewController.h"
+
 #import "LYRUIOutgoingMessageCollectionViewCell.h"
 #import "LYRUIIncomingMessageCollectionViewCell.h"
+#import "LYRUIConversationCollectionViewHeader.h"
+#import "LYRUIConversationCollectionViewFooter.h"
 #import "LYRUIConversationTableViewCell.h"
 #import "LYRUIMessagingUtilities.h"
 #import "LYRUIParticipant.h"

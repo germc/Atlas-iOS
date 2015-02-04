@@ -1,6 +1,6 @@
 //
 //  LYRUIConversationCollectionView.m
-//  Pods
+//  LayerUIKit
 //
 //  Created by Kevin Coleman on 1/30/15.
 //
@@ -47,4 +47,5 @@ NSString *const LYRUIConversationCollectionViewAccessibilityIdentifier = @"Conve
             forSupplementaryViewOfKind:UICollectionElementKindSectionFooter
                    withReuseIdentifier:LYRUIConversationViewFooterIdentifier];
 }
+
 @end

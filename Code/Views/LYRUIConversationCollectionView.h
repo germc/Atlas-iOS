@@ -1,6 +1,6 @@
 //
 //  LYRUIConversationCollectionView.h
-//  Pods
+//  LayerUIKit
 //
 //  Created by Kevin Coleman on 1/30/15.
 //

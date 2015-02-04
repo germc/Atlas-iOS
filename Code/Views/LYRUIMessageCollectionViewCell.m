@@ -22,6 +22,16 @@
 
 @implementation LYRUIMessageCollectionViewCell
 
++ (LYRUIMessageCollectionViewCell *)sharedCell
+{
+    static LYRUIMessageCollectionViewCell *_sharedCell;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        _sharedCell = [LYRUIMessageCollectionViewCell new];
+    });
+    return _sharedCell;
+}
+
 - (id)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
@@ -225,15 +235,17 @@
     // Implemented by subclass
 }
 
-+ (CGFloat)cellHeightForMessage:(LYRMessage *)message
++ (CGFloat)cellHeightForMessage:(LYRMessage *)message inView:(UIView *)view
 {
     LYRMessagePart *part = message.parts.firstObject;
 
     if (!part.data.length) return 48;
     CGFloat height;
     if ([part.MIMEType isEqualToString:LYRUIMIMETypeTextPlain]) {
+        LYRUIMessageCollectionViewCell *cell = [self sharedCell];
+        [view addSubview:cell];
+        [cell removeFromSuperview];
         NSString *text = [[NSString alloc] initWithData:part.data encoding:NSUTF8StringEncoding];
-        LYRUIMessageCollectionViewCell *cell = [[LYRUIMessageCollectionViewCell alloc] init];
         UIFont *font = cell.messageTextFont;
         CGSize size = LYRUITextPlainSize(text, font);
         height = size.height + LYRUIMessageBubbleLabelVerticalPadding * 2;
@@ -254,7 +266,7 @@
     } else if ([part.MIMEType isEqualToString:LYRUIMIMETypeLocation]) {
         height = LYRUIMessageBubbleMapHeight;
     } else {
-        height = 0;
+        height = 10;
     }
     height = ceil(height);
     

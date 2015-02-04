@@ -17,7 +17,7 @@ extern NSString *const LYRUIConversationViewHeaderIdentifier;
 @interface LYRUIConversationCollectionViewHeader : UICollectionReusableView
 
 /**
- @abstract The font for the participant label displayed in the header. Default is 12pt system font.
+ @abstract The font for the participant label displayed in the header. Default is 16pt system font.
  */
 @property (nonatomic) UIFont *participantLabelFont UI_APPEARANCE_SELECTOR;
 
@@ -28,7 +28,7 @@ extern NSString *const LYRUIConversationViewHeaderIdentifier;
 
 /**
  @abstract Displays a string of text representing a participant. The string will be horizontally aligned with
- the left edge of the left edge of the message bubble view.
+ the left edge of the message bubble view.
  @param participantName The string of text to be displayed.
  */
 - (void)updateWithParticipantName:(NSString *)participantName;
