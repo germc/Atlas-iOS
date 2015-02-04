@@ -22,7 +22,7 @@ NSString *const LYRUIAvatarImageViewAccessibilityLabel = @"LYRUIAvatarImageViewA
 + (void)initialize
 {
     LYRUIAvatarImageView *proxy = [self appearance];
-    proxy.backgroundColor = [UIColor whiteColor];
+    proxy.backgroundColor = LYRUILightGrayColor();
 }
 
 - (id)init
