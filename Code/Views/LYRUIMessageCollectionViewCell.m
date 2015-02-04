@@ -284,6 +284,7 @@
 
     CGFloat height;
     if ([part.MIMEType isEqualToString:LYRUIMIMETypeTextPlain]) {
+        // Temporarily adding  the view to the hierarchy so that UIAppearance property values will be set based on containment.
         LYRUIMessageCollectionViewCell *cell = [self sharedCell];
         [view addSubview:cell];
         [cell removeFromSuperview];

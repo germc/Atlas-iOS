@@ -112,11 +112,12 @@ CGFloat const LYRUIConversationViewHeaderVerticalPadding = 10;
 
 + (CGFloat)headerHeightWithDateString:(NSAttributedString *)dateString participantName:(NSString *)participantName inView:(UIView *)view
 {
+    // Temporarily adding  the view to the hierarchy so that UIAppearance property values will be set based on containment.
     LYRUIConversationCollectionViewHeader *header = [self sharedHeader];
     [view addSubview:header];
     [header removeFromSuperview];
     
-    CGFloat height = 0.0;c
+    CGFloat height = 0.0;
     if (participantName) height += LYRUIConversationViewHeaderVerticalPadding;
     if (dateString) height += LYRUIConversationViewHeaderVerticalPadding;
     
