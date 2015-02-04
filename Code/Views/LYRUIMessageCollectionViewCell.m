@@ -111,14 +111,11 @@
     }
 
     LYRMessagePart *previewPart = self.message.parts[1];
-    if ([previewPart.MIMEType isEqualToString:LYRUIMIMETypeImageJPEGPreview]) {
-        if ([self canDisplayImageDataForMessagePart:previewPart]) {
-            [self.bubbleView updateWithImage:[UIImage imageWithData:previewPart.data] width:size.width];
-            return;
-        } else if (previewPart.transferStatus ){
-            [self.bubbleView updateWithImage:[UIImage new] width:size.width];
-        }
+    if ([previewPart.MIMEType isEqualToString:LYRUIMIMETypeImageJPEGPreview] && [self canDisplayImageDataForMessagePart:previewPart]) {
+        [self.bubbleView updateWithImage:[UIImage imageWithData:previewPart.data] width:size.width];
+        return;
     }
+    [self.bubbleView updateWithImage:[UIImage new] width:size.width];
 }
 
 - (BOOL)canDisplayImageDataForMessagePart:(LYRMessagePart *)messagePart
