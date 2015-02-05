@@ -737,7 +737,6 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
 
 - (void)messageInputToolbar:(LYRUIMessageInputToolbar *)messageInputToolbar didTapRightAccessoryButton:(UIButton *)rightAccessoryButton
 {
-    NSLog(@"Tapped Send Message");
     if (!self.conversation || !messageInputToolbar.messageParts.count) return;
     
     NSOrderedSet *messages;
@@ -749,11 +748,9 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
     // If delegate returns nil, we fall back to default behavior.
     if (!messages) messages = [self messagesForMessageParts:messageInputToolbar.messageParts];
     
-    NSLog(@"Sending Messages");
     for (LYRMessage *message in messages) {
         [self sendMessage:message];
     }
-    NSLog(@"Message Sent");
     if (self.addressBarController) [self.addressBarController setPermanent];
 }
 
@@ -965,7 +962,6 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
           forChangeType:(LYRQueryControllerChangeType)type
            newIndexPath:(NSIndexPath *)newIndexPath
 {
-    NSLog(@"New Message!");
     if (self.conversationDataSource.isExpandingPaginationWindow) return;
     NSInteger currentIndex = indexPath ? [self.conversationDataSource collectionViewSectionForQueryControllerRow:indexPath.row] : NSNotFound;
     NSInteger newIndex = newIndexPath ? [self.conversationDataSource collectionViewSectionForQueryControllerRow:newIndexPath.row] : NSNotFound;
