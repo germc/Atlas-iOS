@@ -9,26 +9,69 @@
 
 #import <Foundation/Foundation.h>
 
+///------------------------
+/// @name Controllers
+///------------------------
+#import "LYRUIAddressBarViewController.h"
 #import "LYRUIConversationListViewController.h"
 #import "LYRUIConversationViewController.h"
-#import "LYRUIParticipantPickerController.h"
 #import "LYRUIMessageInputToolbar.h"
-#import "LYRUIAddressBarViewController.h"
+#import "LYRUIParticipantPickerController.h"
+#import "LYRUIParticipantTableViewController.h"
+#import "LYRUITypingIndicatorViewController.h"
 
-#import "LYRUIOutgoingMessageCollectionViewCell.h"
-#import "LYRUIIncomingMessageCollectionViewCell.h"
-#import "LYRUIConversationCollectionViewHeader.h"
-#import "LYRUIConversationCollectionViewFooter.h"
-#import "LYRUIConversationTableViewCell.h"
-#import "LYRUIMessagingUtilities.h"
+///------------------------
+/// @name Models
+///-----------------------
+#import "LYRUIConversationDataSource.h"
+#import "LYRUIDataSourceChange.h"
+#import "LYRUIMediaAttachment.h"
+#import "LYRUIParticipantTableDataSet.h"
+
+///------------------------
+/// @name Protocols
+///------------------------
+#import "LYRUIAvatarItem.h"
+#import "LYRUIConversationPresenting.h"
+#import "LYRUIMessagePresenting.h"
+#import "LYRUIParticipantPresenting.h"
 #import "LYRUIParticipant.h"
+
+///------------------------
+/// @name Utilities
+///------------------------
+#import "LYRUIConstants.h"
+#import "LYRUIErrors.h"
+#import "LYRUIMessagingUtilities.h"
+
+///------------------------
+/// @name Views
+///------------------------
+#import "LYRUIAddressBarContainerView.h"
+#import "LYRUIAddressBarView.h"
+#import "LYRUIAvatarImageView.h"
+#import "LYRUIConversationCollectionView.h"
+#import "LYRUIConversationCollectionViewFooter.h"
+#import "LYRUIConversationCollectionViewHeader.h"
+#import "LYRUIConversationCollectionViewMoreMessagesHeader.h"
+#import "LYRUIConversationTableViewCell.h"
+#import "LYRUIConversationView.h"
+#import "LYRUIIncomingMessageCollectionViewCell.h"
+#import "LYRUIMessageBubbleView.h"
+#import "LYRUIMessageCollectionViewCell.h"
+#import "LYRUIMessageComposeTextView.h"
+#import "LYRUIOutgoingMessageCollectionViewCell.h"
+#import "LYRUIParticipantSectionHeaderView.h"
+#import "LYRUIParticipantTableViewCell.h"
+#import "LYRUIProgressView.h"
+
+/**
+ @abstract Posted when a user taps a link in a message bubble.
+ */
+extern NSString *const LYRUIUserDidTapLinkNotification;
 
 /**
  @abstract Returns the version of the Layer UIKit as a string.
  */
 extern NSString *const LYRUIKitVersionString;
 
-/**
- @abstract Posted when a user taps a link in a message bubble.
- */
-extern NSString *const LYRUIUserDidTapLinkNotification;
