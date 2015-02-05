@@ -1,5 +1,5 @@
 //
-//  LYRTypingIndicatorView.m
+//  LYRTypingIndicatorViewController.m
 //  LayerUIKit
 //
 //  Created by Kevin Coleman on 11/11/14.
