@@ -1,6 +1,6 @@
 //
-//  LYRConversationQueryController.h
-//  Pods
+//  LYRConversationQueryDataSource.h
+//  LayerUIKit
 //
 //  Created by Kevin Coleman on 2/4/15.
 //
@@ -9,12 +9,11 @@
 #import <UIKit/UIKit.h> 
 #import <LayerKit/LayerKit.h>
 
-NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection;
-NSInteger const LYRUIQueryControllerPaginationWindow;
+extern NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection;
 
 /**
  @abstract The `LYRUIConversationDataSource` manages an `LYRQueryController` object whose data is displayed in an
- `LYRUIConversationViewController`. The `LYRUIConversationDataSource` also provides convenince methods for the transalation 
+ `LYRUIConversationViewController`. The `LYRUIConversationDataSource` also provides convenience methods for the transalation 
  of index objects between an `LYRQueryController` and an `LYRUIConversationViewController`.
  @discussion The `LYRUIConversationViewController` reserves the section at index 0 for a "Loading Messages" indicator if
  one is needed during pagination. The index translation methods provided by the `LYRUIConversationDataSource` account for
@@ -32,14 +31,19 @@ NSInteger const LYRUIQueryControllerPaginationWindow;
  @param conversation An `LYRConversation` object used in the predicate of the `queryController` property's `LYRQuery`.
  @return An `LYRUIConversationDataSource` object.
  */
-+ (instancetype)initWithLayerClient:(LYRClient *)layerClient conversation:(LYRConversation *)conversation;
++ (instancetype)dataSourceWithLayerClient:(LYRClient *)layerClient conversation:(LYRConversation *)conversation;
 
 /*
  @abstract The `LYRQueryController` object managing data displayed in the `LYRUIConversationViewController`.
  @disucssion The `queryController` is hydrated with messages belonging to the `LYRConversation` object
  supplied in the designated initializer.
  */
-@property (nonatomic) LYRQueryController *queryController;
+@property (nonatomic, readonly) LYRQueryController *queryController;
+
+/*
+ @abstract Resets the query controller and its delegate to `nil`.
+ */
+- (void)resetQueryController;
 
 ///---------------------------------------
 /// @name Pagination
@@ -52,13 +56,18 @@ NSInteger const LYRUIQueryControllerPaginationWindow;
 - (BOOL)moreMessagesAvailable;
 
 /*
- @abstract Increments the pagination window of the `queryController` by the `parginationWindow` property if
+ @abstract Increments the pagination window of the `queryController` by the `paginationWindow` property if
  more messages are available for display.
  */
-- (void)incrementPaginationWindow;
+- (void)expandPaginationWindow;
+
+/*
+ @abstract Returns yes if the data source is currently in the process of expanding its pagination window.
+ */
+@property (nonatomic, readonly) BOOL isExpandingPaginationWindow;
 
 ///---------------------------------------
-/// @name Index Transalation Methods
+/// @name Index Translation Methods
 ///---------------------------------------
 
 /*

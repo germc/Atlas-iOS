@@ -1,6 +1,6 @@
 //
-//  LYRConversationQueryController.m
-//  Pods
+//  LYRConversationDataSource.m
+//  LayerUIKit
 //
 //  Created by Kevin Coleman on 2/4/15.
 //
@@ -10,7 +10,8 @@
 
 @interface LYRUIConversationDataSource ()
 
-@property (nonatomic) BOOL expandingPaginationWindow;
+@property (nonatomic, readwrite) LYRQueryController *queryController;
+@property (nonatomic, readwrite) BOOL isExpandingPaginationWindow;
 
 @end
 
@@ -19,7 +20,7 @@
 NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 NSInteger const LYRUIQueryControllerPaginationWindow = 30;
 
-+ (instancetype)initWithLayerClient:(LYRClient *)layerClient conversation:(LYRConversation *)conversation
++ (instancetype)dataSourceWithLayerClient:(LYRClient *)layerClient conversation:(LYRConversation *)conversation
 {
     return [[self alloc] initWithLayerClient:layerClient conversation:conversation];
 }
@@ -44,8 +45,15 @@ NSInteger const LYRUIQueryControllerPaginationWindow = 30;
     return self;
 }
 
-- (void)incrementPaginationWindow
+- (void)resetQueryController
 {
+    self.queryController.delegate = nil;
+    self.queryController = nil;
+}
+
+- (void)expandPaginationWindow
+{
+    self.isExpandingPaginationWindow = YES;
     if (!self.queryController) return;
     
     BOOL moreMessagesAvailable = self.queryController.totalNumberOfObjects > ABS(self.queryController.paginationWindow);
@@ -53,6 +61,7 @@ NSInteger const LYRUIQueryControllerPaginationWindow = 30;
     
     NSUInteger numberOfMessagesToDisplay = MIN(-self.queryController.paginationWindow + LYRUIQueryControllerPaginationWindow, self.queryController.totalNumberOfObjects);
     self.queryController.paginationWindow = -numberOfMessagesToDisplay;
+    self.isExpandingPaginationWindow = NO;
 }
 
 - (BOOL)moreMessagesAvailable

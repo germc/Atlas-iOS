@@ -32,7 +32,6 @@
 @property (nonatomic) NSMutableArray *objectChanges;
 @property (nonatomic) NSHashTable *sectionFooters;
 @property (nonatomic, getter=isFirstAppearance) BOOL firstAppearance;
-@property (nonatomic) BOOL expandingPaginationWindow;
 @property (nonatomic) BOOL showingMoreMessagesIndicator;
 
 @end
@@ -233,7 +232,7 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
 - (void)fetchLayerMessages
 {
     if (!self.conversation) return;
-    self.conversationDataSource = [LYRUIConversationDataSource initWithLayerClient:self.layerClient conversation:self.conversation];
+    self.conversationDataSource = [LYRUIConversationDataSource dataSourceWithLayerClient:self.layerClient conversation:self.conversation];
     self.conversationDataSource.queryController.delegate = self;
     self.showingMoreMessagesIndicator = [self.conversationDataSource moreMessagesAvailable];
     [self.collectionView reloadData];
@@ -255,8 +254,7 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
     if (conversation) {
         [self fetchLayerMessages];
     } else {
-        self.conversationDataSource.queryController.delegate = nil;
-        self.conversationDataSource.queryController = nil;
+        [self.conversationDataSource resetQueryController];
         [self.collectionView reloadData];
     }
     CGSize contentSize = self.collectionView.collectionViewLayout.collectionViewContentSize;
@@ -564,7 +562,7 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
     if (section == LYRUINumberOfSectionsBeforeFirstMessageSection) return YES;
     
     LYRMessage *message = [self.conversationDataSource messageAtCollectionViewSection:section];
-    LYRMessage *previousMessage = [self.conversationDataSource messageAtCollectionViewSection:section ];
+    LYRMessage *previousMessage = [self.conversationDataSource messageAtCollectionViewSection:section];
     
     NSTimeInterval interval = [message.receivedAt timeIntervalSinceDate:previousMessage.receivedAt];
     if (interval > self.dateDisplayTimeInterval) {
@@ -1068,7 +1066,7 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
           forChangeType:(LYRQueryControllerChangeType)type
            newIndexPath:(NSIndexPath *)newIndexPath
 {
-    if (self.expandingPaginationWindow) return;
+    if (self.conversationDataSource.isExpandingPaginationWindow) return;
     NSInteger currentIndex = indexPath ? [self.conversationDataSource collectionViewSectionForQueryControllerRow:indexPath.row] : NSNotFound;
     NSInteger newIndex = newIndexPath ? [self.conversationDataSource collectionViewSectionForQueryControllerRow:newIndexPath.row] : NSNotFound;
     [self.objectChanges addObject:[LYRUIDataSourceChange changeObjectWithType:type newIndex:newIndex currentIndex:currentIndex]];
@@ -1076,7 +1074,7 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
 
 - (void)queryControllerDidChangeContent:(LYRQueryController *)queryController
 {
-    if (self.expandingPaginationWindow) {
+    if (self.conversationDataSource.isExpandingPaginationWindow) {
         self.showingMoreMessagesIndicator = [self.conversationDataSource moreMessagesAvailable];
         [self reloadCollectionViewAdjustingForContentHeightChange];
         return;
@@ -1197,9 +1195,7 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
     BOOL nearTop = distanceFromTop <= minimumDistanceFromTopToTriggerLoadingMore;
     if (!nearTop) return;
 
-    self.expandingPaginationWindow = YES;
-    [self.conversationDataSource incrementPaginationWindow];
-    self.expandingPaginationWindow = NO;
+    [self.conversationDataSource expandPaginationWindow];
 }
 
 - (void)configureMoreMessagesIndicatorVisibility
