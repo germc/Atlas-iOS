@@ -248,7 +248,7 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
 
     [self.typingParticipantIDs removeAllObjects];
     [self updateTypingIndicatorOverlay:NO];
-
+    
     [self configureControllerForConversation];
     [self configureAddressBarForChangedParticipants];
 
