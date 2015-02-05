@@ -20,7 +20,11 @@
 @implementation LYRUIConversationCollectionViewHeader
 
 NSString *const LYRUIConversationViewHeaderIdentifier = @"LYRUIConversationViewHeaderIdentifier";
-CGFloat const LYRUIConversationViewHeaderVerticalPadding = 10;
+
+CGFloat const LYRUIConversationViewHeaderParticipantLeftPadding = 50;
+CGFloat const LYRUIConversationViewHeaderVerticalPadding = 18;
+CGFloat const LYRUIConversationViewHeaderHorizontalPadding = 10;
+CGFloat const LYRUIConversationViewHeaderBottomPadding = 2;
 
 + (LYRUIConversationCollectionViewHeader *)sharedHeader
 {
@@ -58,18 +62,18 @@ CGFloat const LYRUIConversationViewHeaderVerticalPadding = 10;
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.dateLabel attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0]];
 
         // To work around an apparent system bug that initially requires the view to have zero width, instead of a required priority, we use a priority one higher than the content compression resistance.
-        NSLayoutConstraint *dateLabelLeftConstraint = [NSLayoutConstraint constraintWithItem:self.dateLabel attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1.0 constant:10];
+        NSLayoutConstraint *dateLabelLeftConstraint = [NSLayoutConstraint constraintWithItem:self.dateLabel attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1.0 constant:LYRUIConversationViewHeaderHorizontalPadding];
         dateLabelLeftConstraint.priority = UILayoutPriorityDefaultHigh + 1;
         [self addConstraint:dateLabelLeftConstraint];
 
-        NSLayoutConstraint *dateLabelRightConstraint = [NSLayoutConstraint constraintWithItem:self.dateLabel attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationLessThanOrEqual toItem:self attribute:NSLayoutAttributeRight multiplier:1.0 constant:-10];
+        NSLayoutConstraint *dateLabelRightConstraint = [NSLayoutConstraint constraintWithItem:self.dateLabel attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationLessThanOrEqual toItem:self attribute:NSLayoutAttributeRight multiplier:1.0 constant:-LYRUIConversationViewHeaderHorizontalPadding];
         dateLabelRightConstraint.priority = UILayoutPriorityDefaultHigh + 1;
         [self addConstraint:dateLabelRightConstraint];
 
-        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.participantLabel attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeBottom multiplier:1.0 constant:-LYRUIConversationViewHeaderVerticalPadding]];
-        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.participantLabel attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1.0 constant:50]];
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.participantLabel attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeBottom multiplier:1.0 constant:-LYRUIConversationViewHeaderBottomPadding]];
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.participantLabel attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1.0 constant:LYRUIConversationViewHeaderParticipantLeftPadding]];
 
-        NSLayoutConstraint *participantLabelRightConstraint = [NSLayoutConstraint constraintWithItem:self.participantLabel attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationLessThanOrEqual toItem:self attribute:NSLayoutAttributeRight multiplier:1.0 constant:-10];
+        NSLayoutConstraint *participantLabelRightConstraint = [NSLayoutConstraint constraintWithItem:self.participantLabel attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationLessThanOrEqual toItem:self attribute:NSLayoutAttributeRight multiplier:1.0 constant:-LYRUIConversationViewHeaderHorizontalPadding];
         participantLabelRightConstraint.priority = UILayoutPriorityDefaultHigh + 1;
         [self addConstraint:participantLabelRightConstraint];
     }
@@ -124,7 +128,7 @@ CGFloat const LYRUIConversationViewHeaderVerticalPadding = 10;
     CGSize participantNameSize = LYRUITextPlainSize(participantName, header.participantLabelFont);
     CGFloat dateHeight = [self heightForAttributedString:dateString];
     
-    return (dateHeight + participantNameSize.height + LYRUIConversationViewHeaderVerticalPadding + height);
+    return (dateHeight + participantNameSize.height + LYRUIConversationViewHeaderBottomPadding + height);
 }
 
 + (CGFloat)heightForAttributedString:(NSAttributedString *)attributedString

@@ -29,15 +29,15 @@ CGFloat const LYRUIConversationViewFooterVerticalPadding = 6;
     self = [super initWithFrame:frame];
     if (self) {
         self.recipientStatusLabel = [[UILabel alloc] init];
-        self.recipientStatusLabel.font = [UIFont boldSystemFontOfSize:12];
+        self.recipientStatusLabel.font = [UIFont boldSystemFontOfSize:14];
         self.recipientStatusLabel.textColor = [UIColor grayColor];
         self.recipientStatusLabel.textAlignment = NSTextAlignmentRight;
         self.recipientStatusLabel.translatesAutoresizingMaskIntoConstraints = NO;
         [self addSubview:self.recipientStatusLabel];
 
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.recipientStatusLabel attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1.0 constant:2]];
-        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.recipientStatusLabel attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1.0 constant:20]];
-        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.recipientStatusLabel attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeRight multiplier:1.0 constant:-20]];
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.recipientStatusLabel attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationLessThanOrEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1.0 constant:20]];
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.recipientStatusLabel attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeRight multiplier:1.0 constant:-10]];
     }
     return self;
 }
