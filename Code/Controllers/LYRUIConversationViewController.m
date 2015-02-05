@@ -770,7 +770,6 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
 
 - (NSOrderedSet *)messagesForMessageParts:(NSArray *)messageParts
 {
-    NSLog(@"Creating Message Parts");
     NSMutableOrderedSet *messages = [NSMutableOrderedSet new];
     for (id part in messageParts){
         NSString *pushText;
