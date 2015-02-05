@@ -17,7 +17,6 @@
 #import "LYRQueryController.h"
 #import "LYRUIDataSourceChange.h"
 #import "LYRUIConversationView.h"
-#import "LYRUIParticipantChange.h"
 
 @interface LYRUIConversationViewController () <UICollectionViewDataSource, UICollectionViewDelegate, LYRUIMessageInputToolbarDelegate, UIActionSheetDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIGestureRecognizerDelegate, LYRQueryControllerDelegate>
 
@@ -257,11 +256,12 @@ static NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection = 1;
 
     _conversation = conversation;
 
-    [self configureControllerForConversation];
-    [self configureAddressBarForChangedParticipants];
     [self.typingParticipantIDs removeAllObjects];
     [self updateTypingIndicatorOverlay:NO];
     
+    [self configureControllerForConversation];
+    [self configureAddressBarForChangedParticipants];
+
     if (conversation) {
         [self fetchLayerMessages];
     } else {
