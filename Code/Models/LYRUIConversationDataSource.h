@@ -59,7 +59,7 @@ extern NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection;
 /*
  @abstract Returns yes if the data source is currently in the process of expanding its pagination window.
  */
-@property (nonatomic, readonly) BOOL isExpandingPaginationWindow;
+@property (nonatomic, readonly, getter=isExpandingPaginationWindow) BOOL expandingPaginationWindow;
 
 ///---------------------------------------
 /// @name Index Translation Methods

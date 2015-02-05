@@ -11,7 +11,7 @@
 @interface LYRUIConversationDataSource ()
 
 @property (nonatomic, readwrite) LYRQueryController *queryController;
-@property (nonatomic, readwrite) BOOL isExpandingPaginationWindow;
+@property (nonatomic, readwrite) BOOL expandingPaginationWindow;
 
 @end
 
@@ -47,7 +47,7 @@ NSInteger const LYRUIQueryControllerPaginationWindow = 30;
 
 - (void)expandPaginationWindow
 {
-    self.isExpandingPaginationWindow = YES;
+    self.expandingPaginationWindow = YES;
     if (!self.queryController) return;
     
     BOOL moreMessagesAvailable = self.queryController.totalNumberOfObjects > ABS(self.queryController.paginationWindow);
@@ -55,7 +55,7 @@ NSInteger const LYRUIQueryControllerPaginationWindow = 30;
     
     NSUInteger numberOfMessagesToDisplay = MIN(-self.queryController.paginationWindow + LYRUIQueryControllerPaginationWindow, self.queryController.totalNumberOfObjects);
     self.queryController.paginationWindow = -numberOfMessagesToDisplay;
-    self.isExpandingPaginationWindow = NO;
+    self.expandingPaginationWindow = NO;
 }
 
 - (BOOL)moreMessagesAvailable
