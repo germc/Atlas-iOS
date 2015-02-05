@@ -58,7 +58,7 @@
     self.backgroundGradientLayer.frame = self.view.bounds;
 }
 
-- (void)updateWithParticipants:(NSMutableArray *)participants animated:(BOOL)animated
+- (void)updateWithParticipants:(NSArray *)participants animated:(BOOL)animated
 {
     NSString *text = [self textWithParticipants:participants];
     if (text.length > 0) {
@@ -67,7 +67,7 @@
     [self configureVisibility:text.length > 0 animated:animated];
 }
 
-- (NSString *)textWithParticipants:(NSMutableArray *)participants
+- (NSString *)textWithParticipants:(NSArray *)participants
 {
     NSUInteger participantsCount = participants.count;
     if (!participantsCount) {

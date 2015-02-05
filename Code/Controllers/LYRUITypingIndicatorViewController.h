@@ -20,6 +20,6 @@
  @discussion If an empty array is supplied, the typing indicator opacity will be set to 0.0. If
  a non-empty array is supplied, the opacity will be set to 1.0.
  */
-- (void)updateWithParticipants:(NSMutableArray *)participants animated:(BOOL)animated;
+- (void)updateWithParticipants:(NSArray *)participants animated:(BOOL)animated;
 
 @end
