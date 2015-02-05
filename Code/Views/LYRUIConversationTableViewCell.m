@@ -375,6 +375,9 @@ NSString *const LYRUILocationMIMETypePlaceholderText = @"Attachment: Location";
                                                                  attribute:NSLayoutAttributeCenterY
                                                                 multiplier:1.0
                                                                  constant:0.0f]];
+
+    // We want the conversation label to compress if needed instead of the date label.
+    [self.dateLabel setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh + 1 forAxis:UILayoutConstraintAxisHorizontal];
 }
 
 - (void)setUpLastMessageLayoutConstraints
