@@ -109,7 +109,6 @@
             [self configureVisibility:YES withAnimation:animated];
         }
     }
-    
 }
 
 - (void)configureVisibility:(BOOL)visible withAnimation:(BOOL)animated
