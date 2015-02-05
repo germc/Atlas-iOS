@@ -1,5 +1,5 @@
 //
-//  LYRTypingIndicatorViewController.m
+//  LYRUITypingIndicatorViewController.m
 //  LayerUIKit
 //
 //  Created by Kevin Coleman on 11/11/14.
@@ -19,40 +19,37 @@
 
 @implementation LYRUITypingIndicatorViewController
 
-- (id)init
+- (void)viewDidLoad
 {
-    self = [super init];
-    if (self) {
-        // Make dragging on the typing indicator scroll the scroll view / keyboard.
-        self.view.userInteractionEnabled = NO;
-        self.view.translatesAutoresizingMaskIntoConstraints = NO;
-        self.view.alpha = 0.0;
-        
-        _backgroundGradientLayer = [CAGradientLayer layer];
-        _backgroundGradientLayer.frame = self.view.bounds;
-        _backgroundGradientLayer.startPoint = CGPointZero;
-        _backgroundGradientLayer.endPoint = CGPointMake(0, 1);
-        _backgroundGradientLayer.colors = @[
-            (id)[UIColor colorWithWhite:1.0 alpha:0.0].CGColor,
-            (id)[UIColor colorWithWhite:1.0 alpha:0.75].CGColor,
-            (id)[UIColor colorWithWhite:1.0 alpha:1.0].CGColor
-        ];
-        [self.view.layer addSublayer:_backgroundGradientLayer];
-
-        _label = [[UILabel alloc] init];
-        _label.translatesAutoresizingMaskIntoConstraints = NO;
-        _label.font = LYRUIMediumFont(12);
-        _label.textColor = [UIColor grayColor];
-        _label.numberOfLines = 1;
-        _label.textAlignment = NSTextAlignmentCenter;
-        [self.view addSubview:_label];
-
-        [self.view addConstraint:[NSLayoutConstraint constraintWithItem:_label attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeLeft multiplier:1.0 constant:8]];
-        [self.view addConstraint:[NSLayoutConstraint constraintWithItem:_label attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeRight multiplier:1.0 constant:-8]];
-        [self.view addConstraint:[NSLayoutConstraint constraintWithItem:_label attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeTop multiplier:1.0 constant:0]];
-        [self.view addConstraint:[NSLayoutConstraint constraintWithItem:_label attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeHeight multiplier:1.0 constant:0]];
-    }
-    return self;
+    [super viewDidLoad];
+    // Make dragging on the typing indicator scroll the scroll view / keyboard.
+    self.view.userInteractionEnabled = NO;
+    self.view.translatesAutoresizingMaskIntoConstraints = NO;
+    self.view.alpha = 0.0;
+    
+    _backgroundGradientLayer = [CAGradientLayer layer];
+    _backgroundGradientLayer.frame = self.view.bounds;
+    _backgroundGradientLayer.startPoint = CGPointZero;
+    _backgroundGradientLayer.endPoint = CGPointMake(0, 1);
+    _backgroundGradientLayer.colors = @[
+                                        (id)[UIColor colorWithWhite:1.0 alpha:0.0].CGColor,
+                                        (id)[UIColor colorWithWhite:1.0 alpha:0.75].CGColor,
+                                        (id)[UIColor colorWithWhite:1.0 alpha:1.0].CGColor
+                                        ];
+    [self.view.layer addSublayer:_backgroundGradientLayer];
+    
+    _label = [[UILabel alloc] init];
+    _label.translatesAutoresizingMaskIntoConstraints = NO;
+    _label.font = LYRUIMediumFont(12);
+    _label.textColor = [UIColor grayColor];
+    _label.numberOfLines = 1;
+    _label.textAlignment = NSTextAlignmentCenter;
+    [self.view addSubview:_label];
+    
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:_label attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeLeft multiplier:1.0 constant:8]];
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:_label attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeRight multiplier:1.0 constant:-8]];
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:_label attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeTop multiplier:1.0 constant:0]];
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:_label attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeHeight multiplier:1.0 constant:0]];
 }
 
 - (void)viewWillLayoutSubviews
@@ -63,32 +60,35 @@
 
 - (void)updateWithParticipants:(NSMutableArray *)participants animated:(BOOL)animated
 {
+    NSString *text = [self textWithParticipants:participants];
+    if (text.length > 0) {
+        self.label.text = text;
+    }
+    [self configureVisibility:text.length > 0 animated:animated];
+}
+
+- (NSString *)textWithParticipants:(NSMutableArray *)participants
+{
     NSUInteger participantsCount = participants.count;
     if (!participantsCount) {
-        [self configureVisibility:NO withAnimation:animated];
-        return;
+        return nil;
     }
     
     NSMutableArray *fullNameComponents = [[participants valueForKey:@"fullName"] mutableCopy];
     NSString *fullNamesText = [self typingIndicatorTextWithParticipantStrings:fullNameComponents participantsCount:participantsCount];
     if ([self typingIndicatorLabelHasSpaceForText:fullNamesText]) {
-        self.label.text = fullNamesText;
-        [self configureVisibility:YES withAnimation:animated];
-        return;
+        return fullNamesText;
     }
     
     NSArray *firstNames = [participants valueForKey:@"firstName"];
     NSMutableArray *firstNameComponents = [firstNames mutableCopy];
     NSString *firstNamesText = [self typingIndicatorTextWithParticipantStrings:firstNameComponents participantsCount:participantsCount];
     if ([self typingIndicatorLabelHasSpaceForText:firstNamesText]) {
-        self.label.text = firstNamesText;
-        [self configureVisibility:YES withAnimation:animated];
-        return;
+        return firstNamesText;
     }
     
     NSMutableArray *strings = [NSMutableArray new];
     for (NSInteger displayedFirstNamesCount = participants.count; displayedFirstNamesCount >= 0; displayedFirstNamesCount--) {
-        
         NSRange displayedRange = NSMakeRange(0, displayedFirstNamesCount);
         NSArray *displayedFirstNames = [firstNames subarrayWithRange:displayedRange];
         [strings addObjectsFromArray:displayedFirstNames];
@@ -105,13 +105,13 @@
         
         NSString *proposedSummary = [self typingIndicatorTextWithParticipantStrings:strings participantsCount:participantsCount];
         if ([self typingIndicatorLabelHasSpaceForText:proposedSummary]) {
-            self.label.text =  proposedSummary;
-            [self configureVisibility:YES withAnimation:animated];
+            return proposedSummary;
         }
     }
+    return nil;
 }
 
-- (void)configureVisibility:(BOOL)visible withAnimation:(BOOL)animated
+- (void)configureVisibility:(BOOL)visible animated:(BOOL)animated
 {
     NSTimeInterval duration;
     if (!animated) {
