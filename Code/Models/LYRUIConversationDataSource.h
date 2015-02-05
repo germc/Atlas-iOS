@@ -40,11 +40,6 @@ extern NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection;
  */
 @property (nonatomic, readonly) LYRQueryController *queryController;
 
-/*
- @abstract Resets the query controller and its delegate to `nil`.
- */
-- (void)resetQueryController;
-
 ///---------------------------------------
 /// @name Pagination
 ///---------------------------------------

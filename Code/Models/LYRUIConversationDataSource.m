@@ -45,12 +45,6 @@ NSInteger const LYRUIQueryControllerPaginationWindow = 30;
     return self;
 }
 
-- (void)resetQueryController
-{
-    self.queryController.delegate = nil;
-    self.queryController = nil;
-}
-
 - (void)expandPaginationWindow
 {
     self.isExpandingPaginationWindow = YES;

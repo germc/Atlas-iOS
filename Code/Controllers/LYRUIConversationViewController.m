@@ -254,7 +254,7 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
     if (conversation) {
         [self fetchLayerMessages];
     } else {
-        [self.conversationDataSource resetQueryController];
+        self.conversationDataSource = nil;
         [self.collectionView reloadData];
     }
     CGSize contentSize = self.collectionView.collectionViewLayout.collectionViewContentSize;
