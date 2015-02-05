@@ -57,7 +57,7 @@ extern NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection;
 - (void)expandPaginationWindow;
 
 /*
- @abstract Returns yes if the data source is currently in the process of expanding its pagination window.
+ @abstract Returns `yes` if the data source is currently in the process of expanding its pagination window.
  */
 @property (nonatomic, readonly, getter=isExpandingPaginationWindow) BOOL expandingPaginationWindow;
 
