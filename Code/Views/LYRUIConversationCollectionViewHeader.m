@@ -23,12 +23,10 @@ NSString *const LYRUIConversationViewHeaderIdentifier = @"LYRUIConversationViewH
 
 CGFloat const LYRUIConversationViewHeaderParticipantLeftPadding = 50;
 CGFloat const LYRUIConversationViewHeaderHorizontalPadding = 10;
-
 CGFloat const LYRUIConversationViewHeaderTopPadding = 18;
 CGFloat const LYRUIConversationViewHeaderDateBottomPadding = 18;
 CGFloat const LYRUIConversationViewHeaderParticipantNameBottomPadding = 2;
 CGFloat const LYRUIConversationViewHeaderEmptyHeight = 2;
-
 
 + (LYRUIConversationCollectionViewHeader *)sharedHeader
 {
