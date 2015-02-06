@@ -19,7 +19,7 @@
 #import "LYRUIConversationView.h"
 #import "LYRUIConversationDataSource.h"
 
-@interface LYRUIConversationViewController () <UICollectionViewDataSource, UICollectionViewDelegate, LYRUIMessageInputToolbarDelegate, UIActionSheetDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIGestureRecognizerDelegate, LYRQueryControllerDelegate>
+@interface LYRUIConversationViewController () <UICollectionViewDataSource, UICollectionViewDelegate, LYRUIMessageInputToolbarDelegate, UIActionSheetDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, LYRQueryControllerDelegate>
 
 @property (nonatomic) LYRUIConversationCollectionView *collectionView;
 @property (nonatomic) LYRUIConversationDataSource *conversationDataSource;
