@@ -631,6 +631,8 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
 
 - (void)messageInputToolbarDidChangeHeight:(NSNotification *)notification
 {
+    if (!self.messageInputToolbar.superview) return;
+
     CGPoint existingOffset = self.collectionView.contentOffset;
     CGPoint bottomOffset = [self bottomOffsetForContentSize:self.collectionView.contentSize];
     CGFloat distanceToBottom = bottomOffset.y - existingOffset.y;
