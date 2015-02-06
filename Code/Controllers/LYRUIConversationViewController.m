@@ -441,7 +441,7 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
     NSAttributedString *dateString;
     NSString *participantName;
     if ([self shouldDisplayDateLabelForSection:section]) {
-        dateString = [self.dataSource conversationViewController:self attributedStringForDisplayOfDate:[NSDate date]];
+        dateString = [self attributedStringForMessageDate:[self.conversationDataSource messageAtCollectionViewSection:section]];
     }
     if ([self shouldDisplaySenderLabelForSection:section]) {
         participantName = [self participantNameForMessage:[self.conversationDataSource messageAtCollectionViewSection:section]];
@@ -490,6 +490,7 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
         [footer updateWithAttributedStringForRecipientStatus:nil];
     }
 }
+
 - (NSAttributedString *)attributedStringForMessageDate:(LYRMessage *)message
 {
     NSAttributedString *dateString;

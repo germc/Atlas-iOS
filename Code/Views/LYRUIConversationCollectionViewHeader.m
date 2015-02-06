@@ -24,6 +24,8 @@ NSString *const LYRUIConversationViewHeaderIdentifier = @"LYRUIConversationViewH
 CGFloat const LYRUIConversationViewHeaderParticipantLeftPadding = 50;
 CGFloat const LYRUIConversationViewHeaderVerticalPadding = 18;
 CGFloat const LYRUIConversationViewHeaderHorizontalPadding = 10;
+CGFloat const LYRUIConversationViewHeaderTopPadding = 18;
+CGFloat const LYRUIConversationViewHeaderInBetweenPadding = 18;
 CGFloat const LYRUIConversationViewHeaderBottomPadding = 2;
 
 + (LYRUIConversationCollectionViewHeader *)sharedHeader
@@ -116,28 +118,32 @@ CGFloat const LYRUIConversationViewHeaderBottomPadding = 2;
 
 + (CGFloat)headerHeightWithDateString:(NSAttributedString *)dateString participantName:(NSString *)participantName inView:(UIView *)view
 {
-    // Temporarily adding  the view to the hierarchy so that UIAppearance property values will be set based on containment.
+    // Temporarily adding the view to the hierarchy so that UIAppearance property values will be set based on containment.
     LYRUIConversationCollectionViewHeader *header = [self sharedHeader];
     [view addSubview:header];
     [header removeFromSuperview];
     
-    CGFloat height = 0.0;
-    if (participantName) height += LYRUIConversationViewHeaderVerticalPadding;
-    if (dateString) height += LYRUIConversationViewHeaderVerticalPadding;
+    CGFloat paddingHeight = 2;
+    if (dateString.length || participantName.length) paddingHeight += LYRUIConversationViewHeaderInBetweenPadding;
     
-    CGSize participantNameSize = LYRUITextPlainSize(participantName, header.participantLabelFont);
-    CGFloat dateHeight = [self heightForAttributedString:dateString];
+    CGFloat dateHeight = 0;
+    if (dateString.length) {
+        [header updateWithAttributedStringForDate:dateString];
+        CGSize dateSize = [header.dateLabel sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
+        dateHeight = dateSize.height;
+        paddingHeight += LYRUIConversationViewHeaderTopPadding;
+    }
     
-    return (dateHeight + participantNameSize.height + LYRUIConversationViewHeaderBottomPadding + height);
-}
-
-+ (CGFloat)heightForAttributedString:(NSAttributedString *)attributedString
-{
-    CGRect rect = [attributedString.string boundingRectWithSize:CGSizeMake(LYRUIMaxCellWidth(), CGFLOAT_MAX)
-                                                        options:NSStringDrawingUsesLineFragmentOrigin
-                                                     attributes:[attributedString attributesAtIndex:0 effectiveRange:nil]
-                                                        context:nil];
-    return rect.size.height;
+    CGFloat participantHeight = 0;
+    if (participantName.length) {
+        [header updateWithParticipantName:participantName];
+        CGSize participantSize = [header.participantLabel sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
+        participantHeight = participantSize.height;
+        paddingHeight += LYRUIConversationViewHeaderBottomPadding;
+        
+    }
+    
+    return paddingHeight + participantHeight + dateHeight;
 }
 
 @end
