@@ -8,6 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
+@class LYRMessage;
+
 extern NSString *const LYRUIConversationViewHeaderIdentifier;
 
 /**
@@ -15,6 +17,11 @@ extern NSString *const LYRUIConversationViewHeaderIdentifier;
  dates and sender names above message cells.
  */
 @interface LYRUIConversationCollectionViewHeader : UICollectionReusableView
+
+/**
+ @abstract The message associated with the header.
+ */
+@property (nonatomic) LYRMessage *message;
 
 /**
  @abstract The font for the participant label displayed in the header. Default is 16pt system font.

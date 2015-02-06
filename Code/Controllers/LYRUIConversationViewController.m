@@ -30,6 +30,7 @@
 @property (nonatomic) NSLayoutConstraint *typingIndicatorViewBottomConstraint;
 @property (nonatomic) NSMutableArray *typingParticipantIDs;
 @property (nonatomic) NSMutableArray *objectChanges;
+@property (nonatomic) NSHashTable *sectionHeaders;
 @property (nonatomic) NSHashTable *sectionFooters;
 @property (nonatomic, getter=isFirstAppearance) BOOL firstAppearance;
 @property (nonatomic) BOOL showingMoreMessagesIndicator;
@@ -59,6 +60,7 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
         _dateDisplayTimeInterval = 60*15;
         _showsAddressBar = NO;
         _typingParticipantIDs = [NSMutableArray new];
+        _sectionHeaders = [NSHashTable weakObjectsHashTable];
         _sectionFooters = [NSHashTable weakObjectsHashTable];
         _firstAppearance = YES;
         _objectChanges = [NSMutableArray new];
@@ -424,6 +426,7 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
     if (kind == UICollectionElementKindSectionHeader) {
         LYRUIConversationCollectionViewHeader *header = [self.collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:LYRUIConversationViewHeaderIdentifier forIndexPath:indexPath];
         [self configureHeader:header atIndexPath:indexPath];
+        [self.sectionHeaders addObject:header];
         return header;
     } else {
         LYRUIConversationCollectionViewFooter *footer = [self.collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:LYRUIConversationViewFooterIdentifier forIndexPath:indexPath];
@@ -472,6 +475,7 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
 - (void)configureHeader:(LYRUIConversationCollectionViewHeader *)header atIndexPath:(NSIndexPath *)indexPath
 {
     LYRMessage *message = [self.conversationDataSource messageAtCollectionViewIndexPath:indexPath];
+    header.message = message;
     if ([self shouldDisplayDateLabelForSection:indexPath.section]) {
         [header updateWithAttributedStringForDate:[self attributedStringForMessageDate:message]];
     }
@@ -1034,6 +1038,13 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
         [self configureCell:cell forMessage:message indexPath:indexPath];
     }
     
+    for (LYRUIConversationCollectionViewHeader *header in self.sectionHeaders) {
+        NSIndexPath *queryControllerIndexPath = [self.conversationDataSource.queryController indexPathForObject:header.message];
+        if (!queryControllerIndexPath) continue;
+        NSIndexPath *collectionViewIndexPath = [self.conversationDataSource collectionViewIndexPathForQueryControllerIndexPath:queryControllerIndexPath];
+        [self configureHeader:header atIndexPath:collectionViewIndexPath];
+    }
+
     for (LYRUIConversationCollectionViewFooter *footer in self.sectionFooters) {
         NSIndexPath *queryControllerIndexPath = [self.conversationDataSource.queryController indexPathForObject:footer.message];
         if (!queryControllerIndexPath) continue;
