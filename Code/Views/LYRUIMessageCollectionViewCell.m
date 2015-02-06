@@ -22,6 +22,8 @@
 
 @implementation LYRUIMessageCollectionViewCell
 
+CGFloat const LYRUIMessageCellMinumumHeight = 10;
+
 + (LYRUIMessageCollectionViewCell *)sharedCell
 {
     static LYRUIMessageCollectionViewCell *_sharedCell;
@@ -284,36 +286,50 @@
 
     CGFloat height;
     if ([part.MIMEType isEqualToString:LYRUIMIMETypeTextPlain]) {
-        // Temporarily adding  the view to the hierarchy so that UIAppearance property values will be set based on containment.
-        LYRUIMessageCollectionViewCell *cell = [self sharedCell];
-        [view addSubview:cell];
-        [cell removeFromSuperview];
-        NSString *text = [[NSString alloc] initWithData:part.data encoding:NSUTF8StringEncoding];
-        UIFont *font = cell.messageTextFont;
-        CGSize size = LYRUITextPlainSize(text, font);
-        height = size.height + LYRUIMessageBubbleLabelVerticalPadding * 2;
-    } else if ([part.MIMEType isEqualToString:LYRUIMIMETypeImageJPEG] || [part.MIMEType isEqualToString:LYRUIMIMETypeImagePNG]) {
-        if (part.transferStatus == LYRContentTransferComplete) {
-            UIImage *image = [UIImage imageWithData:part.data];
-            CGSize size = LYRUIImageSize(image);
-            height = size.height;
-        } else {
-            LYRMessagePart *dimensionPart = message.parts[2];
-            if ([dimensionPart.MIMEType isEqualToString:LYRUIMIMETypeImageSize]) {
-                CGSize size = LYRUIImageSizeForJSONData(dimensionPart.data);
-                height = size.height;
-            } else {
-                height = 0;
-            }
-        }
-    } else if ([part.MIMEType isEqualToString:LYRUIMIMETypeLocation]) {
+        height = [self cellHeightForTextMessage:message inView:view];
+    }
+    if ([part.MIMEType isEqualToString:LYRUIMIMETypeImageJPEG] || [part.MIMEType isEqualToString:LYRUIMIMETypeImagePNG]) {
+        height = [self cellHeightForImageMessage:message];
+    }
+    if ([part.MIMEType isEqualToString:LYRUIMIMETypeLocation]) {
         height = LYRUIMessageBubbleMapHeight;
-    } else {
-        height = 10;
+    }
+    if (!height) {
+        height = LYRUIMessageCellMinumumHeight;
     }
     height = ceil(height);
-    
     return height;
+}
+
++ (CGFloat)cellHeightForTextMessage:(LYRMessage *)message inView:(id)view
+{
+    // Temporarily adding  the view to the hierarchy so that UIAppearance property values will be set based on containment.
+    LYRUIMessageCollectionViewCell *cell = [self sharedCell];
+    [view addSubview:cell];
+    [cell removeFromSuperview];
+    
+    LYRMessagePart *part = message.parts.firstObject;
+    NSString *text = [[NSString alloc] initWithData:part.data encoding:NSUTF8StringEncoding];
+    UIFont *font = cell.messageTextFont;
+    CGSize size = LYRUITextPlainSize(text, font);
+    return size.height + LYRUIMessageBubbleLabelVerticalPadding * 2;
+}
+
++ (CGFloat)cellHeightForImageMessage:(LYRMessage *)message
+{
+    LYRMessagePart *part = message.parts.firstObject;
+    if (part.transferStatus == LYRContentTransferComplete) {
+        UIImage *image = [UIImage imageWithData:part.data];
+        CGSize size = LYRUIImageSize(image);
+        return size.height;
+    } else if (message.parts.count > 1) {
+        LYRMessagePart *dimensionPart = message.parts[2];
+        if ([dimensionPart.MIMEType isEqualToString:LYRUIMIMETypeImageSize]) {
+            CGSize size = LYRUIImageSizeForJSONData(dimensionPart.data);
+            return size.height;
+        }
+    }
+    return LYRUIMessageCellMinumumHeight;
 }
 
 @end
