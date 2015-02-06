@@ -22,7 +22,7 @@
 
 @implementation LYRUIMessageCollectionViewCell
 
-CGFloat const LYRUIMessageCellMinumumHeight = 10;
+CGFloat const LYRUIMessageCellMinimumHeight = 10;
 
 + (LYRUIMessageCollectionViewCell *)sharedCell
 {
@@ -280,23 +280,21 @@ CGFloat const LYRUIMessageCellMinumumHeight = 10;
     // Implemented by subclass
 }
 
+#pragma mark - Cell Height Calculations 
+
 + (CGFloat)cellHeightForMessage:(LYRMessage *)message inView:(UIView *)view
 {
     LYRMessagePart *part = message.parts.firstObject;
 
-    CGFloat height;
+    CGFloat height = 0;
     if ([part.MIMEType isEqualToString:LYRUIMIMETypeTextPlain]) {
         height = [self cellHeightForTextMessage:message inView:view];
-    }
-    if ([part.MIMEType isEqualToString:LYRUIMIMETypeImageJPEG] || [part.MIMEType isEqualToString:LYRUIMIMETypeImagePNG]) {
+    } else if ([part.MIMEType isEqualToString:LYRUIMIMETypeImageJPEG] || [part.MIMEType isEqualToString:LYRUIMIMETypeImagePNG]) {
         height = [self cellHeightForImageMessage:message];
-    }
-    if ([part.MIMEType isEqualToString:LYRUIMIMETypeLocation]) {
+    } else if ([part.MIMEType isEqualToString:LYRUIMIMETypeLocation]) {
         height = LYRUIMessageBubbleMapHeight;
     }
-    if (!height) {
-        height = LYRUIMessageCellMinumumHeight;
-    }
+    if (height < LYRUIMessageCellMinimumHeight) height = LYRUIMessageCellMinimumHeight;
     height = ceil(height);
     return height;
 }
@@ -329,7 +327,7 @@ CGFloat const LYRUIMessageCellMinumumHeight = 10;
             return size.height;
         }
     }
-    return LYRUIMessageCellMinumumHeight;
+    return LYRUIMessageCellMinimumHeight;
 }
 
 @end
