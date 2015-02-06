@@ -8,6 +8,7 @@
 
 ### Public API Changes
 
+* Added `message` property to `LYRUIConversationCollectionViewHeader`.
 * Added `LYRUIConversationDataSource`.
 * Changed `LYRUITypingIndicatorView` to `LYRUITypingIndicatorViewController`.
 * Added `LYRUIProgressView`.
