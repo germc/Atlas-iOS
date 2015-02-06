@@ -23,6 +23,7 @@
 
 NSString *const LYRUIConversationViewFooterIdentifier = @"LYRUIConversationViewFooterIdentifier";
 CGFloat const LYRUIConversationViewFooterVerticalPadding = 6;
+CGFloat const LYRUIConversationViewFooterEmptyPadding = 2;
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -58,7 +59,7 @@ CGFloat const LYRUIConversationViewFooterVerticalPadding = 6;
 
 + (CGFloat)footerHeightWithRecipientStatus:(NSAttributedString *)recipientStatus
 {
-    if (!recipientStatus) return 0;
+    if (!recipientStatus) return LYRUIConversationViewFooterEmptyPadding;
     CGFloat recipientStringSize = [self heightForAttributedString:recipientStatus];
     return (recipientStringSize + LYRUIConversationViewFooterVerticalPadding * 2);
 }
