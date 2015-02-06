@@ -119,39 +119,6 @@ CGFloat const LYRUIConversationViewHeaderEmptyHeight = 2;
     self.participantLabel.textColor = participantLabelTextColor;
 }
 
-
-//+ (CGFloat)headerHeightWithDateString:(NSAttributedString *)dateString participantName:(NSString *)participantName inView:(UIView *)view
-//{
-//    // Temporarily adding the view to the hierarchy so that UIAppearance property values will be set based on containment.
-//    LYRUIConversationCollectionViewHeader *header = [self sharedHeader];
-//    [view addSubview:header];
-//    [header removeFromSuperview];
-//    
-//    // We always want at a minumum, 2px bottom padding
-//    CGFloat paddingHeight = LYRUIConversationViewHeaderBottomPadding;
-//    
-//    // If we have either string, we need a top padding
-//    if (dateString.length || participantName.length) paddingHeight += LYRUIConversationViewHeaderTopPadding;
-//    
-//    CGFloat dateHeight = 0;
-//    if (dateString.length) {
-//        [header updateWithAttributedStringForDate:dateString];
-//        CGSize dateSize = [header.dateLabel sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
-//        dateHeight = dateSize.height;
-//        // If we have date, we need to give it a bottom padding
-//        paddingHeight += LYRUIConversationViewHeaderBottomDatePadding;
-//    }
-//    
-//    CGFloat participantHeight = 0;
-//    if (participantName.length) {
-//        [header updateWithParticipantName:participantName];
-//        CGSize participantSize = [header.participantLabel sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
-//        participantHeight = participantSize.height;
-//    }
-//    
-//    return paddingHeight + participantHeight + dateHeight;
-//}
-
 + (CGFloat)headerHeightWithDateString:(NSAttributedString *)dateString participantName:(NSString *)participantName inView:(UIView *)view
 {
     if (!dateString.length && !participantName.length) return LYRUIConversationViewHeaderEmptyHeight;
