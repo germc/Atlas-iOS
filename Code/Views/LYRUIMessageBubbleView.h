@@ -17,6 +17,11 @@ extern CGFloat const LYRUIMessageBubbleMapHeight;
 extern CGFloat const LYRUIMessageBubbleDefaultHeight;
 
 /**
+ @abstract Posted when a user taps a link in a message bubble.
+ */
+extern NSString *const LYRUIUserDidTapLinkNotification;
+
+/**
  @abstract The `LYRUIMessageBubbleView` class provides a lightweight, customizable view that 
  handles displaying the actual message content within a collection view cell.
  @discussion The view provides support for multiple content types including text,

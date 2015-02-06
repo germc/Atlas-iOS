@@ -8,6 +8,7 @@
 
 ### Public API Changes
 
+* Moved `LYRUIUserDidTapLinkNotification` from `LayerUIKit.h` to `LYRUIMessageBubbleView.h`.
 * Added `message` property to `LYRUIConversationCollectionViewHeader`.
 * Added `LYRUIConversationDataSource`.
 * Changed `LYRUITypingIndicatorView` to `LYRUITypingIndicatorViewController`.
