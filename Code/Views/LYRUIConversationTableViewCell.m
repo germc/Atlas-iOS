@@ -272,12 +272,12 @@ NSString *const LYRUILocationMIMETypePlaceholderText = @"Attachment: Location";
 - (NSString *)dateLabelForLastMessage:(LYRMessage *)lastMessage
 {
     if (!lastMessage) return @"";
-    if (!lastMessage.receivedAt) return @"";
+    if (!lastMessage.sentAt) return @"";
     
-    if (LYRUIIsDateInToday(lastMessage.receivedAt)) {
-        return [LYRUIShortTimeFormatter() stringFromDate:lastMessage.receivedAt];
+    if (LYRUIIsDateInToday(lastMessage.sentAt)) {
+        return [LYRUIShortTimeFormatter() stringFromDate:lastMessage.sentAt];
     } else {
-        return [LYRUIRelativeDateFormatter() stringFromDate:lastMessage.receivedAt];
+        return [LYRUIRelativeDateFormatter() stringFromDate:lastMessage.sentAt];
     }
 }
 
