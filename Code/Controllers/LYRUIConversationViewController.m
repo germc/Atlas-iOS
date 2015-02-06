@@ -563,7 +563,7 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
     if (section == LYRUINumberOfSectionsBeforeFirstMessageSection) return YES;
     
     LYRMessage *message = [self.conversationDataSource messageAtCollectionViewSection:section];
-    LYRMessage *previousMessage = [self.conversationDataSource messageAtCollectionViewSection:section];
+    LYRMessage *previousMessage = [self.conversationDataSource messageAtCollectionViewSection:section - 1];
     
     NSTimeInterval interval = [message.receivedAt timeIntervalSinceDate:previousMessage.receivedAt];
     if (interval > self.dateDisplayTimeInterval) {
