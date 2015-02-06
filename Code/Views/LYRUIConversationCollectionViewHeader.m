@@ -129,6 +129,7 @@ CGFloat const LYRUIConversationViewHeaderEmptyHeight = 2;
     [header removeFromSuperview];
     
     CGFloat height = 0;
+    height += LYRUIConversationViewHeaderTopPadding;
     
     if (dateString.length) {
         [header updateWithAttributedStringForDate:dateString];
@@ -142,7 +143,6 @@ CGFloat const LYRUIConversationViewHeaderEmptyHeight = 2;
         height += participantSize.height + LYRUIConversationViewHeaderParticipantNameBottomPadding;
     }
     
-    height += LYRUIConversationViewHeaderTopPadding;
     return height;
 }
 
