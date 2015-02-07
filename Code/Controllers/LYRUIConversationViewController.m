@@ -569,8 +569,10 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
     
     LYRMessage *message = [self.conversationDataSource messageAtCollectionViewSection:section];
     LYRMessage *previousMessage = [self.conversationDataSource messageAtCollectionViewSection:section - 1];
+    if (!previousMessage.sentAt) return NO;
     
-    NSTimeInterval interval = [message.sentAt timeIntervalSinceDate:previousMessage.sentAt];
+    NSDate *date = message.sentAt ?: [NSDate date];
+    NSTimeInterval interval = [date timeIntervalSinceDate:previousMessage.sentAt];
     if (interval > self.dateDisplayTimeInterval) {
         return YES;
     }
