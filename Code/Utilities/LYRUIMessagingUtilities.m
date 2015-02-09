@@ -130,16 +130,11 @@ LYRMessagePart *LYRUIMessagePartWithText(NSString *text)
     return [LYRMessagePart messagePartWithMIMEType:@"text/plain" data:[text dataUsingEncoding:NSUTF8StringEncoding]];
 }
 
-LYRMessagePart *LYRUIMessagePartWithJPEGImage(UIImage *image, BOOL isPreview)
+LYRMessagePart *LYRUIMessagePartWithJPEGImage(UIImage *image)
 {
     UIImage *adjustedImage = LYRUIAdjustOrientationForImage(image);
-    NSData *imageData;
-    if (isPreview) {
-        imageData = LYRUIJPEGDataForImageWithConstraint(adjustedImage, 768, 0.8f);
-    } else {
-        imageData = UIImageJPEGRepresentation(adjustedImage, 0.8f);
-    }
-    return [LYRMessagePart messagePartWithMIMEType:isPreview ? LYRUIMIMETypeImageJPEGPreview : LYRUIMIMETypeImageJPEG
+    NSData *imageData = LYRUIJPEGDataForImageWithConstraint(adjustedImage, 768, 0.8f);
+    return [LYRMessagePart messagePartWithMIMEType:LYRUIMIMETypeImageJPEG
                                               data:imageData];
 }
 

@@ -52,7 +52,7 @@ CGRect LYRUIImageRectConstrainedToSize(CGSize imageSize, CGSize maxSize);
 
 LYRMessagePart *LYRUIMessagePartWithText(NSString *text);
 
-LYRMessagePart *LYRUIMessagePartWithJPEGImage(UIImage *image, BOOL isPreview);
+LYRMessagePart *LYRUIMessagePartWithJPEGImage(UIImage *image);
 
 LYRMessagePart *LYRUIMessagePartForImageSize(UIImage *image);
 

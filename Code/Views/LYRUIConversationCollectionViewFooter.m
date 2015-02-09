@@ -22,7 +22,8 @@
 @implementation LYRUIConversationCollectionViewFooter
 
 NSString *const LYRUIConversationViewFooterIdentifier = @"LYRUIConversationViewFooterIdentifier";
-CGFloat const LYRUIConversationViewFooterVerticalPadding = 6;
+CGFloat const LYRUIConversationViewFooterTopPadding = 2;
+CGFloat const LYRUIConversationViewFooterBottomPadding = 7;
 CGFloat const LYRUIConversationViewFooterEmptyHeight = 2;
 
 - (id)initWithFrame:(CGRect)frame
@@ -30,13 +31,13 @@ CGFloat const LYRUIConversationViewFooterEmptyHeight = 2;
     self = [super initWithFrame:frame];
     if (self) {
         self.recipientStatusLabel = [[UILabel alloc] init];
-        self.recipientStatusLabel.font = [UIFont boldSystemFontOfSize:14];
+        self.recipientStatusLabel.font = [[self class] defaultRecipientStatusFont];
         self.recipientStatusLabel.textColor = [UIColor grayColor];
         self.recipientStatusLabel.textAlignment = NSTextAlignmentRight;
         self.recipientStatusLabel.translatesAutoresizingMaskIntoConstraints = NO;
         [self addSubview:self.recipientStatusLabel];
 
-        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.recipientStatusLabel attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1.0 constant:2]];
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.recipientStatusLabel attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1.0 constant:LYRUIConversationViewFooterTopPadding]];
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.recipientStatusLabel attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1.0 constant:20]];
         NSLayoutConstraint *recipientStatusLabelRightConstraint = [NSLayoutConstraint constraintWithItem:self.recipientStatusLabel attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeRight multiplier:1.0 constant:-20];
         // To work around an apparent system bug that initially requires the view to have zero width, instead of a required priority, we use a priority one higher than the content compression resistance.
@@ -59,18 +60,34 @@ CGFloat const LYRUIConversationViewFooterEmptyHeight = 2;
 
 + (CGFloat)footerHeightWithRecipientStatus:(NSAttributedString *)recipientStatus
 {
-    if (!recipientStatus) return LYRUIConversationViewFooterEmptyHeight;
-    CGFloat recipientStringSize = [self heightForAttributedString:recipientStatus];
-    return (recipientStringSize + LYRUIConversationViewFooterVerticalPadding * 2);
+    if (!recipientStatus.length) return LYRUIConversationViewFooterEmptyHeight;
+    UIFont *defaultFont = [self defaultRecipientStatusFont];
+    NSAttributedString *recipientStatusWithDefaultFont = [self attributedStringWithDefaultFont:defaultFont attributedString:recipientStatus];
+    CGFloat recipientStatusHeight = [self heightForAttributedString:recipientStatusWithDefaultFont];
+    return LYRUIConversationViewFooterTopPadding + ceil(recipientStatusHeight) + LYRUIConversationViewFooterBottomPadding;
+}
+
++ (NSAttributedString *)attributedStringWithDefaultFont:(UIFont *)defaultFont attributedString:(NSAttributedString *)attributedString
+{
+    NSMutableAttributedString *attributedStringWithDefaultFont = [attributedString mutableCopy];
+    [attributedStringWithDefaultFont enumerateAttribute:NSFontAttributeName inRange:NSMakeRange(0, attributedStringWithDefaultFont.length) options:0 usingBlock:^(UIFont *font, NSRange range, BOOL *stop) {
+        if (font) return;
+            [attributedStringWithDefaultFont addAttribute:NSFontAttributeName value:defaultFont range:range];
+    }];
+    return attributedStringWithDefaultFont;
 }
 
 + (CGFloat)heightForAttributedString:(NSAttributedString *)attributedString
 {
-    CGRect rect = [attributedString.string boundingRectWithSize:CGSizeMake(LYRUIMaxCellWidth(), CGFLOAT_MAX)
-                                                        options:NSStringDrawingUsesLineFragmentOrigin
-                                                     attributes:[attributedString attributesAtIndex:0 effectiveRange:nil]
-                                                        context:nil];
-    return rect.size.height;
+    CGRect rect = [attributedString boundingRectWithSize:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)
+                                                 options:NSStringDrawingUsesLineFragmentOrigin
+                                                 context:nil];
+    return CGRectGetHeight(rect);
+}
+
++ (UIFont *)defaultRecipientStatusFont
+{
+    return [UIFont boldSystemFontOfSize:14];
 }
 
 @end
