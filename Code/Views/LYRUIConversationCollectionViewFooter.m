@@ -72,7 +72,7 @@ CGFloat const LYRUIConversationViewFooterEmptyHeight = 2;
     NSMutableAttributedString *attributedStringWithDefaultFont = [attributedString mutableCopy];
     [attributedStringWithDefaultFont enumerateAttribute:NSFontAttributeName inRange:NSMakeRange(0, attributedStringWithDefaultFont.length) options:0 usingBlock:^(UIFont *font, NSRange range, BOOL *stop) {
         if (font) return;
-            [attributedStringWithDefaultFont addAttribute:NSFontAttributeName value:defaultFont range:range];
+        [attributedStringWithDefaultFont addAttribute:NSFontAttributeName value:defaultFont range:range];
     }];
     return attributedStringWithDefaultFont;
 }
