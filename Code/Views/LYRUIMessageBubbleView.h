@@ -22,12 +22,17 @@ extern CGFloat const LYRUIMessageBubbleDefaultHeight;
 extern NSString *const LYRUIUserDidTapLinkNotification;
 
 /**
- @abstract The `LYRUIMessageBubbleView` class provides a lightweight, customizable view that 
+ @abstract The `LYRUIMessageBubbleView` class provides a lightweight, customizable view that
  handles displaying the actual message content within a collection view cell.
  @discussion The view provides support for multiple content types including text,
  images, and location data.
  */
 @interface LYRUIMessageBubbleView : UIView <UIAppearanceContainer>
+
+/**
+ @abstract Tells the bubble view to display a download indicator on top of content.
+ */
+- (void)updateActivityIndicatorWithProgress:(double)progress style:(LYRUIProgressViewIconStyle)style;
 
 /**
  @abstract Tells the bubble view to display a given string.

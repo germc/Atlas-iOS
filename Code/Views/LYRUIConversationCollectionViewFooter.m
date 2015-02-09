@@ -36,7 +36,7 @@ CGFloat const LYRUIConversationViewFooterEmptyHeight = 2;
         self.recipientStatusLabel.textAlignment = NSTextAlignmentRight;
         self.recipientStatusLabel.translatesAutoresizingMaskIntoConstraints = NO;
         [self addSubview:self.recipientStatusLabel];
-
+        
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.recipientStatusLabel attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1.0 constant:LYRUIConversationViewFooterTopPadding]];
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.recipientStatusLabel attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1.0 constant:20]];
         NSLayoutConstraint *recipientStatusLabelRightConstraint = [NSLayoutConstraint constraintWithItem:self.recipientStatusLabel attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeRight multiplier:1.0 constant:-20];
@@ -72,7 +72,7 @@ CGFloat const LYRUIConversationViewFooterEmptyHeight = 2;
     NSMutableAttributedString *attributedStringWithDefaultFont = [attributedString mutableCopy];
     [attributedStringWithDefaultFont enumerateAttribute:NSFontAttributeName inRange:NSMakeRange(0, attributedStringWithDefaultFont.length) options:0 usingBlock:^(UIFont *font, NSRange range, BOOL *stop) {
         if (font) return;
-            [attributedStringWithDefaultFont addAttribute:NSFontAttributeName value:defaultFont range:range];
+        [attributedStringWithDefaultFont addAttribute:NSFontAttributeName value:defaultFont range:range];
     }];
     return attributedStringWithDefaultFont;
 }

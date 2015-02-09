@@ -12,10 +12,17 @@
 #import "LYRUIOutgoingMessageCollectionViewCell.h"
 #import <LayerKit/LayerKit.h> 
 
-@interface LYRUIMessageCollectionViewCell ()
+#import "LYRUIMessageCollectionViewCell.h"
+#import "LYRUIMessagingUtilities.h"
+#import "LYRUIIncomingMessageCollectionViewCell.h"
+#import "LYRUIOutgoingMessageCollectionViewCell.h"
+#import <LayerKit/LayerKit.h>
+
+@interface LYRUIMessageCollectionViewCell () <LYRProgressDelegate>
 
 @property (nonatomic) BOOL messageSentState;
 @property (nonatomic) LYRMessage *message;
+@property (nonatomic) LYRProgress *progress;
 
 @end
 
@@ -33,6 +40,7 @@ CGFloat const LYRUIMessageCellMinimumHeight = 10;
     return _sharedCell;
 }
 
+// Test
 - (id)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
@@ -53,7 +61,7 @@ CGFloat const LYRUIMessageCellMinimumHeight = 10;
         _avatarImageView = [[LYRUIAvatarImageView alloc] init];
         _avatarImageView.translatesAutoresizingMaskIntoConstraints = NO;
         [self.contentView addSubview:_avatarImageView];
-
+        
         [self configureLayoutConstraints];
     }
     return self;
@@ -63,6 +71,7 @@ CGFloat const LYRUIMessageCellMinimumHeight = 10;
 {
     [super prepareForReuse];
     [self.bubbleView prepareForReuse];
+    self.progress = nil;
 }
 
 - (void)presentMessage:(LYRMessage *)message;
@@ -94,8 +103,36 @@ CGFloat const LYRUIMessageCellMinimumHeight = 10;
     self.accessibilityLabel = [NSString stringWithFormat:@"Message: Photo"];
     
     LYRMessagePart *imagePart = self.message.parts.firstObject;
-    CGSize size = LYRUIImageSizeForData(imagePart.data);
-    [self.bubbleView updateWithImage:[UIImage imageWithData:imagePart.data] width:size.width];
+    if ([self canDisplayImageDataForMessagePart:imagePart]) {
+        CGSize size = LYRUIImageSizeForData(imagePart.data);
+        [self.bubbleView updateWithImage:[UIImage imageWithData:imagePart.data] width:size.width];
+        [self.bubbleView updateActivityIndicatorWithProgress:1.0f style:LYRUIProgressViewIconStyleNone];
+        return;
+    }
+    [self trackProgressIfNeededForMessagePart:imagePart];
+    
+    CGSize size;
+    if (self.message.parts.count > 1) {
+        LYRMessagePart *dimensionPart = self.message.parts[2];
+        if ([dimensionPart.MIMEType isEqualToString:LYRUIMIMETypeImageSize]) {
+            size = LYRUIImageSizeForJSONData(dimensionPart.data);
+        }
+    }
+    
+    LYRMessagePart *previewPart = self.message.parts[1];
+    if ([previewPart.MIMEType isEqualToString:LYRUIMIMETypeImageJPEGPreview] && [self canDisplayImageDataForMessagePart:previewPart]) {
+        [self.bubbleView updateWithImage:[UIImage imageWithData:previewPart.data] width:size.width];
+        return;
+    }
+    [self.bubbleView updateWithImage:[UIImage new] width:size.width];
+}
+
+- (BOOL)canDisplayImageDataForMessagePart:(LYRMessagePart *)messagePart
+{
+    BOOL transferComplete = messagePart.transferStatus == LYRContentTransferComplete;
+    BOOL awaitingUpload = messagePart.transferStatus == LYRContentTransferAwaitingUpload;
+    BOOL uploading = messagePart.transferStatus == LYRContentTransferUploading;
+    return (transferComplete || awaitingUpload || uploading);
 }
 
 - (void)configureBubbleViewForLocationContent
@@ -160,6 +197,78 @@ CGFloat const LYRUIMessageCellMinimumHeight = 10;
     return [messagePart.MIMEType isEqualToString:LYRUIMIMETypeTextPlain];
 }
 
+- (void)trackProgressIfNeededForMessagePart:(LYRMessagePart *)messagePart
+{
+    BOOL trackProgress = NO;
+    LYRContentTransferType transferType;
+    
+    switch (messagePart.transferStatus) {
+        case LYRContentTransferAwaitingUpload:
+            trackProgress = YES;
+            transferType = LYRContentTransferTypeUpload;
+            break;
+            
+        case LYRContentTransferUploading:
+            trackProgress = YES;
+            transferType = LYRContentTransferTypeUpload;
+            break;
+            
+        case LYRContentTransferReadyForDownload:
+            trackProgress = YES;
+            transferType = LYRContentTransferTypeDownload;
+            break;
+            
+        case LYRContentTransferDownloading:
+            trackProgress = YES;
+            transferType = LYRContentTransferTypeDownload;
+            break;
+            
+        case LYRContentTransferComplete:
+            [self.bubbleView updateActivityIndicatorWithProgress:1.0f style:LYRUIProgressViewIconStyleNone];
+            break;
+            
+        default:
+            break;
+    }
+    if (trackProgress) {
+        NSError *error;
+        self.progress = [messagePart downloadContent:&error];
+        self.progress.delegate = self;
+        switch (transferType) {
+            case LYRContentTransferTypeDownload:
+                self.progress.userInfo = @{ @"transferType": @(LYRContentTransferTypeDownload) };
+                break;
+                
+            case LYRContentTransferTypeUpload:
+                self.progress.userInfo = @{ @"transferType": @(LYRContentTransferTypeUpload) };
+                break;
+                
+            default:
+                break;
+        }
+        [self progressDidChange:self.progress];
+    }
+}
+
+- (void)progressDidChange:(LYRProgress *)progress
+{
+    void (^progressUpdateUIBlock)(void) = ^{
+        if (progress.fractionCompleted < 1.00f) {
+            LYRContentTransferType transferType = [progress.userInfo[@"transferType"] integerValue];
+            [self.bubbleView updateActivityIndicatorWithProgress:self.progress.fractionCompleted style:transferType == LYRContentTransferTypeDownload ? LYRUIProgressViewIconStyleDownload : LYRUIProgressViewIconStyleUpload];
+            return;
+        } else {
+            [self.bubbleView updateActivityIndicatorWithProgress:1.0f style:LYRUIProgressViewIconStyleNone];
+            progress.delegate = nil;
+        }
+    };
+    if ([NSThread isMainThread]) {
+        progressUpdateUIBlock();
+    } else {
+        dispatch_sync(dispatch_get_main_queue(), progressUpdateUIBlock);
+    }
+}
+
 - (void)configureLayoutConstraints
 {
     CGFloat maxBubbleWidth = LYRUIMaxCellWidth() + LYRUIMessageBubbleLabelHorizontalPadding * 2;
@@ -178,12 +287,12 @@ CGFloat const LYRUIMessageCellMinimumHeight = 10;
     // Implemented by subclass
 }
 
-#pragma mark - Cell Height Calculations 
+#pragma mark - Cell Height Calculations
 
 + (CGFloat)cellHeightForMessage:(LYRMessage *)message inView:(UIView *)view
 {
     LYRMessagePart *part = message.parts.firstObject;
-
+    
     CGFloat height = 0;
     if ([part.MIMEType isEqualToString:LYRUIMIMETypeTextPlain]) {
         height = [self cellHeightForTextMessage:message inView:view];
@@ -214,14 +323,18 @@ CGFloat const LYRUIMessageCellMinimumHeight = 10;
 + (CGFloat)cellHeightForImageMessage:(LYRMessage *)message
 {
     LYRMessagePart *part = message.parts.firstObject;
-    UIImage *image = [UIImage imageWithData:part.data];
-    CGFloat height;
-    if (image) {
-        height = LYRUIImageSize(image).height;
-    } else {
-        height = 0;
+    if (part.transferStatus == LYRContentTransferComplete) {
+        UIImage *image = [UIImage imageWithData:part.data];
+        CGSize size = LYRUIImageSize(image);
+        return size.height;
+    } else if (message.parts.count > 1) {
+        LYRMessagePart *dimensionPart = message.parts[2];
+        if ([dimensionPart.MIMEType isEqualToString:LYRUIMIMETypeImageSize]) {
+            CGSize size = LYRUIImageSizeForJSONData(dimensionPart.data);
+            return size.height;
+        }
     }
-    return height;
+    return LYRUIMessageCellMinimumHeight;
 }
 
 @end
