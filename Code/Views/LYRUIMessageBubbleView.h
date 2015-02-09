@@ -30,11 +30,6 @@ extern NSString *const LYRUIUserDidTapLinkNotification;
 @interface LYRUIMessageBubbleView : UIView <UIAppearanceContainer>
 
 /**
- @abstract Tells the bubble view to display a download indicator on top of content.
- */
-- (void)updateActivityIndicatorWithProgress:(double)progress style:(LYRUIProgressViewIconStyle)style;
-
-/**
  @abstract Tells the bubble view to display a given string.
  */
 - (void)updateWithAttributedText:(NSAttributedString *)text;

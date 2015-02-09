@@ -25,7 +25,6 @@ typedef NS_ENUM(NSInteger, LYRUIBubbleViewContentType) {
 
 @interface LYRUIMessageBubbleView () <UIGestureRecognizerDelegate>
 
-@property (nonatomic) LYRUIProgressView *progressView;
 @property (nonatomic) LYRUIBubbleViewContentType contentType;
 @property (nonatomic) UIView *longPressMask;
 @property (nonatomic) CLLocationCoordinate2D locationShown;
@@ -67,11 +66,6 @@ typedef NS_ENUM(NSInteger, LYRUIBubbleViewContentType) {
         self.bubbleImageView.contentMode = UIViewContentModeScaleAspectFill;
         [self addSubview:self.bubbleImageView];
         
-        self.progressView = [[LYRUIProgressView alloc] initWithFrame:CGRectMake(0, 0, 128.0f, 128.0f)];
-        self.progressView.translatesAutoresizingMaskIntoConstraints = NO;
-        self.progressView.alpha = 1.0f;
-        [self addSubview:self.progressView];
-        
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleViewLabel attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1.0 constant:LYRUIMessageBubbleLabelVerticalPadding]];
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleViewLabel attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1.0 constant:LYRUIMessageBubbleLabelHorizontalPadding]];
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleViewLabel attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeRight multiplier:1.0 constant:-LYRUIMessageBubbleLabelHorizontalPadding]];
@@ -82,11 +76,6 @@ typedef NS_ENUM(NSInteger, LYRUIBubbleViewContentType) {
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleImageView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0]];
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleImageView attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0]];
         self.imageWidthConstraint = [NSLayoutConstraint constraintWithItem:self.bubbleImageView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:0];
-        
-        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.progressView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0]];
-        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.progressView attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0]];
-        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.progressView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:64.0f]];
-        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.progressView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:64.0f]];
         
         self.tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleLabelTap:)];
         self.tapGestureRecognizer.delegate = self;
@@ -100,7 +89,6 @@ typedef NS_ENUM(NSInteger, LYRUIBubbleViewContentType) {
 
 - (void)prepareForReuse
 {
-    self.progressView.alpha = 0.0f;
     self.bubbleImageView.image = nil;
     [self applyImageWidthConstraint:NO];
     [self setBubbleViewContentType:LYRUIBubbleViewContentTypeText];
@@ -176,14 +164,12 @@ typedef NS_ENUM(NSInteger, LYRUIBubbleViewContentType) {
             self.bubbleImageView.hidden = YES;
             self.bubbleViewLabel.hidden = NO;
             self.bubbleImageView.image = nil;
-            self.progressView.hidden = YES;
             self.locationShown = kCLLocationCoordinate2DInvalid;
             break;
             
         case LYRUIBubbleViewContentTypeImage:
             self.bubbleViewLabel.hidden = YES;
             self.bubbleImageView.hidden = NO;
-            self.progressView.hidden = NO;
             self.locationShown = kCLLocationCoordinate2DInvalid;
             self.bubbleViewLabel.text = nil;
             break;
@@ -193,7 +179,6 @@ typedef NS_ENUM(NSInteger, LYRUIBubbleViewContentType) {
             self.bubbleImageView.hidden = YES;
             self.bubbleImageView.image = nil;
             self.bubbleViewLabel.hidden = YES;
-            self.progressView.hidden = YES;
             self.bubbleViewLabel.text = nil;
             break;
             
@@ -215,23 +200,6 @@ typedef NS_ENUM(NSInteger, LYRUIBubbleViewContentType) {
             [self removeConstraint:self.imageWidthConstraint];
         }
     }
-}
-
-#pragma mark - Activity Indicator 
-
-- (void)updateActivityIndicatorWithProgress:(double)progress style:(LYRUIProgressViewIconStyle)style
-{
-    if (style == LYRUIProgressViewIconStyleNone) {
-        [UIView animateWithDuration:0.25 animations:^{
-            self.progressView.alpha = 0.0f;
-        }];
-    } else {
-        [UIView animateWithDuration:0.25 animations:^{
-            self.progressView.alpha = 1.0f;
-        }];
-    }
-    self.progressView.iconStyle = style;
-    [self.progressView setProgress:progress animated:YES];
 }
 
 #pragma mark - Copy / Paste Support

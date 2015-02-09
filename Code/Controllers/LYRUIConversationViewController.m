@@ -789,9 +789,7 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
         } else if ([part isKindOfClass:[UIImage class]]) {
             pushText = @"Attachment: Image";
             UIImage *image = part;
-            [parts addObject:LYRUIMessagePartWithJPEGImage(image, NO)];
-            [parts addObject:LYRUIMessagePartWithJPEGImage(image, YES)];
-            [parts addObject:LYRUIMessagePartForImageSize(image)];
+            [parts addObject:LYRUIMessagePartWithJPEGImage(image)];
         } else if ([part isKindOfClass:[CLLocation class]]) {
             pushText = @"Attachment: Location";
             [parts addObject:LYRUIMessagePartWithLocation(part)];
