@@ -909,7 +909,14 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
     CGRect keyboardEndFrame = [notification.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
     CGRect keyboardEndFrameInView = [self.view convertRect:keyboardEndFrame fromView:nil];
     CGRect keyboardEndFrameIntersectingView = CGRectIntersection(self.view.bounds, keyboardEndFrameInView);
-    self.keyboardHeight = CGRectGetHeight(keyboardEndFrameIntersectingView);
+    CGFloat keyboardHeight = CGRectGetHeight(keyboardEndFrameIntersectingView);
+
+    // Workaround for keyboard height inaccuracy on iOS 8.
+    if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_7_1) {
+        keyboardHeight -= CGRectGetMinY(self.messageInputToolbar.frame);
+    }
+
+    self.keyboardHeight = keyboardHeight;
 
     // Workaround for collection view cell sizes changing/animating when view is first pushed onscreen on iOS 8.
     if (CGRectEqualToRect(keyboardBeginFrameInView, keyboardEndFrameInView)) {
