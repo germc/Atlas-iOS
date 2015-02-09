@@ -96,7 +96,6 @@ CGFloat const LYRUIMessageCellMinimumHeight = 10;
     LYRMessagePart *imagePart = self.message.parts.firstObject;
     CGSize size = LYRUIImageSizeForData(imagePart.data);
     [self.bubbleView updateWithImage:[UIImage imageWithData:imagePart.data] width:size.width];
-    return;
 }
 
 - (void)configureBubbleViewForLocationContent

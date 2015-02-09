@@ -98,7 +98,7 @@ SPEC CHECKSUMS:
   layer-client-messaging-schema: 08e38c10eb6aeb60fef328c647536ce65c168077
   layer-thrift: aa8c06287c615bdab4d9778b85648773328c8849
   LayerKit: ad6958ee8333ade184e32fbba8242e94bc78f264
-  LayerUIKit: 314c0b7535e828a4e43eedef795c2ae68c2795e7
+  LayerUIKit: 00fef7300ffd73031efe76d95371dff752fdf817
   LYRCountDownLatch: 2187adb9194b398e7f62b00da1e1fb42c22baaaf
   OCMock: ecdd510b73ef397f2f97274785c1e87fd147c49f
   sqlite3: d1be4925916ff3fa11256acbc772a6b10d490880
