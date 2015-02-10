@@ -521,12 +521,11 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
 
 - (void)messageInputToolbar:(LYRUIMessageInputToolbar *)messageInputToolbar didTapLeftAccessoryButton:(UIButton *)leftAccessoryButton
 {
-    UIActionSheet *actionSheet = [[UIActionSheet alloc]
-                                  initWithTitle:nil
-                                  delegate:self
-                                  cancelButtonTitle:@"Cancel"
-                                  destructiveButtonTitle:nil
-                                  otherButtonTitles:@"Take Photo", @"Last Photo Taken", @"Photo Library", nil];
+    UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
+                                                             delegate:self
+                                                    cancelButtonTitle:@"Cancel"
+                                               destructiveButtonTitle:nil
+                                                    otherButtonTitles:@"Take Photo", @"Last Photo Taken", @"Photo Library", nil];
     [actionSheet showInView:self.view];
 }
 
@@ -1010,7 +1009,7 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
     [self.collectionView flashScrollIndicators];
 }
 
-# pragma mark - Conversation Configuration
+#pragma mark - Conversation Configuration
 
 - (void)configureConversationForAddressBar
 {
@@ -1067,7 +1066,7 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
     return nil;
 }
 
-#pragma mark - LYRUIConversationViewControllerDelegate
+#pragma mark - Delegate
 
 - (void)notifyDelegateOfMessageSend:(LYRMessage *)message
 {
@@ -1117,7 +1116,7 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
     return messages;
 }
 
-#pragma mark - LYRUIConversationViewControllerDataSource
+#pragma mark - Data Source
 
 - (id<LYRUIParticipant>)participantForIdentifier:(NSString *)identifier
 {
@@ -1276,7 +1275,6 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
         }
     }
 }
-
 
 #pragma mark - Auto Layout Configuration
 
