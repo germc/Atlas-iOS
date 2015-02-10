@@ -64,11 +64,15 @@ NSString *const LYRUIAvatarImageViewAccessibilityLabel = @"LYRUIAvatarImageViewA
 {
     if (fullName) {
         NSMutableString *initials = [NSMutableString new];
-        NSArray *names = [fullName componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+        fullName = [fullName stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+        NSArray *names = [fullName componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+        if (names.count > 2) {
+            NSString *firstName = names.firstObject;
+            NSString *lastName = names.lastObject;
+            names = @[firstName, lastName];
+        }
         for (NSString *name in names) {
-            if (name.length > 0) {
-                [initials appendString:[name substringToIndex:1]];
-            }
+            [initials appendString:[name substringToIndex:1]];
         }
         self.initialsLabel.text = initials;
     }
