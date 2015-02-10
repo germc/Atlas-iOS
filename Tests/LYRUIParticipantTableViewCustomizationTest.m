@@ -18,7 +18,7 @@
 
 @implementation LYRUIParticipantTableViewCellTest
 
-extern NSString *const LYRUIParticipantTableViewAccessibilityIdentifer;
+extern NSString *const LYRUIParticipantTableViewAccessibilityIdentifier;
 extern NSString *const LYRUIParticipantSectionHeaderViewAccessibilityLabel;
 
 - (void)setUp
@@ -44,7 +44,7 @@ extern NSString *const LYRUIParticipantSectionHeaderViewAccessibilityLabel;
     [[LYRUIParticipantTableViewCell appearance] setTitleColor:testColor];
     [self presentParticipantPicker];
     
-    LYRUIParticipantTableViewCell *cell = (LYRUIParticipantTableViewCell *)[tester waitForCellAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] inTableViewWithAccessibilityIdentifier:LYRUIParticipantTableViewAccessibilityIdentifer];
+    LYRUIParticipantTableViewCell *cell = (LYRUIParticipantTableViewCell *)[tester waitForCellAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] inTableViewWithAccessibilityIdentifier:LYRUIParticipantTableViewAccessibilityIdentifier];
     expect(cell.titleColor).to.equal(testColor);
 }
 
@@ -54,7 +54,7 @@ extern NSString *const LYRUIParticipantSectionHeaderViewAccessibilityLabel;
     [[LYRUIParticipantTableViewCell appearance] setTitleFont:testFont];
     [self presentParticipantPicker];
     
-    LYRUIParticipantTableViewCell *cell = (LYRUIParticipantTableViewCell *)[tester waitForCellAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] inTableViewWithAccessibilityIdentifier:LYRUIParticipantTableViewAccessibilityIdentifer];
+    LYRUIParticipantTableViewCell *cell = (LYRUIParticipantTableViewCell *)[tester waitForCellAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] inTableViewWithAccessibilityIdentifier:LYRUIParticipantTableViewAccessibilityIdentifier];
     expect(cell.titleFont).to.equal(testFont);
 }
 
@@ -64,7 +64,7 @@ extern NSString *const LYRUIParticipantSectionHeaderViewAccessibilityLabel;
     [[LYRUIParticipantTableViewCell appearance] setBoldTitleFont:testFont];
     [self presentParticipantPicker];
     
-    LYRUIParticipantTableViewCell *cell = (LYRUIParticipantTableViewCell *)[tester waitForCellAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] inTableViewWithAccessibilityIdentifier:LYRUIParticipantTableViewAccessibilityIdentifer];
+    LYRUIParticipantTableViewCell *cell = (LYRUIParticipantTableViewCell *)[tester waitForCellAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] inTableViewWithAccessibilityIdentifier:LYRUIParticipantTableViewAccessibilityIdentifier];
     expect(cell.boldTitleFont).to.equal(testFont);
 }
 
