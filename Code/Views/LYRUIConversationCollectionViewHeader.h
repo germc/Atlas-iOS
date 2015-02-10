@@ -24,12 +24,12 @@ extern NSString *const LYRUIConversationViewHeaderIdentifier;
 @property (nonatomic) LYRMessage *message;
 
 /**
- @abstract The font for the participant label displayed in the header. Default is 16pt system font.
+ @abstract The font for the participant label displayed in the header. Default is 10pt system font.
  */
 @property (nonatomic) UIFont *participantLabelFont UI_APPEARANCE_SELECTOR;
 
 /**
- @abstract The text color for the participant label displayed in the header. Default is black.
+ @abstract The text color for the participant label displayed in the header. Default is gray.
  */
 @property (nonatomic) UIColor *participantLabelTextColor UI_APPEARANCE_SELECTOR;
 
