@@ -22,7 +22,7 @@ extern NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection;
 @interface LYRUIConversationDataSource : NSObject
 
 ///---------------------------------------
-/// @name Designated Initializer
+/// @name Initializing a Data Source
 ///---------------------------------------
 
 /**
@@ -33,9 +33,9 @@ extern NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection;
  */
 + (instancetype)dataSourceWithLayerClient:(LYRClient *)layerClient conversation:(LYRConversation *)conversation;
 
-/*
+/**
  @abstract The `LYRQueryController` object managing data displayed in the `LYRUIConversationViewController`.
- @disucssion The `queryController` is hydrated with messages belonging to the `LYRConversation` object
+ @discussion The `queryController` is hydrated with messages belonging to the `LYRConversation` object
  supplied in the designated initializer.
  */
 @property (nonatomic, readonly) LYRQueryController *queryController;
@@ -44,19 +44,19 @@ extern NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection;
 /// @name Pagination
 ///---------------------------------------
 
-/*
- @abstracts Asks the receiver if its `queryController` has more messages to display than are currently displayed on screen.
+/**
+ @abstract Asks the receiver if its `queryController` has more messages to display than are currently displayed on screen.
  @return `YES` if there are more messages to display.
  */
 - (BOOL)moreMessagesAvailable;
 
-/*
- @abstract Increments the pagination window of the `queryController` by the `paginationWindow` property if
+/**
+ @abstract Expands the pagination window of the `queryController` by the `paginationWindow` property if
  more messages are available for display.
  */
 - (void)expandPaginationWindow;
 
-/*
+/**
  @abstract Returns `YES` if the data source is currently in the process of expanding its pagination window.
  */
 @property (nonatomic, readonly, getter=isExpandingPaginationWindow) BOOL expandingPaginationWindow;
@@ -65,28 +65,28 @@ extern NSInteger const LYRUINumberOfSectionsBeforeFirstMessageSection;
 /// @name Index Translation Methods
 ///---------------------------------------
 
-/*
+/**
  @abstract Converts an `LYRUIConversationViewController` index path into an `LYRQueryController` index path.
  */
 - (NSIndexPath *)queryControllerIndexPathForCollectionViewIndexPath:(NSIndexPath *)collectionViewIndexPath;
 
-/*
+/**
  @abstract Converts an `LYRQueryController` index path into an `LYRUIConversationViewController` index path.
  */
 - (NSIndexPath *)collectionViewIndexPathForQueryControllerIndexPath:(NSIndexPath *)collectionViewIndexPath;
 
-/*
+/**
  @abstract Converts an `LYRQueryController` row into an `LYRUIConversationViewController` section.
  @discussion The `LYRUIConversationViewController` displays one `LYRMessage` object for each section.
  */
 - (NSInteger)collectionViewSectionForQueryControllerRow:(NSInteger)queryControllerRow;
 
-/*
+/**
  @abstract Fetches the `LYRMessage` object corresponding to an `LYRUIConversationViewController` index path.
  */
 - (LYRMessage *)messageAtCollectionViewIndexPath:(NSIndexPath *)collectionViewIndexPath;
 
-/*
+/**
  @abstract Fetches the `LYRMessage` object corresponding to an `LYRUIConversationViewController` section.
  */
 - (LYRMessage *)messageAtCollectionViewSection:(NSInteger)collectionViewSection;

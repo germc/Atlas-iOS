@@ -8,12 +8,12 @@
 
 #import <UIKit/UIKit.h>
 
-/*
+/**
  @abstract Displays a simple typing indicator view with a list of participant names.
  */
 @interface LYRUITypingIndicatorViewController : UIViewController
 
-/*
+/**
  @abstract Updates the typing indicator with an array of participants currently typing. 
  @param participants The participants currently typing in a conversation.
  @param animated A boolean value to determine if the typing indicator should animate its opacity.
