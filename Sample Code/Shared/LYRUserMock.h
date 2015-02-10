@@ -20,7 +20,7 @@ typedef NS_ENUM(NSUInteger, LYRClientMockUserName){
     LYRClientMockFactoryNameDoug
 };
 
-@interface LYRUserMock : NSObject <LYRUIParticipant>
+@interface LYRUserMock : NSObject <LYRUIParticipant, LYRUIParticipantPickerDataSource>
 
 @property (nonatomic) NSString *firstName;
 @property (nonatomic) NSString *lastName;

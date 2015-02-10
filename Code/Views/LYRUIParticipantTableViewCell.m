@@ -34,8 +34,6 @@ static CGFloat const LSSelectionIndicatorSize = 30;
         _boldTitleFont = [UIFont boldSystemFontOfSize:14];
         _titleFont = [UIFont systemFontOfSize:14];
         _titleColor =[UIColor blackColor];
-        _subtitleFont = [UIFont systemFontOfSize:12];
-        _subtitleColor = [UIColor grayColor];
 
         self.nameLabel = [UILabel new];
         self.nameLabel.translatesAutoresizingMaskIntoConstraints = NO;

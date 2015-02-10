@@ -29,6 +29,8 @@ static NSString *const LYRUIParticipantCellIdentifier = @"LYRUIParticipantCellId
 
 @implementation LYRUIParticipantTableViewController
 
+NSString *const LYRUIParticipantTableViewAccessibilitIdentifer = @"Participant TableView Controller";
+
 - (id)initWithStyle:(UITableViewStyle)style
 {
     self = [super initWithStyle:style];
@@ -44,7 +46,7 @@ static NSString *const LYRUIParticipantCellIdentifier = @"LYRUIParticipantCellId
     [super viewDidLoad];
 
     self.tableView.allowsMultipleSelection = self.allowsMultipleSelection;
-    self.tableView.accessibilityIdentifier = @"Participant TableView Controller";
+    self.tableView.accessibilityIdentifier = LYRUIParticipantTableViewAccessibilitIdentifer;
     self.tableView.sectionHeaderHeight = 20;
     [self.tableView registerClass:[LYRUIParticipantSectionHeaderView class] forHeaderFooterViewReuseIdentifier:LYRUIParticipantTableSectionHeaderIdentifier];
     
@@ -197,7 +199,7 @@ static NSString *const LYRUIParticipantCellIdentifier = @"LYRUIParticipantCellId
     LYRUIParticipantTableDataSet *dataSet = [self dataSetForTableView:tableView];
     NSString *sectionName = dataSet.sectionTitles[section];
     LYRUIParticipantSectionHeaderView *headerView = [tableView dequeueReusableHeaderFooterViewWithIdentifier:LYRUIParticipantTableSectionHeaderIdentifier];
-    headerView.nameLabel.text = sectionName;
+    headerView.sectionHeaderLabel.text = sectionName;
     return headerView;
 }
 
