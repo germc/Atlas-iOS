@@ -54,6 +54,12 @@
  */
 @property (nonatomic) LYRUIAvatarImageView *avatarImageView;
 
+/**
+ @abstract Performs calculations to determine a cell's height.
+ @param message The `LYRMessage` object that will be displayed in the cell.
+ @param view The view where the cell will be displayed.
+ @return The height for the cell.
+ */
 + (CGFloat)cellHeightForMessage:(LYRMessage *)message inView:(UIView *)view;
 
 @end
