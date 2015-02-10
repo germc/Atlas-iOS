@@ -184,52 +184,6 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-#pragma mark - Public Method Implementation
-
-- (void)registerClass:(Class<LYRUIMessagePresenting>)cellClass forMessageCellWithReuseIdentifier:(NSString *)reuseIdentifier
-{
-    [self.collectionView registerClass:cellClass forCellWithReuseIdentifier:reuseIdentifier];
-}
-
-- (UICollectionViewCell<LYRUIMessagePresenting> *)collectionViewCellForMessage:(LYRMessage *)message
-{
-    NSIndexPath *indexPath = [self.conversationDataSource.queryController indexPathForObject:message];
-    if (indexPath) {
-        NSIndexPath *collectionViewIndexPath = [self.conversationDataSource collectionViewIndexPathForQueryControllerIndexPath:indexPath];
-        UICollectionViewCell *cell = [self.collectionView cellForItemAtIndexPath:collectionViewIndexPath];
-        if (cell) return (UICollectionViewCell<LYRUIMessagePresenting> *)cell;
-    }
-    return nil;
-}
-
-#pragma mark - Collection View Configuration
-
-- (void)configureScrollIndicatorInset
-{
-    UIEdgeInsets contentInset = self.collectionView.contentInset;
-    UIEdgeInsets scrollIndicatorInsets = self.collectionView.scrollIndicatorInsets;
-    CGRect frame = [self.view convertRect:self.addressBarController.addressBarView.frame fromView:self.addressBarController.addressBarView.superview];
-    contentInset.top = CGRectGetMaxY(frame);
-    scrollIndicatorInsets.top = contentInset.top;
-    self.collectionView.contentInset = contentInset;
-    self.collectionView.scrollIndicatorInsets = scrollIndicatorInsets;
-}
-
-- (void)updateViewConstraints
-{
-    CGFloat typingIndicatorBottomConstraintConstant = -self.collectionView.scrollIndicatorInsets.bottom;
-    if (self.messageInputToolbar.superview) {
-        CGRect toolbarFrame = [self.view convertRect:self.messageInputToolbar.frame fromView:self.messageInputToolbar.superview];
-        CGFloat keyboardOnscreenHeight = CGRectGetHeight(self.view.frame) - CGRectGetMinY(toolbarFrame);
-        if (-keyboardOnscreenHeight > typingIndicatorBottomConstraintConstant) {
-            typingIndicatorBottomConstraintConstant = -keyboardOnscreenHeight;
-        }
-    }
-    self.typingIndicatorViewBottomConstraint.constant = typingIndicatorBottomConstraintConstant;
-
-    [super updateViewConstraints];
-}
-
 #pragma mark - Conversation Setup
 
 - (void)fetchLayerMessages
@@ -271,6 +225,21 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
     [self configureSendButtonEnablement];
 }
 
+- (void)configureControllerForChangedParticipants
+{
+    if (self.addressBarController && ![self.addressBarController isPermanent]) {
+        [self configureConversationForAddressBar];
+        return;
+    }
+    NSMutableSet *removedParticipantIdentifiers = [NSMutableSet setWithArray:self.typingParticipantIDs];
+    [removedParticipantIdentifiers minusSet:self.conversation.participants];
+    [self.typingParticipantIDs removeObjectsInArray:removedParticipantIdentifiers.allObjects];
+    [self updateTypingIndicatorOverlay:NO];
+    [self configureAddressBarForChangedParticipants];
+    [self configureControllerForConversation];
+    [self.collectionView reloadData];
+}
+
 - (void)configureAvatarImageDisplay
 {
     NSMutableSet *otherParticipantIDs = [self.conversation.participants mutableCopy];
@@ -308,8 +277,6 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
     }
 }
 
-#pragma mark - Conversation Title
-
 - (void)setConversationTitle:(NSString *)conversationTitle
 {
     _conversationTitle = conversationTitle;
@@ -318,30 +285,6 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
     if (self.isViewLoaded) {
         [self setConversationViewTitle];
     }
-}
-
-#pragma mark - UIScrollViewDelegate
-
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView
-{
-    // When the keyboard is being dragged, we need to update the position of the typing indicator.
-    [self.view setNeedsUpdateConstraints];
-}
-
-- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
-{
-    if (decelerate) return;
-    [self configurePaginationWindow];
-}
-
-- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
-{
-    [self configurePaginationWindow];
-}
-
-- (void)scrollViewDidScrollToTop:(UIScrollView *)scrollView
-{
-    [self configurePaginationWindow];
 }
 
 # pragma mark - UICollectionViewDataSource
@@ -373,48 +316,18 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
     return cell;
 }
 
-// LAYER - Extracting the proper message part and analyzing its properties to determine the cell configuration.
-- (void)configureCell:(UICollectionViewCell<LYRUIMessagePresenting> *)cell forMessage:(LYRMessage *)message indexPath:(NSIndexPath *)indexPath
-{
-    [cell presentMessage:message];
-    [cell shouldDisplayAvatarImage:self.shouldDisplayAvatarImage];
-    
-    if ([self shouldDisplayAvatarImageAtIndexPath:indexPath]) {
-        [cell updateWithParticipant:[self participantForIdentifier:message.sentByUserID]];
-    } else {
-        [cell updateWithParticipant:nil];
-    }
-    if ([self.dataSource respondsToSelector:@selector(conversationViewController:shouldUpdateRecipientStatusForMessage:)]) {
-        if ([self.dataSource conversationViewController:self shouldUpdateRecipientStatusForMessage:message]) {
-            [self updateRecipientStatusForMessage:message];
-        }
-    }
-}
-
 #pragma mark - UICollectionViewDelegate
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    if ([self.delegate respondsToSelector:@selector(conversationViewController:didSelectMessage:)]) {
-        LYRMessage *message = [self.conversationDataSource messageAtCollectionViewIndexPath:indexPath];
-        [self.delegate conversationViewController:self didSelectMessage:message];
-    }
+    [self notifyDelegateOfMessageSelection:[self.conversationDataSource messageAtCollectionViewIndexPath:indexPath]];
 }
 
 #pragma mark - UICollectionViewDelegateFlowLayout
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    CGFloat width = self.collectionView.bounds.size.width;
-    CGFloat height = 0;
-    if ([self.delegate respondsToSelector:@selector(conversationViewController:heightForMessage:withCellWidth:)]) {
-        LYRMessage *message = [self.conversationDataSource messageAtCollectionViewIndexPath:indexPath];
-        height = [self.delegate conversationViewController:self heightForMessage:message withCellWidth:width];
-    }
-    if (!height) {
-        height = [self cellHeightForItemAtIndexPath:indexPath];
-    }
-    return CGSizeMake(width, height);
+    return [self heightForMessageAtIndexPath:indexPath];
 }
 
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
@@ -464,23 +377,45 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
     return CGSizeMake(0, height);
 }
 
-#pragma mark - Layout Configuration
+#pragma mark - UIScrollViewDelegate
 
-- (CGFloat)cellHeightForItemAtIndexPath:(NSIndexPath *)indexPath
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
-    LYRMessage *message = [self.conversationDataSource messageAtCollectionViewIndexPath:indexPath];
-    return [LYRUIMessageCollectionViewCell cellHeightForMessage:message inView:self.view];
+    // When the keyboard is being dragged, we need to update the position of the typing indicator.
+    [self.view setNeedsUpdateConstraints];
 }
 
-- (void)configureHeader:(LYRUIConversationCollectionViewHeader *)header atIndexPath:(NSIndexPath *)indexPath
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
 {
-    LYRMessage *message = [self.conversationDataSource messageAtCollectionViewIndexPath:indexPath];
-    header.message = message;
-    if ([self shouldDisplayDateLabelForSection:indexPath.section]) {
-        [header updateWithAttributedStringForDate:[self attributedStringForMessageDate:message]];
+    if (decelerate) return;
+    [self configurePaginationWindow];
+}
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
+{
+    [self configurePaginationWindow];
+}
+
+- (void)scrollViewDidScrollToTop:(UIScrollView *)scrollView
+{
+    [self configurePaginationWindow];
+}
+
+#pragma mark - Reusable View Configuration
+
+// LAYER - Extracting the proper message part and analyzing its properties to determine the cell configuration.
+- (void)configureCell:(UICollectionViewCell<LYRUIMessagePresenting> *)cell forMessage:(LYRMessage *)message indexPath:(NSIndexPath *)indexPath
+{
+    [cell presentMessage:message];
+    [cell shouldDisplayAvatarImage:self.shouldDisplayAvatarImage];
+    
+    if ([self shouldDisplayAvatarImageAtIndexPath:indexPath]) {
+        [cell updateWithParticipant:[self participantForIdentifier:message.sentByUserID]];
+    } else {
+        [cell updateWithParticipant:nil];
     }
-    if ([self shouldDisplaySenderLabelForSection:indexPath.section]) {
-        [header updateWithParticipantName:[self participantNameForMessage:message]];
+    if ([self shouldUpdateRecipientStatusForMessage:message]) {
+        [self updateRecipientStatusForMessage:message];
     }
 }
 
@@ -495,71 +430,24 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
     }
 }
 
-- (NSAttributedString *)attributedStringForMessageDate:(LYRMessage *)message
+- (void)configureHeader:(LYRUIConversationCollectionViewHeader *)header atIndexPath:(NSIndexPath *)indexPath
 {
-    NSAttributedString *dateString;
-    if ([self.dataSource respondsToSelector:@selector(conversationViewController:attributedStringForDisplayOfDate:)]) {
-        NSDate *date = message.sentAt ?: [NSDate date];
-        dateString = [self.dataSource conversationViewController:self attributedStringForDisplayOfDate:date];
-        NSAssert([dateString isKindOfClass:[NSAttributedString class]], @"Date string must be an attributed string");
-    } else {
-        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"LYRUIConversationViewControllerDataSource must return an attributed string for Date" userInfo:nil];
+    LYRMessage *message = [self.conversationDataSource messageAtCollectionViewIndexPath:indexPath];
+    header.message = message;
+    if ([self shouldDisplayDateLabelForSection:indexPath.section]) {
+        [header updateWithAttributedStringForDate:[self attributedStringForMessageDate:message]];
     }
-    return dateString;
-}
-
-- (NSString *)participantNameForMessage:(LYRMessage *)message
-{
-    id<LYRUIParticipant> participant = [self participantForIdentifier:message.sentByUserID];
-    NSString *participantName = participant.fullName ?: @"Unknown User";
-    return participantName;
-}
-
-- (NSAttributedString *)attributedStringForRecipientStatusOfMessage:(LYRMessage *)message
-{
-    NSAttributedString *recipientStatusString;
-    if ([self.dataSource respondsToSelector:@selector(conversationViewController:attributedStringForDisplayOfRecipientStatus:)]) {
-        recipientStatusString = [self.dataSource conversationViewController:self attributedStringForDisplayOfRecipientStatus:message.recipientStatusByUserID];
-        NSAssert([recipientStatusString isKindOfClass:[NSAttributedString class]], @"Recipient String must be an attributed string");
-    } else {
-        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"LYRUIConversationViewControllerDataSource must return an attributed string for recipient status" userInfo:nil];
-    }
-    return recipientStatusString;
-}
-
-#pragma mark - Recipient Status
-
-- (void)updateRecipientStatusForMessage:(LYRMessage *)message
-{
-    if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) return;
-    if (!message) return;
-    NSNumber *recipientStatusNumber = [message.recipientStatusByUserID objectForKey:self.layerClient.authenticatedUserID];
-    LYRRecipientStatus recipientStatus = [recipientStatusNumber integerValue];
-    if (recipientStatus != LYRRecipientStatusRead) {
-        NSError *error;
-        BOOL success = [message markAsRead:&error];
-        if (!success) {
-            NSLog(@"Failed to mark message as read with error %@", error);
-        }
+    if ([self shouldDisplaySenderLabelForSection:indexPath.section]) {
+        [header updateWithParticipantName:[self participantNameForMessage:message]];
     }
 }
 
 #pragma mark - UI Configuration
 
-- (NSString *)reuseIdentifierForMessage:(LYRMessage *)message atIndexPath:(NSIndexPath *)indexPath
+- (CGFloat)defaultCellHeightForItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSString *reuseIdentifier;
-    if ([self.dataSource respondsToSelector:@selector(conversationViewController:reuseIdentifierForMessage:)]) {
-        reuseIdentifier = [self.dataSource conversationViewController:self reuseIdentifierForMessage:message];
-    }
-    if (!reuseIdentifier) {
-        if ([self.layerClient.authenticatedUserID isEqualToString:message.sentByUserID]) {
-            reuseIdentifier = LYRUIOutgoingMessageCellIdentifier;
-        } else {
-            reuseIdentifier = LYRUIIncomingMessageCellIdentifier;
-        }
-    }
-    return reuseIdentifier;
+    LYRMessage *message = [self.conversationDataSource messageAtCollectionViewIndexPath:indexPath];
+    return [LYRUIMessageCollectionViewCell cellHeightForMessage:message inView:self.view];
 }
 
 - (BOOL)shouldDisplayDateLabelForSection:(NSUInteger)section
@@ -629,108 +517,6 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
     return YES;
 }
 
-#pragma mark - Notification Handlers
-
-- (void)messageInputToolbarDidChangeHeight:(NSNotification *)notification
-{
-    if (!self.messageInputToolbar.superview) return;
-
-    CGPoint existingOffset = self.collectionView.contentOffset;
-    CGPoint bottomOffset = [self bottomOffsetForContentSize:self.collectionView.contentSize];
-    CGFloat distanceToBottom = bottomOffset.y - existingOffset.y;
-    BOOL shouldScrollToBottom = distanceToBottom <= 50;
-
-    CGRect toolbarFrame = [self.view convertRect:self.messageInputToolbar.frame fromView:self.messageInputToolbar.superview];
-    CGFloat keyboardOnscreenHeight = CGRectGetHeight(self.view.frame) - CGRectGetMinY(toolbarFrame);
-    if (keyboardOnscreenHeight == self.keyboardHeight) return;
-    self.keyboardHeight = keyboardOnscreenHeight;
-    [self updateCollectionViewInsets];
-    self.typingIndicatorViewBottomConstraint.constant = -self.collectionView.scrollIndicatorInsets.bottom;
-
-    if (shouldScrollToBottom) {
-        self.collectionView.contentOffset = existingOffset;
-        [self scrollToBottomOfCollectionViewAnimated:YES];
-    }
-}
-
-- (void)keyboardWillShow:(NSNotification *)notification
-{
-    [self configureWithKeyboardNotification:notification];
-}
-
-- (void)keyboardWillHide:(NSNotification *)notification
-{
-    if (![self.navigationController.viewControllers containsObject:self]) return;
-    [self configureWithKeyboardNotification:notification];
-}
-
-- (void)textViewTextDidBeginEditing:(NSNotification *)notification
-{
-    [self scrollToBottomOfCollectionViewAnimated:YES];
-}
-
-- (void)didReceiveTypingIndicator:(NSNotification *)notification
-{
-    if (!self.conversation) return;
-    if (!notification.object) return;
-    if (![notification.object isEqual:self.conversation]) return;
-
-    NSString *participantID = notification.userInfo[LYRTypingIndicatorParticipantUserInfoKey];
-    NSNumber *statusNumber = notification.userInfo[LYRTypingIndicatorValueUserInfoKey];
-    LYRTypingIndicator status = statusNumber.unsignedIntegerValue;
-    if (status == LYRTypingDidBegin) {
-        [self.typingParticipantIDs addObject:participantID];
-    } else {
-        [self.typingParticipantIDs removeObject:participantID];
-    }
-    [self updateTypingIndicatorOverlay:YES];
-}
-
-- (void)layerClientObjectsDidChange:(NSNotification *)notification
-{
-    if (!self.conversation) return;
-    if (!self.layerClient) return;
-    if (!notification.object) return;
-    if (![notification.object isEqual:self.layerClient]) return;
-
-    NSArray *changes = notification.userInfo[LYRClientObjectChangesUserInfoKey];
-    for (NSDictionary *change in changes) {
-        id changedObject = change[LYRObjectChangeObjectKey];
-        if (![changedObject isEqual:self.conversation]) continue;
-
-        LYRObjectChangeType changeType = [change[LYRObjectChangeTypeKey] integerValue];
-        NSString *changedProperty = change[LYRObjectChangePropertyKey];
-
-        if (changeType == LYRObjectChangeTypeUpdate && [changedProperty isEqualToString:@"participants"]) {
-            [self configureForChangedParticipants];
-            break;
-        }
-    }
-}
-
-- (void)handleApplicationWillEnterForeground:(NSNotification *)notification
-{
-    if (self.conversation) {
-        NSError *error;
-        BOOL success = [self.conversation markAllMessagesAsRead:&error];
-        if (!success) {
-            NSLog(@"Failed to mark all messages as read with error: %@", error);
-        }
-    }
-}
-
-#pragma mark - Typing Indicator
-
-- (void)updateTypingIndicatorOverlay:(BOOL)animated
-{
-    NSMutableArray *knownParticipantsTyping = [NSMutableArray array];
-    [self.typingParticipantIDs enumerateObjectsUsingBlock:^(NSString *participantID, NSUInteger idx, BOOL *stop) {
-        id<LYRUIParticipant> participant = [self participantForIdentifier:participantID];
-        if (participant) [knownParticipantsTyping addObject:participant];
-    }];
-    [self.typingIndicatorViewController updateWithParticipants:knownParticipantsTyping animated:animated];
-}
-
 #pragma mark - LYRUIMessageInputToolbarDelegate
 
 - (void)messageInputToolbar:(LYRUIMessageInputToolbar *)messageInputToolbar didTapLeftAccessoryButton:(UIButton *)leftAccessoryButton
@@ -747,16 +533,7 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
 - (void)messageInputToolbar:(LYRUIMessageInputToolbar *)messageInputToolbar didTapRightAccessoryButton:(UIButton *)rightAccessoryButton
 {
     if (!self.conversation || !messageInputToolbar.messageParts.count) return;
-    
-    NSOrderedSet *messages;
-    if ([self.delegate respondsToSelector:@selector(conversationViewController:messagesForContentParts:)]) {
-        messages = [self.delegate conversationViewController:self messagesForContentParts:messageInputToolbar.messageParts];
-        // If delegate returns an empty set, don't send any messages.
-        if (messages && !messages.count) return;
-    }
-    // If delegate returns nil, we fall back to default behavior.
-    if (!messages) messages = [self messagesForMessageParts:messageInputToolbar.messageParts];
-    
+    NSOrderedSet *messages = [self messagesForContentParts:messageInputToolbar.messageParts];
     for (LYRMessage *message in messages) {
         [self sendMessage:message];
     }
@@ -777,7 +554,7 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
 
 #pragma mark - Message Sending
 
-- (NSOrderedSet *)messagesForMessageParts:(NSArray *)messageParts
+- (NSOrderedSet *)defaultMessagesForMessageParts:(NSArray *)messageParts
 {
     NSMutableOrderedSet *messages = [NSMutableOrderedSet new];
     for (id part in messageParts){
@@ -818,13 +595,9 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
     NSError *error;
     BOOL success = [self.conversation sendMessage:message error:&error];
     if (success) {
-        if ([self.delegate respondsToSelector:@selector(conversationViewController:didSendMessage:)]) {
-            [self.delegate conversationViewController:self didSendMessage:message];
-        }
+        [self notifyDelegateOfMessageSend:message];
     } else {
-        if ([self.delegate respondsToSelector:@selector(conversationViewController:didFailSendingMessage:error:)]) {
-            [self.delegate conversationViewController:self didFailSendingMessage:message error:error];
-        }
+        [self notifyDelegateOfMessageSendFailure:message error:error];
     }
 }
 
@@ -958,6 +731,109 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
     CGPoint offset = CGPointMake(0, MAX(-collectionViewTopInset, contentSizeHeight - (collectionViewFrameHeight - collectionViewBottomInset)));
     return offset;
 }
+
+#pragma mark - Notification Handlers
+
+- (void)messageInputToolbarDidChangeHeight:(NSNotification *)notification
+{
+    if (!self.messageInputToolbar.superview) return;
+    
+    CGPoint existingOffset = self.collectionView.contentOffset;
+    CGPoint bottomOffset = [self bottomOffsetForContentSize:self.collectionView.contentSize];
+    CGFloat distanceToBottom = bottomOffset.y - existingOffset.y;
+    BOOL shouldScrollToBottom = distanceToBottom <= 50;
+    
+    CGRect toolbarFrame = [self.view convertRect:self.messageInputToolbar.frame fromView:self.messageInputToolbar.superview];
+    CGFloat keyboardOnscreenHeight = CGRectGetHeight(self.view.frame) - CGRectGetMinY(toolbarFrame);
+    if (keyboardOnscreenHeight == self.keyboardHeight) return;
+    self.keyboardHeight = keyboardOnscreenHeight;
+    [self updateCollectionViewInsets];
+    self.typingIndicatorViewBottomConstraint.constant = -self.collectionView.scrollIndicatorInsets.bottom;
+    
+    if (shouldScrollToBottom) {
+        self.collectionView.contentOffset = existingOffset;
+        [self scrollToBottomOfCollectionViewAnimated:YES];
+    }
+}
+
+- (void)keyboardWillShow:(NSNotification *)notification
+{
+    [self configureWithKeyboardNotification:notification];
+}
+
+- (void)keyboardWillHide:(NSNotification *)notification
+{
+    if (![self.navigationController.viewControllers containsObject:self]) return;
+    [self configureWithKeyboardNotification:notification];
+}
+
+- (void)textViewTextDidBeginEditing:(NSNotification *)notification
+{
+    [self scrollToBottomOfCollectionViewAnimated:YES];
+}
+
+- (void)didReceiveTypingIndicator:(NSNotification *)notification
+{
+    if (!self.conversation) return;
+    if (!notification.object) return;
+    if (![notification.object isEqual:self.conversation]) return;
+    
+    NSString *participantID = notification.userInfo[LYRTypingIndicatorParticipantUserInfoKey];
+    NSNumber *statusNumber = notification.userInfo[LYRTypingIndicatorValueUserInfoKey];
+    LYRTypingIndicator status = statusNumber.unsignedIntegerValue;
+    if (status == LYRTypingDidBegin) {
+        [self.typingParticipantIDs addObject:participantID];
+    } else {
+        [self.typingParticipantIDs removeObject:participantID];
+    }
+    [self updateTypingIndicatorOverlay:YES];
+}
+
+- (void)layerClientObjectsDidChange:(NSNotification *)notification
+{
+    if (!self.conversation) return;
+    if (!self.layerClient) return;
+    if (!notification.object) return;
+    if (![notification.object isEqual:self.layerClient]) return;
+    
+    NSArray *changes = notification.userInfo[LYRClientObjectChangesUserInfoKey];
+    for (NSDictionary *change in changes) {
+        id changedObject = change[LYRObjectChangeObjectKey];
+        if (![changedObject isEqual:self.conversation]) continue;
+        
+        LYRObjectChangeType changeType = [change[LYRObjectChangeTypeKey] integerValue];
+        NSString *changedProperty = change[LYRObjectChangePropertyKey];
+        
+        if (changeType == LYRObjectChangeTypeUpdate && [changedProperty isEqualToString:@"participants"]) {
+            [self configureControllerForChangedParticipants];
+            break;
+        }
+    }
+}
+
+- (void)handleApplicationWillEnterForeground:(NSNotification *)notification
+{
+    if (self.conversation) {
+        NSError *error;
+        BOOL success = [self.conversation markAllMessagesAsRead:&error];
+        if (!success) {
+            NSLog(@"Failed to mark all messages as read with error: %@", error);
+        }
+    }
+}
+
+#pragma mark - Typing Indicator
+
+- (void)updateTypingIndicatorOverlay:(BOOL)animated
+{
+    NSMutableArray *knownParticipantsTyping = [NSMutableArray array];
+    [self.typingParticipantIDs enumerateObjectsUsingBlock:^(NSString *participantID, NSUInteger idx, BOOL *stop) {
+        id<LYRUIParticipant> participant = [self participantForIdentifier:participantID];
+        if (participant) [knownParticipantsTyping addObject:participant];
+    }];
+    [self.typingIndicatorViewController updateWithParticipants:knownParticipantsTyping animated:animated];
+}
+
 
 #pragma mark - Device Rotation
 
@@ -1134,33 +1010,7 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
     [self.collectionView flashScrollIndicators];
 }
 
-#pragma mark - Helpers
-
-- (void)scrollToBottomOfCollectionViewAnimated:(BOOL)animated
-{
-    CGSize contentSize = self.collectionView.contentSize;
-    [self.collectionView setContentOffset:[self bottomOffsetForContentSize:contentSize] animated:animated];
-}
-
-- (NSOrderedSet *)participantsForIdentifiers:(NSOrderedSet *)identifiers
-{
-    NSMutableOrderedSet *participants = [NSMutableOrderedSet new];
-    for (NSString *participantIdentifier in identifiers) {
-        id<LYRUIParticipant> participant = [self participantForIdentifier:participantIdentifier];
-        if (!participant) continue;
-        [participants addObject:participant];
-    }
-    return participants;
-}
-
-- (id<LYRUIParticipant>)participantForIdentifier:(NSString *)identifier
-{
-    if ([self.dataSource respondsToSelector:@selector(conversationViewController:participantForIdentifier:)]) {
-        return [self.dataSource conversationViewController:self participantForIdentifier:identifier];
-    } else {
-        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"LYRUIConversationViewControllerDelegate must return a participant for an identifier" userInfo:nil];
-    }
-}
+# pragma mark - Conversation Configuration
 
 - (void)configureConversationForAddressBar
 {
@@ -1172,51 +1022,7 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
     self.conversation = conversation;
 }
 
-- (LYRConversation *)conversationWithParticipants:(NSSet *)participants
-{
-    if (participants.count == 0) return nil;
-
-    LYRConversation *conversation;
-    if ([self.dataSource respondsToSelector:@selector(conversationViewController:conversationWithParticipants:)]) {
-        conversation = [self.dataSource conversationViewController:self conversationWithParticipants:participants];
-        if (conversation) return conversation;
-    }
-    NSSet *participantIdentifiers = [participants valueForKey:@"participantIdentifier"];
-    conversation = [self existingConversationWithParticipantIdentifiers:participantIdentifiers];
-    if (conversation) return conversation;
-
-    BOOL deliveryReceiptsEnabled = participants.count <= 5;
-    NSDictionary *options = @{LYRConversationOptionsDeliveryReceiptsEnabledKey: @(deliveryReceiptsEnabled)};
-    conversation = [self.layerClient newConversationWithParticipants:participantIdentifiers options:options error:nil];
-    return conversation;
-}
-
-- (LYRConversation *)existingConversationWithParticipantIdentifiers:(NSSet *)participantIdentifiers
-{
-    NSMutableSet *set = [participantIdentifiers mutableCopy];
-    [set addObject:self.layerClient.authenticatedUserID];
-    LYRQuery *query = [LYRQuery queryWithClass:[LYRConversation class]];
-    query.predicate = [LYRPredicate predicateWithProperty:@"participants" operator:LYRPredicateOperatorIsEqualTo value:set];
-    query.limit = 1;
-    return [self.layerClient executeQuery:query error:nil].lastObject;
-}
-
-- (void)configureForChangedParticipants
-{
-    if (self.addressBarController && ![self.addressBarController isPermanent]) {
-        [self configureConversationForAddressBar];
-        return;
-    }
-
-    NSMutableSet *removedParticipantIdentifiers = [NSMutableSet setWithArray:self.typingParticipantIDs];
-    [removedParticipantIdentifiers minusSet:self.conversation.participants];
-    [self.typingParticipantIDs removeObjectsInArray:removedParticipantIdentifiers.allObjects];
-    [self updateTypingIndicatorOverlay:NO];
-    [self configureAddressBarForChangedParticipants];
-    [self setConversationViewTitle];
-    [self configureAvatarImageDisplay];
-    [self.collectionView reloadData];
-}
+#pragma mark - Address Bar Configuration 
 
 - (void)configureAddressBarForChangedParticipants
 {
@@ -1242,6 +1048,235 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
     NSOrderedSet *participants = [self participantsForIdentifiers:participantIdentifiers];
     self.addressBarController.selectedParticipants = participants;
 }
+
+#pragma mark - Public Methods
+
+- (void)registerClass:(Class<LYRUIMessagePresenting>)cellClass forMessageCellWithReuseIdentifier:(NSString *)reuseIdentifier
+{
+    [self.collectionView registerClass:cellClass forCellWithReuseIdentifier:reuseIdentifier];
+}
+
+- (UICollectionViewCell<LYRUIMessagePresenting> *)collectionViewCellForMessage:(LYRMessage *)message
+{
+    NSIndexPath *indexPath = [self.conversationDataSource.queryController indexPathForObject:message];
+    if (indexPath) {
+        NSIndexPath *collectionViewIndexPath = [self.conversationDataSource collectionViewIndexPathForQueryControllerIndexPath:indexPath];
+        UICollectionViewCell *cell = [self.collectionView cellForItemAtIndexPath:collectionViewIndexPath];
+        if (cell) return (UICollectionViewCell<LYRUIMessagePresenting> *)cell;
+    }
+    return nil;
+}
+
+#pragma mark - LYRUIConversationViewControllerDelegate
+
+- (void)notifyDelegateOfMessageSend:(LYRMessage *)message
+{
+    if ([self.delegate respondsToSelector:@selector(conversationViewController:didSendMessage:)]) {
+        [self.delegate conversationViewController:self didSendMessage:message];
+    }
+}
+
+- (void)notifyDelegateOfMessageSendFailure:(LYRMessage *)message error:(NSError *)error
+{
+    if ([self.delegate respondsToSelector:@selector(conversationViewController:didFailSendingMessage:error:)]) {
+        [self.delegate conversationViewController:self didFailSendingMessage:message error:error];
+    }
+}
+
+- (void)notifyDelegateOfMessageSelection:(LYRMessage *)message
+{
+    if ([self.delegate respondsToSelector:@selector(conversationViewController:didSelectMessage:)]) {
+        [self.delegate conversationViewController:self didSelectMessage:message];
+    }
+}
+
+- (CGSize)heightForMessageAtIndexPath:(NSIndexPath *)indexPath
+{
+    CGFloat width = self.collectionView.bounds.size.width;
+    CGFloat height = 0;
+    if ([self.delegate respondsToSelector:@selector(conversationViewController:heightForMessage:withCellWidth:)]) {
+        LYRMessage *message = [self.conversationDataSource messageAtCollectionViewIndexPath:indexPath];
+        height = [self.delegate conversationViewController:self heightForMessage:message withCellWidth:width];
+    }
+    if (!height) {
+        height = [self defaultCellHeightForItemAtIndexPath:indexPath];
+    }
+    return CGSizeMake(width, height);
+}
+
+- (NSOrderedSet *)messagesForContentParts:(NSArray *)contentParts
+{
+    NSOrderedSet *messages;
+    if ([self.delegate respondsToSelector:@selector(conversationViewController:messagesForContentParts:)]) {
+        messages = [self.delegate conversationViewController:self messagesForContentParts:contentParts];
+        // If delegate returns an empty set, don't send any messages.
+        if (messages && !messages.count) return nil;
+    }
+    // If delegate returns nil, we fall back to default behavior.
+    if (!messages) messages = [self defaultMessagesForMessageParts:contentParts];
+    return messages;
+}
+
+#pragma mark - LYRUIConversationViewControllerDataSource
+
+- (id<LYRUIParticipant>)participantForIdentifier:(NSString *)identifier
+{
+    if ([self.dataSource respondsToSelector:@selector(conversationViewController:participantForIdentifier:)]) {
+        return [self.dataSource conversationViewController:self participantForIdentifier:identifier];
+    } else {
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"LYRUIConversationViewControllerDelegate must return a participant for an identifier" userInfo:nil];
+    }
+}
+
+- (NSAttributedString *)attributedStringForMessageDate:(LYRMessage *)message
+{
+    NSAttributedString *dateString;
+    if ([self.dataSource respondsToSelector:@selector(conversationViewController:attributedStringForDisplayOfDate:)]) {
+        NSDate *date = message.sentAt ?: [NSDate date];
+        dateString = [self.dataSource conversationViewController:self attributedStringForDisplayOfDate:date];
+        NSAssert([dateString isKindOfClass:[NSAttributedString class]], @"Date string must be an attributed string");
+    } else {
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"LYRUIConversationViewControllerDataSource must return an attributed string for Date" userInfo:nil];
+    }
+    return dateString;
+}
+
+- (NSAttributedString *)attributedStringForRecipientStatusOfMessage:(LYRMessage *)message
+{
+    NSAttributedString *recipientStatusString;
+    if ([self.dataSource respondsToSelector:@selector(conversationViewController:attributedStringForDisplayOfRecipientStatus:)]) {
+        recipientStatusString = [self.dataSource conversationViewController:self attributedStringForDisplayOfRecipientStatus:message.recipientStatusByUserID];
+        NSAssert([recipientStatusString isKindOfClass:[NSAttributedString class]], @"Recipient String must be an attributed string");
+    } else {
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"LYRUIConversationViewControllerDataSource must return an attributed string for recipient status" userInfo:nil];
+    }
+    return recipientStatusString;
+}
+
+- (BOOL)shouldUpdateRecipientStatusForMessage:(LYRMessage *)message
+{
+    if ([self.dataSource respondsToSelector:@selector(conversationViewController:shouldUpdateRecipientStatusForMessage:)]) {
+        if ([self.dataSource conversationViewController:self shouldUpdateRecipientStatusForMessage:message]) {
+            return YES;
+        } else {
+            return NO;
+        }
+    }
+    return YES;
+}
+
+- (NSString *)reuseIdentifierForMessage:(LYRMessage *)message atIndexPath:(NSIndexPath *)indexPath
+{
+    NSString *reuseIdentifier;
+    if ([self.dataSource respondsToSelector:@selector(conversationViewController:reuseIdentifierForMessage:)]) {
+        reuseIdentifier = [self.dataSource conversationViewController:self reuseIdentifierForMessage:message];
+    }
+    if (!reuseIdentifier) {
+        if ([self.layerClient.authenticatedUserID isEqualToString:message.sentByUserID]) {
+            reuseIdentifier = LYRUIOutgoingMessageCellIdentifier;
+        } else {
+            reuseIdentifier = LYRUIIncomingMessageCellIdentifier;
+        }
+    }
+    return reuseIdentifier;
+}
+
+- (LYRConversation *)conversationWithParticipants:(NSSet *)participants
+{
+    if (participants.count == 0) return nil;
+    
+    LYRConversation *conversation;
+    if ([self.dataSource respondsToSelector:@selector(conversationViewController:conversationWithParticipants:)]) {
+        conversation = [self.dataSource conversationViewController:self conversationWithParticipants:participants];
+        if (conversation) return conversation;
+    }
+    NSSet *participantIdentifiers = [participants valueForKey:@"participantIdentifier"];
+    conversation = [self existingConversationWithParticipantIdentifiers:participantIdentifiers];
+    if (conversation) return conversation;
+    
+    BOOL deliveryReceiptsEnabled = participants.count <= 5;
+    NSDictionary *options = @{LYRConversationOptionsDeliveryReceiptsEnabledKey: @(deliveryReceiptsEnabled)};
+    conversation = [self.layerClient newConversationWithParticipants:participantIdentifiers options:options error:nil];
+    return conversation;
+}
+
+- (LYRConversation *)existingConversationWithParticipantIdentifiers:(NSSet *)participantIdentifiers
+{
+    NSMutableSet *set = [participantIdentifiers mutableCopy];
+    [set addObject:self.layerClient.authenticatedUserID];
+    LYRQuery *query = [LYRQuery queryWithClass:[LYRConversation class]];
+    query.predicate = [LYRPredicate predicateWithProperty:@"participants" operator:LYRPredicateOperatorIsEqualTo value:set];
+    query.limit = 1;
+    return [self.layerClient executeQuery:query error:nil].lastObject;
+}
+
+#pragma mark - Helpers
+
+- (void)configureScrollIndicatorInset
+{
+    UIEdgeInsets contentInset = self.collectionView.contentInset;
+    UIEdgeInsets scrollIndicatorInsets = self.collectionView.scrollIndicatorInsets;
+    CGRect frame = [self.view convertRect:self.addressBarController.addressBarView.frame fromView:self.addressBarController.addressBarView.superview];
+    contentInset.top = CGRectGetMaxY(frame);
+    scrollIndicatorInsets.top = contentInset.top;
+    self.collectionView.contentInset = contentInset;
+    self.collectionView.scrollIndicatorInsets = scrollIndicatorInsets;
+}
+
+- (void)updateViewConstraints
+{
+    CGFloat typingIndicatorBottomConstraintConstant = -self.collectionView.scrollIndicatorInsets.bottom;
+    if (self.messageInputToolbar.superview) {
+        CGRect toolbarFrame = [self.view convertRect:self.messageInputToolbar.frame fromView:self.messageInputToolbar.superview];
+        CGFloat keyboardOnscreenHeight = CGRectGetHeight(self.view.frame) - CGRectGetMinY(toolbarFrame);
+        if (-keyboardOnscreenHeight > typingIndicatorBottomConstraintConstant) {
+            typingIndicatorBottomConstraintConstant = -keyboardOnscreenHeight;
+        }
+    }
+    self.typingIndicatorViewBottomConstraint.constant = typingIndicatorBottomConstraintConstant;
+    
+    [super updateViewConstraints];
+}
+
+- (void)scrollToBottomOfCollectionViewAnimated:(BOOL)animated
+{
+    CGSize contentSize = self.collectionView.contentSize;
+    [self.collectionView setContentOffset:[self bottomOffsetForContentSize:contentSize] animated:animated];
+}
+
+- (NSOrderedSet *)participantsForIdentifiers:(NSOrderedSet *)identifiers
+{
+    NSMutableOrderedSet *participants = [NSMutableOrderedSet new];
+    for (NSString *participantIdentifier in identifiers) {
+        id<LYRUIParticipant> participant = [self participantForIdentifier:participantIdentifier];
+        if (!participant) continue;
+        [participants addObject:participant];
+    }
+    return participants;
+}
+
+- (NSString *)participantNameForMessage:(LYRMessage *)message
+{
+    id<LYRUIParticipant> participant = [self participantForIdentifier:message.sentByUserID];
+    NSString *participantName = participant.fullName ?: @"Unknown User";
+    return participantName;
+}
+
+- (void)updateRecipientStatusForMessage:(LYRMessage *)message
+{
+    if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) return;
+    if (!message) return;
+    NSNumber *recipientStatusNumber = [message.recipientStatusByUserID objectForKey:self.layerClient.authenticatedUserID];
+    LYRRecipientStatus recipientStatus = [recipientStatusNumber integerValue];
+    if (recipientStatus != LYRRecipientStatusRead) {
+        NSError *error;
+        BOOL success = [message markAsRead:&error];
+        if (!success) {
+            NSLog(@"Failed to mark message as read with error %@", error);
+        }
+    }
+}
+
 
 #pragma mark - Auto Layout Configuration
 
