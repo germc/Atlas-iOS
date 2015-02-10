@@ -42,7 +42,7 @@ CGFloat const LYRUIMessageCellMinimumHeight = 10;
         _messageTextColor = [UIColor blackColor];
         _messageLinkTextColor = [UIColor blueColor];
         _bubbleViewColor = [UIColor grayColor];
-        _bubbleViewCornerRadius = 12;
+        _bubbleViewCornerRadius = 16;
         
         _bubbleView = [[LYRUIMessageBubbleView alloc] init];
         _bubbleView.translatesAutoresizingMaskIntoConstraints = NO;

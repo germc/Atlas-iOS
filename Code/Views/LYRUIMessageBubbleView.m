@@ -9,8 +9,8 @@
 #import "LYRUIMessageBubbleView.h"
 #import "LYRUIMessagingUtilities.h"
 
-CGFloat const LYRUIMessageBubbleLabelHorizontalPadding = 12;
-CGFloat const LYRUIMessageBubbleLabelVerticalPadding = 8;
+CGFloat const LYRUIMessageBubbleLabelHorizontalPadding = 14;
+CGFloat const LYRUIMessageBubbleLabelVerticalPadding = 10;
 CGFloat const LYRUIMessageBubbleMapWidth = 200;
 CGFloat const LYRUIMessageBubbleMapHeight = 200;
 CGFloat const LYRUIMessageBubbleDefaultHeight = 40;

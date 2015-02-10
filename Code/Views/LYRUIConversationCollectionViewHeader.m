@@ -41,8 +41,8 @@ CGFloat const LYRUIConversationViewHeaderEmptyHeight = 2;
 + (void)initialize
 {
     LYRUIConversationCollectionViewHeader *proxy = [self appearance];
-    proxy.participantLabelTextColor = [UIColor blackColor];
-    proxy.participantLabelFont = [UIFont systemFontOfSize:14];
+    proxy.participantLabelTextColor = [UIColor grayColor];
+    proxy.participantLabelFont = [UIFont systemFontOfSize:10];
 }
 
 - (id)initWithFrame:(CGRect)frame
