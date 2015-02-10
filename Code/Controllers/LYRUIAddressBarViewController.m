@@ -72,7 +72,7 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
     if (self.isPermanent) return;
     self.permanent = YES;
 
-    self.addressBarView.addressBarTextView.text = [self stringForParticipants:self.selectedParticipants];
+    self.addressBarView.addressBarTextView.text = [self stringForParticipants:self.selectedParticipants permanent:YES];
     self.addressBarView.addressBarTextView.textColor = LYRUIGrayColor();
     self.addressBarView.addressBarTextView.userInteractionEnabled = NO;
     self.addressBarView.addressBarTextView.editable = NO;
@@ -104,7 +104,7 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
     if (existingParticipants) [addedParticipants minusOrderedSet:existingParticipants];
 
     if (self.isPermanent) {
-        NSString *text = [self stringForParticipants:selectedParticipants];
+        NSString *text = [self stringForParticipants:selectedParticipants permanent:NO];
         self.addressBarView.addressBarTextView.text = text;
     } else {
         NSAttributedString *attributedText = [self attributedStringForParticipants:selectedParticipants];
@@ -343,15 +343,21 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
     return participants;
 }
 
-- (NSString *)stringForParticipants:(NSOrderedSet *)participants
+- (NSString *)stringForParticipants:(NSOrderedSet *)participants permanent:(BOOL)permanent
 {
-    NSMutableArray *fullNames = [NSMutableArray new];
+    NSMutableArray *names = [NSMutableArray new];
     for (id<LYRUIParticipant> participant in participants) {
-        NSString *fullName = participant.fullName;
-        if (fullName.length == 0) continue;
-        [fullNames addObject:fullName];
+        NSString *name;
+        if (permanent) {
+            name = participant.firstName;
+        } else {
+            name = participant.fullName;
+        }
+        if (name.length == 0) continue;
+        [names addObject:name];
+
     }
-    NSString *string = [fullNames componentsJoinedByString:@", "];
+    NSString *string = [names componentsJoinedByString:@", "];
     return string;
 }
 
