@@ -40,7 +40,7 @@
 @property (nonatomic) UIColor *bubbleViewColor UI_APPEARANCE_SELECTOR;
 
 /**
- @abstract The corner radius of the bubble view displayed in the cell. Default is 12.
+ @abstract The corner radius of the bubble view displayed in the cell. Default is 16.
  */
 @property (nonatomic) CGFloat bubbleViewCornerRadius UI_APPEARANCE_SELECTOR;
 
