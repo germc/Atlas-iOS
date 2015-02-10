@@ -29,7 +29,7 @@ static NSString *const LYRUIParticipantCellIdentifier = @"LYRUIParticipantCellId
 
 @implementation LYRUIParticipantTableViewController
 
-NSString *const LYRUIParticipantTableViewAccessibilitIdentifer = @"Participant TableView Controller";
+NSString *const LYRUIParticipantTableViewAccessibilityIdentifer = @"Participant Table View Controller";
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -46,7 +46,7 @@ NSString *const LYRUIParticipantTableViewAccessibilitIdentifer = @"Participant T
     [super viewDidLoad];
 
     self.tableView.allowsMultipleSelection = self.allowsMultipleSelection;
-    self.tableView.accessibilityIdentifier = LYRUIParticipantTableViewAccessibilitIdentifer;
+    self.tableView.accessibilityIdentifier = LYRUIParticipantTableViewAccessibilityIdentifer;
     self.tableView.sectionHeaderHeight = 20;
     [self.tableView registerClass:[LYRUIParticipantSectionHeaderView class] forHeaderFooterViewReuseIdentifier:LYRUIParticipantTableSectionHeaderIdentifier];
     
