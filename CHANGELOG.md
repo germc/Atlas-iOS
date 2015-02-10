@@ -81,6 +81,7 @@
 
 ### Enhancements
 
+* `LYRUIAddressBarViewController` now shows only first names when set permanent.
 * Implemented progress view in `LYRUIBubbleView`.
 * Implemented pagination in the `LYRUIConversationViewController`.
 * `LYRUIConversationTableViewCell` no longer shows conversation image by default.

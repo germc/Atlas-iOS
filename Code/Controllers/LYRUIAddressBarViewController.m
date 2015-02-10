@@ -72,7 +72,7 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
     if (self.isPermanent) return;
     self.permanent = YES;
 
-    self.addressBarView.addressBarTextView.text = [self stringForParticipants:self.selectedParticipants];
+    self.addressBarView.addressBarTextView.text = [self permanentStringForParticipants:self.selectedParticipants];
     self.addressBarView.addressBarTextView.textColor = LYRUIGrayColor();
     self.addressBarView.addressBarTextView.userInteractionEnabled = NO;
     self.addressBarView.addressBarTextView.editable = NO;
@@ -104,7 +104,7 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
     if (existingParticipants) [addedParticipants minusOrderedSet:existingParticipants];
 
     if (self.isPermanent) {
-        NSString *text = [self stringForParticipants:selectedParticipants];
+        NSString *text = [self permanentStringForParticipants:selectedParticipants];
         self.addressBarView.addressBarTextView.text = text;
     } else {
         NSAttributedString *attributedText = [self attributedStringForParticipants:selectedParticipants];
@@ -343,15 +343,15 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
     return participants;
 }
 
-- (NSString *)stringForParticipants:(NSOrderedSet *)participants
+- (NSString *)permanentStringForParticipants:(NSOrderedSet *)participants
 {
-    NSMutableArray *fullNames = [NSMutableArray new];
+    NSMutableArray *names = [NSMutableArray new];
     for (id<LYRUIParticipant> participant in participants) {
-        NSString *fullName = participant.fullName;
-        if (fullName.length == 0) continue;
-        [fullNames addObject:fullName];
+        NSString *name = participant.firstName;
+        if (name.length == 0) continue;
+        [names addObject:name];
     }
-    NSString *string = [fullNames componentsJoinedByString:@", "];
+    NSString *string = [names componentsJoinedByString:@", "];
     return string;
 }
 
