@@ -17,14 +17,14 @@
 @protocol LYRUIConversationPresenting <NSObject>
 
 /**
- @abstract Tells the receiver to present a given Layer Conversation.
+ @abstract Tells the receiver to present a given Layer conversation.
  @param conversation The conversation to present.
  */
 - (void)presentConversation:(LYRConversation *)conversation;
 
 /**
- @abstract Gives the receiver a string to display representing the conversation label
- @param conversation The conversation label to display
+ @abstract Gives the receiver a string to display representing the conversation label.
+ @param conversation The conversation label to display.
  */
 - (void)updateWithConversationLabel:(NSString *)conversationLabel;
 

@@ -17,7 +17,7 @@
 @interface LYRUIParticipantTableViewCell : UITableViewCell <LYRUIParticipantPresenting>
 
 /**
- @abstract Appearance customization propoerties.
+ @abstract Appearance customization properties.
  */
 @property (nonatomic) UIFont *titleFont UI_APPEARANCE_SELECTOR;
 @property (nonatomic) UIFont *boldTitleFont UI_APPEARANCE_SELECTOR;

@@ -39,7 +39,7 @@
 - (void)conversationViewController:(LYRUIConversationViewController *)viewController didFailSendingMessage:(LYRMessage *)message error:(NSError *)error;
 
 /**
- @abstract Informs the delegate that an `LYRMessage` object was tapped
+ @abstract Informs the delegate that an `LYRMessage` object was tapped.
  @param conversationViewController The `LYRUIConversationViewController` in which the message failed to send.
  @param message The `LYRMessage` object which that was tapped.
  */
@@ -83,7 +83,7 @@
  @abstract Asks the data source for an object conforming to the `LYRUIParticipant` protocol for a given identifier.
  @param conversationViewController The `LYRUIConversationViewController` requesting the object.
  @param participantIdentifer The participant identifier.
- @return an object conforming to the `LYRUIParticpant` protocol.
+ @return An object conforming to the `LYRUIParticpant` protocol.
  */
 - (id<LYRUIParticipant>)conversationViewController:(LYRUIConversationViewController *)conversationViewController participantForIdentifier:(NSString *)participantIdentifier;
 
@@ -91,7 +91,7 @@
  @abstract Asks the data source for an `NSAttributedString` representation of a given date.
  @param conversationViewController The `LYRUIConversationViewController` requesting the string.
  @param date The `NSDate` object to be displayed as a string.
- @retrun an `NSAttributedString` representing the given date.
+ @return an `NSAttributedString` representing the given date.
  @discussion The date string will be displayed above message cells in section headers. The date represents the `sentAt` date of a message object.
  The string can be customized to appear in whichever fromat your application requires.
  */
@@ -102,7 +102,7 @@
  @param conversationViewController The `LYRUIConversationViewController` requesting the string.
  @param recipientStatus The `LYRRecipientStatus` object to be displayed as aquestion
  string.
- @return an `NSAttributedString` representing the give recipient status
+ @return An `NSAttributedString` representing the give recipient status.
  @discussion The recipient status string will be displayed below message the most recent message sent by the authenticated user.
  */
 - (NSAttributedString *)conversationViewController:(LYRUIConversationViewController *)conversationViewController attributedStringForDisplayOfRecipientStatus:(NSDictionary *)recipientStatus;
@@ -112,9 +112,9 @@
 /**
  @abstract Asks the data source if the `LRYRecipientStatus` should be updated.
  @param conversationViewController The `LYRConversationViewController` requesting the string.
- @param message the `LYRMessage` object that requires evaluation
- @return a boolean value indicating if the recipient status should be updated
- @discussion If the method returns true, the controller will mark the message as read
+ @param message the `LYRMessage` object that requires evaluation.
+ @return A boolean value indicating if the recipient status should be updated.
+ @discussion If the method returns true, the controller will mark the message as read.
  */
 - (BOOL)conversationViewController:(LYRUIConversationViewController *)conversationViewController shouldUpdateRecipientStatusForMessage:(LYRMessage *)message;
 
@@ -144,7 +144,7 @@
 /**
  @abstract The `LYRUIConversationViewController` class presents an interface that provides for displaying
  a Layer conversation and the ability to send messages. The controller's design and functionality closely correlates with
- the conversation view controller in iMessage.
+ the conversation view controller in Messages.
 */
 @interface LYRUIConversationViewController : UIViewController <LYRUIAddressBarControllerDelegate>
 

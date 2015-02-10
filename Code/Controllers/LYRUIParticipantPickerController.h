@@ -77,7 +77,7 @@
  @abstract Creates and returns a participant picker initialized with the given set of participants.
  @param dataSource The object to acts as the picker's data source.
  @param sortType The sort type to use for the participants.
- @returns A new participant picker initialized with the given data source and sort type.
+ @return A new participant picker initialized with the given data source and sort type.
  */
 + (instancetype)participantPickerWithDataSource:(id<LYRUIParticipantPickerDataSource>)dataSource sortType:(LYRUIParticipantPickerSortType)sortType;
 
@@ -105,7 +105,7 @@
 
 /**
  @abstract A boolean value that determines whether multiple participants can be selected at once.
- @discussion The defauly value of this property is `YES`.
+ @discussion The default value of this property is `YES`.
  @raises NSInternalInconsistencyException Raised if the value is mutated after the receiver has been presented.
  */
 @property (nonatomic, assign) BOOL allowsMultipleSelection;

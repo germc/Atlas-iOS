@@ -38,7 +38,7 @@ extern CGFloat const LYRUIAvatarImageDiameter;
  */
 @property (nonatomic) UIColor *imageViewBackgroundColor UI_APPEARANCE_SELECTOR;
 
-/*
+/**
  @abstract Sets the initials to be displayed in the image view.
  @param fullName The full name string representing a participant in a conversation. 
  @discussion The string supplied will be split into components separated by `whitespaceCharacterSet`. The first
