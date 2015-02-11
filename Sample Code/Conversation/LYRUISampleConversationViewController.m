@@ -29,6 +29,7 @@
     self.dateFormatter = [[NSDateFormatter alloc] init];
     self.dateFormatter.dateStyle = NSDateFormatterShortStyle;
     self.dateFormatter.timeStyle = NSDateFormatterShortStyle;
+    [self configureTitle];
 }
 
 #pragma mark - LYRUIConversationViewControllerDataSource methods
@@ -68,6 +69,31 @@
         [mergedStatuses appendAttributedString:statusString];
     }];
     return mergedStatuses;
+}
+
+- (void)configureTitle
+{
+    if (!self.conversation) {
+        self.title = @"New Message";
+        return;
+    }
+    
+    NSMutableSet *otherParticipantIDs = [self.conversation.participants mutableCopy];
+    if (self.layerClient.authenticatedUserID) [otherParticipantIDs removeObject:self.layerClient.authenticatedUserID];
+    
+    if (otherParticipantIDs.count == 0) {
+        self.title = @"Personal";
+    } else if (otherParticipantIDs.count == 1) {
+        NSString *otherParticipantID = [otherParticipantIDs anyObject];
+        id<LYRUIParticipant> participant = [LYRUserMock mockUserForIdentifier:otherParticipantID];
+        if (participant) {
+            self.title = participant.firstName;
+        } else {
+            self.title = @"Unknown";
+        }
+    } else {
+        self.title = @"Group";
+    }
 }
 
 @end

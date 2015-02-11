@@ -110,15 +110,6 @@
 @optional
 
 /**
- @abstract Asks the data source if the `LRYRecipientStatus` should be updated.
- @param conversationViewController The `LYRConversationViewController` requesting the string.
- @param message the `LYRMessage` object that requires evaluation.
- @return A boolean value indicating if the recipient status should be updated.
- @discussion If the method returns true, the controller will mark the message as read.
- */
-- (BOOL)conversationViewController:(LYRUIConversationViewController *)conversationViewController shouldUpdateRecipientStatusForMessage:(LYRMessage *)message;
-
-/**
  @abstract Asks the data source for the collection view cell reuse identifier for a message.
  @param viewController The `LYRUIConversationViewController` requesting the string.
  @param message The `LYRMessage` object to display in the cell.
@@ -153,12 +144,16 @@
 ///---------------------------------------
 
 /**
- @abstract Creates and returns a new `LYRUIConversationViewController` initialized with a `LYRConversation` and `LYRClient` object.
- @param conversation The `LYRConversation` object whose messages are to be displayed in the controller.
+ @abstract Creates and returns a new `LYRUIConversationViewController` initialized with an `LYRClient` object.
  @param layerClient The `LYRClient` object from which to retrieve the messages for display.
  @return An `LYRConversationViewController` object.
  */
-+ (instancetype)conversationViewControllerWithConversation:(LYRConversation *)conversation layerClient:(LYRClient *)layerClient;
++ (instancetype)conversationViewControllerWithLayerClient:(LYRClient *)layerClient;
+
+/**
+ @abstract The `LYRConversation` object whose messages will be displayed in the controller.
+ */
+@property (nonatomic) LYRConversation *conversation;
 
 /**
  @abstract The `LYRUIConversationViewControllerDelegate` class informs the reciever to specific events that occured within the controller.
@@ -170,16 +165,6 @@
  for the display of information pertaining to specific messages in the conversation view controller
  */
 @property (nonatomic, weak) id<LYRUIConversationViewControllerDataSource> dataSource;
-
-///---------------------------------------
-/// @name Configuration
-///---------------------------------------
-
-/**
- @abstract The time interval at which message dates should be displayed in seconds. Default is 15 minutes meaning that
- dates will appear centered above a message only if the previous message was sent over 15 minutes ago.
- */
-@property (nonatomic) NSTimeInterval dateDisplayTimeInterval;
 
 /**
  @abstract Register a class for use in creating message collection view cells.
@@ -197,18 +182,36 @@
 - (UICollectionViewCell<LYRUIMessagePresenting> *)collectionViewCellForMessage:(LYRMessage *)message;
 
 ///---------------------------------------
+/// @name Configuration
+///---------------------------------------
+
+/**
+ @abstract The time interval at which message dates should be displayed in seconds. Default is 15 minutes meaning that
+ dates will appear centered above a message only if the previous message was sent over 15 minutes ago.
+ */
+@property (nonatomic) NSTimeInterval dateDisplayTimeInterval;
+
+/**
+ @abstract Informs the receiver if it should marks messages as read.
+ @discussion If `YES`, the controller will mark all messages in the conversation as read when it comes on screen.
+ @default `YES`.
+ */
+@property (nonatomic) BOOL marksMessagesAsRead;
+
+/**
+ @abstract Informs the receiver if it should display a `LYRUIAddressBarController`. If yes, your application must implement
+ `LYRUIAddressBarControllerDelegate` and `LYRUIAddressBarControllerDataSource`. Default is no.
+ */
+@property (nonatomic) BOOL displaysAddressBar;
+
+///---------------------------------------
 /// @name Public Accessors
 ///---------------------------------------
 
 /**
  @abstract The `LYRClient` object used to initialize the controller.
  */
-@property (nonatomic) LYRClient *layerClient;
-
-/**
- @abstract The `LYRConversation` object used to initialize the controller.
- */
-@property (nonatomic) LYRConversation *conversation;
+@property (nonatomic, readonly) LYRClient *layerClient;
 
 /**
  @abstract The `LYRUIAddressBarViewController` displayed for addressing new conversations.
@@ -220,15 +223,6 @@
  */
 @property (nonatomic) LYRUIMessageInputToolbar *messageInputToolbar;
 
-/**
- @abstract Informs the receiver if it should display a `LYRUIAddressBarController`. If yes, your application must implement
- `LYRUIAddressBarControllerDelegate` and `LYRUIAddressBarControllerDataSource`. Default is no.
- */
-@property (nonatomic) BOOL showsAddressBar;
 
-/**
- @abstract If set, places the text in the navigation bar, otherwise UI will place the names of the participants.
- */
-@property (nonatomic) NSString *conversationTitle;
 
 @end

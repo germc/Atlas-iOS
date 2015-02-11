@@ -42,7 +42,8 @@
 
 - (void)conversationListViewController:(LYRUIConversationListViewController *)conversationListViewController didSelectConversation:(LYRConversation *)conversation
 {
-    LYRUISampleConversationViewController *controller = [LYRUISampleConversationViewController conversationViewControllerWithConversation:conversation layerClient:self.layerClient];
+    LYRUISampleConversationViewController *controller = [LYRUISampleConversationViewController conversationViewControllerWithLayerClient:self.layerClient];
+    controller.conversation = conversation;
     [self.navigationController pushViewController:controller animated:YES];
 }
 
