@@ -72,7 +72,8 @@ NSString *const LYRUIAvatarImageViewAccessibilityLabel = @"LYRUIAvatarImageViewA
             names = @[firstName, lastName];
         }
         for (NSString *name in names) {
-            [initials appendString:[name substringToIndex:1]];
+            NSString *initial = [name substringToIndex:1].uppercaseString;
+            [initials appendString:initial];
         }
         self.initialsLabel.text = initials;
     }
