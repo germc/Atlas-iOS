@@ -18,6 +18,7 @@
 		D0E7294F1A02FDB900B76672 /* LYRClientMock.m in Sources */ = {isa = PBXBuildFile; fileRef = D0E7294E1A02FDB900B76672 /* LYRClientMock.m */; };
 		D0E729511A03202700B76672 /* LYRClientMockTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D0E729501A03202700B76672 /* LYRClientMockTests.m */; };
 		D0E7295A1A04413D00B76672 /* LYRUserMock.m in Sources */ = {isa = PBXBuildFile; fileRef = D0E729591A04413D00B76672 /* LYRUserMock.m */; };
+		D62661311A8B035C00AFB309 /* LayerUIKit.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D62661301A8B035C00AFB309 /* LayerUIKit.storyboard */; };
 		D662CFB91A43A75900E7331B /* LYRUISampleConversationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D0AF56C01A08383F0093D5A5 /* LYRUISampleConversationViewController.m */; };
 		D662CFBF1A43BB3100E7331B /* LYRUserMock.m in Sources */ = {isa = PBXBuildFile; fileRef = D0E729591A04413D00B76672 /* LYRUserMock.m */; };
 		D667D0641A36561300D63546 /* LYRConversationMock.m in Sources */ = {isa = PBXBuildFile; fileRef = D667D0631A36561300D63546 /* LYRConversationMock.m */; };
@@ -75,6 +76,7 @@
 		D0E729501A03202700B76672 /* LYRClientMockTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRClientMockTests.m; sourceTree = "<group>"; };
 		D0E729581A04413D00B76672 /* LYRUserMock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUserMock.h; sourceTree = "<group>"; };
 		D0E729591A04413D00B76672 /* LYRUserMock.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUserMock.m; sourceTree = "<group>"; };
+		D62661301A8B035C00AFB309 /* LayerUIKit.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LayerUIKit.storyboard; sourceTree = "<group>"; };
 		D667D0621A36561300D63546 /* LYRConversationMock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRConversationMock.h; sourceTree = "<group>"; };
 		D667D0631A36561300D63546 /* LYRConversationMock.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRConversationMock.m; sourceTree = "<group>"; };
 		D667D0651A36561F00D63546 /* LYRMessageMock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRMessageMock.h; sourceTree = "<group>"; };
@@ -143,6 +145,8 @@
 		D0D778881A02E2B2000A5F51 = {
 			isa = PBXGroup;
 			children = (
+				D0D778D51A02EB83000A5F51 /* Supporting Files */,
+				D626612F1A8B02FA00AFB309 /* Storyboard */,
 				D0D778BA1A02EAD8000A5F51 /* Code */,
 				D0D778D41A02EB83000A5F51 /* Tests */,
 				D0D778941A02EAA9000A5F51 /* Products */,
@@ -193,7 +197,6 @@
 				D67922111A77137F008BE823 /* Controller */,
 				0A1B02B21A6DB23700D5DA8E /* LYRUITestClasses.m */,
 				D6A025751A420744003C6513 /* Test Utilities */,
-				D0D778D51A02EB83000A5F51 /* Supporting Files */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -208,6 +211,7 @@
 				D0D778D61A02EB83000A5F51 /* Info.plist */,
 			);
 			name = "Supporting Files";
+			path = Tests;
 			sourceTree = "<group>";
 		};
 		D0E729491A02F1C700B76672 /* Mock Objects */ = {
@@ -231,6 +235,14 @@
 			);
 			name = "Mock Objects";
 			path = "Sample Code/Shared";
+			sourceTree = "<group>";
+		};
+		D626612F1A8B02FA00AFB309 /* Storyboard */ = {
+			isa = PBXGroup;
+			children = (
+				D62661301A8B035C00AFB309 /* LayerUIKit.storyboard */,
+			);
+			name = Storyboard;
 			sourceTree = "<group>";
 		};
 		D67922111A77137F008BE823 /* Controller */ = {
@@ -357,6 +369,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D0D778C71A02EAEE000A5F51 /* Images.xcassets in Resources */,
+				D62661311A8B035C00AFB309 /* LayerUIKit.storyboard in Resources */,
 				0A1B02B51A6DB2AA00D5DA8E /* test.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -91,6 +91,8 @@
  */
 + (instancetype)conversationListViewControllerWithLayerClient:(LYRClient *)layerClient;
 
+- (void)updateWithLayerClient:(LYRClient *)layerClient;
+
 /**
  @abstract The object that is informed when specific events occur
  within the `LYRConversationListViewController`.

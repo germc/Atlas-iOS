@@ -1143,8 +1143,7 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
     if (conversation) return conversation;
     
     BOOL deliveryReceiptsEnabled = participants.count <= 5;
-    NSDictionary *options = @{LYRConversationOptionsDeliveryReceiptsEnabledKey: @(deliveryReceiptsEnabled),
-                              LYRConversationOptionsUniqueImmutableParticipantsModeKey : @(YES)};
+    NSDictionary *options = @{LYRConversationOptionsDeliveryReceiptsEnabledKey: @(deliveryReceiptsEnabled)};
     conversation = [self.layerClient newConversationWithParticipants:participantIdentifiers options:options error:nil];
     return conversation;
 }
