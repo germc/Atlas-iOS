@@ -231,6 +231,7 @@ NSString *const LYRUIConversationTableViewAccessibilityIdentifier = @"Conversati
     return actions;
 }
 
+// TODO - Handle `deletionModes` functionality for iOS 7
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
     self.conversationToDelete = [self.queryController objectAtIndexPath:indexPath];
