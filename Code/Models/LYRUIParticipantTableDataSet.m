@@ -8,6 +8,8 @@
 
 #import "LYRUIParticipantTableDataSet.h"
 
+static NSString *const LYRUIParticipantTableMiscellaneaSectionTitle = @"#";
+
 @interface LYRUIParticipantTableSectionData : NSObject
 
 @property (nonatomic) NSRange participantsRange;
@@ -33,10 +35,10 @@
     NSSortDescriptor *sortDescriptor;
     switch (sortType) {
         case LYRUIParticipantPickerSortTypeFirstName:
-            sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"firstName" ascending:YES];
+            sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"firstName" ascending:YES selector:@selector(localizedStandardCompare:)];
             break;
         case LYRUIParticipantPickerSortTypeLastName:
-            sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"lastName" ascending:YES];
+            sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"lastName" ascending:YES selector:@selector(localizedStandardCompare:)];
             break;
     }
     NSArray *sortedParticipants = [participants sortedArrayUsingDescriptors:@[sortDescriptor]];
@@ -55,7 +57,7 @@
                 name = participant.lastName;
                 break;
         }
-        NSString *initial = [name substringToIndex:1].uppercaseString;
+        NSString *initial = [self initialForName:name];
         if ([initial isEqualToString:currentSectionTitle]) {
             NSRange range = currentSectionData.participantsRange;
             range.length += 1;
@@ -75,6 +77,21 @@
     dataSet.sectionTitles = sectionTitles;
     dataSet.sections = sections;
     return dataSet;
+}
+
++ (NSString *)initialForName:(NSString *)name
+{
+    if (name.length == 0) return LYRUIParticipantTableMiscellaneaSectionTitle;
+    NSString *initial = [name substringToIndex:1];
+    initial = [initial decomposedStringWithCanonicalMapping];
+    if (initial.length > 1) {
+        initial = [initial substringToIndex:1];
+    }
+    initial = initial.uppercaseString;
+    NSCharacterSet *uppercaseCharacters = [NSCharacterSet uppercaseLetterCharacterSet];
+    NSRange range = [initial rangeOfCharacterFromSet:uppercaseCharacters];
+    if (range.location == NSNotFound) return LYRUIParticipantTableMiscellaneaSectionTitle;
+    return initial;
 }
 
 - (NSUInteger)numberOfSections
