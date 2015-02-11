@@ -1,5 +1,13 @@
 # LayerUIKit Change Log
 
+## 0.5.0 
+
+### Public API Changes
+
+* Changed `displaysConversationImage` to `displaysAvatarItem` in `LYRUIConversationListViewController.h`.
+* Changed `conversationListViewController:labelForConversation:` to `conversationListViewController:titleForConversation:` in `LYRUIConversationListViewController.h`.
+* Added `deletionModes` to `LYRUIConversationListViewController.h`.
+
 ## 0.2.2
 
 ### Backwards Incompatibility
