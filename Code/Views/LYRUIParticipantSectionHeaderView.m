@@ -17,15 +17,12 @@ NSString *const LYRUIParticipantSectionHeaderViewAccessibilityLabel = @"Section 
 {
     self = [super initWithReuseIdentifier:reuseIdentifier];
     if (self) {
-        _sectionHeaderTextColor = [UIColor blackColor];
-        _sectionHeaderFont =  [UIFont boldSystemFontOfSize:14];
-        _sectionHeaderBackgroundColor = LYRUILightGrayColor();
+        self.contentView.backgroundColor = LYRUILightGrayColor();
         
-        self.contentView.backgroundColor = _sectionHeaderBackgroundColor;
         self.sectionHeaderLabel = [[UILabel alloc] init];
         self.sectionHeaderLabel.translatesAutoresizingMaskIntoConstraints = NO;
-        self.sectionHeaderLabel.font = _sectionHeaderFont;
-        self.sectionHeaderLabel.textColor = _sectionHeaderTextColor;
+        self.sectionHeaderLabel.font = [UIFont boldSystemFontOfSize:14];
+        self.sectionHeaderLabel.textColor = [UIColor blackColor];
         [self.contentView addSubview:self.sectionHeaderLabel];
         
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.sectionHeaderLabel attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0]];
@@ -46,20 +43,32 @@ NSString *const LYRUIParticipantSectionHeaderViewAccessibilityLabel = @"Section 
 
 - (void)setSectionHeaderTextColor:(UIColor *)sectionLabelColor
 {
-    _sectionHeaderTextColor = sectionLabelColor;
     self.sectionHeaderLabel.textColor = sectionLabelColor;
+}
+
+- (UIColor *)sectionHeaderTextColor
+{
+    return self.sectionHeaderLabel.textColor;
 }
 
 - (void)setSectionHeaderFont:(UIFont *)sectionLabelFont
 {
-    _sectionHeaderFont = sectionLabelFont;
     self.sectionHeaderLabel.font = sectionLabelFont;
+}
+
+- (UIFont *)sectionHeaderFont
+{
+    return self.sectionHeaderLabel.font;
 }
 
 - (void)setSectionHeaderBackgroundColor:(UIColor *)sectionHeaderBackgroundColor
 {
-    _sectionHeaderBackgroundColor = sectionHeaderBackgroundColor;
     self.contentView.backgroundColor = sectionHeaderBackgroundColor;
+}
+
+- (UIColor *)sectionHeaderBackgroundColor
+{
+    return self.contentView.backgroundColor;
 }
 
 @end
