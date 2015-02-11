@@ -22,16 +22,16 @@
 /**
  @abstract The font for the section header label. Default is 14pt system font.
  */
-@property (nonatomic) UIFont *sectionHeaderFont;
+@property (nonatomic) UIFont *sectionHeaderFont UI_APPEARANCE_SELECTOR;
 
 /**
  @abstract The color for the section header label. Default is black.
  */
-@property (nonatomic) UIColor *sectionHeaderTextColor;
+@property (nonatomic) UIColor *sectionHeaderTextColor UI_APPEARANCE_SELECTOR;
 
 /**
- @abstract The background color for the section header. Default is white.
+ @abstract The background color for the section header. Default is `LYRUILightGrayColor()`.
  */
-@property (nonatomic) UIColor *sectionHeaderBackgroundColor;
+@property (nonatomic) UIColor *sectionHeaderBackgroundColor UI_APPEARANCE_SELECTOR;
 
 @end
