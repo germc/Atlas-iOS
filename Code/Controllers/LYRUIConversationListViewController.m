@@ -40,7 +40,7 @@ NSString *const LYRUIConversationTableViewAccessibilityIdentifier = @"Conversati
     if (self)  {
         _layerClient = layerClient;
         _cellClass = [LYRUIConversationTableViewCell class];
-        _displaysConversationImage = NO;
+        _displaysAvatarItem = NO;
         _allowsEditing = YES;
         _rowHeight = 76.0f;
     }
@@ -92,6 +92,34 @@ NSString *const LYRUIConversationTableViewAccessibilityIdentifier = @"Conversati
 
 #pragma mark - Public Setters
 
+- (void)setCellClass:(Class<LYRUIConversationPresenting>)cellClass
+{
+    if (self.hasAppeared) {
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Cannot change cell class after the view has been presented" userInfo:nil];
+    }
+    if (!class_conformsToProtocol(cellClass, @protocol(LYRUIConversationPresenting))) {
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Cell class must conform to LYRUIConversationPresenting" userInfo:nil];
+        
+    }
+    _cellClass = cellClass;
+}
+
+- (void)setDeletionModes:(NSArray *)deletionModes
+{
+    if (self.hasAppeared) {
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Cannot change deletion modes after the view has been presented" userInfo:nil];
+    }
+    _deletionModes = deletionModes;
+}
+
+- (void)setDisplaysAvatarItem:(BOOL)displaysAvatarItem
+{
+    if (self.hasAppeared) {
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Cannot change conversation image display after the view has been presented" userInfo:nil];
+    }
+    _displaysAvatarItem = displaysAvatarItem;
+}
+
 - (void)setAllowsEditing:(BOOL)allowsEditing
 {
     if (self.hasAppeared) {
@@ -100,32 +128,12 @@ NSString *const LYRUIConversationTableViewAccessibilityIdentifier = @"Conversati
     _allowsEditing = allowsEditing;
 }
 
-- (void)setCellClass:(Class<LYRUIConversationPresenting>)cellClass
-{
-    if (self.hasAppeared) {
-        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Cannot change cell class after the view has been presented" userInfo:nil];
-    }
-    if (!class_conformsToProtocol(cellClass, @protocol(LYRUIConversationPresenting))) {
-        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Cell class must conform to LYRUIConversationPresenting" userInfo:nil];
-
-    }
-    _cellClass = cellClass;
-}
-
 - (void)setRowHeight:(CGFloat)rowHeight
 {
     if (self.hasAppeared) {
         @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Cannot change row height after the view has been presented" userInfo:nil];
     }
     _rowHeight = rowHeight;
-}
-
-- (void)setDisplaysConversationImage:(BOOL)displaysConversationImage
-{
-    if (self.hasAppeared) {
-        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Cannot change conversation image display after the view has been presented" userInfo:nil];
-    }
-    _displaysConversationImage = displaysConversationImage;
 }
 
 #pragma mark - Set Up
@@ -176,7 +184,7 @@ NSString *const LYRUIConversationTableViewAccessibilityIdentifier = @"Conversati
     LYRConversation *conversation = [self.queryController objectAtIndexPath:indexPath];
     [conversationCell presentConversation:conversation];
     
-    if (self.displaysConversationImage) {
+    if (self.displaysAvatarItem) {
         if ([self.dataSource respondsToSelector:@selector(conversationListViewController:avatarItemForConversation:)]) {
             id<LYRUIAvatarItem> avatarItem = [self.dataSource conversationListViewController:self avatarItemForConversation:conversation];
             [conversationCell updateWithAvatarItem:avatarItem];
@@ -185,8 +193,8 @@ NSString *const LYRUIConversationTableViewAccessibilityIdentifier = @"Conversati
         }
     }
     
-    if ([self.dataSource respondsToSelector:@selector(conversationListViewController:labelForConversation:)]) {
-        NSString *conversationLabel = [self.dataSource conversationListViewController:self labelForConversation:conversation];
+    if ([self.dataSource respondsToSelector:@selector(conversationListViewController:titleForConversation:)]) {
+        NSString *conversationLabel = [self.dataSource conversationListViewController:self titleForConversation:conversation];
         [conversationCell updateWithConversationLabel:conversationLabel];
     } else {
         @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Conversation View Delegate must return a conversation label" userInfo:nil];
@@ -195,19 +203,32 @@ NSString *const LYRUIConversationTableViewAccessibilityIdentifier = @"Conversati
 
 #pragma mark - UITableViewDelegate
 
-- (NSArray *)tableView:(UITableView *)tableView editActionsForRowAtIndexPath:(NSIndexPath *)indexPath {
-    
-    UITableViewRowAction *localDeleteAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDefault title:@"Local" handler:^(UITableViewRowAction *action, NSIndexPath *indexPath) {
-        [self deleteConversationAtIndexPath:indexPath withDeletionMode:LYRDeletionModeLocal];
-    }];
-    localDeleteAction.backgroundColor = [UIColor grayColor];
+- (NSArray *)tableView:(UITableView *)tableView editActionsForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    NSMutableArray *actions = [NSMutableArray new];
+    for (NSNumber *deletionMode in self.deletionModes) {
+        NSString *actionString;
+        UIColor *actionColor;
+        switch (deletionMode.integerValue) {
+            case LYRDeletionModeLocal:
+                actionString = @"Local";
+                actionColor = [UIColor redColor];
+                break;
+            case LYRDeletionModeAllParticipants:
+                actionString = @"Global";
+                actionColor = [UIColor grayColor];
+                break;
 
-    UITableViewRowAction *globalDeleteAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDefault title:@"Global" handler:^(UITableViewRowAction *action, NSIndexPath *indexPath) {
-        [self deleteConversationAtIndexPath:indexPath withDeletionMode:LYRDeletionModeAllParticipants];
-    }];
-    
-    globalDeleteAction.backgroundColor = [UIColor redColor];
-    return @[globalDeleteAction, localDeleteAction];
+            default:
+                break;
+        }
+        UITableViewRowAction *deleteAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDefault title:actionString handler:^(UITableViewRowAction *action, NSIndexPath *indexPath) {
+            [self deleteConversationAtIndexPath:indexPath withDeletionMode:deletionMode.integerValue];
+        }];
+        deleteAction.backgroundColor = actionColor;
+        [actions addObject:deleteAction];
+    }
+    return actions;
 }
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
