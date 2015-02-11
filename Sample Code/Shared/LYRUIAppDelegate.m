@@ -32,6 +32,10 @@
     self.window.rootViewController = rootViewController;
     [self.window makeKeyAndVisible];
     
+//    UINavigationController *rootNavigationController = (UINavigationController *)[[[application delegate] window] rootViewController];
+//    LYRUISampleConversationListViewController *controller = rootNavigationController.viewControllers[0];
+//    [controller updateWithLayerClient:(LYRClient *)layerClient];
+    
     return YES;
 }
 
