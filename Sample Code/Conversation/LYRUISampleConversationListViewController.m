@@ -25,6 +25,7 @@
     [super viewDidLoad];
     self.dataSource = self;
     self.delegate = self;
+    self.deletionModes = @[@(LYRDeletionModeAllParticipants), @(LYRDeletionModeLocal)];
     UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithTitle:@"Hydrate" style:UIBarButtonItemStylePlain target:self action:@selector(hydrate)];
     self.navigationItem.leftBarButtonItem = item;
 }
@@ -63,7 +64,7 @@
 
 #pragma mark - Conversation List View Controller Data Source Methods
 
-- (NSString *)conversationListViewController:(LYRUIConversationListViewController *)conversationListViewController labelForConversation:(LYRConversation *)conversation
+- (NSString *)conversationListViewController:(LYRUIConversationListViewController *)conversationListViewController titleForConversation:(LYRConversation *)conversation
 {
     if (!self.layerClient.authenticatedUserID) return @"Not auth'd";
     NSMutableSet *participantIdentifiers = [conversation.participants mutableCopy];

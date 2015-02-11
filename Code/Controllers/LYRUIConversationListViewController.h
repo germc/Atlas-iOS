@@ -54,12 +54,12 @@
 @protocol LYRUIConversationListViewControllerDataSource <NSObject>
 
 /**
- @abstract Asks the data source for a string to display for a given conversation.
+ @abstract Asks the data source for a title string to display for a given conversation.
  @param conversationListViewController The `LYRConversationListViewController` in which the string will appear.
  @param conversation The `LYRConversation` object.
- @return The string to be displayed for a given conversation in the conversation list.
+ @return The string to be displayed as the title for a given conversation in the conversation list.
  */
-- (NSString *)conversationListViewController:(LYRUIConversationListViewController *)conversationListViewController labelForConversation:(LYRConversation *)conversation;
+- (NSString *)conversationListViewController:(LYRUIConversationListViewController *)conversationListViewController titleForConversation:(LYRConversation *)conversation;
 
 @optional
 
@@ -114,14 +114,23 @@
  */
 @property (nonatomic) Class<LYRUIConversationPresenting> cellClass;
 
+
 /**
- @abstract Informs the receiver if it should display an image representing a conversation.
- @discussion When `YES`, an image will be displayed for every conversation cell.
- Typically this image will be an avatar image representing the user or group of users.
+ @abstract Informs the receiver of the deletion modes that it should support.
+ @discussion See `LYRDeletionMode` in `LayerKit`. `LYRDeletionMode` must be wrapped as an `NSNumber` object prior to insertion in an array.
+ @default `LYRDeletionModeLocal` and `LYRDeletionModeAllParticipants.
+ @raises NSInternalInconsistencyException Raised if the value is mutated after the receiver has been presented.
+ */
+@property (nonatomic) NSArray *deletionModes;
+
+/**
+ @abstract Informs the receiver if it should display an avatar item representing a conversation.
+ @discussion When `YES`, an avatar item will be displayed for every conversation cell.
+ Typically, this image will be an avatar image representing the user or group of users.
  @default `YES`
  @raises NSInternalInconsistencyException Raised if the value is mutated after the receiver has been presented.
  */
-@property (nonatomic, assign) BOOL displaysConversationImage;
+@property (nonatomic, assign) BOOL displaysAvatarItem;
 
 /**
  @abstract A boolean value that determines if editing is enabled.
