@@ -17,11 +17,11 @@ NSString *const LYRUIParticipantSectionHeaderViewAccessibilityLabel = @"Section 
 {
     self = [super initWithReuseIdentifier:reuseIdentifier];
     if (self) {
-        self.contentView.backgroundColor = LYRUILightGrayColor();
-        
         _sectionHeaderTextColor = [UIColor blackColor];
         _sectionHeaderFont =  [UIFont boldSystemFontOfSize:14];
+        _sectionHeaderBackgroundColor = LYRUILightGrayColor();
         
+        self.contentView.backgroundColor = _sectionHeaderBackgroundColor;
         self.sectionHeaderLabel = [[UILabel alloc] init];
         self.sectionHeaderLabel.translatesAutoresizingMaskIntoConstraints = NO;
         self.sectionHeaderLabel.font = _sectionHeaderFont;
