@@ -15,7 +15,7 @@
 @interface LYRUIParticipantSectionHeaderView : UITableViewHeaderFooterView
 
 /**
- @abstract The Label displayed in the section header.
+ @abstract The label displayed in the section header.
  */
 @property (nonatomic) UILabel *sectionHeaderLabel;
 
