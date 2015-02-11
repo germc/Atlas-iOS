@@ -117,7 +117,8 @@
 
 /**
  @abstract Informs the receiver of the deletion modes that it should support.
- @discussion See `LYRDeletionMode` in `LayerKit`.
+ @discussion See `LYRDeletionMode` in `LayerKit`. `LYRDeletionMode` must be wrapped as an `NSNumber` object prior to insertion in an array.
+ @default `LYRDeletionModeLocal` and `LYRDeletionModeAllParticipants.
  @raises NSInternalInconsistencyException Raised if the value is mutated after the receiver has been presented.
  */
 @property (nonatomic) NSArray *deletionModes;

@@ -40,6 +40,7 @@ NSString *const LYRUIConversationTableViewAccessibilityIdentifier = @"Conversati
     if (self)  {
         _layerClient = layerClient;
         _cellClass = [LYRUIConversationTableViewCell class];
+        _deletionModes = @[@(LYRDeletionModeLocal), @(LYRDeletionModeAllParticipants)];
         _displaysAvatarItem = NO;
         _allowsEditing = YES;
         _rowHeight = 76.0f;
@@ -99,7 +100,6 @@ NSString *const LYRUIConversationTableViewAccessibilityIdentifier = @"Conversati
     }
     if (!class_conformsToProtocol(cellClass, @protocol(LYRUIConversationPresenting))) {
         @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Cell class must conform to LYRUIConversationPresenting" userInfo:nil];
-        
     }
     _cellClass = cellClass;
 }
@@ -194,8 +194,8 @@ NSString *const LYRUIConversationTableViewAccessibilityIdentifier = @"Conversati
     }
     
     if ([self.dataSource respondsToSelector:@selector(conversationListViewController:titleForConversation:)]) {
-        NSString *conversationLabel = [self.dataSource conversationListViewController:self titleForConversation:conversation];
-        [conversationCell updateWithConversationLabel:conversationLabel];
+        NSString *conversationTitle = [self.dataSource conversationListViewController:self titleForConversation:conversation];
+        [conversationCell updateWithConversationLabel:conversationTitle];
     } else {
         @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Conversation View Delegate must return a conversation label" userInfo:nil];
     }
