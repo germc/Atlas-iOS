@@ -7,6 +7,11 @@
 * Changed `displaysConversationImage` to `displaysAvatarItem` in `LYRUIConversationListViewController.h`.
 * Changed `conversationListViewController:labelForConversation:` to `conversationListViewController:titleForConversation:` in `LYRUIConversationListViewController.h`.
 * Added `deletionModes` to `LYRUIConversationListViewController.h`.
+* Removed `conversationTitle` property in `LYRUIConversationViewController`.
+* Removed `conversationViewController:shouldMarkMessagesAsRead:`
+* Added `marksMessagesAsRead` property.
+* Changed `layerClient` property to be readonly. 
+* Changed `conversationViewControllerWithConversation:layerClient:` to `conversationViewControllerWithLayerClient:`
 
 ## 0.2.2
 

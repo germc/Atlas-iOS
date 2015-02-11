@@ -21,6 +21,7 @@
 
 @interface LYRUIConversationViewController () <UICollectionViewDataSource, UICollectionViewDelegate, LYRUIMessageInputToolbarDelegate, UIActionSheetDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, LYRQueryControllerDelegate>
 
+@property (nonatomic, readwrite) LYRClient *layerClient;
 @property (nonatomic) LYRUIConversationCollectionView *collectionView;
 @property (nonatomic) LYRUIConversationDataSource *conversationDataSource;
 @property (nonatomic) LYRUIConversationView *view;
@@ -42,23 +43,22 @@
 static CGFloat const LYRUITypingIndicatorHeight = 20;
 static NSInteger const LYRUIMoreMessagesSection = 0;
 
-+ (instancetype)conversationViewControllerWithConversation:(LYRConversation *)conversation layerClient:(LYRClient *)layerClient;
++ (instancetype)conversationViewControllerWithLayerClient:(LYRClient *)layerClient;
 {
     NSAssert(layerClient, @"`Layer Client` cannot be nil");
-    return [[self alloc] initWithConversation:conversation layerClient:layerClient];
+    return [[self alloc] initWithLayerClient:layerClient];
 }
 
-- (id)initWithConversation:(LYRConversation *)conversation layerClient:(LYRClient *)layerClient
+- (id)initWithLayerClient:(LYRClient *)layerClient
 {
     self = [super init];
     if (self) {
-         // Set properties from designated initializer
-        _conversation = conversation;
         _layerClient = layerClient;
         
         // Set default configuration for public configuration properties
         _dateDisplayTimeInterval = 60*15;
-        _showsAddressBar = NO;
+        _marksMessagesAsRead = YES;
+        _displaysAddressBar = NO;
         _typingParticipantIDs = [NSMutableArray new];
         _sectionHeaders = [NSHashTable weakObjectsHashTable];
         _sectionFooters = [NSHashTable weakObjectsHashTable];
@@ -110,7 +110,7 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
     [self configureTypingIndicatorLayoutConstraints];
     
     // Add address bar if needed
-    if (!self.conversation && self.showsAddressBar) {
+    if (!self.conversation && self.displaysAddressBar) {
         self.addressBarController = [[LYRUIAddressBarViewController alloc] init];
         self.addressBarController.delegate = self;
         [self addChildViewController:self.addressBarController];
@@ -221,8 +221,12 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
 - (void)configureControllerForConversation
 {
     [self configureAvatarImageDisplay];
-    [self setConversationViewTitle];
     [self configureSendButtonEnablement];
+    NSError *error;
+    [self.conversation markAllMessagesAsRead:&error];
+    if (error) {
+        NSLog(@"Failed marking all messages as read with error: %@", error);
+    }
 }
 
 - (void)configureControllerForChangedParticipants
@@ -245,46 +249,6 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
     NSMutableSet *otherParticipantIDs = [self.conversation.participants mutableCopy];
     if (self.layerClient.authenticatedUserID) [otherParticipantIDs removeObject:self.layerClient.authenticatedUserID];
     self.shouldDisplayAvatarImage = otherParticipantIDs.count > 1;
-}
-
-- (void)setConversationViewTitle
-{
-    if (self.conversationTitle) {
-        self.title = self.conversationTitle;
-        return;
-    }
-
-    if (!self.conversation) {
-        self.title = @"New Message";
-        return;
-    }
-
-    NSMutableSet *otherParticipantIDs = [self.conversation.participants mutableCopy];
-    if (self.layerClient.authenticatedUserID) [otherParticipantIDs removeObject:self.layerClient.authenticatedUserID];
-
-    if (otherParticipantIDs.count == 0) {
-        self.title = @"Personal";
-    } else if (otherParticipantIDs.count == 1) {
-        NSString *otherParticipantID = [otherParticipantIDs anyObject];
-        id<LYRUIParticipant> participant = [self participantForIdentifier:otherParticipantID];
-        if (participant) {
-            self.title = participant.firstName;
-        } else {
-            self.title = @"Unknown";
-        }
-    } else {
-        self.title = @"Group";
-    }
-}
-
-- (void)setConversationTitle:(NSString *)conversationTitle
-{
-    _conversationTitle = conversationTitle;
-    
-    // Update UI if possible
-    if (self.isViewLoaded) {
-        [self setConversationViewTitle];
-    }
 }
 
 # pragma mark - UICollectionViewDataSource
@@ -413,9 +377,6 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
         [cell updateWithParticipant:[self participantForIdentifier:message.sentByUserID]];
     } else {
         [cell updateWithParticipant:nil];
-    }
-    if ([self shouldUpdateRecipientStatusForMessage:message]) {
-        [self updateRecipientStatusForMessage:message];
     }
 }
 
@@ -1152,18 +1113,6 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
     return recipientStatusString;
 }
 
-- (BOOL)shouldUpdateRecipientStatusForMessage:(LYRMessage *)message
-{
-    if ([self.dataSource respondsToSelector:@selector(conversationViewController:shouldUpdateRecipientStatusForMessage:)]) {
-        if ([self.dataSource conversationViewController:self shouldUpdateRecipientStatusForMessage:message]) {
-            return YES;
-        } else {
-            return NO;
-        }
-    }
-    return YES;
-}
-
 - (NSString *)reuseIdentifierForMessage:(LYRMessage *)message atIndexPath:(NSIndexPath *)indexPath
 {
     NSString *reuseIdentifier;
@@ -1259,21 +1208,6 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
     id<LYRUIParticipant> participant = [self participantForIdentifier:message.sentByUserID];
     NSString *participantName = participant.fullName ?: @"Unknown User";
     return participantName;
-}
-
-- (void)updateRecipientStatusForMessage:(LYRMessage *)message
-{
-    if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) return;
-    if (!message) return;
-    NSNumber *recipientStatusNumber = [message.recipientStatusByUserID objectForKey:self.layerClient.authenticatedUserID];
-    LYRRecipientStatus recipientStatus = [recipientStatusNumber integerValue];
-    if (recipientStatus != LYRRecipientStatusRead) {
-        NSError *error;
-        BOOL success = [message markAsRead:&error];
-        if (!success) {
-            NSLog(@"Failed to mark message as read with error %@", error);
-        }
-    }
 }
 
 #pragma mark - Auto Layout Configuration
