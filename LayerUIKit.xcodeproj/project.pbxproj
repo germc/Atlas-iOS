@@ -33,6 +33,7 @@
 		D689C6771A7834E100BE1A60 /* LYRUIConversationTableViewCellTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D689C6761A7834E100BE1A60 /* LYRUIConversationTableViewCellTest.m */; };
 		D6A8485E1A7C33080026DAC8 /* LYRUIConversationAvatarItem.m in Sources */ = {isa = PBXBuildFile; fileRef = D6A8485D1A7C33080026DAC8 /* LYRUIConversationAvatarItem.m */; };
 		D6B282601A368065001DC713 /* LYRMockContentStore.m in Sources */ = {isa = PBXBuildFile; fileRef = D6B2825F1A368065001DC713 /* LYRMockContentStore.m */; };
+		D6BACA361A8ADB8700CFF810 /* LYRUIParticipantPickerCustomizationTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D6BACA351A8ADB8700CFF810 /* LYRUIParticipantPickerCustomizationTest.m */; };
 		D6DE58771A37651100FA9375 /* LYRMessagePartMock.m in Sources */ = {isa = PBXBuildFile; fileRef = D6DE58761A37651100FA9375 /* LYRMessagePartMock.m */; };
 		F309E194D1651CC5D4FEA717 /* libPods-Conversation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D9A79E80B908428B22486437 /* libPods-Conversation.a */; };
 /* End PBXBuildFile section */
@@ -93,6 +94,7 @@
 		D6A8485D1A7C33080026DAC8 /* LYRUIConversationAvatarItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIConversationAvatarItem.m; sourceTree = "<group>"; };
 		D6B2825E1A368065001DC713 /* LYRMockContentStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRMockContentStore.h; sourceTree = "<group>"; };
 		D6B2825F1A368065001DC713 /* LYRMockContentStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRMockContentStore.m; sourceTree = "<group>"; };
+		D6BACA351A8ADB8700CFF810 /* LYRUIParticipantPickerCustomizationTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIParticipantPickerCustomizationTest.m; sourceTree = "<group>"; };
 		D6DE58751A37651100FA9375 /* LYRMessagePartMock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRMessagePartMock.h; sourceTree = "<group>"; };
 		D6DE58761A37651100FA9375 /* LYRMessagePartMock.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRMessagePartMock.m; sourceTree = "<group>"; };
 		D9A79E80B908428B22486437 /* libPods-Conversation.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Conversation.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -247,6 +249,7 @@
 			isa = PBXGroup;
 			children = (
 				D679220F1A77137B008BE823 /* LYRUIMessageCollectionViewCellTest.m */,
+				D6BACA351A8ADB8700CFF810 /* LYRUIParticipantPickerCustomizationTest.m */,
 				D689C6761A7834E100BE1A60 /* LYRUIConversationTableViewCellTest.m */,
 			);
 			name = View;
@@ -466,6 +469,7 @@
 				D667F8D71A4101DB00D44699 /* LYRUIConversationListTest.m in Sources */,
 				D667F8D11A40F87700D44699 /* LYRUITestInterface.m in Sources */,
 				D0E729511A03202700B76672 /* LYRClientMockTests.m in Sources */,
+				D6BACA361A8ADB8700CFF810 /* LYRUIParticipantPickerCustomizationTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

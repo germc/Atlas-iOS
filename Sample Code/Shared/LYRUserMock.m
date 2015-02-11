@@ -116,4 +116,14 @@ NSString *const LYRMockUserIDDoug = @"0000000007";
     return _fullName;
 }
 
+- (NSSet *)participantsForParticipantPickerController:(LYRUIParticipantPickerController *)participantPickerController
+{
+    return [[self class] allMockParticipants];
+}
+
+- (void)participantPickerController:(LYRUIParticipantPickerController *)participantPickerController searchForParticipantsMatchingText:(NSString *)searchText completion:(void (^)(NSSet *participants))completion
+{
+    completion(nil);
+}
+
 @end

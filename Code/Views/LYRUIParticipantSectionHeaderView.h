@@ -15,8 +15,23 @@
 @interface LYRUIParticipantSectionHeaderView : UITableViewHeaderFooterView
 
 /**
- @abstract The label representing the section of the participant picker.
+ @abstract The label displayed in the section header.
  */
-@property (nonatomic) UILabel *nameLabel;
+@property (nonatomic) UILabel *sectionHeaderLabel;
+
+/**
+ @abstract The font for the section header label. Default is 14pt system font.
+ */
+@property (nonatomic) UIFont *sectionHeaderFont UI_APPEARANCE_SELECTOR;
+
+/**
+ @abstract The color for the section header label. Default is black.
+ */
+@property (nonatomic) UIColor *sectionHeaderTextColor UI_APPEARANCE_SELECTOR;
+
+/**
+ @abstract The background color for the section header. Default is `LYRUILightGrayColor()`.
+ */
+@property (nonatomic) UIColor *sectionHeaderBackgroundColor UI_APPEARANCE_SELECTOR;
 
 @end
