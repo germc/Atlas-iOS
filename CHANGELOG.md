@@ -13,7 +13,7 @@
 * Added storyboard support for `LYRUIConversationViewController`.
 * Added storyboard support for `LYRUIConversationListViewController`.
 * `layerClient` property is no longer read only in `LYRUIConversationViewController`.
-* `layerClient` property is no longer read only in `LYRUIConverssationListViewController`.
+* `layerClient` property is no longer read only in `LYRUIConversationListViewController`.
 
 ## 0.5.0 
 
