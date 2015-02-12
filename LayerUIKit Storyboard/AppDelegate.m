@@ -7,7 +7,7 @@
 //
 
 #import "AppDelegate.h"
-#import "LYRUIAppDelegate.h"
+#import "LSAppDelegate.h"
 #import "LayerKitMock.h"
 #import "LYRUISampleConversationListViewController.h"
 #import "LYRUISampleConversationViewController.h"

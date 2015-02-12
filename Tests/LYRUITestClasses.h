@@ -24,11 +24,3 @@
 @interface LYRUITestParticipantCell : LYRUIParticipantTableViewCell
 
 @end
-
-@interface LYRUITestParticipantDataSource : NSObject <LYRUIParticipantPickerDataSource>
-
-@property (nonatomic, readonly) NSSet *participants;
-
-+ (instancetype)dataSourceWithParticipants:(NSSet *)participants;
-
-@end

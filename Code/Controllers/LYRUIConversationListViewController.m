@@ -71,6 +71,14 @@ NSString *const LYRUIConversationTableViewAccessibilityIdentifier = @"Conversati
     return nil;
 }
 
+- (void)setLayerClient:(LYRClient *)layerClient
+{
+    if (self.hasAppeared) {
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Layer Client cannot be set after the view has been presented" userInfo:nil];
+    }
+    _layerClient = layerClient;
+}
+
 #pragma mark - Lifecycle
 
 - (void)viewDidLoad

@@ -18,7 +18,7 @@
 #import <KIF/KIF.h>
 #import "KIFSystemTestActor+ViewControllerActions.h"
 #import <LayerUIKit/LayerUIKit.h>
-#import "LYRUIAppDelegate.h"
+#import "LSAppDelegate.h"
 #import "LYRUITestClasses.h"
 #import "LYRMockContentStore.h"
 
