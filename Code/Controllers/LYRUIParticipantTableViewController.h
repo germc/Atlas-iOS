@@ -49,7 +49,7 @@
 @interface LYRUIParticipantTableViewController : UITableViewController
 
 /**
- @abstract Creates and returns an `LYRUIParticipantTableViewController` initialized with the given set of participants.
+ @abstract Creates and returns an `LYRUIParticipantTableViewController` initialized with the given set of participants and sort type.
  @param participants The set of participants to be used for display in the table view.
  @param sortType The sort order applied to the participants. 
  @return A new participant picker initialized with the given participant set and sort type.

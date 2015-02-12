@@ -38,7 +38,7 @@ NSString *const LYRUIParticipantTableViewAccessibilityIdentifier = @"Participant
 - (id)initWithParticipants:(NSSet *)participants sortType:(LYRUIParticipantPickerSortType)sortType
 {
     NSAssert(participants, @"Participants cannot be nil");
-    self = [super initWithStyle:UITableViewStyleGrouped];
+    self = [super initWithStyle:UITableViewStylePlain];
     if (self) {
         _participants = participants;
         _sortType = sortType;
@@ -66,7 +66,7 @@ NSString *const LYRUIParticipantTableViewAccessibilityIdentifier = @"Participant
 
 - (void)loadView
 {
-    self.view = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
+    self.view = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
 }
 
 - (void)viewDidLoad
