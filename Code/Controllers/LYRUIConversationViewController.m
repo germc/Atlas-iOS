@@ -21,7 +21,6 @@
 
 @interface LYRUIConversationViewController () <UICollectionViewDataSource, UICollectionViewDelegate, LYRUIMessageInputToolbarDelegate, UIActionSheetDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, LYRQueryControllerDelegate>
 
-@property (nonatomic, readwrite) LYRClient *layerClient;
 @property (nonatomic) LYRUIConversationCollectionView *collectionView;
 @property (nonatomic) LYRUIConversationDataSource *conversationDataSource;
 @property (nonatomic) LYRUIConversationView *view;
@@ -35,6 +34,7 @@
 @property (nonatomic) NSHashTable *sectionFooters;
 @property (nonatomic, getter=isFirstAppearance) BOOL firstAppearance;
 @property (nonatomic) BOOL showingMoreMessagesIndicator;
+@property (nonatomic) BOOL hasAppeared;
 
 @end
 
@@ -54,18 +54,44 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
     self = [super init];
     if (self) {
         _layerClient = layerClient;
-        
-        // Set default configuration for public configuration properties
-        _dateDisplayTimeInterval = 60*15;
-        _marksMessagesAsRead = YES;
-        _displaysAddressBar = NO;
-        _typingParticipantIDs = [NSMutableArray new];
-        _sectionHeaders = [NSHashTable weakObjectsHashTable];
-        _sectionFooters = [NSHashTable weakObjectsHashTable];
-        _firstAppearance = YES;
-        _objectChanges = [NSMutableArray new];
+        [self lyr_commonInit];
     }
     return self;
+}
+
+- (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+{
+    self = [super initWithNibName:nil bundle:nil];
+    if (self) {
+        [self lyr_commonInit];
+    }
+    return self;
+}
+
+- (instancetype)initWithCoder:(NSCoder *)decoder
+{
+    self = [super initWithCoder:decoder];
+    if (self) {
+        [self lyr_commonInit];
+    }
+    return self;
+}
+
+- (void)lyr_commonInit
+{
+    _dateDisplayTimeInterval = 60*15;
+    _marksMessagesAsRead = YES;
+    _displaysAddressBar = NO;
+    _typingParticipantIDs = [NSMutableArray new];
+    _sectionHeaders = [NSHashTable weakObjectsHashTable];
+    _sectionFooters = [NSHashTable weakObjectsHashTable];
+    _firstAppearance = YES;
+    _objectChanges = [NSMutableArray new];
+}
+
+- (void)loadView
+{
+    self.view = [LYRUIConversationView new];
 }
 
 - (id)init
@@ -75,11 +101,6 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
 }
 
 #pragma mark - Lifecycle
-
-- (void)loadView
-{
-    self.view = [LYRUIConversationView new];
-}
 
 - (void)viewDidLoad
 {
@@ -139,7 +160,7 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-
+    self.hasAppeared = YES;
     if (self.addressBarController && !self.addressBarController.isPermanent) {
         [self.addressBarController.addressBarView.addressBarTextView becomeFirstResponder];
     }
@@ -182,6 +203,14 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
 {
     self.collectionView.delegate = nil;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)setLayerClient:(LYRClient *)layerClient
+{
+    if (self.hasAppeared) {
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Layer Client cannot be set after the view has been presented" userInfo:nil];
+    }
+    _layerClient = layerClient;
 }
 
 #pragma mark - Conversation Setup

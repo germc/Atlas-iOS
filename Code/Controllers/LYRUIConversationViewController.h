@@ -151,6 +151,13 @@
 + (instancetype)conversationViewControllerWithLayerClient:(LYRClient *)layerClient;
 
 /**
+ @abstract The `LYRClient` object used to initialize the controller.
+ @discussion If using storyboards, the property must be set explicitly.
+ @raises NSInternalInconsistencyException Raised if the value is mutated after the receiver has been presented.
+ */
+@property (nonatomic) LYRClient *layerClient;
+
+/**
  @abstract The `LYRConversation` object whose messages will be displayed in the controller.
  */
 @property (nonatomic) LYRConversation *conversation;
@@ -207,11 +214,6 @@
 ///---------------------------------------
 /// @name Public Accessors
 ///---------------------------------------
-
-/**
- @abstract The `LYRClient` object used to initialize the controller.
- */
-@property (nonatomic, readonly) LYRClient *layerClient;
 
 /**
  @abstract The `LYRUIAddressBarViewController` displayed for addressing new conversations.
