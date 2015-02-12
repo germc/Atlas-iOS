@@ -51,7 +51,7 @@
 /**
  @abstract Creates and returns an `LYRUIParticipantTableViewController` initialized with the given set of participants.
  @param participants The set of participants to be used for display in the table view.
- @param sortType The sort type to use for the participants.
+ @param sortType The sort order applied to the participants. 
  @return A new participant picker initialized with the given participant set and sort type.
  */
 + (instancetype)participantTableViewControllerWithParticipants:(NSSet *)participants sortType:(LYRUIParticipantPickerSortType)sortType;

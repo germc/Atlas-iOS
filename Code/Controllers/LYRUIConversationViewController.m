@@ -59,15 +59,6 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
     return self;
 }
 
-- (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-{
-    self = [super initWithNibName:nil bundle:nil];
-    if (self) {
-        [self lyr_commonInit];
-    }
-    return self;
-}
-
 - (instancetype)initWithCoder:(NSCoder *)decoder
 {
     self = [super initWithCoder:decoder];
