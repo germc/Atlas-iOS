@@ -230,7 +230,6 @@
 				D676CF171A8C4344002D9D27 /* Examples */,
 				D0D778941A02EAA9000A5F51 /* Products */,
 				62DAD57DC0987BFBA6E8516D /* Pods */,
-				D0D778BA1A02EAD8000A5F51 /* Code */,
 				412524007C3A7505AC34F33C /* Frameworks */,
 			);
 			sourceTree = "<group>";
@@ -246,16 +245,16 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		D0D778BA1A02EAD8000A5F51 /* Code */ = {
+		D0D778BA1A02EAD8000A5F51 /* Shared Code */ = {
 			isa = PBXGroup;
 			children = (
-				D0D778BC1A02EAEE000A5F51 /* Sample App */,
+				D0D778BC1A02EAEE000A5F51 /* Sample Controlelrs */,
 				D0E729491A02F1C700B76672 /* Mock Objects */,
 			);
-			name = Code;
+			name = "Shared Code";
 			sourceTree = "<group>";
 		};
-		D0D778BC1A02EAEE000A5F51 /* Sample App */ = {
+		D0D778BC1A02EAEE000A5F51 /* Sample Controlelrs */ = {
 			isa = PBXGroup;
 			children = (
 				D0D778C31A02EAEE000A5F51 /* LYRUISampleConversationListViewController.h */,
@@ -267,7 +266,7 @@
 				D676CF221A8C47CB002D9D27 /* LYRUISampleParticipantTableViewController.h */,
 				D676CF231A8C47CB002D9D27 /* LYRUISampleParticipantTableViewController.m */,
 			);
-			name = "Sample App";
+			name = "Sample Controlelrs";
 			path = "Sample Code/Conversation";
 			sourceTree = "<group>";
 		};
@@ -311,6 +310,7 @@
 		D676CF171A8C4344002D9D27 /* Examples */ = {
 			isa = PBXGroup;
 			children = (
+				D0D778BA1A02EAD8000A5F51 /* Shared Code */,
 				D6F57E2B1A8BE4AF00B62BD9 /* Programmatic */,
 				D6F57E551A8BE4B500B62BD9 /* Storyboard */,
 			);
