@@ -30,21 +30,30 @@ CGFloat const LYRUIConversationViewFooterEmptyHeight = 2;
 {
     self = [super initWithFrame:frame];
     if (self) {
-        self.recipientStatusLabel = [[UILabel alloc] init];
-        self.recipientStatusLabel.font = [[self class] defaultRecipientStatusFont];
-        self.recipientStatusLabel.textColor = [UIColor grayColor];
-        self.recipientStatusLabel.textAlignment = NSTextAlignmentRight;
-        self.recipientStatusLabel.translatesAutoresizingMaskIntoConstraints = NO;
-        [self addSubview:self.recipientStatusLabel];
-
-        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.recipientStatusLabel attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1.0 constant:LYRUIConversationViewFooterTopPadding]];
-        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.recipientStatusLabel attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1.0 constant:20]];
-        NSLayoutConstraint *recipientStatusLabelRightConstraint = [NSLayoutConstraint constraintWithItem:self.recipientStatusLabel attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeRight multiplier:1.0 constant:-20];
-        // To work around an apparent system bug that initially requires the view to have zero width, instead of a required priority, we use a priority one higher than the content compression resistance.
-        recipientStatusLabelRightConstraint.priority = UILayoutPriorityDefaultHigh + 1;
-        [self addConstraint:recipientStatusLabelRightConstraint];
+        [self lyr_commonInit];
     }
     return self;
+}
+
+- (id)initWithCoder:(NSCoder *)aDecoder
+{
+    self = [super initWithCoder:aDecoder];
+    if (self) {
+        [self lyr_commonInit];
+    }
+    return self;
+}
+
+- (void)lyr_commonInit
+{
+    self.recipientStatusLabel = [[UILabel alloc] init];
+    self.recipientStatusLabel.font = [[self class] defaultRecipientStatusFont];
+    self.recipientStatusLabel.textColor = [UIColor grayColor];
+    self.recipientStatusLabel.textAlignment = NSTextAlignmentRight;
+    self.recipientStatusLabel.translatesAutoresizingMaskIntoConstraints = NO;
+    [self addSubview:self.recipientStatusLabel];
+    
+    [self configureRecipientStatusLabelConstraints];
 }
 
 - (void)prepareForReuse
@@ -88,6 +97,16 @@ CGFloat const LYRUIConversationViewFooterEmptyHeight = 2;
 + (UIFont *)defaultRecipientStatusFont
 {
     return [UIFont boldSystemFontOfSize:14];
+}
+
+- (void)configureRecipientStatusLabelConstraints
+{
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:self.recipientStatusLabel attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1.0 constant:LYRUIConversationViewFooterTopPadding]];
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:self.recipientStatusLabel attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1.0 constant:20]];
+    NSLayoutConstraint *recipientStatusLabelRightConstraint = [NSLayoutConstraint constraintWithItem:self.recipientStatusLabel attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeRight multiplier:1.0 constant:-20];
+    // To work around an apparent system bug that initially requires the view to have zero width, instead of a required priority, we use a priority one higher than the content compression resistance.
+    recipientStatusLabelRightConstraint.priority = UILayoutPriorityDefaultHigh + 1;
+    [self addConstraint:recipientStatusLabelRightConstraint];
 }
 
 @end

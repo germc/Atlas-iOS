@@ -36,6 +36,8 @@
 		D676CF261A8C494A002D9D27 /* LYRUISampleConversationListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D0D778C41A02EAEE000A5F51 /* LYRUISampleConversationListViewController.m */; };
 		D676CF271A8C4951002D9D27 /* LYRUISampleParticipantTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D676CF231A8C47CB002D9D27 /* LYRUISampleParticipantTableViewController.m */; };
 		D676CF281A8C4959002D9D27 /* LYRUIConversationAvatarItem.m in Sources */ = {isa = PBXBuildFile; fileRef = D6A8485D1A7C33080026DAC8 /* LYRUIConversationAvatarItem.m */; };
+		D676CF2B1A8D3CD5002D9D27 /* LYRUITestConversationListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D676CF2A1A8D3CD5002D9D27 /* LYRUITestConversationListViewController.m */; };
+		D676CF2C1A8D40DC002D9D27 /* LYRUITestConversationListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D676CF2A1A8D3CD5002D9D27 /* LYRUITestConversationListViewController.m */; };
 		D67BE3CC1A8BE5CA0017B5C0 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = D6F71D581A8BDECB00A55D42 /* AppDelegate.m */; };
 		D67BE3CD1A8BE5DE0017B5C0 /* LayerUIKit.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D62661301A8B035C00AFB309 /* LayerUIKit.storyboard */; };
 		D6F57E2F1A8BE4AF00B62BD9 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = D6F57E2E1A8BE4AF00B62BD9 /* main.m */; };
@@ -120,6 +122,8 @@
 		D667F8D61A4101DB00D44699 /* LYRUIConversationListTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIConversationListTest.m; sourceTree = "<group>"; };
 		D676CF221A8C47CB002D9D27 /* LYRUISampleParticipantTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUISampleParticipantTableViewController.h; sourceTree = "<group>"; };
 		D676CF231A8C47CB002D9D27 /* LYRUISampleParticipantTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUISampleParticipantTableViewController.m; sourceTree = "<group>"; };
+		D676CF291A8D3CD5002D9D27 /* LYRUITestConversationListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUITestConversationListViewController.h; sourceTree = "<group>"; };
+		D676CF2A1A8D3CD5002D9D27 /* LYRUITestConversationListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUITestConversationListViewController.m; sourceTree = "<group>"; };
 		D679220F1A77137B008BE823 /* LYRUIMessageCollectionViewCellTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIMessageCollectionViewCellTest.m; sourceTree = "<group>"; };
 		D689C6761A7834E100BE1A60 /* LYRUIConversationTableViewCellTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIConversationTableViewCellTest.m; sourceTree = "<group>"; };
 		D6A8485C1A7C33080026DAC8 /* LYRUIConversationAvatarItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUIConversationAvatarItem.h; sourceTree = "<group>"; };
@@ -389,6 +393,8 @@
 			children = (
 				D6F71D571A8BDECB00A55D42 /* AppDelegate.h */,
 				D6F71D581A8BDECB00A55D42 /* AppDelegate.m */,
+				D676CF291A8D3CD5002D9D27 /* LYRUITestConversationListViewController.h */,
+				D676CF2A1A8D3CD5002D9D27 /* LYRUITestConversationListViewController.m */,
 				D62661301A8B035C00AFB309 /* LayerUIKit.storyboard */,
 				D6F57E6F1A8BE4B600B62BD9 /* StoryboardTests */,
 				D6F57E561A8BE4B500B62BD9 /* Supporting Files */,
@@ -726,6 +732,7 @@
 				D676CF161A8C41B8002D9D27 /* LYRUserMock.m in Sources */,
 				D676CF0C1A8C41A0002D9D27 /* LSAppDelegate.m in Sources */,
 				D6F57E2F1A8BE4AF00B62BD9 /* main.m in Sources */,
+				D676CF2B1A8D3CD5002D9D27 /* LYRUITestConversationListViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -754,6 +761,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D676CF2C1A8D40DC002D9D27 /* LYRUITestConversationListViewController.m in Sources */,
 				D67BE3CC1A8BE5CA0017B5C0 /* AppDelegate.m in Sources */,
 				D6F57E7A1A8BE53000B62BD9 /* LYRUISampleConversationListViewController.m in Sources */,
 				D6F57E7B1A8BE53000B62BD9 /* LYRUISampleConversationViewController.m in Sources */,

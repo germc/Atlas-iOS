@@ -30,34 +30,39 @@ static CGFloat const LSSelectionIndicatorSize = 30;
 {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
-        // UIAppearance Defaults
-        _boldTitleFont = [UIFont boldSystemFontOfSize:14];
-        _titleFont = [UIFont systemFontOfSize:14];
-        _titleColor =[UIColor blackColor];
-
-        self.nameLabel = [UILabel new];
-        self.nameLabel.translatesAutoresizingMaskIntoConstraints = NO;
-        [self.contentView addSubview:self.nameLabel];
-
-        self.avatarImageView = [[LYRUIAvatarImageView alloc] init];
-        self.avatarImageView.backgroundColor = LYRUILightGrayColor();
-        self.avatarImageView.layer.cornerRadius = LSSelectionIndicatorSize / 2;
-        self.avatarImageView.translatesAutoresizingMaskIntoConstraints = NO;
-        [self.contentView addSubview:self.avatarImageView];
-
-        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.nameLabel attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:self.contentView attribute:NSLayoutAttributeTop multiplier:1.0 constant:8]];
-        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.nameLabel attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationLessThanOrEqual toItem:self.contentView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:-8]];
-        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.nameLabel attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0]];
-        
-        // NOTE: We're not using NSLayoutRelationLessThanOrEqual here because doing so would cause iOS 8.0 to not update the label's intrinsic content size constraints when the label's value is changed / the cell is reused.
-        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.nameLabel attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeRight multiplier:1.0 constant:-10]];
-        self.nameWithAvatarLeftConstraint = [NSLayoutConstraint constraintWithItem:self.nameLabel attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.avatarImageView attribute:NSLayoutAttributeRight multiplier:1.0 constant:15];
-        self.nameWithoutAvatarLeftConstraint = [NSLayoutConstraint constraintWithItem:self.nameLabel attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeLeft multiplier:1.0 constant:15];
-
-        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.avatarImageView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeLeft multiplier:1.0 constant:15]];
-        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.avatarImageView attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0]];
+        [self lyr_commonInit];
     }
     return self;
+}
+
+- (id)initWithCoder:(NSCoder *)aDecoder
+{
+    self = [super initWithCoder:aDecoder];
+    if (self) {
+        [self lyr_commonInit];
+    }
+    return self;
+}
+
+- (void)lyr_commonInit
+{
+    // UIAppearance Defaults
+    _boldTitleFont = [UIFont boldSystemFontOfSize:14];
+    _titleFont = [UIFont systemFontOfSize:14];
+    _titleColor =[UIColor blackColor];
+    
+    self.nameLabel = [UILabel new];
+    self.nameLabel.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.contentView addSubview:self.nameLabel];
+    
+    self.avatarImageView = [[LYRUIAvatarImageView alloc] init];
+    self.avatarImageView.backgroundColor = LYRUILightGrayColor();
+    self.avatarImageView.layer.cornerRadius = LSSelectionIndicatorSize / 2;
+    self.avatarImageView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.contentView addSubview:self.avatarImageView];
+    
+    [self configureNameLabelConstraints];
+    [self configureAvatarImageViewConstraints];
 }
 
 - (void)setHighlighted:(BOOL)highlighted animated:(BOOL)animated
@@ -142,6 +147,24 @@ static CGFloat const LSSelectionIndicatorSize = 30;
 
     self.nameLabel.attributedText = attributedString;
     self.nameLabel.textColor = self.titleColor;
+}
+
+- (void)configureNameLabelConstraints
+{
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:self.nameLabel attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:self.contentView attribute:NSLayoutAttributeTop multiplier:1.0 constant:8]];
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:self.nameLabel attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationLessThanOrEqual toItem:self.contentView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:-8]];
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:self.nameLabel attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0]];
+    
+    // NOTE: We're not using NSLayoutRelationLessThanOrEqual here because doing so would cause iOS 8.0 to not update the label's intrinsic content size constraints when the label's value is changed / the cell is reused.
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:self.nameLabel attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeRight multiplier:1.0 constant:-10]];
+    self.nameWithAvatarLeftConstraint = [NSLayoutConstraint constraintWithItem:self.nameLabel attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.avatarImageView attribute:NSLayoutAttributeRight multiplier:1.0 constant:15];
+    self.nameWithoutAvatarLeftConstraint = [NSLayoutConstraint constraintWithItem:self.nameLabel attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeLeft multiplier:1.0 constant:15];
+}
+
+- (void)configureAvatarImageViewConstraints
+{
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:self.avatarImageView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeLeft multiplier:1.0 constant:15]];
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:self.avatarImageView attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0]];
 }
 
 @end

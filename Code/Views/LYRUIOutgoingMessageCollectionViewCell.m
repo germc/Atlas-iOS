@@ -24,10 +24,24 @@ NSString *const LYRUIOutgoingMessageCellIdentifier = @"LYRUIOutgoingMessageCellI
 {
     self = [super initWithFrame:frame];
     if (self) {
-        self.avatarImageView.hidden = YES;
-        [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleView  attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeRight multiplier:1.0 constant:-10]];
+        [self lyr_outgoingCommonInit];
     }
     return self;
+}
+
+- (id)initWithCoder:(NSCoder *)aDecoder
+{
+    self = [super initWithCoder:aDecoder];
+    if (self) {
+        [self lyr_outgoingCommonInit];
+    }
+    return self;
+}
+
+- (void)lyr_outgoingCommonInit
+{
+    self.avatarImageView.hidden = YES;
+    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleView  attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeRight multiplier:1.0 constant:-10]];
 }
 
 @end

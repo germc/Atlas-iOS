@@ -30,37 +30,46 @@ static CGFloat const LYRUILineSpacing = 6;
 {
     self = [super init];
     if (self) {
-        _addressBarFont = LYRUIMediumFont(14);
-        _addressBarTextColor = [UIColor blackColor];
-        _addressBarHighlightColor = LYRUIBlueColor();
-
-        self.backgroundColor = [UIColor clearColor];
-        self.textContainerInset = UIEdgeInsetsMake(10, 0, 10, 0);
-
-        NSMutableParagraphStyle *paragraphStyle = [NSMutableParagraphStyle new];
-        paragraphStyle.firstLineHeadIndent = 28.0f;
-        paragraphStyle.lineSpacing = LYRUILineSpacing;
-        self.typingAttributes = @{NSParagraphStyleAttributeName: paragraphStyle, NSForegroundColorAttributeName: self.addressBarTextColor};
-        self.font = self.addressBarFont;
+        [self lyr_commonInit];
         
-        self.toLabel = [UILabel new];
-        self.toLabel.translatesAutoresizingMaskIntoConstraints = NO;
-        self.toLabel.text = @"To:";
-        self.toLabel.textColor = LYRUIGrayColor();
-        self.toLabel.font = self.addressBarFont;
-        [self addSubview:self.toLabel];
-        
-        self.heightConstraint = [NSLayoutConstraint constraintWithItem:self attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:0];
-        [self addConstraint:self.heightConstraint];
-
-        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.toLabel attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1.0 constant:12]];
-        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.toLabel attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1.0 constant:10]];
-        // Adding the constraint below works around a crash on iOS 7.1. It will be overriden by the content size.
-        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.toLabel attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeRight multiplier:1.0 constant:0]];
-
-        [self setUpMaxHeight];
     }
     return self;
+}
+
+- (id)initWithCoder:(NSCoder *)aDecoder
+{
+    self = [super initWithCoder:aDecoder];
+    if (self) {
+        [self lyr_commonInit];
+    }
+    return self;
+}
+
+- (void)lyr_commonInit
+{
+    _addressBarFont = LYRUIMediumFont(14);
+    _addressBarTextColor = [UIColor blackColor];
+    _addressBarHighlightColor = LYRUIBlueColor();
+    
+    self.backgroundColor = [UIColor clearColor];
+    self.textContainerInset = UIEdgeInsetsMake(10, 0, 10, 0);
+    
+    NSMutableParagraphStyle *paragraphStyle = [NSMutableParagraphStyle new];
+    paragraphStyle.firstLineHeadIndent = 28.0f;
+    paragraphStyle.lineSpacing = LYRUILineSpacing;
+    self.typingAttributes = @{NSParagraphStyleAttributeName: paragraphStyle, NSForegroundColorAttributeName: self.addressBarTextColor};
+    self.font = self.addressBarFont;
+    
+    self.toLabel = [UILabel new];
+    self.toLabel.translatesAutoresizingMaskIntoConstraints = NO;
+    self.toLabel.text = @"To:";
+    self.toLabel.textColor = LYRUIGrayColor();
+    self.toLabel.font = self.addressBarFont;
+    [self addSubview:self.toLabel];
+    
+    [self configureHeightConstraint];
+    [self configureToLabelConstraints];
+    [self setUpMaxHeight];
 }
 
 - (void)updateConstraints
@@ -116,6 +125,20 @@ static CGFloat const LYRUILineSpacing = 6;
     }];
     self.attributedText = adjustedAttributedText;
     self.selectedRange = selectedRange;
+}
+
+- (void)configureHeightConstraint
+{
+    self.heightConstraint = [NSLayoutConstraint constraintWithItem:self attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:0];
+    [self addConstraint:self.heightConstraint];
+}
+
+- (void)configureToLabelConstraints
+{
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:self.toLabel attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1.0 constant:12]];
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:self.toLabel attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1.0 constant:10]];
+    // Adding the constraint below works around a crash on iOS 7.1. It will be overriden by the content size.
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:self.toLabel attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeRight multiplier:1.0 constant:0]];
 }
 
 - (void)setUpMaxHeight

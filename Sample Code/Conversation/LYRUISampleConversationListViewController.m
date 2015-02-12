@@ -26,8 +26,9 @@
     self.dataSource = self;
     self.delegate = self;
     self.deletionModes = @[@(LYRDeletionModeAllParticipants), @(LYRDeletionModeLocal)];
-    UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithTitle:@"Hydrate" style:UIBarButtonItemStylePlain target:self action:@selector(hydrate)];
-    self.navigationItem.leftBarButtonItem = item;
+    
+    UIBarButtonItem *new = [[UIBarButtonItem alloc] initWithTitle:@"New" style:UIBarButtonItemStylePlain target:self action:@selector(handleNewTap)];
+    self.navigationItem.rightBarButtonItem = new;
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -36,9 +37,11 @@
     [self.tableView reloadData];
 }
 
-- (void)hydrate
+- (void)handleNewTap
 {
-    [[LYRMockContentStore sharedStore] hydrateConversationsForAuthenticatedUserID:self.layerClient.authenticatedUserID count:10];
+    LYRUISampleConversationViewController *controller = [LYRUISampleConversationViewController conversationViewControllerWithLayerClient:self.layerClient];
+    controller.displaysAddressBar = YES;
+    [self.navigationController pushViewController:controller animated:YES];
 }
 
 - (void)conversationListViewController:(LYRUIConversationListViewController *)conversationListViewController didSelectConversation:(LYRConversation *)conversation

@@ -64,23 +64,37 @@ NSString *LYRUIProgressViewStringForIconStyle(LYRUIProgressViewIconStyle iconSty
 {
     self = [super initWithFrame:frame];
     if (self) {
-        _borderWidth = 8.0f;
-        _progress = 0.0f;
-        _animationDuration = 0.25f;
-        _backRingLayer = [CAShapeLayer layer];
-        _progressRingLayer = [CAShapeLayer layer];
-        _iconLayer = [CATextLayer layer];
-        [self.layer addSublayer:_backRingLayer];
-        [self.layer addSublayer:_progressRingLayer];
-        [self.layer addSublayer:_iconLayer];
-        _backgroundRingColorUpload = [UIColor colorWithRed:0.8f green:0.0f blue:0.0f alpha:0.3f];
-        _foregroundRingColorUpload = [UIColor colorWithRed:0.8f green:0.0f blue:0.0f alpha:0.5f];
-        _iconColorUpload = [UIColor colorWithRed:0.8f green:0.0f blue:0.0f alpha:0.3f];
-        _backgroundRingColorDownload = [UIColor colorWithWhite:0.8f alpha:0.7f];
-        _foregroundRingColorDownload = [UIColor colorWithWhite:1.0f alpha:0.9f];
-        _iconColorDownload = [UIColor colorWithWhite:0.8f alpha:0.9f];
+        [self lyr_commonInit];
     }
     return self;
+}
+
+- (id)initWithCoder:(NSCoder *)aDecoder
+{
+    self = [super initWithCoder:aDecoder];
+    if (self) {
+        [self lyr_commonInit];
+    }
+    return self;
+}
+
+- (void)lyr_commonInit
+{
+    _borderWidth = 8.0f;
+    _progress = 0.0f;
+    _animationDuration = 0.25f;
+    _backRingLayer = [CAShapeLayer layer];
+    _progressRingLayer = [CAShapeLayer layer];
+    _iconLayer = [CATextLayer layer];
+    [self.layer addSublayer:_backRingLayer];
+    [self.layer addSublayer:_progressRingLayer];
+    [self.layer addSublayer:_iconLayer];
+    _backgroundRingColorUpload = [UIColor colorWithRed:0.8f green:0.0f blue:0.0f alpha:0.3f];
+    _foregroundRingColorUpload = [UIColor colorWithRed:0.8f green:0.0f blue:0.0f alpha:0.5f];
+    _iconColorUpload = [UIColor colorWithRed:0.8f green:0.0f blue:0.0f alpha:0.3f];
+    _backgroundRingColorDownload = [UIColor colorWithWhite:0.8f alpha:0.7f];
+    _foregroundRingColorDownload = [UIColor colorWithWhite:1.0f alpha:0.9f];
+    _iconColorDownload = [UIColor colorWithWhite:0.8f alpha:0.9f];
 }
 
 - (void)layoutSubviews
