@@ -1,5 +1,20 @@
 # LayerUIKit Change Log
 
+## 0.6.0
+
+### Public API Changes
+
+* Deprecated `LYRUIParticipantPickerController`.
+* Changed `LYRUIParticipantTableViewController` initailizer to `participantTableViewControllerWithParticipants:sortType`.
+
+### Enhancements
+
+* Added storyboard support for `LYRUIParticipantTableViewController`.
+* Added storyboard support for `LYRUIConversationViewController`.
+* Added storyboard support for `LYRUIConversationListViewController`.
+* `layerClient` property is no longer read only in `LYRUIConversationViewController`.
+* `layerClient` property is no longer read only in `LYRUIConverssationListViewController`.
+
 ## 0.5.0 
 
 ### Public API Changes
@@ -17,7 +32,7 @@
 
 ### Backwards Incompatibility
 
-`LYRUIConversationViewController` now sends mixed content (e.g. an image and text) in multiple messages, i.e. one message per piece of content (e.g. one message with an image part and another message with a text part). Correspondingly, it now displays one cell for each message. The previous behavior was to display one cell for each message part. The default message cells assume that each message only has one part. So a multi-part message (e.g. one sent with the previous behavior) will only have its first part displayed.
+* `LYRUIConversationViewController` now sends mixed content (e.g. an image and text) in multiple messages, i.e. one message per piece of content (e.g. one message with an image part and another message with a text part). Correspondingly, it now displays one cell for each message. The previous behavior was to display one cell for each message part. The default message cells assume that each message only has one part. So a multi-part message (e.g. one sent with the previous behavior) will only have its first part displayed.
 
 ### Public API Changes
 
