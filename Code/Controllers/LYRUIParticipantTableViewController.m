@@ -10,7 +10,6 @@
 #import "LYRUIParticipantTableDataSet.h"
 #import "LYRUIParticipantSectionHeaderView.h"
 #import "LYRUIConstants.h"
-#import "LYRUIParticipantPickerController.h"
 #import "LYRUIAvatarImageView.h"
 
 static NSString *const LYRUIParticipantTableSectionHeaderIdentifier = @"LYRUIParticipantTableSectionHeaderIdentifier";
@@ -31,22 +30,54 @@ static NSString *const LYRUIParticipantCellIdentifier = @"LYRUIParticipantCellId
 
 NSString *const LYRUIParticipantTableViewAccessibilityIdentifier = @"Participant Table View Controller";
 
-- (id)initWithStyle:(UITableViewStyle)style
++ (instancetype)participantTableViewControllerWithParticipants:(NSSet *)participants sortType:(LYRUIParticipantPickerSortType)sortType
 {
-    self = [super initWithStyle:style];
+    return  [[self alloc] initWithParticipants:participants sortType:sortType];
+}
+
+- (id)initWithParticipants:(NSSet *)participants sortType:(LYRUIParticipantPickerSortType)sortType
+{
+    NSAssert(participants, @"Participants cannot be nil");
+    self = [super initWithStyle:UITableViewStyleGrouped];
     if (self) {
-        _rowHeight = 48;
-        _selectedParticipants = [[NSMutableSet alloc] init];
+        _participants = participants;
+        _sortType = sortType;
+        [self lyr_commonInit];
     }
     return self;
+}
+
+- (instancetype)initWithCoder:(NSCoder *)decoder
+{
+    self = [super initWithCoder:decoder];
+    if (self) {
+        [self lyr_commonInit];
+    }
+    return self;
+}
+
+- (void)lyr_commonInit
+{
+    _cellClass = [LYRUIParticipantTableViewCell class];
+    _rowHeight = 48;
+    _allowsMultipleSelection = YES;
+    _selectedParticipants = [[NSMutableSet alloc] init];
+}
+
+- (void)loadView
+{
+    self.view = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
 
+    self.tableView.delegate = self;
+    self.tableView.dataSource = self;
     self.tableView.allowsMultipleSelection = self.allowsMultipleSelection;
     self.tableView.accessibilityIdentifier = LYRUIParticipantTableViewAccessibilityIdentifier;
+    self.tableView.sectionFooterHeight = 0;
     self.tableView.sectionHeaderHeight = 20;
     [self.tableView registerClass:[LYRUIParticipantSectionHeaderView class] forHeaderFooterViewReuseIdentifier:LYRUIParticipantTableSectionHeaderIdentifier];
     
@@ -63,10 +94,6 @@ NSString *const LYRUIParticipantTableViewAccessibilityIdentifier = @"Participant
     self.searchController.searchResultsDataSource = self;
 
     self.title = @"Participants";
-    
-    UIBarButtonItem *cancelButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancelButtonTapped)];
-    cancelButtonItem.accessibilityLabel = @"Cancel";
-    self.navigationItem.rightBarButtonItem = cancelButtonItem;
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -75,10 +102,9 @@ NSString *const LYRUIParticipantTableViewAccessibilityIdentifier = @"Participant
         self.unfilteredDataSet = [LYRUIParticipantTableDataSet dataSetWithParticipants:self.participants sortType:self.sortType];
         self.tableView.rowHeight = self.rowHeight;
         self.tableView.allowsMultipleSelection = self.allowsMultipleSelection;
-        [self.tableView registerClass:self.participantCellClass forCellReuseIdentifier:LYRUIParticipantCellIdentifier];
+        [self.tableView registerClass:self.cellClass forCellReuseIdentifier:LYRUIParticipantCellIdentifier];
         self.hasAppeared = YES;
     }
-
     [super viewWillAppear:animated];
 }
 
@@ -100,12 +126,12 @@ NSString *const LYRUIParticipantTableViewAccessibilityIdentifier = @"Participant
     _allowsMultipleSelection = allowsMultipleSelection;
 }
 
-- (void)setParticipantCellClass:(Class<LYRUIParticipantPresenting>)participantCellClass
+- (void)setCellClass:(Class<LYRUIParticipantPresenting>)cellClass
 {
     if (self.hasAppeared) {
         @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Cannot change cell class after view has been presented" userInfo:nil];
     }
-    _participantCellClass = participantCellClass;
+    _cellClass = cellClass;
 }
 
 - (void)setRowHeight:(CGFloat)rowHeight
@@ -131,7 +157,7 @@ NSString *const LYRUIParticipantTableViewAccessibilityIdentifier = @"Participant
     tableView.allowsMultipleSelection = self.allowsMultipleSelection;
     tableView.sectionHeaderHeight = self.tableView.sectionHeaderHeight;
     tableView.rowHeight = self.rowHeight;
-    [tableView registerClass:self.participantCellClass forCellReuseIdentifier:LYRUIParticipantCellIdentifier];
+    [tableView registerClass:self.cellClass forCellReuseIdentifier:LYRUIParticipantCellIdentifier];
     [tableView registerClass:[LYRUIParticipantSectionHeaderView class] forHeaderFooterViewReuseIdentifier:LYRUIParticipantTableSectionHeaderIdentifier];
 }
 
@@ -225,13 +251,6 @@ NSString *const LYRUIParticipantTableViewAccessibilityIdentifier = @"Participant
     if ([self.delegate respondsToSelector:@selector(participantTableViewController:didDeselectParticipant:)]) {
         [self.delegate participantTableViewController:self didDeselectParticipant:participant];
     }
-}
-
-#pragma mark - Actions
-
-- (void)cancelButtonTapped
-{
-    [self.delegate participantTableViewControllerDidCancel:self];
 }
 
 #pragma mark - Helpers

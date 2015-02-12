@@ -7,10 +7,9 @@
 //
 
 #import "LYRUIAppDelegate.h"
+#import <LayerUIKit/LayerUIKit.h>
 #import "LayerKitMock.h"
 #import "LYRUISampleConversationListViewController.h"
-#import <LayerUIKit/LayerUIKit.h>
-#import <UIKit/UIKit.h>
 
 @interface LYRUIAppDelegate ()
 
@@ -31,11 +30,7 @@
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     self.window.rootViewController = rootViewController;
     [self.window makeKeyAndVisible];
-    
-//    UINavigationController *rootNavigationController = (UINavigationController *)[[[application delegate] window] rootViewController];
-//    LYRUISampleConversationListViewController *controller = rootNavigationController.viewControllers[0];
-//    [controller updateWithLayerClient:(LYRClient *)layerClient];
-    
+
     return YES;
 }
 

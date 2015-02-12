@@ -4,10 +4,10 @@
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6247"/>
     </dependencies>
     <scenes>
-        <!--Navigation Controller-->
+        <!--Participant Picker Controller-->
         <scene sceneID="N7e-w8-hv1">
             <objects>
-                <navigationController id="J3B-Vp-uyL" sceneMemberID="viewController">
+                <navigationController id="J3B-Vp-uyL" customClass="LYRUIParticipantPickerController" sceneMemberID="viewController">
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="Pnx-Hc-5Li">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -20,10 +20,10 @@
             </objects>
             <point key="canvasLocation" x="150" y="351"/>
         </scene>
-        <!--Sample Conversation List View Controller-->
+        <!--Participant Table View Controller-->
         <scene sceneID="Ne7-mm-ufM">
             <objects>
-                <viewController autoresizesArchivedViewToFullSize="NO" id="Pwj-cK-miY" customClass="LYRUISampleConversationListViewController" sceneMemberID="viewController">
+                <viewController autoresizesArchivedViewToFullSize="NO" id="Pwj-cK-miY" customClass="LYRUIParticipantTableViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="1VK-R8-ysd"/>
                         <viewControllerLayoutGuide type="bottom" id="yL2-hD-uEb"/>

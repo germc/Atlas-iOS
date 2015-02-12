@@ -14,10 +14,9 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"LYRUIConversatio
 @interface LYRUIConversationListViewController () <UIActionSheetDelegate, LYRQueryControllerDelegate>
 
 @property (nonatomic) LYRQueryController *queryController;
-@property (nonatomic) LYRClient *layerClient;
-@property (nonatomic) BOOL hasAppeared;
 @property (nonatomic) LYRConversation *conversationToDelete;
 @property (nonatomic) LYRConversation *conversationSelectedBeforeContentChange;
+@property (nonatomic) BOOL hasAppeared;
 
 @end
 
@@ -38,16 +37,7 @@ NSString *const LYRUIConversationTableViewAccessibilityIdentifier = @"Conversati
     self = [super initWithStyle:UITableViewStylePlain];
     if (self)  {
         _layerClient = layerClient;
-        [self commonInit];
-    }
-    return self;
-}
-
-- (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-{
-    self = [super initWithNibName:nil bundle:nil];
-    if (self) {
-        [self commonInit];
+        [self lyr_commonInit];
     }
     return self;
 }
@@ -56,12 +46,12 @@ NSString *const LYRUIConversationTableViewAccessibilityIdentifier = @"Conversati
 {
     self = [super initWithCoder:decoder];
     if (self) {
-        [self commonInit];
+        [self lyr_commonInit];
     }
     return self;
 }
 
-- (void)commonInit
+- (void)lyr_commonInit
 {
     _cellClass = [LYRUIConversationTableViewCell class];
     _deletionModes = @[@(LYRDeletionModeLocal), @(LYRDeletionModeAllParticipants)];
@@ -72,24 +62,13 @@ NSString *const LYRUIConversationTableViewAccessibilityIdentifier = @"Conversati
 
 - (void)loadView
 {
-    CGRect applicationFrame = [[UIScreen mainScreen] applicationFrame];
-    UIView *contentView = [[UIView alloc] initWithFrame:applicationFrame];
-    contentView.backgroundColor = [UIColor blackColor];
-    self.tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
-    self.tableView.delegate = self;
-    self.tableView.dataSource = self;
-    self.view = self.tableView;
+    self.view = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
 }
 
 - (id)init
 {
     [NSException raise:NSInternalInconsistencyException format:@"Failed to call designated initializer"];
     return nil;
-}
-
-- (void)updateWithLayerClient:(LYRClient *)layerClient
-{
-    self.layerClient = layerClient;
 }
 
 #pragma mark - Lifecycle
@@ -99,6 +78,9 @@ NSString *const LYRUIConversationTableViewAccessibilityIdentifier = @"Conversati
     [super viewDidLoad];
     self.title = LYRUIConversationListViewControllerTitle;
     self.accessibilityLabel = LYRUIConversationListViewControllerTitle;
+    
+    self.tableView.delegate = self;
+    self.tableView.dataSource = self;
     self.tableView.accessibilityLabel = LYRUIConversationTableViewAccessibilityLabel;
     self.tableView.accessibilityIdentifier = LYRUIConversationTableViewAccessibilityIdentifier;
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
