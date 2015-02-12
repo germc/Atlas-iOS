@@ -63,8 +63,8 @@
 @property (nonatomic) NSSet *participants;
 
 /**
- @abstract Defines the sort ordering of the participant list. The view controller will sort and group
- participants by the order you specify.
+ @abstract Defines the sort ordering of the participant list. The view controller will sort and group participants by the order you specify.
+ @default `LYRUIParticipantPickerSortTypeFirstName`.
  @raises NSInternalInconsistencyException Raised if the value is mutated after the receiver has been presented.
  */
 @property (nonatomic, assign) LYRUIParticipantPickerSortType sortType;

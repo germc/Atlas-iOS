@@ -98,14 +98,21 @@ NSString *const LYRUIParticipantTableViewAccessibilityIdentifier = @"Participant
 
 - (void)viewWillAppear:(BOOL)animated
 {
+    [super viewWillAppear:animated];
+    if (!self.sortType) self.sortType = LYRUIParticipantPickerSortTypeFirstName;
     if (!self.hasAppeared) {
-        self.unfilteredDataSet = [LYRUIParticipantTableDataSet dataSetWithParticipants:self.participants sortType:self.sortType];
         self.tableView.rowHeight = self.rowHeight;
         self.tableView.allowsMultipleSelection = self.allowsMultipleSelection;
         [self.tableView registerClass:self.cellClass forCellReuseIdentifier:LYRUIParticipantCellIdentifier];
-        self.hasAppeared = YES;
+        self.unfilteredDataSet = [LYRUIParticipantTableDataSet dataSetWithParticipants:self.participants sortType:self.sortType];
+        [self.tableView reloadData];
     }
-    [super viewWillAppear:animated];
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    self.hasAppeared = YES;
 }
 
 #pragma mark - Public Configuration

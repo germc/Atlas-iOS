@@ -45,7 +45,7 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
 
 + (instancetype)conversationViewControllerWithLayerClient:(LYRClient *)layerClient;
 {
-    NSAssert(layerClient, @"`Layer Client` cannot be nil");
+    NSAssert(layerClient, @"Layer Client cannot be nil");
     return [[self alloc] initWithLayerClient:layerClient];
 }
 

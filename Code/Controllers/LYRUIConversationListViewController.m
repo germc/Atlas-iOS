@@ -28,11 +28,11 @@ NSString *const LYRUIConversationTableViewAccessibilityIdentifier = @"Conversati
 
 + (instancetype)conversationListViewControllerWithLayerClient:(LYRClient *)layerClient
 {
-    NSAssert(layerClient, @"layerClient cannot be nil");
-    return [[self alloc] initConversationlistViewControllerWithLayerClient:layerClient];
+    NSAssert(layerClient, @"Layer Client cannot be nil");
+    return [[self alloc] initWithLayerClient:layerClient];
 }
 
-- (id)initConversationlistViewControllerWithLayerClient:(LYRClient *)layerClient
+- (id)initWithLayerClient:(LYRClient *)layerClient
 {
     self = [super initWithStyle:UITableViewStylePlain];
     if (self)  {
@@ -99,13 +99,9 @@ NSString *const LYRUIConversationTableViewAccessibilityIdentifier = @"Conversati
     [super viewWillAppear:animated];
     [self setupConversationDataSource];
     if (!self.hasAppeared) {
-        // Set public configuration properties once view has loaded
         [self.tableView registerClass:self.cellClass forCellReuseIdentifier:LYRUIConversationCellReuseIdentifier];
         self.tableView.rowHeight = self.rowHeight;
-        if (self.allowsEditing) {
-            [self addEditButton];
-        }
-        self.hasAppeared = YES;
+        if (self.allowsEditing) [self addEditButton];
     }
 
     NSIndexPath *selectedIndexPath = [self.tableView indexPathForSelectedRow];
@@ -117,6 +113,12 @@ NSString *const LYRUIConversationTableViewAccessibilityIdentifier = @"Conversati
             [self.tableView selectRowAtIndexPath:selectedIndexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
         }];
     }
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    self.hasAppeared = YES;
 }
 
 #pragma mark - Public Setters
