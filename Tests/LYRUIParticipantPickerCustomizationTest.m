@@ -8,6 +8,7 @@
 
 #import <XCTest/XCTest.h>
 #import "LYRUITestInterface.h"
+#import "LYRUISampleParticipantTableViewController.h"
 
 @interface LYRUIParticipantPickerCustomizationTest : XCTestCase
 
@@ -113,12 +114,13 @@ extern NSString *const LYRUIParticipantSectionHeaderViewAccessibilityLabel;
 
 - (void)presentParticipantPicker
 {
-    LYRUIParticipantPickerController *controller = [LYRUIParticipantPickerController participantPickerWithDataSource:self.userMock
-                                                                                                            sortType:LYRUIParticipantPickerSortTypeFirstName];
+    NSSet *participants = [LYRUserMock allMockParticipants];
+    LYRUISampleParticipantTableViewController *controller = [LYRUISampleParticipantTableViewController participantTableViewControllerWithParticipants:participants sortType:LYRUIParticipantPickerSortTypeFirstName];
     controller.allowsMultipleSelection = NO;
     
+    UINavigationController *presnetingController = [[UINavigationController alloc] initWithRootViewController:controller];
     UINavigationController *navigationController = (UINavigationController *)[[[[UIApplication sharedApplication] delegate] window] rootViewController];
-    [navigationController presentViewController:controller animated:YES completion:nil];
+    [navigationController presentViewController:presnetingController animated:YES completion:nil];
 }
 
 @end

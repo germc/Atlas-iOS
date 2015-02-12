@@ -244,17 +244,4 @@
     [self.mockObjectChanges removeAllObjects];
 }
 
-#pragma mark 0 Participant Picker Deleage
-
-- (NSSet *)participantsForParticipantPickerController:(LYRUIParticipantPickerController *)participantPickerController
-{
-    return [LYRUserMock allMockParticipants];
-}
-
-- (void)participantPickerController:(LYRUIParticipantPickerController *)participantPickerController searchForParticipantsMatchingText:(NSString *)searchText completion:(void (^)(NSSet *participants))completion
-{
-    
-}
-
-
 @end

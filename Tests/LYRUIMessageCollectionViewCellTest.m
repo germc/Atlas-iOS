@@ -192,8 +192,8 @@ extern NSString *const LYRUIConversationCollectionViewAccessibilityIdentifier;
     self.conversation = [self.testInterface conversationWithParticipants:[NSSet setWithObjects:mockUser1.participantIdentifier, mockUser2.participantIdentifier, nil] lastMessageText:nil];
     
     NSLog(@"Conversation %@", self.conversation);
-    LYRUISampleConversationViewController *controller = [LYRUISampleConversationViewController conversationViewControllerWithConversation:(LYRConversation *)self.conversation
-                                                                                                                              layerClient:(LYRClient *)self.testInterface.layerClient];
+    LYRUISampleConversationViewController *controller = [LYRUISampleConversationViewController conversationViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];;
+    controller.conversation = (LYRConversation *)self.conversation;
     [self.testInterface setRootViewController:controller];
 }
 
