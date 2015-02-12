@@ -28,7 +28,7 @@
 		D676CF1C1A8C438A002D9D27 /* LYRUIConversationListTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D667F8D61A4101DB00D44699 /* LYRUIConversationListTest.m */; };
 		D676CF1D1A8C438A002D9D27 /* LYRUIConversationViewTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D667F8C51A40F5DB00D44699 /* LYRUIConversationViewTest.m */; };
 		D676CF1E1A8C438A002D9D27 /* LYRUIMessageInputBarTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D667F8C41A40F5DB00D44699 /* LYRUIMessageInputBarTest.m */; };
-		D676CF1F1A8C438A002D9D27 /* LYRUIParticipantPickerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D667F8C71A40F5DB00D44699 /* LYRUIParticipantPickerTest.m */; };
+		D676CF1F1A8C438A002D9D27 /* LYRUIParticipantTableViewControllerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D667F8C71A40F5DB00D44699 /* LYRUIParticipantTableViewControllerTest.m */; };
 		D676CF201A8C438A002D9D27 /* LYRUITestClasses.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A1B02B21A6DB23700D5DA8E /* LYRUITestClasses.m */; };
 		D676CF211A8C478C002D9D27 /* LYRUITestInterface.m in Sources */ = {isa = PBXBuildFile; fileRef = D667F8CF1A40F63000D44699 /* LYRUITestInterface.m */; };
 		D676CF241A8C47CB002D9D27 /* LYRUISampleParticipantTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D676CF231A8C47CB002D9D27 /* LYRUISampleParticipantTableViewController.m */; };
@@ -116,7 +116,7 @@
 		D667D0721A3658A800D63546 /* LYRQueryControllerMock.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRQueryControllerMock.m; sourceTree = "<group>"; };
 		D667F8C41A40F5DB00D44699 /* LYRUIMessageInputBarTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIMessageInputBarTest.m; sourceTree = "<group>"; };
 		D667F8C51A40F5DB00D44699 /* LYRUIConversationViewTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIConversationViewTest.m; sourceTree = "<group>"; };
-		D667F8C71A40F5DB00D44699 /* LYRUIParticipantPickerTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIParticipantPickerTest.m; sourceTree = "<group>"; };
+		D667F8C71A40F5DB00D44699 /* LYRUIParticipantTableViewControllerTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIParticipantTableViewControllerTest.m; sourceTree = "<group>"; };
 		D667F8CE1A40F63000D44699 /* LYRUITestInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LYRUITestInterface.h; sourceTree = "<group>"; };
 		D667F8CF1A40F63000D44699 /* LYRUITestInterface.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUITestInterface.m; sourceTree = "<group>"; };
 		D667F8D61A4101DB00D44699 /* LYRUIConversationListTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LYRUIConversationListTest.m; sourceTree = "<group>"; };
@@ -323,7 +323,7 @@
 				D667F8D61A4101DB00D44699 /* LYRUIConversationListTest.m */,
 				D667F8C51A40F5DB00D44699 /* LYRUIConversationViewTest.m */,
 				D667F8C41A40F5DB00D44699 /* LYRUIMessageInputBarTest.m */,
-				D667F8C71A40F5DB00D44699 /* LYRUIParticipantPickerTest.m */,
+				D667F8C71A40F5DB00D44699 /* LYRUIParticipantTableViewControllerTest.m */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -758,7 +758,7 @@
 				D676CF1C1A8C438A002D9D27 /* LYRUIConversationListTest.m in Sources */,
 				D676CF1D1A8C438A002D9D27 /* LYRUIConversationViewTest.m in Sources */,
 				D676CF1E1A8C438A002D9D27 /* LYRUIMessageInputBarTest.m in Sources */,
-				D676CF1F1A8C438A002D9D27 /* LYRUIParticipantPickerTest.m in Sources */,
+				D676CF1F1A8C438A002D9D27 /* LYRUIParticipantTableViewControllerTest.m in Sources */,
 				D676CF201A8C438A002D9D27 /* LYRUITestClasses.m in Sources */,
 				D6F57E491A8BE4AF00B62BD9 /* ProgrammaticTests.m in Sources */,
 			);
