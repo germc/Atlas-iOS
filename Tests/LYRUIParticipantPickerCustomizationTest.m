@@ -118,9 +118,9 @@ extern NSString *const LYRUIParticipantSectionHeaderViewAccessibilityLabel;
     LYRUISampleParticipantTableViewController *controller = [LYRUISampleParticipantTableViewController participantTableViewControllerWithParticipants:participants sortType:LYRUIParticipantPickerSortTypeFirstName];
     controller.allowsMultipleSelection = NO;
     
-    UINavigationController *presnetingController = [[UINavigationController alloc] initWithRootViewController:controller];
+    UINavigationController *presentingController = [[UINavigationController alloc] initWithRootViewController:controller];
     UINavigationController *navigationController = (UINavigationController *)[[[[UIApplication sharedApplication] delegate] window] rootViewController];
-    [navigationController presentViewController:presnetingController animated:YES completion:nil];
+    [navigationController presentViewController:presentingController animated:YES completion:nil];
 }
 
 @end
