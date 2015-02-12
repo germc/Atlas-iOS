@@ -113,16 +113,10 @@ CGFloat const LYRUIMessageCellMinimumHeight = 10;
     
     CGSize size;
     if (self.message.parts.count > 1) {
-        LYRMessagePart *dimensionPart = self.message.parts[2];
+        LYRMessagePart *dimensionPart = self.message.parts[1];
         if ([dimensionPart.MIMEType isEqualToString:LYRUIMIMETypeImageSize]) {
             size = LYRUIImageSizeForJSONData(dimensionPart.data);
         }
-    }
-    
-    LYRMessagePart *previewPart = self.message.parts[1];
-    if ([previewPart.MIMEType isEqualToString:LYRUIMIMETypeImageJPEGPreview] && [self canDisplayImageDataForMessagePart:previewPart]) {
-        [self.bubbleView updateWithImage:[UIImage imageWithData:previewPart.data] width:size.width];
-        return;
     }
     [self.bubbleView updateWithImage:[UIImage new] width:size.width];
 }
@@ -328,7 +322,7 @@ CGFloat const LYRUIMessageCellMinimumHeight = 10;
         CGSize size = LYRUIImageSize(image);
         return size.height;
     } else if (message.parts.count > 1) {
-        LYRMessagePart *dimensionPart = message.parts[2];
+        LYRMessagePart *dimensionPart = message.parts[1];
         if ([dimensionPart.MIMEType isEqualToString:LYRUIMIMETypeImageSize]) {
             CGSize size = LYRUIImageSizeForJSONData(dimensionPart.data);
             return size.height;
