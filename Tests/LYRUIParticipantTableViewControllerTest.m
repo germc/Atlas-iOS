@@ -1,5 +1,5 @@
 //
-//  LYRUIParticipantPickerTest.m
+//  LYUIParticipantTableViewControllerTest.m
 //  LayerSample
 //
 //  Created by Kevin Coleman on 9/2/14.
@@ -19,14 +19,14 @@
 
 @end
 
-@interface LYRUIParticipantPickerTest : XCTestCase
+@interface LYRUIParticipantTableViewControllerTest : XCTestCase
 
 @property (nonatomic) LYRUITestInterface *testInterface;
 @property (nonatomic) LYRUISampleParticipantTableViewController *controller;
 
 @end
 
-@implementation LYRUIParticipantPickerTest
+@implementation LYRUIParticipantTableViewControllerTest
 
 NSString *const LYRUIParticipantTableViewAccessibilityIdentifier;
 
