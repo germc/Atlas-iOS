@@ -88,6 +88,7 @@
 		1E25E423862E254994407AA1 /* Pods-StoryboardTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-StoryboardTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-StoryboardTests/Pods-StoryboardTests.debug.xcconfig"; sourceTree = "<group>"; };
 		1F88B2BB7AACF5DFC943592C /* Pods-Unit Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Unit Tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Unit Tests/Pods-Unit Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		24D48AA25D796157557FF613 /* Pods-Storyboard.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Storyboard.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Storyboard/Pods-Storyboard.debug.xcconfig"; sourceTree = "<group>"; };
+		255E3F6B1A8D9C7F00E8F59E /* Code */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Code; sourceTree = "<group>"; };
 		33DB815F6BA62C0A16EB4D19 /* Pods-Storyboard.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Storyboard.release.xcconfig"; path = "Pods/Target Support Files/Pods-Storyboard/Pods-Storyboard.release.xcconfig"; sourceTree = "<group>"; };
 		358D1AE37F6A67F9CE5ADC47 /* libPods-Unit Tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Unit Tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		4A1A0BE9E193CC265341461A /* Pods-Unit Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Unit Tests.release.xcconfig"; path = "Pods/Target Support Files/Pods-Unit Tests/Pods-Unit Tests.release.xcconfig"; sourceTree = "<group>"; };
@@ -227,6 +228,7 @@
 		D0D778881A02E2B2000A5F51 = {
 			isa = PBXGroup;
 			children = (
+				255E3F6B1A8D9C7F00E8F59E /* Code */,
 				D676CF171A8C4344002D9D27 /* Examples */,
 				D0D778941A02EAA9000A5F51 /* Products */,
 				62DAD57DC0987BFBA6E8516D /* Pods */,
