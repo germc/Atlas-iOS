@@ -54,7 +54,7 @@ extern NSString *const LYRUIAvatarImageViewAccessibilityLabel;
 //Send a new message a verify it appears in the view.
 - (void)testToVerifySentMessageAppearsInConversationView
 {
-    self.viewController = [LYRUISampleConversationViewController conversationViewControllerWithConversation:(LYRConversation *)self.conversation layerClient:(LYRClient *)self.testInterface.layerClient];
+    [self setupConversationViewController];
     [self setRootViewController:self.viewController];
     
     [self sendMessageWithText:@"This is a test"];
@@ -63,7 +63,7 @@ extern NSString *const LYRUIAvatarImageViewAccessibilityLabel;
 //Synchronize a new message and verify it appears in the view.
 - (void)testToVerifyRecievedMessageAppearsInConversationView
 {
-    self.viewController = [LYRUISampleConversationViewController conversationViewControllerWithConversation:(LYRConversation *)self.conversation layerClient:(LYRClient *)self.testInterface.layerClient];
+    [self setupConversationViewController];
     [self setRootViewController:self.viewController];
     
     LYRMessagePart *part = [LYRMessagePart messagePartWithText:@"Hey Dude"];
@@ -76,7 +76,7 @@ extern NSString *const LYRUIAvatarImageViewAccessibilityLabel;
 //Add an image to a message and verify that it sends.
 - (void)testToVerifySentImageAppearsInConversationView
 {
-    self.viewController = [LYRUISampleConversationViewController conversationViewControllerWithConversation:(LYRConversation *)self.conversation layerClient:(LYRClient *)self.testInterface.layerClient];
+    [self setupConversationViewController];
     [self setRootViewController:self.viewController];
     
     [self sendPhotoMessage];
@@ -96,7 +96,7 @@ extern NSString *const LYRUIAvatarImageViewAccessibilityLabel;
     LYRMessageMock *message3 = [self.testInterface.layerClient newMessageWithParts:@[messagePart3] options:nil error:nil];
     [self.conversation sendMessage:message3 error:nil];
 
-    self.viewController = [LYRUISampleConversationViewController conversationViewControllerWithConversation:(LYRConversation *)self.conversation layerClient:(LYRClient *)self.testInterface.layerClient];
+    [self setupConversationViewController];
     [self setRootViewController:self.viewController];
     
     id cell = [self.viewController collectionViewCellForMessage:(LYRMessage *)message3];
@@ -107,7 +107,7 @@ extern NSString *const LYRUIAvatarImageViewAccessibilityLabel;
 //- (void)conversationViewController:(LYRUIConversationViewController *)viewController didSendMessage:(LYRMessage *)message;
 - (void)testToVerifyDelegateIsNotifiedOfMessageSend
 {
-    self.viewController = [LYRUISampleConversationViewController conversationViewControllerWithConversation:(LYRConversation *)self.conversation layerClient:(LYRClient *)self.testInterface.layerClient];
+    [self setupConversationViewController];
     [self setRootViewController:self.viewController];
     
     id delegateMock = OCMProtocolMock(@protocol(LYRUIConversationViewControllerDelegate));
@@ -124,7 +124,7 @@ extern NSString *const LYRUIAvatarImageViewAccessibilityLabel;
 //- (void)conversationViewController:(LYRUIConversationViewController *)viewController didSelectMessage:(LYRMessage *)message;
 - (void)testToVerifyDelegateIsNotifiedOfMessageSelection
 {
-    self.viewController = [LYRUISampleConversationViewController conversationViewControllerWithConversation:(LYRConversation *)self.conversation layerClient:(LYRClient *)self.testInterface.layerClient];
+    [self setupConversationViewController];
     [self setRootViewController:self.viewController];
     
     id delegateMock = OCMProtocolMock(@protocol(LYRUIConversationViewControllerDelegate));
@@ -141,7 +141,7 @@ extern NSString *const LYRUIAvatarImageViewAccessibilityLabel;
 
 - (void)testToVerityControllerDisplaysCorrectDataFromTheDataSource
 {
-    self.viewController = [LYRUISampleConversationViewController conversationViewControllerWithConversation:(LYRConversation *)self.conversation layerClient:(LYRClient *)self.testInterface.layerClient];
+    [self setupConversationViewController];
     [self setRootViewController:self.viewController];
     
     id delegateMock = OCMProtocolMock(@protocol(LYRUIConversationViewControllerDataSource));
@@ -163,11 +163,6 @@ extern NSString *const LYRUIAvatarImageViewAccessibilityLabel;
     }] conversationViewController:[OCMArg any] attributedStringForDisplayOfRecipientStatus:[OCMArg any]];
     
     [[[delegateMock expect] andDo:^(NSInvocation *invocation) {
-        float yes = 1.0f;
-        [invocation setReturnValue:&yes];
-    }] conversationViewController:[OCMArg any] shouldUpdateRecipientStatusForMessage:[OCMArg any]];
-    
-    [[[delegateMock expect] andDo:^(NSInvocation *invocation) {
         NSString *identifer = @"LYRUIOutgoingMessageCellIdentifier";
         [invocation setReturnValue:&identifer];
     }] conversationViewController:[OCMArg any] reuseIdentifierForMessage:[OCMArg any]];
@@ -186,7 +181,7 @@ extern NSString *const LYRUIAvatarImageViewAccessibilityLabel;
     LYRMessageMock *message = [layerClient newMessageWithParts:@[part] options:nil error:nil];
     [self.conversation sendMessage:message error:nil];
     
-    self.viewController = [LYRUISampleConversationViewController conversationViewControllerWithConversation:(LYRConversation *)self.conversation layerClient:(LYRClient *)self.testInterface.layerClient];
+    [self setupConversationViewController];
     [self setRootViewController:self.viewController];
     
     [tester waitForAbsenceOfViewWithAccessibilityLabel:LYRUIAvatarImageViewAccessibilityLabel];
@@ -203,7 +198,7 @@ extern NSString *const LYRUIAvatarImageViewAccessibilityLabel;
     LYRMessageMock *message = [layerClient newMessageWithParts:@[part] options:nil error:nil];
     [self.conversation sendMessage:message error:nil];
     
-    self.viewController = [LYRUISampleConversationViewController conversationViewControllerWithConversation:(LYRConversation *)self.conversation layerClient:(LYRClient *)self.testInterface.layerClient];
+    [self setupConversationViewController];
     [self setRootViewController:self.viewController];
     
     [tester waitForViewWithAccessibilityLabel:LYRUIAvatarImageViewAccessibilityLabel];
@@ -221,11 +216,17 @@ extern NSString *const LYRUIAvatarImageViewAccessibilityLabel;
     LYRMessageMock *message = [layerClient newMessageWithParts:@[part] options:nil error:nil];
     [self.conversation sendMessage:message error:nil];
     
-    self.viewController = [LYRUISampleConversationViewController conversationViewControllerWithConversation:(LYRConversation *)self.conversation layerClient:(LYRClient *)self.testInterface.layerClient];
+    [self setupConversationViewController];
     [self setRootViewController:self.viewController];
     
     LYRUIAvatarImageView *imageView = (LYRUIAvatarImageView *)[tester waitForViewWithAccessibilityLabel:LYRUIAvatarImageViewAccessibilityLabel];
     expect(imageView.avatarImageViewDiameter).to.equal(40);
+}
+
+- (void)setupConversationViewController
+{
+    self.viewController = [LYRUISampleConversationViewController conversationViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];
+    self.viewController.conversation = (LYRConversation *)self.conversation;
 }
 
 - (void)sendMessageWithText:(NSString *)messageText

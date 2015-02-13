@@ -14,10 +14,9 @@ static NSString *const LYRUIConversationCellReuseIdentifier = @"LYRUIConversatio
 @interface LYRUIConversationListViewController () <UIActionSheetDelegate, LYRQueryControllerDelegate>
 
 @property (nonatomic) LYRQueryController *queryController;
-@property (nonatomic) LYRClient *layerClient;
-@property (nonatomic) BOOL hasAppeared;
 @property (nonatomic) LYRConversation *conversationToDelete;
 @property (nonatomic) LYRConversation *conversationSelectedBeforeContentChange;
+@property (nonatomic) BOOL hasAppeared;
 
 @end
 
@@ -27,31 +26,57 @@ NSString *const LYRUIConversationListViewControllerTitle = @"Messages";
 NSString *const LYRUIConversationTableViewAccessibilityLabel = @"Conversation Table View";
 NSString *const LYRUIConversationTableViewAccessibilityIdentifier = @"Conversation Table View Identifier";
 
-
 + (instancetype)conversationListViewControllerWithLayerClient:(LYRClient *)layerClient
 {
-    NSAssert(layerClient, @"layerClient cannot be nil");
-    return [[self alloc] initConversationlistViewControllerWithLayerClient:layerClient];
+    NSAssert(layerClient, @"Layer Client cannot be nil");
+    return [[self alloc] initWithLayerClient:layerClient];
 }
-    
-- (id)initConversationlistViewControllerWithLayerClient:(LYRClient *)layerClient
+
+- (id)initWithLayerClient:(LYRClient *)layerClient
 {
     self = [super initWithStyle:UITableViewStylePlain];
     if (self)  {
         _layerClient = layerClient;
-        _cellClass = [LYRUIConversationTableViewCell class];
-        _deletionModes = @[@(LYRDeletionModeLocal), @(LYRDeletionModeAllParticipants)];
-        _displaysAvatarItem = NO;
-        _allowsEditing = YES;
-        _rowHeight = 76.0f;
+        [self lyr_commonInit];
     }
     return self;
+}
+
+- (instancetype)initWithCoder:(NSCoder *)decoder
+{
+    self = [super initWithCoder:decoder];
+    if (self) {
+        [self lyr_commonInit];
+    }
+    return self;
+}
+
+- (void)lyr_commonInit
+{
+    _cellClass = [LYRUIConversationTableViewCell class];
+    _deletionModes = @[@(LYRDeletionModeLocal), @(LYRDeletionModeAllParticipants)];
+    _displaysAvatarItem = NO;
+    _allowsEditing = YES;
+    _rowHeight = 76.0f;
+}
+
+- (void)loadView
+{
+    self.view = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
 }
 
 - (id)init
 {
     [NSException raise:NSInternalInconsistencyException format:@"Failed to call designated initializer"];
     return nil;
+}
+
+- (void)setLayerClient:(LYRClient *)layerClient
+{
+    if (self.hasAppeared) {
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Layer Client cannot be set after the view has been presented" userInfo:nil];
+    }
+    _layerClient = layerClient;
 }
 
 #pragma mark - Lifecycle
@@ -61,23 +86,22 @@ NSString *const LYRUIConversationTableViewAccessibilityIdentifier = @"Conversati
     [super viewDidLoad];
     self.title = LYRUIConversationListViewControllerTitle;
     self.accessibilityLabel = LYRUIConversationListViewControllerTitle;
+    
+    self.tableView.delegate = self;
+    self.tableView.dataSource = self;
     self.tableView.accessibilityLabel = LYRUIConversationTableViewAccessibilityLabel;
     self.tableView.accessibilityIdentifier = LYRUIConversationTableViewAccessibilityIdentifier;
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
-    [self setupConversationDataSource];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    [self setupConversationDataSource];
     if (!self.hasAppeared) {
-        // Set public configuration properties once view has loaded
         [self.tableView registerClass:self.cellClass forCellReuseIdentifier:LYRUIConversationCellReuseIdentifier];
         self.tableView.rowHeight = self.rowHeight;
-        if (self.allowsEditing) {
-            [self addEditButton];
-        }
-        self.hasAppeared = YES;
+        if (self.allowsEditing) [self addEditButton];
     }
 
     NSIndexPath *selectedIndexPath = [self.tableView indexPathForSelectedRow];
@@ -89,6 +113,12 @@ NSString *const LYRUIConversationTableViewAccessibilityIdentifier = @"Conversati
             [self.tableView selectRowAtIndexPath:selectedIndexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
         }];
     }
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    self.hasAppeared = YES;
 }
 
 #pragma mark - Public Setters

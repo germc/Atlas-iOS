@@ -77,7 +77,7 @@
 
 - (void)setRootViewController:(UIViewController *)controller
 {
-    LYRUIAppDelegate *delegate = [[UIApplication sharedApplication] delegate];
+    LSAppDelegate *delegate = [[UIApplication sharedApplication] delegate];
     if (!delegate.window) {
         delegate.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
         [delegate.window makeKeyAndVisible];
@@ -89,7 +89,7 @@
 
 - (void)pushViewController:(UIViewController *)controller
 {
-    LYRUIAppDelegate *delegate = [[UIApplication sharedApplication] delegate];
+    LSAppDelegate *delegate = [[UIApplication sharedApplication] delegate];
     if (!delegate.window.rootViewController) {
         delegate.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
         delegate.window.rootViewController = controller;

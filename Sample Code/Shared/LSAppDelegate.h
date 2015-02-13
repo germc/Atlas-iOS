@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface LYRUIAppDelegate : UIResponder <UIApplicationDelegate>
+@interface LSAppDelegate : UIResponder <UIApplicationDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
 

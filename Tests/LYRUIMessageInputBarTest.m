@@ -41,7 +41,8 @@ static NSString *const LSCameraButtonLabel = @"Camera Button";
     
     LYRUserMock *mockUser1 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameMarshawn];
     LYRConversationMock *conversation1 = [self.testInterface conversationWithParticipants:[NSSet setWithObject:mockUser1.participantIdentifier] lastMessageText:@"Message1"];
-    self.viewController = [LYRUISampleConversationViewController conversationViewControllerWithConversation:(LYRConversation *)conversation1 layerClient:(LYRClient *)self.testInterface.layerClient];
+    self.viewController = [LYRUISampleConversationViewController conversationViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];
+    self.viewController.conversation = (LYRConversation *)conversation1;
     [self setRootViewController:self.viewController];
 }
 

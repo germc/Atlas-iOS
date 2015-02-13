@@ -275,9 +275,9 @@ NSString *const LYRUILocationMIMETypePlaceholderText = @"Attachment: Location";
     if (!lastMessage.sentAt) return @"";
     
     if (LYRUIIsDateInToday(lastMessage.sentAt)) {
-        return [LYRUIShortTimeFormatter() stringFromDate:lastMessage.sentAt];
+        return [LYRUIShortTimeFormatter() stringFromDate:lastMessage.receivedAt];
     } else {
-        return [LYRUIRelativeDateFormatter() stringFromDate:lastMessage.sentAt];
+        return [LYRUIRelativeDateFormatter() stringFromDate:lastMessage.receivedAt];
     }
 }
 

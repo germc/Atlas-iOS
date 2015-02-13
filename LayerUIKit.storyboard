@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6254" systemVersion="14B25" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="J3B-Vp-uyL">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6247"/>
+    </dependencies>
+    <scenes>
+        <!--Participant Picker Controller-->
+        <scene sceneID="N7e-w8-hv1">
+            <objects>
+                <navigationController id="J3B-Vp-uyL" customClass="LYRUIParticipantPickerController" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="Pnx-Hc-5Li">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="Pwj-cK-miY" kind="relationship" relationship="rootViewController" id="vKZ-sK-fi2"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="ucV-d8-tKg" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="150" y="351"/>
+        </scene>
+        <!--Participant Table View Controller-->
+        <scene sceneID="Ne7-mm-ufM">
+            <objects>
+                <viewController autoresizesArchivedViewToFullSize="NO" id="Pwj-cK-miY" customClass="LYRUIParticipantTableViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="1VK-R8-ysd"/>
+                        <viewControllerLayoutGuide type="bottom" id="yL2-hD-uEb"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="pov-gp-4cp">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="sSY-X2-dxg"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="mEx-0u-lWg" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="879" y="351"/>
+        </scene>
+    </scenes>
+</document>

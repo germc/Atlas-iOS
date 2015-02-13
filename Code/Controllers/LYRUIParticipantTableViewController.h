@@ -32,11 +32,6 @@
  */
 - (void)participantTableViewController:(LYRUIParticipantTableViewController *)participantTableViewController didSearchWithString:(NSString *)searchText completion:(void (^)(NSSet *filteredParticipants))completion;
 
-/**
- @abstract Informs the delegate that the user tapped the cancel button.
- */
-- (void)participantTableViewControllerDidCancel:(LYRUIParticipantTableViewController *)participantTableViewController;
-
 @optional
 
 /**
@@ -54,16 +49,12 @@
 @interface LYRUIParticipantTableViewController : UITableViewController
 
 /**
- @abstract The table view cell class for customizing the display of participants.
- @default `[LYRUIParticipantTableViewCell class]`
- @raises NSInternalInconsistencyException Raised if the value is mutated after the receiver has been presented.
+ @abstract Creates and returns an `LYRUIParticipantTableViewController` initialized with the given set of participants and sort type.
+ @param participants The set of participants to be used for display in the table view.
+ @param sortType The sort order applied to the participants. 
+ @return A new participant picker initialized with the given participant set and sort type.
  */
-@property (nonatomic) Class<LYRUIParticipantPresenting> participantCellClass;
-
-/**
- @abstract The delegate for the participant table view controller.
- */
-@property (nonatomic, weak) id<LYRUIParticipantTableViewControllerDelegate> delegate;
++ (instancetype)participantTableViewControllerWithParticipants:(NSSet *)participants sortType:(LYRUIParticipantPickerSortType)sortType;
 
 /**
  @abstract The participants to display.
@@ -72,11 +63,24 @@
 @property (nonatomic) NSSet *participants;
 
 /**
- @abstract Defines the sort ordering of the participant list. The view controller will sort and group
- participants by the order you specify.
+ @abstract Defines the sort ordering of the participant list.
+ @default `LYRUIParticipantPickerSortTypeFirstName`.
  @raises NSInternalInconsistencyException Raised if the value is mutated after the receiver has been presented.
  */
 @property (nonatomic, assign) LYRUIParticipantPickerSortType sortType;
+
+
+/**
+ @abstract The delegate for the participant table view controller.
+ */
+@property (nonatomic, weak) id<LYRUIParticipantTableViewControllerDelegate> delegate;
+
+/**
+ @abstract The table view cell class for customizing the display of participants.
+ @default `[LYRUIParticipantTableViewCell class]`
+ @raises NSInternalInconsistencyException Raised if the value is mutated after the receiver has been presented.
+ */
+@property (nonatomic) Class<LYRUIParticipantPresenting> cellClass;
 
 /**
  @abstract Sets the height for cells within the receiver.

@@ -1,5 +1,5 @@
 //
-//  LYRUIParticipantPickerTest.m
+//  LYUIParticipantTableViewControllerTest.m
 //  LayerSample
 //
 //  Created by Kevin Coleman on 9/2/14.
@@ -9,10 +9,9 @@
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
 #import "LYRUITestInterface.h"
-
-#import "LYRUIParticipantPickerController.h"
 #import "LYRUIParticipantTableViewCell.h"
 #import "LYRUIParticipant.h"
+#import "LYRUISampleParticipantTableViewController.h"
 
 @interface LYRUIParticipantTableViewCell ()
 
@@ -20,15 +19,16 @@
 
 @end
 
-@interface LYRUIParticipantPickerTest : XCTestCase
+@interface LYRUIParticipantTableViewControllerTest : XCTestCase
 
 @property (nonatomic) LYRUITestInterface *testInterface;
-@property (nonatomic) LYRUIParticipantPickerController *viewController;
-@property (nonatomic) LYRUITestParticipantDataSource *dataSource;
+@property (nonatomic) LYRUISampleParticipantTableViewController *controller;
 
 @end
 
-@implementation LYRUIParticipantPickerTest
+@implementation LYRUIParticipantTableViewControllerTest
+
+NSString *const LYRUIParticipantTableViewAccessibilityIdentifier;
 
 - (void)setUp
 {
@@ -39,10 +39,9 @@
     self.testInterface = [LYRUITestInterface testIntefaceWithLayerClient:layerClient];
     
     NSSet *participants = [LYRUserMock allMockParticipants];
-    self.dataSource = [LYRUITestParticipantDataSource dataSourceWithParticipants:participants];
-    self.viewController = [LYRUIParticipantPickerController participantPickerWithDataSource:self.dataSource
-                                                                               sortType:LYRUIParticipantPickerSortTypeFirstName];
-    [self.viewController setCellClass:[LYRUIParticipantTableViewCell class]];
+    self.controller = [LYRUISampleParticipantTableViewController participantTableViewControllerWithParticipants:participants sortType:LYRUIParticipantPickerSortTypeFirstName];
+    [self.controller setCellClass:[LYRUIParticipantTableViewCell class]];
+    
     [[LYRUIParticipantTableViewCell appearance] setTitleFont:[UIFont systemFontOfSize:14]];
     [[LYRUIParticipantTableViewCell appearance] setTitleColor:[UIColor blackColor]];
 }
@@ -51,7 +50,7 @@
 {
     [[LYRMockContentStore sharedStore] resetContentStore];
     self.testInterface = nil;
-    self.viewController = nil;
+    self.controller = nil;
     [super tearDown];
 }
 
@@ -102,7 +101,7 @@
 //Verify that the cell can be overridden and a new UI presented.
 - (void)testToVerifyCustomCellClassFunctionality
 {
-    self.viewController.cellClass = [LYRUITestParticipantCell class];
+    self.controller.cellClass = [LYRUITestParticipantCell class];
     [self setRootViewController];
     
     LYRUserMock *mock = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameBobby];
@@ -114,7 +113,7 @@
 - (void)testToVerifyCustomRowHeightFunctionality
 {
     LYRUserMock *mock = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameBobby];
-    self.viewController.rowHeight = 80;
+    self.controller.rowHeight = 80;
     [self setRootViewController];
     expect([tester waitForViewWithAccessibilityLabel:mock.fullName].frame.size.height).to.equal(80);
 }
@@ -122,16 +121,16 @@
 -(void)testToVerifySectionTextPropertyFunctionality
 {
     [self setRootViewController];
+    
     NSSet *participants = [LYRUserMock allMockParticipants];
     NSArray *sortedParticipantsFirst = [[participants allObjects] sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"firstName" ascending:YES]]];
     LYRUserMock *firstUser = (LYRUserMock *)[sortedParticipantsFirst firstObject];
-    LYRUIParticipantTableViewCell *cell = (LYRUIParticipantTableViewCell *)[tester waitForCellAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]
-                                                                   inTableViewWithAccessibilityIdentifier:@"Participant TableView Controller"];
+    LYRUIParticipantTableViewCell *cell = (LYRUIParticipantTableViewCell *)[tester waitForCellAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:1]
+                                                                   inTableViewWithAccessibilityIdentifier:LYRUIParticipantTableViewAccessibilityIdentifier];
     expect(cell.nameLabel.text).to.equal(firstUser.fullName);
     
     NSArray *sortedParticipantsLast = [[participants allObjects] sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"lastName" ascending:YES]]];
-    self.viewController = [LYRUIParticipantPickerController participantPickerWithDataSource:self.dataSource
-                                                                               sortType:LYRUIParticipantPickerSortTypeLastName];
+    self.controller = [LYRUISampleParticipantTableViewController participantTableViewControllerWithParticipants:participants sortType:LYRUIParticipantPickerSortTypeLastName];
     [self setRootViewController];
     firstUser = (LYRUserMock *)[sortedParticipantsLast firstObject];
     cell = (LYRUIParticipantTableViewCell *)[tester waitForCellAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]
@@ -143,38 +142,38 @@
 - (void)testToVerifyChangingCellClassAfterViewLoadRaiseException
 {
     [self setRootViewController];
-    expect(^{ [self.viewController setCellClass:[UITableView class]]; }).to.raise(NSInternalInconsistencyException);
+    expect(^{ [self.controller setCellClass:[UITableView class]]; }).to.raise(NSInternalInconsistencyException);
 }
 
 //Test that attempting to change the row height after the view is loaded results in a runtime error.
 - (void)testToVerifyChangingRowHeightAfterViewLoadRaiseException
 {
     [self setRootViewController];
-    expect(^{ [self.viewController setRowHeight:80]; }).to.raise(NSInternalInconsistencyException);
+    expect(^{ [self.controller setRowHeight:80]; }).to.raise(NSInternalInconsistencyException);
 }
 
 - (void)testToVerifyParticipantPickerDelegateFunctionalityForCancelButton
 {
     [self setRootViewController];
-    id delegateMock = OCMProtocolMock(@protocol(LYRUIParticipantPickerControllerDelegate));
-    self.viewController.participantPickerDelegate = delegateMock;
+    id delegateMock = OCMProtocolMock(@protocol(LYRUIParticipantTableViewControllerDelegate));
+    self.controller.delegate = delegateMock;
     [self setRootViewController];
     [[[delegateMock expect] andDo:^(NSInvocation *invocation) {
         //
-    }] participantPickerControllerDidCancel:[OCMArg any]];
+    }] participantTableViewController:[OCMArg any] didSearchWithString:[OCMArg any] completion:nil];
     
-    [tester tapViewWithAccessibilityLabel:@"Cancel"];
+    [tester enterText:@"Search" intoViewWithAccessibilityLabel:@"Search"];
     [delegateMock verify];
 }
 
 - (void)testtoVerifyParticipantPickerDelegateFunctionalityForParticipantSelection
 {
     [self setRootViewController];
-    id delegateMock = OCMProtocolMock(@protocol(LYRUIParticipantPickerControllerDelegate));
-    self.viewController.participantPickerDelegate = delegateMock;
+    id delegateMock = OCMProtocolMock(@protocol(LYRUIParticipantTableViewControllerDelegate));
+    self.controller.delegate = delegateMock;
     [[[delegateMock expect] andDo:^(NSInvocation *invocation) {
 
-    }] participantPickerController:[OCMArg any] didSelectParticipant:[OCMArg any]];
+    }] participantTableViewController:[OCMArg any] didSelectParticipant:[OCMArg any]];
     
     [tester tapRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] inTableViewWithAccessibilityIdentifier:@"Participant TableView Controller"];
     [delegateMock verify];
@@ -182,6 +181,9 @@
 
 - (void)setRootViewController
 {
-    [self.testInterface pushViewController:self.viewController];
+    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:self.controller];
+    [self.testInterface pushViewController:navigationController];
+    [tester waitForViewWithAccessibilityLabel:@"Participants"];
 }
+
 @end

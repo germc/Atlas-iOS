@@ -6,17 +6,16 @@
 //  Copyright (c) 2014 Layer. All rights reserved.
 //
 
-#import "LYRUIAppDelegate.h"
+#import "LSAppDelegate.h"
+#import <LayerUIKit/LayerUIKit.h>
 #import "LayerKitMock.h"
 #import "LYRUISampleConversationListViewController.h"
-#import <LayerUIKit/LayerUIKit.h>
-#import <UIKit/UIKit.h>
 
-@interface LYRUIAppDelegate ()
+@interface LSAppDelegate ()
 
 @end
 
-@implementation LYRUIAppDelegate
+@implementation LSAppDelegate
 
 #pragma mark - UIApplicationDelegate methods
 
@@ -31,7 +30,7 @@
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     self.window.rootViewController = rootViewController;
     [self.window makeKeyAndVisible];
-    
+
     return YES;
 }
 

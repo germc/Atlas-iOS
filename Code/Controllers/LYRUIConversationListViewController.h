@@ -92,6 +92,13 @@
 + (instancetype)conversationListViewControllerWithLayerClient:(LYRClient *)layerClient;
 
 /**
+ @abstract The `LYRClient` object used to initialize the controller. 
+ @discussion If using storyboards, the property must be set explicitly.
+ @raises NSInternalInconsistencyException Raised if the value is mutated after the receiver has been presented.
+ */
+@property (nonatomic) LYRClient *layerClient;
+
+/**
  @abstract The object that is informed when specific events occur
  within the `LYRConversationListViewController`.
  */
@@ -147,14 +154,5 @@
  @raises NSInternalInconsistencyException Raised if the value is mutated after the receiver has been presented.
  */
 @property (nonatomic, assign) CGFloat rowHeight;
-
-///---------------------------------------
-/// @name Public Accessors
-///---------------------------------------
-
-/**
- @abstract The `LYRClient` object used to initialize the controller.
- */
-@property (nonatomic, readonly) LYRClient *layerClient;
 
 @end
