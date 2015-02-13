@@ -29,30 +29,39 @@ NSString *const LYRUIAvatarImageViewAccessibilityLabel = @"LYRUIAvatarImageViewA
 {
     self = [super init];
     if (self) {
-        // Default UI Appearance
-        _initialsFont = [UIFont systemFontOfSize:14];
-        _initialsColor = [UIColor blackColor];
-        _avatarImageViewDiameter = 30;
-        
-        self.clipsToBounds = YES;
-        self.layer.cornerRadius = _avatarImageViewDiameter / 2;
-        self.contentMode = UIViewContentModeScaleAspectFill;
-        
-        _initialsLabel = [[UILabel alloc] init];
-        _initialsLabel.translatesAutoresizingMaskIntoConstraints = NO;
-        _initialsLabel.textAlignment = NSTextAlignmentCenter;
-        _initialsLabel.adjustsFontSizeToFitWidth = YES;
-        _initialsLabel.minimumScaleFactor = 0.75;
-        _initialsLabel.textColor = _initialsColor;
-        _initialsLabel.font = _initialsFont;
-        [self addSubview:_initialsLabel];
-        
-        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.initialsLabel attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1.0 constant:3]];
-        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.initialsLabel attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeRight multiplier:1.0 constant:-3]];
-        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.initialsLabel attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1.0 constant:3]];
-        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.initialsLabel attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeBottom multiplier:1.0 constant:-3]];
+        [self lyr_commonInit];
     }
     return self;
+}
+
+- (id)initWithCoder:(NSCoder *)aDecoder
+{
+    self = [super initWithCoder:aDecoder];
+    if (self) {
+        [self lyr_commonInit];
+    }
+    return self;
+}
+
+- (void)lyr_commonInit
+{
+    // Default UI Appearance
+    _initialsFont = [UIFont systemFontOfSize:14];
+    _initialsColor = [UIColor blackColor];
+    _avatarImageViewDiameter = 30;
+    
+    self.clipsToBounds = YES;
+    self.layer.cornerRadius = _avatarImageViewDiameter / 2;
+    self.contentMode = UIViewContentModeScaleAspectFill;
+    
+    _initialsLabel = [[UILabel alloc] init];
+    _initialsLabel.translatesAutoresizingMaskIntoConstraints = NO;
+    _initialsLabel.textAlignment = NSTextAlignmentCenter;
+    _initialsLabel.adjustsFontSizeToFitWidth = YES;
+    _initialsLabel.minimumScaleFactor = 0.75;
+    _initialsLabel.textColor = _initialsColor;
+    _initialsLabel.font = _initialsFont;
+    [self addSubview:_initialsLabel];
 }
 
 - (CGSize)intrinsicContentSize
@@ -104,4 +113,12 @@ NSString *const LYRUIAvatarImageViewAccessibilityLabel = @"LYRUIAvatarImageViewA
     _imageViewBackgroundColor = imageViewBackgroundColor;
 }
 
+- (void)configureInitialsLabelConstraint
+{
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:self.initialsLabel attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1.0 constant:3]];
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:self.initialsLabel attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeRight multiplier:1.0 constant:-3]];
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:self.initialsLabel attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1.0 constant:3]];
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:self.initialsLabel attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeBottom multiplier:1.0 constant:-3]];
+}
+    
 @end

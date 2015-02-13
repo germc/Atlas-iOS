@@ -17,14 +17,28 @@ NSString *const LYRUIConversationCollectionViewAccessibilityIdentifier = @"Conve
 {
     self = [super initWithFrame:frame collectionViewLayout:layout];
     if (self) {
-        self.backgroundColor = [UIColor clearColor];
-        self.alwaysBounceVertical = YES;
-        self.bounces = YES;
-        self.accessibilityIdentifier = LYRUIConversationCollectionViewAccessibilityIdentifier;
-        self.keyboardDismissMode = UIScrollViewKeyboardDismissModeInteractive;
-        [self registerReuseIdentifiers];
+        [self lyr_commonInit];
     }
     return self;
+}
+
+- (id)initWithCoder:(NSCoder *)aDecoder
+{
+    self = [super initWithCoder:aDecoder];
+    if (self) {
+        [self lyr_commonInit];
+    }
+    return self;
+}
+
+- (void)lyr_commonInit
+{
+    self.backgroundColor = [UIColor clearColor];
+    self.alwaysBounceVertical = YES;
+    self.bounces = YES;
+    self.accessibilityIdentifier = LYRUIConversationCollectionViewAccessibilityIdentifier;
+    self.keyboardDismissMode = UIScrollViewKeyboardDismissModeInteractive;
+    [self registerReuseIdentifiers];
 }
 
 - (void)registerReuseIdentifiers

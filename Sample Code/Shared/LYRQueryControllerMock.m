@@ -71,7 +71,6 @@
 
 - (void)mockObjectsDidChange:(NSNotification *)notification
 {
-    NSLog(@"Changes %@", notification);
     self.oldObjects = [self.objects copy];
     [self execute:nil];
     if ([self.delegate respondsToSelector:@selector(queryControllerWillChangeContent:)]) {
