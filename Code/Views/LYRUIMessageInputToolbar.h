@@ -21,14 +21,6 @@
 #import <UIKit/UIKit.h>
 #import "LYRUIMessageComposeTextView.h"
 
-/**
- @abstract The `LYRUIMessageInputToolbar` provides a lightweight and customizable class
- that is similar to the message input toolbar in Messages.
- @discussion The class displays two customizable UIButtons seperated by a message input text view.
- The class automatically resizes itself in response to user or system input content. The view also 
- caches any content provided and exposes that content back to a consuming object via the 
- messageParts property.
- */
 @class LYRUIMessageInputToolbar;
 
 extern NSString *const LYRUIMessageInputToolbarDidChangeHeightNotification;
@@ -67,6 +59,14 @@ extern NSString *const LYRUIMessageInputToolbarDidChangeHeightNotification;
 
 @end
 
+/**
+ @abstract The `LYRUIMessageInputToolbar` provides a lightweight and customizable class
+ that is similar to the message input toolbar in Messages.
+ @discussion The class displays two customizable UIButtons seperated by a message input text view.
+ The class automatically resizes itself in response to user or system input content. The view also
+ caches any content provided and exposes that content back to a consuming object via the
+ messageParts property.
+ */
 @interface LYRUIMessageInputToolbar : UIToolbar
 
 //------------------------------
