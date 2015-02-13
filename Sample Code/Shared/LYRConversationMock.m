@@ -1,5 +1,5 @@
 //
-//  LYRConversationMock.m
+//  ATLConversationMock.m
 //  Atlas
 //
 //  Created by Kevin Coleman on 12/8/14.

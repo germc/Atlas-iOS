@@ -20,7 +20,7 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
-#import <LayerUIKit/LayerUIKit.h>
+#import <Atlas/Atlas.h>
 
 typedef NS_ENUM(NSUInteger, LYRClientMockUserName){
     LYRClientMockFactoryNameMarshawn,
@@ -32,7 +32,7 @@ typedef NS_ENUM(NSUInteger, LYRClientMockUserName){
     LYRClientMockFactoryNameDoug
 };
 
-@interface LYRUserMock : NSObject <LYRUIParticipant>
+@interface LYRUserMock : NSObject <ATLParticipant>
 
 @property (nonatomic) NSString *firstName;
 @property (nonatomic) NSString *lastName;

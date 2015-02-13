@@ -1,5 +1,5 @@
 //
-//  LYRClientMock.h
+//  ATLClientMock.h
 //  Atlas
 //
 //  Created by Klemen Verdnik on 10/30/14.

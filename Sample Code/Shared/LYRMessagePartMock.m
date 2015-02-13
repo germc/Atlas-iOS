@@ -1,5 +1,5 @@
 //
-//  LYRMessagePartMock.m
+//  ATLMessagePartMock.m
 //  Atlas
 //
 //  Created by Kevin Coleman on 12/9/14.
@@ -40,7 +40,7 @@
 
 + (instancetype)messagePartWithText:(NSString *)text
 {
-   return [[self alloc] initWithMIMEType:LYRUIMIMETypeTextPlain data:[text dataUsingEncoding:NSUTF8StringEncoding]];
+   return [[self alloc] initWithMIMEType:ATLMIMETypeTextPlain data:[text dataUsingEncoding:NSUTF8StringEncoding]];
 }
 
 - (id)initWithMIMEType:(NSString *)MIMEType data:(NSData *)data

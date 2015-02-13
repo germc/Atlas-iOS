@@ -5,12 +5,12 @@ source 'git@github.com:layerhq/cocoapods-specs.git'
 source 'https://github.com/CocoaPods/Specs.git'
 
 target 'Programmatic' do
-  pod 'LayerUIKit', path: '.'
+  pod 'Atlas', path: '.'
   pod 'LayerKit', '0.9.7'
 end
 
 target 'Storyboard' do
-  pod 'LayerUIKit', path: '.'
+  pod 'Atlas', path: '.'
   pod 'LayerKit', '0.9.7'
 end
 

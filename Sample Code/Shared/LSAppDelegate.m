@@ -1,5 +1,5 @@
 //
-//  LYRUIAppDelegate.m
+//  ATLUIAppDelegate.m
 //  Conversation
 //
 //  Created by Klemen Verdnik on 10/30/14.
@@ -19,9 +19,9 @@
 //
 
 #import "LSAppDelegate.h"
-#import <LayerUIKit/LayerUIKit.h>
+#import <Atlas/Atlas.h>
 #import "LayerKitMock.h"
-#import "LYRUISampleConversationListViewController.h"
+#import "ATLSampleConversationListViewController.h"
 
 @interface LSAppDelegate ()
 
@@ -35,7 +35,7 @@
 {
     LYRUserMock *mockUser = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameRussell];
     LYRClientMock *layerClient = [LYRClientMock layerClientMockWithAuthenticatedUserID:mockUser.participantIdentifier];
-    LYRUISampleConversationListViewController *controller = [LYRUISampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)layerClient];
+    ATLSampleConversationListViewController *controller = [ATLSampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)layerClient];
 
     UINavigationController *rootViewController = [[UINavigationController alloc] initWithRootViewController:controller];
     

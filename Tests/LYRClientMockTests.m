@@ -1,5 +1,5 @@
 //
-//  LYRClientMockTests.m
+//  ATLClientMockTests.m
 //  Atlas
 //
 //  Created by Klemen Verdnik on 10/30/14.
@@ -27,11 +27,11 @@
 
 #import <LayerKit/LayerKit.h>
 #import "LYRClientMock.h"
-#import "LYRUITestInterface.h"
+#import "ATLTestInterface.h"
 
 @interface LYRClientMockTests : XCTestCase
 
-@property (nonatomic) LYRUITestInterface *testInterface;
+@property (nonatomic) ATLTestInterface *testInterface;
 @end
 
 @implementation LYRClientMockTests
