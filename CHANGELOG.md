@@ -1,5 +1,13 @@
 # LayerUIKit Change Log
 
+## 0.7.0
+
+### Public API Changes
+* Changed `setPermanet` to `setDisabled` on  `LYRUIAddressBarViewController`.
+* Changed `setPermanet` to `setDisabled` on  `LYRUIAddressBarViewController`.
+* Changed `updateWithConversationLabel:` to `updateWithConversationTitle:` on `LYRUIConversationPresenting`
+
+
 ## 0.6.0
 
 ### Public API Changes

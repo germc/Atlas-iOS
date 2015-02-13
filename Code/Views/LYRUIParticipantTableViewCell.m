@@ -107,7 +107,7 @@ static CGFloat const LSSelectionIndicatorSize = 30;
         [self addConstraint:self.nameWithoutAvatarLeftConstraint];
         self.avatarImageView.hidden = YES;
     }
-    [self configureAvatarInitials];
+    self.avatarImageView.avatarItem = self.participant;
     [self configureNameLabel];
 }
 
@@ -127,11 +127,6 @@ static CGFloat const LSSelectionIndicatorSize = 30;
 {
     _titleColor = titleColor;
     [self configureNameLabel];
-}
-
-- (void)configureAvatarInitials
-{
-    self.avatarImageView.avatarItem = self.participant;
 }
 
 - (void)configureNameLabel

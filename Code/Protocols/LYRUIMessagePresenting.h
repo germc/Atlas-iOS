@@ -39,7 +39,7 @@
 - (void)updateWithSender:(id<LYRUIParticipant>)sender;
 
 /**
- @abstract Tells the receiver if it should display an avatar item.
+ @abstract A boolean to determine whether or not the receiver should display an avatar item.
  */
 - (void)shouldDisplayAvatarItem:(BOOL)shouldDisplayAvatarItem;
 

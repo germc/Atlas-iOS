@@ -36,7 +36,7 @@
 
 /**
  @abstract Provides a string to display representing the conversation title.
- @param conversation The conversation label to display.
+ @param conversationTitle The conversation title to display.
  */
 - (void)updateWithConversationTitle:(NSString *)conversationTitle;
 

@@ -29,6 +29,10 @@ extern CGFloat const LYRUIAvatarImageDiameter;
  */
 @interface LYRUIAvatarImageView : UIImageView
 
+/**
+ @abstract An object conforming to the `LYRUIAvatarItem` protocol. 
+ @disucssion The object's image or initials will be used for display in the receiver.
+ */
 @property (nonatomic) id<LYRUIAvatarItem> avatarItem;
 
 /**

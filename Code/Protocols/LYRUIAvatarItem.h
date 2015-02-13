@@ -22,7 +22,7 @@
 
 /**
  @abstract Objects conforming to the `LYRUIAvatarItem` protocol will be used to display images or
- initails in a `LYRUIAvatarImageView`. 
+ initials in a `LYRUIAvatarImageView`.
  */
 @protocol LYRUIAvatarItem <NSObject>
 
@@ -34,7 +34,7 @@
 @property (nonatomic, readonly) UIImage *avatarImage;
 
 /** 
- @abstract Returns the avatar initails of the receiver.
+ @abstract Returns the avatar initials of the receiver.
  */
 @property (nonatomic, readonly) NSString *avatarInitials;
 

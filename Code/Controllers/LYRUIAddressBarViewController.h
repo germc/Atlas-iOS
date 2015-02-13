@@ -131,7 +131,7 @@
 - (void)setDisabled;
 
 /**
- @abstract A boolean indicating whether or not the reciever is in a disabled state.
+ @abstract A boolean indicating whether or not the receiver is in a disabled state.
  */
 - (BOOL)isDisabled;
 
