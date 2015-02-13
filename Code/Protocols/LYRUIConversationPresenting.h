@@ -35,13 +35,13 @@
 - (void)presentConversation:(LYRConversation *)conversation;
 
 /**
- @abstract Gives the receiver a string to display representing the conversation label.
+ @abstract Provides a string to display representing the conversation title.
  @param conversation The conversation label to display.
  */
-- (void)updateWithConversationLabel:(NSString *)conversationLabel;
+- (void)updateWithConversationTitle:(NSString *)conversationTitle;
 
 /**
- @abstract Gives the receiver an object conforming to the `LYRUIAvatarItem` protocol.
+ @abstract Provides an object conforming to the `LYRUIAvatarItem` protocol.
  @param avatarItem The object conforming to `LYRUIAvatarItem` protocol.
  @discussion The avatarItem is used to display either an image or initials with an `LYRUIAvatarImageView`
  in an `LYRUIConversationTableViewCell.`

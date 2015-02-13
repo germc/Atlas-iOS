@@ -128,11 +128,11 @@
 /**
  @abstract Informs the receiver to enter a permanent state. When this method is called, user input and search will be disallowed.
  */
-- (void)setPermanent;
+- (void)setDisabled;
 
 /**
- @abstract A boolean indicating whether or not the reciever is in its permanent state.
+ @abstract A boolean indicating whether or not the reciever is in a disabled state.
  */
-- (BOOL)isPermanent;
+- (BOOL)isDisabled;
 
 @end

@@ -43,6 +43,7 @@ typedef NS_ENUM(NSUInteger, LYRUIParticipantPickerSortType) {
  */
 - (void)presentParticipant:(id<LYRUIParticipant>)participant
               withSortType:(LYRUIParticipantPickerSortType)sortType
-     shouldShowAvatarImage:(BOOL)shouldShowAvatarImage;
+      shouldShowAvatarItem:(BOOL)shouldShowAvatarItem;
+
 
 @end

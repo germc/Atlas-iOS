@@ -237,7 +237,7 @@ NSString *const LYRUIConversationTableViewAccessibilityIdentifier = @"Conversati
     
     if ([self.dataSource respondsToSelector:@selector(conversationListViewController:titleForConversation:)]) {
         NSString *conversationTitle = [self.dataSource conversationListViewController:self titleForConversation:conversation];
-        [conversationCell updateWithConversationLabel:conversationTitle];
+        [conversationCell updateWithConversationTitle:conversationTitle];
     } else {
         @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Conversation View Delegate must return a conversation label" userInfo:nil];
     }

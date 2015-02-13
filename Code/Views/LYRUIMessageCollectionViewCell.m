@@ -194,12 +194,12 @@ CGFloat const LYRUIMessageCellMinimumHeight = 10;
     [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeTop multiplier:1.0 constant:0]];
 }
 
-- (void)updateWithParticipant:(id<LYRUIParticipant>)participant
+- (void)updateWithSender:(id<LYRUIParticipant>)sender
 {
     // Implemented by subclass
 }
 
-- (void)shouldDisplayAvatarImage:(BOOL)shouldDisplayAvatarImage
+- (void)shouldDisplayAvatarItem:(BOOL)shouldDisplayAvatarItem
 {
     // Implemented by subclass
 }

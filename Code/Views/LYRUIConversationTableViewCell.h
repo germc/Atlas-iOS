@@ -30,12 +30,12 @@
 /**
  @abstract The font for the conversation label displayed in the cell. Default is 14pt system font.
  */
-@property (nonatomic) UIFont *conversationLabelFont UI_APPEARANCE_SELECTOR;
+@property (nonatomic) UIFont *conversationTitleLabelFont UI_APPEARANCE_SELECTOR;
 
 /**
  @abstract The text color for the conversation label displayed in the cell. Default is black.
  */
-@property (nonatomic) UIColor *conversationLabelColor UI_APPEARANCE_SELECTOR;
+@property (nonatomic) UIColor *conversationTitleLabelColor UI_APPEARANCE_SELECTOR;
 
 /**
  @abstract The font for the last message label displayed in the cell. Default is 12pt system font.

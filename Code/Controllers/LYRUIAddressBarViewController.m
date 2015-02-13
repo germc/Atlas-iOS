@@ -27,7 +27,7 @@
 @property (nonatomic) LYRUIAddressBarContainerView *view;
 @property (nonatomic) UITableView *tableView;
 @property (nonatomic) NSArray *participants;
-@property (nonatomic, getter=isPermanent) BOOL permanent;
+@property (nonatomic, getter=isDisabled) BOOL disabled;
 
 @end
 
@@ -79,12 +79,12 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
 
 #pragma mark - Public Method Implementation
 
-- (void)setPermanent
+- (void)setDisabled
 {
-    if (self.isPermanent) return;
-    self.permanent = YES;
+    if (self.isDisabled) return;
+    self.disabled = YES;
 
-    self.addressBarView.addressBarTextView.text = [self permanentStringForParticipants:self.selectedParticipants];
+    self.addressBarView.addressBarTextView.text = [self disabledStringForParticipants:self.selectedParticipants];
     self.addressBarView.addressBarTextView.textColor = LYRUIGrayColor();
     self.addressBarView.addressBarTextView.userInteractionEnabled = NO;
     self.addressBarView.addressBarTextView.editable = NO;
@@ -115,8 +115,8 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
     NSMutableOrderedSet *addedParticipants = [NSMutableOrderedSet orderedSetWithOrderedSet:selectedParticipants];
     if (existingParticipants) [addedParticipants minusOrderedSet:existingParticipants];
 
-    if (self.isPermanent) {
-        NSString *text = [self permanentStringForParticipants:selectedParticipants];
+    if (self.isDisabled) {
+        NSString *text = [self disabledStringForParticipants:selectedParticipants];
         self.addressBarView.addressBarTextView.text = text;
     } else {
         NSAttributedString *attributedText = [self attributedStringForParticipants:selectedParticipants];
@@ -355,7 +355,7 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
     return participants;
 }
 
-- (NSString *)permanentStringForParticipants:(NSOrderedSet *)participants
+- (NSString *)disabledStringForParticipants:(NSOrderedSet *)participants
 {
     NSMutableArray *names = [NSMutableArray new];
     for (id<LYRUIParticipant> participant in participants) {
