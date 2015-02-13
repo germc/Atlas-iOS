@@ -1,6 +1,6 @@
 //
 //  LYRUIConversationViewTest.m
-//  LayerSample
+//  Atlas
 //
 //  Created by Kevin Coleman on 9/16/14.
 //  Copyright (c) 2014 Layer, Inc. All rights reserved.

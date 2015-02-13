@@ -1,6 +1,6 @@
 //
 //  LYRUIProgressView.m
-//  LayerUIKit
+//  Atlas
 //
 //  Created by Klemen Verdnik on 1/17/15.
 //  Copyright (c) 2015 Layer, Inc. All rights reserved.
