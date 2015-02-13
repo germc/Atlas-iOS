@@ -139,11 +139,11 @@ NSString *const LYRUILocationMIMETypePlaceholderText = @"Attachment: Location";
     self.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     self.backgroundColor = _cellBackgroundColor;
     
-    [self setUpConversationImageViewLayoutContraints];
-    [self setUpConversationLabelLayoutContraints];
-    [self setUpDateLabelLayoutContstraints];
-    [self setUpLastMessageLayoutConstraints];
-    [self setUpUnreadMessageIndicatorLayoutConstraints];
+    [self configureConversationImageViewLayoutContraints];
+    [self configureConversationLabelLayoutContraints];
+    [self configureDateLabelLayoutContstraints];
+    [self configureLastMessageLayoutConstraints];
+    [self configureUnreadMessageIndicatorLayoutConstraints];
 }
 
 - (void)updateConstraints
@@ -295,7 +295,7 @@ NSString *const LYRUILocationMIMETypePlaceholderText = @"Attachment: Location";
     }
 }
 
-- (void)setUpConversationImageViewLayoutContraints
+- (void)configureConversationImageViewLayoutContraints
 {
     [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.conversationImageView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeHeight multiplier:0.6 constant:0]];
     [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.conversationImageView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:self.conversationImageView attribute:NSLayoutAttributeWidth multiplier:1 constant:0]];
@@ -303,7 +303,7 @@ NSString *const LYRUILocationMIMETypePlaceholderText = @"Attachment: Location";
     [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.conversationImageView attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0]];
 }
 
-- (void)setUpConversationLabelLayoutContraints
+- (void)configureConversationLabelLayoutContraints
 {
     self.conversationLabelWithImageLeftConstraint = [NSLayoutConstraint constraintWithItem:self.conversationLabel attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.conversationImageView attribute:NSLayoutAttributeRight multiplier:1.0 constant:10];
     self.conversationLabelWithoutImageLeftConstraint = [NSLayoutConstraint constraintWithItem:self.conversationLabel attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeLeft multiplier:1.0 constant:30];
@@ -311,7 +311,7 @@ NSString *const LYRUILocationMIMETypePlaceholderText = @"Attachment: Location";
     [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.conversationLabel attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeTop multiplier:1.0 constant:LYRUICellVerticalMargin]];
 }
 
-- (void)setUpDateLabelLayoutContstraints
+- (void)configureDateLabelLayoutContstraints
 {
     [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.dateLabel attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeRight multiplier:1.0 constant:0]];
     [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.dateLabel attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self.conversationLabel attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0.0f]];
@@ -319,7 +319,7 @@ NSString *const LYRUILocationMIMETypePlaceholderText = @"Attachment: Location";
     [self.dateLabel setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh + 1 forAxis:UILayoutConstraintAxisHorizontal];
 }
 
-- (void)setUpLastMessageLayoutConstraints
+- (void)configureLastMessageLayoutConstraints
 {
     [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.lastMessageLabel attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.conversationLabel attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0]];
     [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.lastMessageLabel attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeRight multiplier:1.0 constant:0]];
@@ -327,7 +327,7 @@ NSString *const LYRUILocationMIMETypePlaceholderText = @"Attachment: Location";
     [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.lastMessageLabel attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationLessThanOrEqual toItem:self.contentView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:-8]];
 }
 
-- (void)setUpUnreadMessageIndicatorLayoutConstraints
+- (void)configureUnreadMessageIndicatorLayoutConstraints
 {
     [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.unreadMessageIndicator attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:LYRUIUnreadMessageCountLabelSize]];
     [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.unreadMessageIndicator attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:LYRUIUnreadMessageCountLabelSize]];
