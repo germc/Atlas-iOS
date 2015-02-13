@@ -17,16 +17,6 @@
 		25319AD81A8DA89800813103 /* ATLSampleParticipantTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 25319AD01A8DA89800813103 /* ATLSampleParticipantTableViewController.m */; };
 		25319ADB1A8DA8D300813103 /* ATLTestConversationListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 25319ADA1A8DA8D300813103 /* ATLTestConversationListViewController.m */; };
 		25319ADD1A8DA8E600813103 /* Atlas.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 25319ADC1A8DA8E600813103 /* Atlas.storyboard */; };
-		25319AEA1A8DA97F00813103 /* ATLConversationListTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25319ADE1A8DA97F00813103 /* ATLConversationListTest.m */; };
-		25319AEB1A8DA97F00813103 /* ATLConversationTableViewCellTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25319ADF1A8DA97F00813103 /* ATLConversationTableViewCellTest.m */; };
-		25319AEC1A8DA97F00813103 /* ATLConversationViewTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25319AE01A8DA97F00813103 /* ATLConversationViewTest.m */; };
-		25319AED1A8DA97F00813103 /* ATLMessageCollectionViewCellTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25319AE11A8DA97F00813103 /* ATLMessageCollectionViewCellTest.m */; };
-		25319AEE1A8DA97F00813103 /* ATLMessageInputBarTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25319AE21A8DA97F00813103 /* ATLMessageInputBarTest.m */; };
-		25319AEF1A8DA97F00813103 /* ATLParticipantPickerCustomizationTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25319AE31A8DA97F00813103 /* ATLParticipantPickerCustomizationTest.m */; };
-		25319AF01A8DA97F00813103 /* ATLParticipantTableViewControllerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25319AE41A8DA97F00813103 /* ATLParticipantTableViewControllerTest.m */; };
-		25319AF11A8DA97F00813103 /* ATLParticipantTableViewCustomizationTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 25319AE51A8DA97F00813103 /* ATLParticipantTableViewCustomizationTest.m */; };
-		25319AF21A8DA97F00813103 /* ATLTestClasses.m in Sources */ = {isa = PBXBuildFile; fileRef = 25319AE71A8DA97F00813103 /* ATLTestClasses.m */; };
-		25319AF31A8DA97F00813103 /* ATLTestInterface.m in Sources */ = {isa = PBXBuildFile; fileRef = 25319AE91A8DA97F00813103 /* ATLTestInterface.m */; };
 		2B6445637A4A449ABC5750C4 /* libPods-StoryboardTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DFFB13F66B57103A728CA624 /* libPods-StoryboardTests.a */; };
 		377EEF73853F61FE5B5568A2 /* libPods-Storyboard.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 12E6C660682C89FC093228B5 /* libPods-Storyboard.a */; };
 		D2575596FE7E9432B48A0D74 /* libPods-ProgrammaticTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D82E912F9EB0D3AB8BD452A2 /* libPods-ProgrammaticTests.a */; };
@@ -709,28 +699,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				25319AF11A8DA97F00813103 /* ATLParticipantTableViewCustomizationTest.m in Sources */,
 				D676CF101A8C41B8002D9D27 /* LYRConversationMock.m in Sources */,
-				25319AF01A8DA97F00813103 /* ATLParticipantTableViewControllerTest.m in Sources */,
 				25319AD11A8DA89800813103 /* ATLConversationAvatarItem.m in Sources */,
 				D676CF111A8C41B8002D9D27 /* LYRMessageMock.m in Sources */,
 				D676CF121A8C41B8002D9D27 /* LYRMessagePartMock.m in Sources */,
-				25319AF21A8DA97F00813103 /* ATLTestClasses.m in Sources */,
 				D676CF131A8C41B8002D9D27 /* LYRClientMock.m in Sources */,
 				25319AD71A8DA89800813103 /* ATLSampleParticipantTableViewController.m in Sources */,
-				25319AF31A8DA97F00813103 /* ATLTestInterface.m in Sources */,
-				25319AEE1A8DA97F00813103 /* ATLMessageInputBarTest.m in Sources */,
 				D676CF141A8C41B8002D9D27 /* LYRQueryControllerMock.m in Sources */,
 				D676CF151A8C41B8002D9D27 /* LYRMockContentStore.m in Sources */,
 				D676CF161A8C41B8002D9D27 /* LYRUserMock.m in Sources */,
 				D676CF0C1A8C41A0002D9D27 /* LSAppDelegate.m in Sources */,
 				25319AD31A8DA89800813103 /* ATLSampleConversationListViewController.m in Sources */,
-				25319AEC1A8DA97F00813103 /* ATLConversationViewTest.m in Sources */,
-				25319AED1A8DA97F00813103 /* ATLMessageCollectionViewCellTest.m in Sources */,
-				25319AEF1A8DA97F00813103 /* ATLParticipantPickerCustomizationTest.m in Sources */,
 				D6F57E2F1A8BE4AF00B62BD9 /* main.m in Sources */,
-				25319AEA1A8DA97F00813103 /* ATLConversationListTest.m in Sources */,
-				25319AEB1A8DA97F00813103 /* ATLConversationTableViewCellTest.m in Sources */,
 				25319AD51A8DA89800813103 /* ATLSampleConversationViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
