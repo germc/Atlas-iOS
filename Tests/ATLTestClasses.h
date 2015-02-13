@@ -18,7 +18,7 @@
 //  limitations under the License.
 //
 #import <Foundation/Foundation.h>
-#import <LayerUIKit/LayerUIKit.h>
+#import <Atlas/Atlas.h>
 
 @interface ATLTestClasses : NSObject
 
