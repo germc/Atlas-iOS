@@ -105,7 +105,7 @@
  @param date The `NSDate` object to be displayed as a string.
  @return an `NSAttributedString` representing the given date.
  @discussion The date string will be displayed above message cells in section headers. The date represents the `sentAt` date of a message object.
- The string can be customized to appear in whichever fromat your application requires.
+ The string can be customized to appear in whatever format your application requires.
  */
 - (NSAttributedString *)conversationViewController:(LYRUIConversationViewController *)conversationViewController attributedStringForDisplayOfDate:(NSDate *)date;
 
