@@ -37,22 +37,22 @@
 
 - (void)lyr_commonInit
 {
-    self.addressBarTextView = [[LYRUIAddressBarTextView alloc] init];
-    self.addressBarTextView.autoresizingMask = UIViewAutoresizingFlexibleHeight;
-    self.addressBarTextView.translatesAutoresizingMaskIntoConstraints = NO;
-    self.addressBarTextView.autocorrectionType = UITextAutocorrectionTypeNo;
-    [self.addressBarTextView sizeToFit];
-    [self addSubview:self.addressBarTextView];
+    _addressBarTextView = [[LYRUIAddressBarTextView alloc] init];
+    _addressBarTextView.autoresizingMask = UIViewAutoresizingFlexibleHeight;
+    _addressBarTextView.translatesAutoresizingMaskIntoConstraints = NO;
+    _addressBarTextView.autocorrectionType = UITextAutocorrectionTypeNo;
+    [_addressBarTextView sizeToFit];
+    [self addSubview:_addressBarTextView];
     
-    self.addContactsButton = [UIButton buttonWithType:UIButtonTypeContactAdd];
-    self.addContactsButton.translatesAutoresizingMaskIntoConstraints = NO;
-    self.addContactsButton.tintColor = LYRUIBlueColor();
-    [self addSubview:self.addContactsButton];
+    _addContactsButton = [UIButton buttonWithType:UIButtonTypeContactAdd];
+    _addContactsButton.translatesAutoresizingMaskIntoConstraints = NO;
+    _addContactsButton.tintColor = LYRUIBlueColor();
+    [self addSubview:_addContactsButton];
     
-    self.bottomBorder = [[UIView alloc] init];
-    self.bottomBorder.translatesAutoresizingMaskIntoConstraints = NO;
-    self.bottomBorder.backgroundColor = LYRUIGrayColor();
-    [self addSubview:self.bottomBorder];
+    _bottomBorder = [[UIView alloc] init];
+    _bottomBorder.translatesAutoresizingMaskIntoConstraints = NO;
+    _bottomBorder.backgroundColor = LYRUIGrayColor();
+    [self addSubview:_bottomBorder];
     
     [self configureAddressBarTextViewConstrants];
     [self configureAddContactsButtonConstraints];
@@ -61,23 +61,23 @@
 
 - (void)configureAddressBarTextViewConstrants
 {
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:self.addressBarTextView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeWidth multiplier:1.0 constant:-40]];
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:self.addressBarTextView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1.0 constant:0]];
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:self.addressBarTextView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0]];
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:_addressBarTextView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeWidth multiplier:1.0 constant:-40]];
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:_addressBarTextView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1.0 constant:0]];
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:_addressBarTextView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0]];
 }
 
 - (void)configureAddContactsButtonConstraints
 {
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:self.addContactsButton attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.addressBarTextView attribute:NSLayoutAttributeRight multiplier:1.0 constant:8]];
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:self.addContactsButton attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1.0 constant:6]];
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:_addContactsButton attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:_addressBarTextView attribute:NSLayoutAttributeRight multiplier:1.0 constant:8]];
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:_addContactsButton attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1.0 constant:6]];
 }
 
 - (void)configureBottomBorderConstraints
 {
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:self.bottomBorder attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0]];
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:self.bottomBorder attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeBottom multiplier:1.0 constant:-0.5]];
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:self.bottomBorder attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:0.5]];
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:self.bottomBorder attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0]];
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:_bottomBorder attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0]];
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:_bottomBorder attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeBottom multiplier:1.0 constant:-0.5]];
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:_bottomBorder attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:0.5]];
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:_bottomBorder attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0]];
 }
 
 @end
