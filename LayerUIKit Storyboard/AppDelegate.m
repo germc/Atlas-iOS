@@ -11,7 +11,7 @@
 #import "LayerKitMock.h"
 #import "LYRUISampleConversationListViewController.h"
 #import "LYRUISampleConversationViewController.h"
-
+#import "LYRUITestConversationListViewController.h"
 #import <LayerUIKit/LayerUIKit.h>
 
 @interface AppDelegate ()
@@ -25,12 +25,10 @@
 {
     LYRUserMock *mockUser = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameRussell];
     LYRClientMock *layerClient = [LYRClientMock layerClientMockWithAuthenticatedUserID:mockUser.participantIdentifier];
+    [[LYRMockContentStore sharedStore] hydrateConversationsForAuthenticatedUserID:layerClient.authenticatedUserID count:10];
     
-    UINavigationController *rootNavigationController = (UINavigationController *)[[[application delegate] window] rootViewController];
-    LYRUIParticipantTableViewController *controller = rootNavigationController.viewControllers[0];
-    controller.participants = [LYRUserMock allMockParticipants];
-   // controller.layerClient = (LYRClient *)layerClient;
-   // controller.displaysAddressBar = YES;
+    LYRUITestConversationListViewController *controller = (LYRUITestConversationListViewController *)[[[application delegate] window] rootViewController];
+    [controller setLayerClient:layerClient];
     
     return YES;
 }

@@ -181,12 +181,12 @@
 {
     if ([objectClass isSubclassOfClass:[LYRConversation class]]) {
         NSOrderedSet *filteredSet = [NSOrderedSet new];
-//        if (predicate) {
-//            NSPredicate *conversationPredicate = [self constructPredicateForMockPredicate:predicate];
-//            filteredSet = [[NSOrderedSet alloc] initWithSet:[self.conversations filteredSetUsingPredicate:conversationPredicate]];
-//        } else {
+        if (predicate) {
+            NSPredicate *conversationPredicate = [self constructPredicateForMockPredicate:predicate];
+            filteredSet = [[NSOrderedSet alloc] initWithSet:[self.conversations filteredSetUsingPredicate:conversationPredicate]];
+        } else {
             filteredSet = [[NSOrderedSet alloc] initWithSet:self.conversations];
-//        }
+        }
         NSArray *sortedArray = [filteredSet.array sortedArrayUsingDescriptors:sortDescriptor];
         return [[NSOrderedSet alloc] initWithArray:sortedArray];;
     } else if ([objectClass isSubclassOfClass:[LYRMessage class]]) {
@@ -224,11 +224,12 @@
         case LYRPredicateOperatorIsGreaterThanOrEqualTo:
             return [NSPredicate predicateWithFormat:@"SELF.%@ <= %@", predicate.property, predicate.value];
 
-        case LYRPredicateOperatorIsIn:
-            return [NSPredicate predicateWithFormat:@"SELF.%@ IN %@", predicate.property, predicate.value];
-   
+        case LYRPredicateOperatorIsIn: {
+            NSPredicate *predicatee = [NSPredicate predicateWithFormat:@"%@ IN SELF.%@", predicate.value, predicate.property];
+            return predicatee;
+        }
         case LYRPredicateOperatorIsNotIn:
-            return [NSPredicate predicateWithFormat:@"SELF.%@ !IN %@", predicate.property, predicate.value];
+            return [NSPredicate predicateWithFormat:@"%@ !IN SELF.%@", predicate.value, predicate.property];
 
         default:
             break;

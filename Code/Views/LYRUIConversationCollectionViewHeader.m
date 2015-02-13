@@ -49,37 +49,35 @@ CGFloat const LYRUIConversationViewHeaderEmptyHeight = 2;
 {
     self = [super initWithFrame:frame];
     if (self) {
-        self.dateLabel = [[UILabel alloc] init];
-        self.dateLabel.textAlignment = NSTextAlignmentCenter;
-        self.dateLabel.translatesAutoresizingMaskIntoConstraints = NO;
-        [self addSubview:self.dateLabel];
-        
-        self.participantLabel = [[UILabel alloc] init];
-        self.participantLabel.font = _participantLabelFont;
-        self.participantLabel.textColor = _participantLabelTextColor;
-        self.participantLabel.translatesAutoresizingMaskIntoConstraints = NO;
-        [self addSubview:self.participantLabel];
-
-        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.dateLabel attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1.0 constant:LYRUIConversationViewHeaderTopPadding]];
-        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.dateLabel attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0]];
-
-        // To work around an apparent system bug that initially requires the view to have zero width, instead of a required priority, we use a priority one higher than the content compression resistance.
-        NSLayoutConstraint *dateLabelLeftConstraint = [NSLayoutConstraint constraintWithItem:self.dateLabel attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1.0 constant:LYRUIConversationViewHeaderHorizontalPadding];
-        dateLabelLeftConstraint.priority = UILayoutPriorityDefaultHigh + 1;
-        [self addConstraint:dateLabelLeftConstraint];
-
-        NSLayoutConstraint *dateLabelRightConstraint = [NSLayoutConstraint constraintWithItem:self.dateLabel attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationLessThanOrEqual toItem:self attribute:NSLayoutAttributeRight multiplier:1.0 constant:-LYRUIConversationViewHeaderHorizontalPadding];
-        dateLabelRightConstraint.priority = UILayoutPriorityDefaultHigh + 1;
-        [self addConstraint:dateLabelRightConstraint];
-
-        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.participantLabel attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeBottom multiplier:1.0 constant:-LYRUIConversationViewHeaderParticipantNameBottomPadding]];
-        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.participantLabel attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1.0 constant:LYRUIConversationViewHeaderParticipantLeftPadding]];
-
-        NSLayoutConstraint *participantLabelRightConstraint = [NSLayoutConstraint constraintWithItem:self.participantLabel attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationLessThanOrEqual toItem:self attribute:NSLayoutAttributeRight multiplier:1.0 constant:-LYRUIConversationViewHeaderHorizontalPadding];
-        participantLabelRightConstraint.priority = UILayoutPriorityDefaultHigh + 1;
-        [self addConstraint:participantLabelRightConstraint];
+        [self lyr_commonInit];
     }
     return self;
+}
+
+- (id)initWithCoder:(NSCoder *)aDecoder
+{
+    self = [super initWithCoder:aDecoder];
+    if (self) {
+        [self lyr_commonInit];
+    }
+    return self;
+}
+
+- (void)lyr_commonInit
+{
+    self.dateLabel = [[UILabel alloc] init];
+    self.dateLabel.textAlignment = NSTextAlignmentCenter;
+    self.dateLabel.translatesAutoresizingMaskIntoConstraints = NO;
+    [self addSubview:self.dateLabel];
+    
+    self.participantLabel = [[UILabel alloc] init];
+    self.participantLabel.font = _participantLabelFont;
+    self.participantLabel.textColor = _participantLabelTextColor;
+    self.participantLabel.translatesAutoresizingMaskIntoConstraints = NO;
+    [self addSubview:self.participantLabel];
+    
+    [self configureDateLabelConstraints];
+    [self configureParticipantLabelConstraints];
 }
 
 - (void)prepareForReuse
@@ -141,6 +139,32 @@ CGFloat const LYRUIConversationViewHeaderEmptyHeight = 2;
     }
     
     return height;
+}
+
+- (void)configureDateLabelConstraints
+{
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:self.dateLabel attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1.0 constant:LYRUIConversationViewHeaderTopPadding]];
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:self.dateLabel attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0]];
+    
+    // To work around an apparent system bug that initially requires the view to have zero width, instead of a required priority, we use a priority one higher than the content compression resistance.
+    NSLayoutConstraint *dateLabelLeftConstraint = [NSLayoutConstraint constraintWithItem:self.dateLabel attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1.0 constant:LYRUIConversationViewHeaderHorizontalPadding];
+    dateLabelLeftConstraint.priority = UILayoutPriorityDefaultHigh + 1;
+    [self addConstraint:dateLabelLeftConstraint];
+    
+    NSLayoutConstraint *dateLabelRightConstraint = [NSLayoutConstraint constraintWithItem:self.dateLabel attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationLessThanOrEqual toItem:self attribute:NSLayoutAttributeRight multiplier:1.0 constant:-LYRUIConversationViewHeaderHorizontalPadding];
+    dateLabelRightConstraint.priority = UILayoutPriorityDefaultHigh + 1;
+    [self addConstraint:dateLabelRightConstraint];
+}
+
+- (void)configureParticipantLabelConstraints
+{
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:self.participantLabel attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeBottom multiplier:1.0 constant:-LYRUIConversationViewHeaderParticipantNameBottomPadding]];
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:self.participantLabel attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1.0 constant:LYRUIConversationViewHeaderParticipantLeftPadding]];
+    
+    // To work around an apparent system bug that initially requires the view to have zero width, instead of a required priority, we use a priority one higher than the content compression resistance.
+    NSLayoutConstraint *participantLabelRightConstraint = [NSLayoutConstraint constraintWithItem:self.participantLabel attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationLessThanOrEqual toItem:self attribute:NSLayoutAttributeRight multiplier:1.0 constant:-LYRUIConversationViewHeaderHorizontalPadding];
+    participantLabelRightConstraint.priority = UILayoutPriorityDefaultHigh + 1;
+    [self addConstraint:participantLabelRightConstraint];
 }
 
 

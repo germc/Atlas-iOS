@@ -9,6 +9,7 @@
 #import "LYRUISampleConversationViewController.h"
 #import "LYRClientMock.h"
 #import "LYRUIParticipant.h"
+#import "LYRUISampleParticipantTableViewController.h"
 
 @interface LYRUISampleConversationViewController () <LYRUIConversationViewControllerDataSource>
 
@@ -24,7 +25,7 @@
     // Setup the datasource as self, since we're going to
     // handle it in this implementation file.
     self.dataSource = self;
-    
+    self.addressBarController.delegate = self;
     // Setup the dateformatter used by the dataSource.
     self.dateFormatter = [[NSDateFormatter alloc] init];
     self.dateFormatter.dateStyle = NSDateFormatterShortStyle;
@@ -96,4 +97,11 @@
     }
 }
 
+- (void)addressBarViewController:(LYRUIAddressBarViewController *)addressBarViewController didTapAddContactsButton:(UIButton *)addContactsButton
+{
+    NSSet *participants = [LYRUserMock allMockParticipants];
+    LYRUISampleParticipantTableViewController *controller = [LYRUISampleParticipantTableViewController participantTableViewControllerWithParticipants:participants sortType:LYRUIParticipantPickerSortTypeFirstName];
+    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
+    [self.navigationController presentViewController:navigationController animated:YES completion:nil];
+}
 @end

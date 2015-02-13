@@ -37,26 +37,40 @@ CGFloat const LYRUIMessageCellMinimumHeight = 10;
 {
     self = [super initWithFrame:frame];
     if (self) {
-        // Default UIAppearance
-        _messageTextFont = [UIFont systemFontOfSize:17];
-        _messageTextColor = [UIColor blackColor];
-        _messageLinkTextColor = [UIColor blueColor];
-        _bubbleViewColor = [UIColor grayColor];
-        _bubbleViewCornerRadius = 16;
-        
-        _bubbleView = [[LYRUIMessageBubbleView alloc] init];
-        _bubbleView.translatesAutoresizingMaskIntoConstraints = NO;
-        _bubbleView.layer.cornerRadius = _bubbleViewCornerRadius;
-        _bubbleView.backgroundColor = _bubbleViewColor;
-        [self.contentView addSubview:_bubbleView];
-        
-        _avatarImageView = [[LYRUIAvatarImageView alloc] init];
-        _avatarImageView.translatesAutoresizingMaskIntoConstraints = NO;
-        [self.contentView addSubview:_avatarImageView];
-
-        [self configureLayoutConstraints];
+        [self lyr_commonInit];
     }
     return self;
+}
+
+- (id)initWithCoder:(NSCoder *)aDecoder
+{
+    self = [super initWithCoder:aDecoder];
+    if (self) {
+        [self lyr_commonInit];
+    }
+    return self;
+}
+
+- (void)lyr_commonInit
+{
+    // Default UIAppearance
+    _messageTextFont = [UIFont systemFontOfSize:17];
+    _messageTextColor = [UIColor blackColor];
+    _messageLinkTextColor = [UIColor blueColor];
+    _bubbleViewColor = [UIColor grayColor];
+    _bubbleViewCornerRadius = 16;
+    
+    _bubbleView = [[LYRUIMessageBubbleView alloc] init];
+    _bubbleView.translatesAutoresizingMaskIntoConstraints = NO;
+    _bubbleView.layer.cornerRadius = _bubbleViewCornerRadius;
+    _bubbleView.backgroundColor = _bubbleViewColor;
+    [self.contentView addSubview:_bubbleView];
+    
+    _avatarImageView = [[LYRUIAvatarImageView alloc] init];
+    _avatarImageView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.contentView addSubview:_avatarImageView];
+    
+    [self configureLayoutConstraints];
 }
 
 - (void)prepareForReuse

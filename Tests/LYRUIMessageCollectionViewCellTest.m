@@ -28,7 +28,7 @@ extern NSString *const LYRUIConversationCollectionViewAccessibilityIdentifier;
 - (void)setUp
 {
     [super setUp];
-    
+    [[LYRMockContentStore sharedStore] resetContentStore];
     LYRUserMock *mockUser = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameRussell];
     LYRClientMock *layerClient = [LYRClientMock layerClientMockWithAuthenticatedUserID:mockUser.participantIdentifier];
     self.testInterface = [LYRUITestInterface testIntefaceWithLayerClient:layerClient];
@@ -165,14 +165,16 @@ extern NSString *const LYRUIConversationCollectionViewAccessibilityIdentifier;
 
 - (void)testToVerifyAvatarImageBackgroundColor
 {
+    [tester waitForTimeInterval:1];
     [[LYRUIAvatarImageView appearance] setImageViewBackgroundColor:[UIColor redColor]];
     LYRUserMock *mockUser = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameEarl];
     LYRClientMock *layerClient = [LYRClientMock layerClientMockWithAuthenticatedUserID:mockUser.participantIdentifier];
     
     LYRMessagePartMock *part = [LYRMessagePartMock messagePartWithText:@"test"];
     LYRMessageMock *message = [layerClient newMessageWithParts:@[part] options:nil error:nil];
-    [self.conversation sendMessage:message error:nil];
     
+    [self.conversation sendMessage:message error:nil];
+
     LYRUIMessageCollectionViewCell *cell = (LYRUIMessageCollectionViewCell *)[tester waitForCellAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:1]
                                                                      inCollectionViewWithAccessibilityIdentifier:LYRUIConversationCollectionViewAccessibilityIdentifier];
     expect(cell.avatarImageView.imageViewBackgroundColor).to.equal([UIColor redColor]);

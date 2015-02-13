@@ -59,7 +59,7 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
     return self;
 }
 
-- (instancetype)initWithCoder:(NSCoder *)decoder
+- (id)initWithCoder:(NSCoder *)decoder
 {
     self = [super initWithCoder:decoder];
     if (self) {
