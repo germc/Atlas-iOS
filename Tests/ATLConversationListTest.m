@@ -18,7 +18,7 @@
 //  limitations under the License.
 //
 #import <XCTest/XCTest.h>
-#import <LayerUIKit/LayerUIKit.h>
+#import <Atlas/Atlas.h>
 #import "ATLTestInterface.h"
 #import "LYRClientMock.h"
 #import "ATLSampleConversationListViewController.h"
