@@ -393,10 +393,12 @@ NSString *const LYRUIConversationTableViewAccessibilityIdentifier = @"Conversati
     [self.delegate conversationListViewController:self didSearchWithString:searchString completion:^(NSSet *filteredParticipants) {
         if (![searchString isEqualToString:controller.searchBar.text]) return;
         NSSet *participantIdentifiers = [filteredParticipants valueForKey:@"participantIdentifier"];
+        
         LYRQuery *query = [LYRQuery queryWithClass:[LYRConversation class]];
         query.predicate = [LYRPredicate predicateWithProperty:@"participants" operator:LYRPredicateOperatorIsIn value:participantIdentifiers];
         query.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"lastMessage.receivedAt" ascending:NO]];
         self.searchQueryController = [self.layerClient queryControllerWithQuery:query];
+        
         NSError *error;
         [self.searchQueryController execute:&error];
         [self.searchController.searchResultsTableView reloadData];
