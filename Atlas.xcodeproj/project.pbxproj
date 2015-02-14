@@ -37,7 +37,6 @@
 		D6F405FF1A8FDEDD00AE9581 /* warning-black@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D6F405FA1A8FDEDD00AE9581 /* warning-black@2x.png */; };
 		D6F406261A8FDF5900AE9581 /* StoryboardAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = D6F405D61A8FDE1B00AE9581 /* StoryboardAppDelegate.m */; };
 		D6F406291A8FDFBB00AE9581 /* ProgrammaticAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = D6F406281A8FDFBB00AE9581 /* ProgrammaticAppDelegate.m */; };
-		D6F4062A1A8FE20400AE9581 /* ProgrammaticTests-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = D6F4060F1A8FDEEB00AE9581 /* ProgrammaticTests-Info.plist */; };
 		D6F4062B1A8FE20D00AE9581 /* StoryboardTests-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = D6F406101A8FDEEB00AE9581 /* StoryboardTests-Info.plist */; };
 		D6F4062C1A8FE28000AE9581 /* ATLConversationListTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D6F406011A8FDEEB00AE9581 /* ATLConversationListTest.m */; };
 		D6F4062D1A8FE28000AE9581 /* ATLConversationTableViewCellTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D6F406021A8FDEEB00AE9581 /* ATLConversationTableViewCellTest.m */; };
@@ -568,7 +567,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				D6F406371A8FEE4C00AE9581 /* test.png in Resources */,
-				D6F4062A1A8FE20400AE9581 /* ProgrammaticTests-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

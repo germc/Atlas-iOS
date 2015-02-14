@@ -59,7 +59,7 @@
     ATLConversationTableViewCell *cell = (ATLConversationTableViewCell *)[tableView dequeueReusableCellWithIdentifier:@"Test" forIndexPath:indexPath];
 
     [cell presentConversation:[self.querycontroller objectAtIndexPath:indexPath]];
-    [cell updateWithConversationLabel:@"Test Conversat"];
+    [cell updateWithConversationTitle:@"Test Conversat"];
     return cell;
 }
 
