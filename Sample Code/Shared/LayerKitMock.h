@@ -1,5 +1,5 @@
 //
-//  LYRLayerKitMock.h
+//  ATLLayerKitMock.h
 //  Atlas
 //
 //  Created by Kevin Coleman on 12/8/14.
@@ -18,7 +18,7 @@
 //  limitations under the License.
 //
 #import <LayerKit/LayerKit.h>
-#import <LayerUIKit/LayerUIKit.h>
+#import <Atlas/Atlas.h>
 
 #import "LYRClientMock.h"
 #import "LYRConversationMock.h"

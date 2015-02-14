@@ -1,5 +1,5 @@
 //
-//  LYRMessagePartMock.h
+//  ATLMessagePartMock.h
 //  Atlas
 //
 //  Created by Kevin Coleman on 12/9/14.
@@ -19,7 +19,7 @@
 //
 #import <Foundation/Foundation.h>
 #import "LayerKitMock.h"
-#import "LYRUIMessagingUtilities.h"
+#import "ATLMessagingUtilities.h"
 
 @interface LYRMessagePartMock : NSObject
 

@@ -1,5 +1,5 @@
 //
-//  LYRUIAppDelegate.h
+//  ATLUIAppDelegate.h
 //  Conversation
 //
 //  Created by Klemen Verdnik on 10/30/14.
