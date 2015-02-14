@@ -123,4 +123,9 @@
     [self.navigationController dismissViewControllerAnimated:YES completion:nil];
 }
 
+- (void)participantTableViewController:(LYRUIParticipantTableViewController *)participantTableViewController didSearchWithString:(NSString *)searchText completion:(void (^)(NSSet *))completion
+{
+    
+}
+
 @end

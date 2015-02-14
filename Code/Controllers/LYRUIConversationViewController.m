@@ -529,7 +529,7 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
     for (LYRMessage *message in messages) {
         [self sendMessage:message];
     }
-    if (self.addressBarController) [self.addressBarController setDisabled];
+    if (self.addressBarController) [self.addressBarController disable];
 }
 
 - (void)messageInputToolbarDidType:(LYRUIMessageInputToolbar *)messageInputToolbar

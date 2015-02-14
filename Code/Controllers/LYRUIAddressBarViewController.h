@@ -126,9 +126,9 @@
 - (void)selectParticipant:(id<LYRUIParticipant>)participant;
 
 /**
- @abstract Informs the receiver to enter a permanent state. When this method is called, user input and search will be disallowed.
+@abstract Disables user input and searching.
  */
-- (void)setDisabled;
+- (void)disable;
 
 /**
  @abstract A boolean indicating whether or not the receiver is in a disabled state.

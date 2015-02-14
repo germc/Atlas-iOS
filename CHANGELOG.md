@@ -3,8 +3,8 @@
 ## 0.7.0
 
 ### Public API Changes
-* Changed `setPermanet` to `setDisabled` on  `LYRUIAddressBarViewController`.
-* Changed `isPermanet` to `isDisabled` on  `LYRUIAddressBarViewController`.
+* Changed `setPermanent` to `disable` on  `LYRUIAddressBarViewController`.
+* Changed `isPermanent` to `isDisabled` on  `LYRUIAddressBarViewController`.
 * Changed `updateWithConversationLabel:` to `updateWithConversationTitle:` on `LYRUIConversationPresenting`.
 * Chanded `shouldDisplayAvatarImage:` to `shouldDisplayAvatarItem:` on `LYRUIMessagePresenting`.
 * `LYRUIParticipant` now inherits from the `LYRUIAvatarItem` protocol.

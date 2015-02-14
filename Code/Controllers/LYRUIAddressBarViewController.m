@@ -79,7 +79,7 @@ static NSString *const LYRUIAddressBarParticipantAttributeName = @"LYRUIAddressB
 
 #pragma mark - Public Method Implementation
 
-- (void)setDisabled
+- (void)disable
 {
     if (self.isDisabled) return;
     self.disabled = YES;
