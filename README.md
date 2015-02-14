@@ -1,120 +1,235 @@
-#LayerUIKit
-LayerUIKit provides lightweight, customizable user interface components that allow developers to quickly build dynamic and responsive user interfaces on top of the LayerKit SDK.
+# Atlas
 
-##Installation
-LayerUIKit can be easily installed via Cocoapods. Include the following in your Podfile.
+[![Build Status](http://img.shields.io/travis/layerhq/Atlas-iOS/development.svg?style=flat)](https://travis-ci.org/layerhq/Atlas-iOS)
+[![Pod Version](http://img.shields.io/cocoapods/v/Atlas.svg?style=flat)](http://cocoadocs.org/docsets/Atlas/)
+[![Pod Platform](http://img.shields.io/cocoapods/p/Atlas.svg?style=flat)](http://cocoadocs.org/docsets/Atlas/)
+[![Pod License](http://img.shields.io/cocoapods/l/Atlas.svg?style=flat)](https://www.apache.org/licenses/LICENSE-2.0.html)
+
+Atlas is a lightweight, flexible set of user interface components designed to enable developers to quickly and easily integrate native communications experiences into their applications. It was designed and built from the ground up to integrate with [LayerKit](https://github.com/layerhq/releases-ios#layerkit), the native iOS SDK for accessing the [Layer](https://layer.com) communications platform. LayerKit provides developers with a simple, object oriented interface to the rich messaging capabilities provided by the Layer platform. Atlas, in turn, provides ready-made UI components that expose these capabilities directly to users.
+
+![Conversation List](Examples/Screenshots/Conversation_List.png)
+![Conversation View](Examples/Screenshots/Conversation_View.jpg)
+![Conversation Details](Examples/Screenshots/Conversation_Details.jpg)
+
+## Overview
+
+Atlas provides several complete user interface experiences as well as a large library of individual views. It was designed for to address three use cases simulatenously:
+
+1. Provide good looking, high quality implementations of familiar messaging experiences out of the box. By default Atlas is styled to look much like iMessage.
+2. Enable quick and easy branding of the user experience via integration with `UIAppearance` and Interface Builder. All fonts, colors, etc. can be customized via an extensive set of `UIAppearance` selectors. This enables developers to quickly add messaging to an existing application and match the components with the existing style.
+3. Support full customization of the user interface by enabling developers to plug in their own views in any of the experiences. Developers should be able to implement any design while continuing to leverage the scaffolding that is driving the messaging UI's.
+
+Atlas is deeply and directly integrated with LayerKit. This enables maximum integration with the communications API's and keeps the user interface components very clean, simple and lightweight. LayerKit provides three foundational models (Conversations, Messages, and Message Parts) and a querying system for accessing the messaging data. These models and the querying functionality are used to drive the Atlas UI components.
+
+## API Quick Start
+
+The table below details the most important classes in Atlas and is hyperlinked directly to the current header file. All classes are fully documented.
+
+<table>
+    <tr><th colspan="2" style="text-align:center;">Controllers</th></tr>
+    <tr>
+        <td><a href="Code/Controllers/ATLUIAddressBarController.h">ATLUIAddressBarController</a></td>
+        <td>A controller that provides a searchable address input experience for selecting users to message.</td>
+    </tr>
+    <tr>
+        <td><a href="Code/Controllers/ATLConversationListViewController.h">ATLConversationListViewController</a></td>
+        <td>A controller that provides an editable list of all Conversations for the authenticated user.</td>
+    </tr>
+    <tr>
+        <td><a href="Code/Controllers/ATLConversationViewController.h">ATLConversationViewController</a></td>
+        <td>A controller that a scrollable, auto-paginating view of the Messages in a Conversation.</td>
+    </tr>
+    <tr>
+        <td><a href="Code/Controllers/ATLParticipantTableViewController.h">ATLParticipantTableViewController</a></td>
+        <td>A controller that provides a sortable, searchable table view for selecting a set of participants to communicate with.</td>
+    </tr>
+    <tr>
+        <td><a href="Code/Controllers/ATLTypingIndicatorViewController.h">ATLTypingIndicatorViewController</a></td>
+        <td>A controller that provides a typing indicator view that displays a list of participant names.</td>
+    </tr>
+    <tr><th colspan="2" style="text-align:center;">Protocols</th></tr>
+    <tr>
+        <td><a href="Code/Protocols/ATLAvatarItem.h">ATLAvatarItem</a></td>
+        <td>A protocol adopted by an object that wishes to represent a user avatar.</td>
+    </tr>
+    <tr>
+        <td><a href="Code/Protocols/ATLConversationPresenting.h">ATLConversationPresenting</a></td>
+        <td>A protocol adopted by views that present a Layer Conversation object.</td>
+    </tr>
+    <tr>
+        <td><a href="Code/Protocols/ATLMessagePresenting.h">ATLMessagePresenting</a></td>
+        <td>A protocol adopted by views that present a Layer Message object.</td>
+    </tr>
+    <tr>
+        <td><a href="Code/Protocols/ATLParticipant.h">ATLParticipant</a></td>
+        <td>A protocol adopted by objects that wish to represent participants in a Converation.</td>
+    </tr>
+    <tr>
+        <td><a href="Code/Protocols/ATLParticipant.h">ATLParticipantPresenting</a></td>
+        <td>A protocol adopted by objects that wish to represent participants in a Converation.</td>
+    </tr>
+    <tr><th colspan="2" style="text-align:center;">Views</th></tr>
+    <tr>
+        <td><a href="Code/Views/ATLMessageInputToolbar.h">ATLMessageInputToolbar</a></td>
+        <td>A input toolbar that provides a dynamic sizing message input interface.</td>
+    </tr>
+    <tr>
+        <td><a href="Code/Views/ATLMessageComposeTextView.h">ATLMessageComposeTextView</a></td>
+        <td>A flexible, expanding text view with support for text, images and location data.</td>
+    </tr>
+</table>
+
+## Installation
+
+Atlas can be installed directly into your application via CocoaPods or by directly importing the source code files. Please note that Atlas has a direct dependency on LayerKit that must be satisfied in order to build the components.
+
+#### CocoaPods Installation
+
+The recommended path for installation is [CocoaPods](http://cocoapods.org/). CocoaPods provides a simple, versioned dependency management system that automates the tedious and error prone aspects of manually configuring libraries and frameworks. You can add Atlas to your project via CocoaPods by doing the following:
+
+```sh
+$ sudo gem install cocoapods
+$ pod setup
 ```
-pod 'LayerUIKit', git: 'git@github.com:layerhq/LayerUIKit'
+
+Now create a `Podfile` in the root of your project directory and add the following:
+
+```ruby
+pod 'Atlas'
 ```
 
-Please note that LayerUIKit must be used in conjunction with the `LayerKit` SDK . It will be installed as a dependency
+Complete the installation by executing:
 
-##What's Included
-LayerUIKit provides the following components that must be used in conjunction with LayerKit.
+```sh
+$ pod install
+```
 
-1. `LYRUIConversationViewController` - Displays an individual Layer conversation.
-2. `LYRUIConversationListViewController` - Displays a list of Layer conversations.
+These instructions will setup your local CocoaPods environment and import Atlas into your project.
 
-LayerUIKit provides the following components that can be used independently of LayerKit.
+#### Source Code Installation
 
-1. `LYRUIParticipantPicker` - Displays a list of participants conforming to the `LYRUIParticipant` protocol.
-2. `LYRUIMessageInputToolbar` - A message input toolbar similar in functionality to the toolbar used in iMessage.
+If you wish to install Atlas directly into your application from source, then clone the repository and add code and resources to your application:
+
+1. Drag and drop the files from the `Code` and `Resources` directories onto your project, instructing Xcode to copy items into your destination group's folder.
+2. Update your project settings to include the linker flags: `-ObjC -lz`
+3. Add the following Cocoa SDK frameworks to your project: `'CFNetwork', 'Security', 'MobileCoreServices', 'SystemConfiguration', 'CoreLocation'`
+
+Build and run your project to verify installation was successful.
 
 ## Getting Started
-1. **Subclass** - Subclass the `LYRUIConversationViewController` or `LYRUIConversationListViewController`
-2. **Implement** - Both controllers declare Delegate and Datasource protocols. Your subclasses must implement these protocols.
-3. **Customize** - The LayerUIKit leverages the UIAppearance protocol to allow for effortless customization of components.
-4. **Communicate** - Use the LayerKit SDK and the LayerUIKit to build compelling messaging applications.
 
-##MIMETypes
-LayerUIKit provides support for multiple different MIMETypes. Implementing applications should ensure that their LYRMessagePart objects are instantiated with the following MIMEType strings.
+1. **Subclass** - Subclass the `ATLConversationViewController` or `ATLConversationListViewController`
+2. **Implement** - Both controllers declare delegate and data source protocols. Your subclasses must implement these protocols.
+3. **Customize** - The Atlas leverages the `UIAppearance` protocol to allow for effortless customization of components.
+4. **Communicate** - Use the LayerKit SDK and the Atlas to build compelling messaging applications.
 
-```
-NSString *LYRUIMIMETypeTextPlain; /// text/plain
-NSString *LYRUIMIMETypeImagePNG;  /// image/png
-NSString *LYRUIMIMETypeImageJPEG;  /// image/jpeg
-NSString *LYRUIMIMETypeLocation;  /// location
-```
+### MIME Types
 
-##Sychronization Updates
+Layer Messages include an arbitrary number of message parts. Each message part is transported with a developer assigned MIME Type. Atlas utilizes MIME Type information to determine how to handle a particular message part. Developers must take care to assign an appropriate MIME Type for the content or else Atlas will be unable to handle it. For convenience, Atlas exports a number of constants for the MIME Types it supports:
 
-##Components
-###LYRUIConversationListViewController
-The `LYRUIConversationListViewController` provides a customizable UITableViewController subclass for displaying a list of Layer conversations. Conversations are represented by a Conversation label, the latest message content, and the latest message date. The controller handles fetching and ordering conversation based on the latest message date.
-
-####Initializer
-The `LYRUIConversationListViewController` is initialized with a LYRClient object.
-
-```
-LYRUIConversationListViewController *viewController = [LYRUIConversationListViewController conversationListViewControllerWithLayerClient:layerClient];
+```objc
+NSString *ATLMIMETypeTextPlain; // text/plain
+NSString *ATLMIMETypeImagePNG;  // image/png
+NSString *ATLMIMETypeImageJPEG;  // image/jpeg
+NSString *ATLMIMETypeLocation;  // location
 ```
 
-####Customization
-The `LYRUIConverationListViewController` displays `LYRUIConversationTableViewCells`. The cells themselves provide for customization via UIAppearance selectors.
+## Component Details
 
+### ATLConversationListViewController
+
+The `ATLConversationListViewController` provides a customizable UITableViewController subclass for displaying a list of Layer conversations. Conversations are represented by a Conversation label, the latest message content, and the latest message date. The controller handles fetching and ordering conversation based on the latest message date.
+
+#### Initialization
+
+The `ATLConversationListViewController` is initialized with a LYRClient object.
+
+```objc
+LYRUIConversationListViewController *viewController = [ATLConversationListViewController conversationListViewControllerWithLayerClient:layerClient];
 ```
-[[LYRUIConversationTableViewCell appearance] setConversationLabelFont:[UIFont boldSystemFontOfSize:14]];
-[[LYRUIConversationTableViewCell appearance] setConversationLabelColor:[UIColor blackColor]];
+
+#### Customization
+
+The `ATLConverationListViewController` displays `ATLConversationTableViewCells`. The cells themselves provide for customization via UIAppearance selectors.
+
+```objc
+[[ATLConversationTableViewCell appearance] setConversationLabelFont:[UIFont boldSystemFontOfSize:14]];
+[[ATLConversationTableViewCell appearance] setConversationLabelColor:[UIColor blackColor]];
  ```
 
-###LYRUIConversationViewController
-The `LYRUIConversationViewController` provides a customizable `UICollectionViewController` subclass for displaying individual Layer conversations. The controller is initialized with and `LYRClient` object and an `LYRConversation` object. It handles fetching, displaying and sending messages via LayerKit. The controller leverages the `LYRUIMessageInputToolbar` object to allow for text and content input.
+### ATLConversationViewController
 
-####Initializer
+The `ATLConversationViewController` provides a customizable `UICollectionViewController` subclass for displaying individual Layer conversations. The controller is initialized with and `LYRClient` object and an `LYRConversation` object. It handles fetching, displaying and sending messages via LayerKit. The controller leverages the `ATLMessageInputToolbar` object to allow for text and content input.
 
-```
-LYRUIConversationViewController *viewController = [LYRUIConversationViewController conversationViewControllerWithConversation:conversation layerClient:self.layerClient];
-```
+#### Initialization
 
-####Customization
-The `LYRUIConverationViewController` displays both incoming and outgoing flavors of `LYRUIMessageCollectionViewCell`. The cells themselves provide for customization via UIAppearance selectors.
-
-```
-[[LYRUIOutgoingMessageCollectionViewCell appearance] setMessageTextColor:[UIColor whiteColor]];
-[[LYRUIOutgoingMessageCollectionViewCell appearance] setMessageTextFont:[UIFont systemFontOfSize:14]];
-[[LYRUIOutgoingMessageCollectionViewCell appearance] setBubbleViewColor:[UIColor blueColor]];
+```objc
+LYRUIConversationViewController *viewController = [ATLConversationViewController conversationViewControllerWithConversation:conversation layerClient:self.layerClient];
 ```
 
-###LYRUIParticipantPicker
-The `LYRUIParticipantPickerController` provides a `UINavigationController` subclass that displays a list of users conforming to the `LYRUIParticipant` protocol. The controller provides support for sorting and ordering participants based on either first or last name. The controller also provides multi-selection support and an optional selection indicator.
+#### Customization
 
-####Initializer
-The `LYRUIParticipantPickerController` is initialized with an object conforming to the `LYRUIParticipantPickerDataSource` and a sortType.
+The `ATLConverationViewController` displays both incoming and outgoing flavors of `ATLMessageCollectionViewCell`. The cells themselves provide for customization via UIAppearance selectors.
 
+```objc
+[[ATLOutgoingMessageCollectionViewCell appearance] setMessageTextColor:[UIColor whiteColor]];
+[[ATLOutgoingMessageCollectionViewCell appearance] setMessageTextFont:[UIFont systemFontOfSize:14]];
+[[ATLOutgoingMessageCollectionViewCell appearance] setBubbleViewColor:[UIColor blueColor]];
 ```
+
+### ATLParticipantPicker
+
+The `ATLParticipantPickerController` provides a `UINavigationController` subclass that displays a list of users conforming to the `ATLParticipant` protocol. The controller provides support for sorting and ordering participants based on either first or last name. The controller also provides multi-selection support and an optional selection indicator.
+
+#### Initialization
+
+The `ATLParticipantPickerController` is initialized with an object conforming to the `ATLParticipantPickerDataSource` and a sortType.
+
+```objc
 LYRUIParticipantPickerSortType sortType = LYRUIParticipantPickerControllerSortTypeFirst;
-LYRUIParticipantPickerController *controller = [LYRUIParticipantPickerController participantPickerWithDataSource:dataSource
+LYRUIParticipantPickerController *controller = [ATLParticipantPickerController participantPickerWithDataSource:dataSource
                                                                                                         sortType:sortType];
 ```
 
-####Customization
-The `LYRUIParticipantPickerController` displays `LYRUIParticipantTableViewCells`. The cells themselves provide for customization via UIAppearance selectors.
+#### Customization
+
+The `ATLParticipantPickerController` displays `ATLParticipantTableViewCells`. The cells themselves provide for customization via UIAppearance selectors.
+
+```objc
+[[ATLParticipantTableViewCell appearance] setTitleColor:[UIColor blackColor]];
+[[ATLParticipantTableViewCell appearance] setTitleFont:[UIFont systemFontOfSize:14]];
+```
+
+### ATLMessageInputToolbar
+
+The `ATLMessageInputToolbar` provides a `UIToolbar` subclass that supports text and image input. The toolbar handles auto-resizing itself relative to its content.
+
+#### Initialization
+
+The `ATLMessageInputToolbar` is initialized with a `UIViewController` object and sets itself as the inputAccessoryView of the ViewController. In order to do this, the `inputAcccessoryView` property of the view controller must first be re-declared in the implementation file of the view controller class.
 
 ```
-[[LYRUIParticipantTableViewCell appearance] setTitleColor:[UIColor blackColor]];
-[[LYRUIParticipantTableViewCell appearance] setTitleFont:[UIFont systemFontOfSize:14]];
-```
-
-###LYRUIMessageInputToolbar
-The `LYRMessageInputToolbar` provides a `UIToolbar` subclass that supports text and image input. The toolbar handles auto-resizing itself relative to its content.
-
-####Initializer
-The `LYRMessageInputToolbar` is initialized with a `UIViewController` object and sets itself as the inputAccessoryView of the ViewController. In order to do this, the `inputAcccessoryView` property of the view controller must first be re-declared in the implementation file of the view controller class.
-
-```
-self.inputAccessoryView = [LYRUIMessageInputToolbar inputToolBarWithViewController:self];
+self.inputAccessoryView = [ATLMessageInputToolbar inputToolBarWithViewController:self];
 ```
 Once initialized, the controller manages resizing itself relative to its content, and animation so that it sticks to the top of the keyboard.
 
-###Presenters
-While the LayerUIKit does provide highly customizable TableView and CollectionView cells, advanced customization of the UI components can be done by implementing custom cells and setting the component's `cellClass` property. The LayerUIKit component CollectionView and TableView Cells share a common Presenter pattern where each cell displayed in a Component conforms to a specific presenter protocol. If you would like to swap out the default cells for cells that you build, this can easily accomplished via implementing cells that conform to the presenter patterns and setting the `cellClass` property of the controller.
+### Presenters
 
-The presenters are `LYRUIParticipantPresenting`, `LYRUIConversationPresenting`, and `LYRUIMessagePresenting`.
+While the Atlas does provide highly customizable TableView and CollectionView cells, advanced customization of the UI components can be done by implementing custom cells and setting the component's `cellClass` property. The Atlas component CollectionView and TableView Cells share a common Presenter pattern where each cell displayed in a Component conforms to a specific presenter protocol. If you would like to swap out the default cells for cells that you build, this can easily accomplished via implementing cells that conform to the presenter patterns and setting the `cellClass` property of the controller.
 
-##Contributing
+The presenters are `ATLParticipantPresenting`, `ATLConversationPresenting`, and `ATLMessagePresenting`.
 
-##Contact
-LayerKit was developed in San Francisco by the Layer team. If you have any technical questions or concerns about this project feel free to reach out to engineers responsible for the development:
+## Contributing
+
+Atlas is an Open Source project maintained by Layer. Feedback and contributions are always welcome and the maintainers try to process patches as quickly as possible. Feel free to open up a Pull Request or Issue on Github.
+
+## License
+
+Atlas is licensed under the terms of the [Apache License, version 2.0](http://www.apache.org/licenses/LICENSE-2.0.html). Please see the [LICENSE](LICENSE) file for full details.
+
+## Contact
+
+Atlas was developed in San Francisco by the Layer team. If you have any technical questions or concerns about this project feel free to reach out to engineers responsible for the development:
 
 * [Kevin Coleman](mailto:kevin@layer.com)
 * [Klemen Verdnik](mailto:klemen@layer.com)
