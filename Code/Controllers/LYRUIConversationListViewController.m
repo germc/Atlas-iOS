@@ -23,11 +23,14 @@
 
 static NSString *const LYRUIConversationCellReuseIdentifier = @"LYRUIConversationCellReuseIdentifier";
 
-@interface LYRUIConversationListViewController () <UIActionSheetDelegate, LYRQueryControllerDelegate>
+@interface LYRUIConversationListViewController () <UIActionSheetDelegate, LYRQueryControllerDelegate, UISearchBarDelegate, UISearchControllerDelegate, UISearchDisplayDelegate>
 
 @property (nonatomic) LYRQueryController *queryController;
+@property (nonatomic) LYRQueryController *searchQueryController;
 @property (nonatomic) LYRConversation *conversationToDelete;
 @property (nonatomic) LYRConversation *conversationSelectedBeforeContentChange;
+@property (nonatomic) UISearchDisplayController *searchController;
+@property (nonatomic) UISearchBar *searchBar;
 @property (nonatomic) BOOL hasAppeared;
 
 @end
@@ -104,11 +107,28 @@ NSString *const LYRUIConversationTableViewAccessibilityIdentifier = @"Conversati
     self.tableView.accessibilityLabel = LYRUIConversationTableViewAccessibilityLabel;
     self.tableView.accessibilityIdentifier = LYRUIConversationTableViewAccessibilityIdentifier;
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
+    
+    self.searchBar = [[UISearchBar alloc] initWithFrame:CGRectZero];
+    [self.searchBar sizeToFit];
+    self.searchBar.translucent = NO;
+    self.searchBar.accessibilityLabel = @"Search Bar";
+    self.searchBar.delegate = self;
+    self.tableView.tableHeaderView = self.searchBar;
+    
+    self.searchController = [[UISearchDisplayController alloc] initWithSearchBar:self.searchBar contentsController:self];
+    self.searchController.delegate = self;
+    self.searchController.searchResultsDelegate = self;
+    self.searchController.searchResultsDataSource = self;
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    // Hide the search bar
+    if (!self.hasAppeared) {
+        CGFloat contentOffset = self.tableView.contentOffset.y + self.searchBar.frame.size.height;
+        [self.tableView setContentOffset:CGPointMake(0, contentOffset)];
+    }
     [self setupConversationDataSource];
     if (!self.hasAppeared) {
         [self.tableView registerClass:self.cellClass forCellReuseIdentifier:LYRUIConversationCellReuseIdentifier];
@@ -357,6 +377,42 @@ NSString *const LYRUIConversationTableViewAccessibilityIdentifier = @"Conversati
             [self.tableView selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
         }
         self.conversationSelectedBeforeContentChange = nil;
+    }
+}
+
+#pragma mark - UISearchDisplayDelegate
+
+
+- (void)searchDisplayController:(UISearchDisplayController *)controller didLoadSearchResultsTableView:(UITableView *)tableView
+{
+    tableView.rowHeight = self.rowHeight;
+    [tableView registerClass:self.cellClass forCellReuseIdentifier:LYRUIConversationCellReuseIdentifier];
+}
+
+- (BOOL)searchDisplayController:(UISearchDisplayController *)controller shouldReloadTableForSearchString:(NSString *)searchString
+{
+    [self.delegate conversationListViewController:self didSearchForText:searchString completion:^(NSSet *filteredParticipants) {
+        if (![searchString isEqualToString:controller.searchBar.text]) return;
+        NSSet *participantIdentifiers = [filteredParticipants valueForKey:@"participantIdentifier"];
+        
+        LYRQuery *query = [LYRQuery queryWithClass:[LYRConversation class]];
+        query.predicate = [LYRPredicate predicateWithProperty:@"participants" operator:LYRPredicateOperatorIsIn value:participantIdentifiers];
+        query.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"lastMessage.receivedAt" ascending:NO]];
+        self.searchQueryController = [self.layerClient queryControllerWithQuery:query];
+        
+        NSError *error;
+        [self.searchQueryController execute:&error];
+        [self.searchController.searchResultsTableView reloadData];
+    }];
+    return NO;
+}
+
+- (LYRQueryController *)queryController
+{
+    if (self.searchController.isActive) {
+        return _searchQueryController;
+    } else {
+        return _queryController;
     }
 }
 
