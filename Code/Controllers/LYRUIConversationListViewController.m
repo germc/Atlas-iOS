@@ -125,9 +125,10 @@ NSString *const LYRUIConversationTableViewAccessibilityIdentifier = @"Conversati
 {
     [super viewWillAppear:animated];
     // Hide the search bar
-    CGFloat contentOffset = self.tableView.contentOffset.y + self.searchBar.frame.size.height;
-    [self.tableView setContentOffset:CGPointMake(0, contentOffset)];
-    
+    if (!self.hasAppeared) {
+        CGFloat contentOffset = self.tableView.contentOffset.y + self.searchBar.frame.size.height;
+        [self.tableView setContentOffset:CGPointMake(0, contentOffset)];
+    }
     [self setupConversationDataSource];
     if (!self.hasAppeared) {
         [self.tableView registerClass:self.cellClass forCellReuseIdentifier:LYRUIConversationCellReuseIdentifier];
