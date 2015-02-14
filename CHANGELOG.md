@@ -4,13 +4,13 @@
 
 ### Public API Changes
 * Changed `setPermanet` to `setDisabled` on  `LYRUIAddressBarViewController`.
-* Changed `setPermanet` to `setDisabled` on  `LYRUIAddressBarViewController`.
+* Changed `isPermanet` to `isDisabled` on  `LYRUIAddressBarViewController`.
 * Changed `updateWithConversationLabel:` to `updateWithConversationTitle:` on `LYRUIConversationPresenting`.
 * Chanded `shouldDisplayAvatarImage:` to `shouldDisplayAvatarItem:` on `LYRUIMessagePresenting`.
 * `LYRUIParticipant` now inherits from the `LYRUIAvatarItem` protocol.
 * Changed `presentParticipant:withSortType:shouldShowAvatarImage:` to `presentParticipant:withSortType:shouldShowAvatarItem:` on `LYRUIParticipantPresenting`
 * Added `avatarItem` property to `LYRUIAvatarImageView`.
-* Removed `setINitialsForFullName:`
+* Removed `setInitialsForFullName:`
 * Changed `conversationLabelColor` to `conversationTitleLabelColor` in `LYRUIConversationCell`.
 * Changed `conversationLabelFont` to `conversationTitleLabelFont` in `LYRUIConversationCell`.
 
