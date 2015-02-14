@@ -61,7 +61,7 @@
  @abstract Informs the delegate that a search has been made with the following search string.
  @param conversationListViewController The controller in which the search was made.
  @param searchString The search string that was just used for search.
- @param completion The completion block that should be called when the results are fetched from the search.
+ @param completion The completion block that should be called when the results are fetched from the search. `filteredParticipants` shoud be an `NSSet` of participants whose `fullName` contains the search string.
  */
 - (void)conversationListViewController:(LYRUIConversationListViewController *)conversationListViewController didSearchWithString:(NSString *)searchText completion:(void (^)(NSSet *filteredParticipants))completion;
 

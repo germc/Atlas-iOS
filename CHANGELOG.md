@@ -13,6 +13,7 @@
 * Removed `setInitialsForFullName:`
 * Changed `conversationLabelColor` to `conversationTitleLabelColor` in `LYRUIConversationCell`.
 * Changed `conversationLabelFont` to `conversationTitleLabelFont` in `LYRUIConversationCell`.
+* Added `conversationListViewController:didSearchWithString:completion:` to `LYRUIConversationListViewController.`
 
 ## 0.6.0
 
