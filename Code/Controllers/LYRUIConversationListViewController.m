@@ -391,7 +391,7 @@ NSString *const LYRUIConversationTableViewAccessibilityIdentifier = @"Conversati
 
 - (BOOL)searchDisplayController:(UISearchDisplayController *)controller shouldReloadTableForSearchString:(NSString *)searchString
 {
-    [self.delegate conversationListViewController:self didSearchWithString:searchString completion:^(NSSet *filteredParticipants) {
+    [self.delegate conversationListViewController:self didSearchForText:searchString completion:^(NSSet *filteredParticipants) {
         if (![searchString isEqualToString:controller.searchBar.text]) return;
         NSSet *participantIdentifiers = [filteredParticipants valueForKey:@"participantIdentifier"];
         
