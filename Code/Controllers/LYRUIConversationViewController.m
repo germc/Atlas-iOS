@@ -38,15 +38,15 @@
 @property (nonatomic) LYRUIConversationView *view;
 @property (nonatomic) LYRUITypingIndicatorViewController *typingIndicatorViewController;
 @property (nonatomic) CGFloat keyboardHeight;
-@property (nonatomic) BOOL shouldDisplayAvatarImage;
-@property (nonatomic) NSLayoutConstraint *typingIndicatorViewBottomConstraint;
+@property (nonatomic) BOOL shouldDisplayAvatarItem;
+@property (nonatomic) BOOL showingMoreMessagesIndicator;
+@property (nonatomic) BOOL hasAppeared;
 @property (nonatomic) NSMutableArray *typingParticipantIDs;
 @property (nonatomic) NSMutableArray *objectChanges;
 @property (nonatomic) NSHashTable *sectionHeaders;
 @property (nonatomic) NSHashTable *sectionFooters;
+@property (nonatomic) NSLayoutConstraint *typingIndicatorViewBottomConstraint;
 @property (nonatomic, getter=isFirstAppearance) BOOL firstAppearance;
-@property (nonatomic) BOOL showingMoreMessagesIndicator;
-@property (nonatomic) BOOL hasAppeared;
 
 @end
 
@@ -173,7 +173,7 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
 {
     [super viewDidAppear:animated];
     self.hasAppeared = YES;
-    if (self.addressBarController && !self.addressBarController.isPermanent) {
+    if (self.addressBarController && !self.addressBarController.isDisabled) {
         [self.addressBarController.addressBarView.addressBarTextView becomeFirstResponder];
     }
 }
@@ -264,7 +264,7 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
 
 - (void)configureControllerForChangedParticipants
 {
-    if (self.addressBarController && ![self.addressBarController isPermanent]) {
+    if (self.addressBarController && ![self.addressBarController isDisabled]) {
         [self configureConversationForAddressBar];
         return;
     }
@@ -281,7 +281,7 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
 {
     NSMutableSet *otherParticipantIDs = [self.conversation.participants mutableCopy];
     if (self.layerClient.authenticatedUserID) [otherParticipantIDs removeObject:self.layerClient.authenticatedUserID];
-    self.shouldDisplayAvatarImage = otherParticipantIDs.count > 1;
+    self.shouldDisplayAvatarItem = otherParticipantIDs.count > 1;
 }
 
 # pragma mark - UICollectionViewDataSource
@@ -400,16 +400,15 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
 
 #pragma mark - Reusable View Configuration
 
-// LAYER - Extracting the proper message part and analyzing its properties to determine the cell configuration.
 - (void)configureCell:(UICollectionViewCell<LYRUIMessagePresenting> *)cell forMessage:(LYRMessage *)message indexPath:(NSIndexPath *)indexPath
 {
     [cell presentMessage:message];
-    [cell shouldDisplayAvatarImage:self.shouldDisplayAvatarImage];
+    [cell shouldDisplayAvatarItem:self.shouldDisplayAvatarItem];
     
     if ([self shouldDisplayAvatarImageAtIndexPath:indexPath]) {
-        [cell updateWithParticipant:[self participantForIdentifier:message.sentByUserID]];
+        [cell updateWithSender:[self participantForIdentifier:message.sentByUserID]];
     } else {
-        [cell updateWithParticipant:nil];
+        [cell updateWithSender:nil];
     }
 }
 
@@ -492,7 +491,7 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
 
 - (BOOL)shouldDisplayAvatarImageAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (!self.shouldDisplayAvatarImage) return NO;
+    if (!self.shouldDisplayAvatarItem) return NO;
    
     LYRMessage *message = [self.conversationDataSource messageAtCollectionViewIndexPath:indexPath];
     if ([message.sentByUserID isEqualToString:self.layerClient.authenticatedUserID]) {
@@ -530,7 +529,7 @@ static NSInteger const LYRUIMoreMessagesSection = 0;
     for (LYRMessage *message in messages) {
         [self sendMessage:message];
     }
-    if (self.addressBarController) [self.addressBarController setPermanent];
+    if (self.addressBarController) [self.addressBarController disable];
 }
 
 - (void)messageInputToolbarDidType:(LYRUIMessageInputToolbar *)messageInputToolbar

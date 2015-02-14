@@ -234,7 +234,7 @@ NSString *const LYRUIParticipantTableViewAccessibilityIdentifier = @"Participant
 - (void)configureCell:(UITableViewCell<LYRUIParticipantPresenting> *)cell atIndexPath:(NSIndexPath *)indexPath forTableView:(UITableView *)tableView
 {
     id<LYRUIParticipant> participant = [self participantForTableView:tableView atIndexPath:indexPath];
-    [cell presentParticipant:participant withSortType:self.sortType shouldShowAvatarImage:YES];
+    [cell presentParticipant:participant withSortType:self.sortType shouldShowAvatarItem:YES];
 }
 
 #pragma mark - UITableViewDelegate

@@ -23,7 +23,7 @@
 #import "LYRUIParticipant.h"
 #import "LYRUISampleParticipantTableViewController.h"
 
-@interface LYRUISampleConversationViewController () <LYRUIConversationViewControllerDataSource>
+@interface LYRUISampleConversationViewController () <LYRUIConversationViewControllerDataSource, LYRUIParticipantTableViewControllerDelegate>
 
 @property (nonatomic) NSDateFormatter *dateFormatter;
 
@@ -116,4 +116,16 @@
     UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
     [self.navigationController presentViewController:navigationController animated:YES completion:nil];
 }
+
+- (void)participantTableViewController:(LYRUIParticipantTableViewController *)participantTableViewController didSelectParticipant:(id<LYRUIParticipant>)participant
+{
+    [self.addressBarController selectParticipant:participant];
+    [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)participantTableViewController:(LYRUIParticipantTableViewController *)participantTableViewController didSearchWithString:(NSString *)searchText completion:(void (^)(NSSet *))completion
+{
+    
+}
+
 @end

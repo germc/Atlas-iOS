@@ -74,6 +74,7 @@ NSString *const LYRUIAvatarImageViewAccessibilityLabel = @"LYRUIAvatarImageViewA
     _initialsLabel.textColor = _initialsColor;
     _initialsLabel.font = _initialsFont;
     [self addSubview:_initialsLabel];
+    [self configureInitialsLabelConstraint];
 }
 
 - (CGSize)intrinsicContentSize
@@ -81,23 +82,14 @@ NSString *const LYRUIAvatarImageViewAccessibilityLabel = @"LYRUIAvatarImageViewA
     return CGSizeMake(self.avatarImageViewDiameter, self.avatarImageViewDiameter);
 }
 
-- (void)setInitialsForFullName:(NSString *)fullName
+- (void)setAvatarItem:(id<LYRUIAvatarItem>)avatarItem
 {
-    if (fullName) {
-        NSMutableString *initials = [NSMutableString new];
-        fullName = [fullName stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-        NSArray *names = [fullName componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-        if (names.count > 2) {
-            NSString *firstName = names.firstObject;
-            NSString *lastName = names.lastObject;
-            names = @[firstName, lastName];
-        }
-        for (NSString *name in names) {
-            NSString *initial = [name substringToIndex:1].uppercaseString;
-            [initials appendString:initial];
-        }
-        self.initialsLabel.text = initials;
+    if (avatarItem.avatarImage) {
+        self.image = avatarItem.avatarImage;
+    } else if (avatarItem.avatarInitials) {
+        self.initialsLabel.text = avatarItem.avatarInitials;
     }
+    _avatarItem = avatarItem;
 }
 
 - (void)setInitialsColor:(UIColor *)initialsColor

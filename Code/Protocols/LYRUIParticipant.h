@@ -19,12 +19,12 @@
 //
 
 #import <Foundation/Foundation.h>
-
+#import "LYRUIAvatarItem.h"
 /**
  @abstract The `LYRUIParticipant` protocol must be adopted by objects wishing to represent Layer
  participants in the user interface.
  */
-@protocol LYRUIParticipant <NSObject>
+@protocol LYRUIParticipant <NSObject, LYRUIAvatarItem>
 
 /**
  @abstract The first name of the participant as it should be presented in the user interface.
@@ -40,11 +40,6 @@
  @abstract The full name of the participant as it should be presented in the user interface.
  */
 @property (nonatomic, readonly) NSString *fullName;
-
-/**
-@abstract Returns the avatar image of the receiver.
-*/
-@property (nonatomic, readonly) UIImage *avatarImage;
 
 /**
  @abstract The unique identifier of the participant as it should be used for Layer addressing.

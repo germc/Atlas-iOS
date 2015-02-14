@@ -29,12 +29,18 @@
 @interface LYRUIParticipantTableViewCell : UITableViewCell <LYRUIParticipantPresenting>
 
 /**
- @abstract Appearance customization properties.
+ @abstract The font for the title label displayed in the cell. Default is 14pt system font.
  */
 @property (nonatomic) UIFont *titleFont UI_APPEARANCE_SELECTOR;
 
+/**
+ @abstract The bold font for the title label displayed in the cell. Default is 14pt bold system font.
+ */
 @property (nonatomic) UIFont *boldTitleFont UI_APPEARANCE_SELECTOR;
 
+/**
+ @abstract The color for the title label displayed in the cell. Default is black.
+ */
 @property (nonatomic) UIColor *titleColor UI_APPEARANCE_SELECTOR;
 
 @end

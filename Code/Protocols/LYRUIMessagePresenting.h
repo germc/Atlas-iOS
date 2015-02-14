@@ -34,13 +34,13 @@
 - (void)presentMessage:(LYRMessage *)message;
 
 /**
- @abstract Informs the receiver of its participant.
+ @abstract Informs the receiver of its sender.
  */
-- (void)updateWithParticipant:(id<LYRUIParticipant>)participant;
+- (void)updateWithSender:(id<LYRUIParticipant>)sender;
 
 /**
- @abstract Tells the receiver if it should display an avatar image.
+ @abstract A boolean to determine whether or not the receiver should display an avatar item.
  */
-- (void)shouldDisplayAvatarImage:(BOOL)shouldDisplayAvatarImage;
+- (void)shouldDisplayAvatarItem:(BOOL)shouldDisplayAvatarItem;
 
 @end

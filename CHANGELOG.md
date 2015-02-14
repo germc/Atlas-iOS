@@ -1,5 +1,19 @@
 # LayerUIKit Change Log
 
+## 0.7.0
+
+### Public API Changes
+* Changed `setPermanent` to `disable` on  `LYRUIAddressBarViewController`.
+* Changed `isPermanent` to `isDisabled` on  `LYRUIAddressBarViewController`.
+* Changed `updateWithConversationLabel:` to `updateWithConversationTitle:` on `LYRUIConversationPresenting`.
+* Chanded `shouldDisplayAvatarImage:` to `shouldDisplayAvatarItem:` on `LYRUIMessagePresenting`.
+* `LYRUIParticipant` now inherits from the `LYRUIAvatarItem` protocol.
+* Changed `presentParticipant:withSortType:shouldShowAvatarImage:` to `presentParticipant:withSortType:shouldShowAvatarItem:` on `LYRUIParticipantPresenting`
+* Added `avatarItem` property to `LYRUIAvatarImageView`.
+* Removed `setInitialsForFullName:`
+* Changed `conversationLabelColor` to `conversationTitleLabelColor` in `LYRUIConversationCell`.
+* Changed `conversationLabelFont` to `conversationTitleLabelFont` in `LYRUIConversationCell`.
+
 ## 0.6.0
 
 ### Public API Changes

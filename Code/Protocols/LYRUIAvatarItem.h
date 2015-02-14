@@ -20,12 +20,22 @@
 
 #import <Foundation/Foundation.h>
 
+/**
+ @abstract Objects conforming to the `LYRUIAvatarItem` protocol will be used to display images or
+ initials in a `LYRUIAvatarImageView`.
+ */
 @protocol LYRUIAvatarItem <NSObject>
 
 @optional
 
-- (NSString *)avatarItemFullName;
+/**
+ @abstract Returns the avatar image of the receiver.
+ */
+@property (nonatomic, readonly) UIImage *avatarImage;
 
-- (UIImage *)avatarItemImage;
+/** 
+ @abstract Returns the avatar initials of the receiver.
+ */
+@property (nonatomic, readonly) NSString *avatarInitials;
 
 @end

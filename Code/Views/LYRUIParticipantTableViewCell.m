@@ -93,12 +93,12 @@ static CGFloat const LSSelectionIndicatorSize = 30;
     self.avatarImageView.backgroundColor = preservedAvatarBackgroundColor;
 }
 
-- (void)presentParticipant:(id<LYRUIParticipant>)participant withSortType:(LYRUIParticipantPickerSortType)sortType shouldShowAvatarImage:(BOOL)shouldShowAvatarImage
+- (void)presentParticipant:(id<LYRUIParticipant>)participant withSortType:(LYRUIParticipantPickerSortType)sortType shouldShowAvatarItem:(BOOL)shouldShowAvatarItem
 {
     self.accessibilityLabel = [participant fullName];
     self.participant = participant;
     self.sortType = sortType;
-    if (shouldShowAvatarImage) {
+    if (shouldShowAvatarItem) {
         [self removeConstraint:self.nameWithoutAvatarLeftConstraint];
         [self addConstraint:self.nameWithAvatarLeftConstraint];
         self.avatarImageView.hidden = NO;
@@ -107,7 +107,7 @@ static CGFloat const LSSelectionIndicatorSize = 30;
         [self addConstraint:self.nameWithoutAvatarLeftConstraint];
         self.avatarImageView.hidden = YES;
     }
-    [self configureAvatarInitials];
+    self.avatarImageView.avatarItem = self.participant;
     [self configureNameLabel];
 }
 
@@ -127,12 +127,6 @@ static CGFloat const LSSelectionIndicatorSize = 30;
 {
     _titleColor = titleColor;
     [self configureNameLabel];
-}
-
-- (void)configureAvatarInitials
-{
-    NSString *participantName = self.participant.fullName.length ? self.participant.fullName : @"Unknown Participant";
-    [self.avatarImageView setInitialsForFullName:participantName];
 }
 
 - (void)configureNameLabel

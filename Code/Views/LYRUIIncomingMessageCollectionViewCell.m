@@ -61,10 +61,10 @@ NSString *const LYRUIIncomingMessageCellIdentifier = @"LYRUIIncomingMessageCellI
     [self configureConstraintsForIncomingMessage];
 }
 
-- (void)shouldDisplayAvatarImage:(BOOL)shouldDisplayAvatarImage
+- (void)shouldDisplayAvatarItem:(BOOL)shouldDisplayAvatarItem
 {
     NSArray *constraints = [self.contentView constraints];
-    if (shouldDisplayAvatarImage) {
+    if (shouldDisplayAvatarItem) {
         if ([constraints containsObject:self.bubbleWithAvatarLeftConstraint]) return;
         [self.contentView removeConstraint:self.bubbleWithoutAvatarLeftConstraint];
         [self.contentView addConstraint:self.bubbleWithAvatarLeftConstraint];
@@ -76,15 +76,11 @@ NSString *const LYRUIIncomingMessageCellIdentifier = @"LYRUIIncomingMessageCellI
     [self setNeedsUpdateConstraints];
 }
 
-- (void)updateWithParticipant:(id<LYRUIParticipant>)participant
+- (void)updateWithSender:(id<LYRUIParticipant>)sender
 {
-    if (participant) {
+    if (sender) {
         self.avatarImageView.hidden = NO;
-        if (participant.avatarImage) {
-            [self.avatarImageView setImage:participant.avatarImage];
-        } else {
-            [self.avatarImageView setInitialsForFullName:participant.fullName];
-        }
+        self.avatarImageView.avatarItem = sender;
     } else {
         self.avatarImageView.hidden = YES;
     }

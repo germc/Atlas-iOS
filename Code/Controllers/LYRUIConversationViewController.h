@@ -185,21 +185,6 @@
  */
 @property (nonatomic, weak) id<LYRUIConversationViewControllerDataSource> dataSource;
 
-/**
- @abstract Register a class for use in creating message collection view cells.
- @param reuseIdentifier The string to be associated with the class.
- */
-- (void)registerClass:(Class<LYRUIMessagePresenting>)cellClass forMessageCellWithReuseIdentifier:(NSString *)reuseIdentifier;
-
-/**
- @abstract Returns the `UICollectionViewCell` corresponding to the provided `LYRMessage` object.
- @param message The LYRMessage object used to acquire the cell.
- @return A `UICollectionViewCell` object conforming to the `LYRUIMessagePresenting` protocol.
- @discussion If the provided `LYRMessage` object is not in the current results set of the controller, or the corresponding cell is
- not currently visible, the method may return nil.
- */
-- (UICollectionViewCell<LYRUIMessagePresenting> *)collectionViewCellForMessage:(LYRMessage *)message;
-
 ///---------------------------------------
 /// @name Configuration
 ///---------------------------------------
@@ -211,8 +196,8 @@
 @property (nonatomic) NSTimeInterval dateDisplayTimeInterval;
 
 /**
- @abstract Informs the receiver if it should marks messages as read.
- @discussion If `YES`, the controller will mark all messages in the conversation as read when it comes on screen.
+@abstract A Boolean value that determines whether or not the controller marks all messages as read.
+ @discussion If `YES`, the controller will mark all messages in the conversation as read when it is presented.
  @default `YES`.
  */
 @property (nonatomic) BOOL marksMessagesAsRead;
@@ -237,6 +222,23 @@
  */
 @property (nonatomic) LYRUIMessageInputToolbar *messageInputToolbar;
 
+///---------------------------------------
+/// @name Custom Collection View Cells
+///---------------------------------------
 
+/**
+ @abstract Register a class for use in creating message collection view cells.
+ @param reuseIdentifier The string to be associated with the class.
+ */
+- (void)registerClass:(Class<LYRUIMessagePresenting>)cellClass forMessageCellWithReuseIdentifier:(NSString *)reuseIdentifier;
+
+/**
+ @abstract Returns the `UICollectionViewCell` corresponding to the provided `LYRMessage` object.
+ @param message The LYRMessage object used to acquire the cell.
+ @return A `UICollectionViewCell` object conforming to the `LYRUIMessagePresenting` protocol.
+ @discussion If the provided `LYRMessage` object is not in the current results set of the controller, or the corresponding cell is
+ not currently visible, the method may return nil.
+ */
+- (UICollectionViewCell<LYRUIMessagePresenting> *)collectionViewCellForMessage:(LYRMessage *)message;
 
 @end
