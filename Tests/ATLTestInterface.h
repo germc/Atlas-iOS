@@ -29,7 +29,6 @@
 #import <KIF/KIF.h>
 #import "KIFSystemTestActor+ViewControllerActions.h"
 #import <Atlas/Atlas.h>
-#import "LSAppDelegate.h"
 #import "ATLTestClasses.h"
 #import "LYRMockContentStore.h"
 

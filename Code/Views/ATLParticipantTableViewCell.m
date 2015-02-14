@@ -109,6 +109,7 @@ static CGFloat const LSSelectionIndicatorSize = 30;
     }
     [self configureAvatarInitials];
     [self configureNameLabel];
+    self.accessibilityLabel = participant.fullName;
 }
 
 - (void)setTitleFont:(UIFont *)titleFont

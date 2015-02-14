@@ -18,10 +18,10 @@
 //  limitations under the License.
 //
 #import <UIKit/UIKit.h>
-#import "LSAppDelegate.h"
+#import "ProgrammaticAppDelegate.h"
 
 int main(int argc, char * argv[]) {
     @autoreleasepool {
-        return UIApplicationMain(argc, argv, nil, NSStringFromClass([LSAppDelegate class]));
+        return UIApplicationMain(argc, argv, nil, NSStringFromClass([ProgrammaticAppDelegate class]));
     }
 }

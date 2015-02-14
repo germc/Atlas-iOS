@@ -41,7 +41,6 @@
 - (void)setUp
 {
     [super setUp];
-    
     LYRUserMock *mockUser = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameRussell];
     LYRClientMock *layerClient = [LYRClientMock layerClientMockWithAuthenticatedUserID:mockUser.participantIdentifier];
     self.testInterface = [ATLTestInterface testIntefaceWithLayerClient:layerClient];
@@ -78,11 +77,11 @@
     LYRConversationMock *conversation1 = [self.testInterface conversationWithParticipants:[NSSet setWithObject:mockUser1.participantIdentifier] lastMessageText:message1];
     
     NSString *message2 = @"Message2";
-    LYRUserMock *userMock2 = [LYRUserMock randomUser];
+    LYRUserMock *userMock2 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameBobby];
     LYRConversationMock *conversation2 = [self.testInterface conversationWithParticipants:[NSSet setWithObject:userMock2.participantIdentifier] lastMessageText:message2];
     
     NSString *message3 = @"Message3";
-    LYRUserMock *userMock3 = [LYRUserMock randomUser];
+    LYRUserMock *userMock3 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameEarl];
     LYRConversationMock *conversation3 =  [self.testInterface conversationWithParticipants:[NSSet setWithObject:userMock3.participantIdentifier] lastMessageText:message3];
     
     [tester waitForViewWithAccessibilityLabel:[self.testInterface conversationLabelForConversation:conversation1]];

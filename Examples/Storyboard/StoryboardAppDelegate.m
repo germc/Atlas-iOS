@@ -17,19 +17,16 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 //
-#import "AppDelegate.h"
-#import "LSAppDelegate.h"
+#import "StoryboardAppDelegate.h"
 #import "LayerKitMock.h"
 #import "ATLSampleConversationListViewController.h"
-#import "ATLSampleConversationViewController.h"
-#import "ATLTestConversationListViewController.h"
 #import <LayerUIKit/LayerUIKit.h>
 
-@interface AppDelegate ()
+@interface StoryboardAppDelegate ()
 
 @end
 
-@implementation AppDelegate
+@implementation StoryboardAppDelegate
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
