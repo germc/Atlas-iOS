@@ -37,7 +37,7 @@ CHECKOUT OPTIONS:
     :git: git@github.com:layerhq/LYRCountDownLatch.git
 
 SPEC CHECKSUMS:
-  Atlas: 4b19ffb79e6a9e4b34da48b78822289ddfca6a18
+  Atlas: 12ec273de13f18588ce3f0aa6ed99e5f586a9f1f
   Expecta: ee641011fe10aa1855d487b40e4976dac50ec342
   KIF: 068074b24dd455025e7f2a488ba4fb07b9ce047b
   KIFViewControllerActions: 6d680038a329864d62526928dd89556c0177bc55

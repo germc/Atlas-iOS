@@ -11,7 +11,7 @@ Pod::Spec.new do |s|
   s.platform                    = :ios, '7.0'
   s.requires_arc                = true
   s.source_files                = 'Code/**/*.{h,m}'
-  s.ios.resource_bundle         = {'AtlasResources' => 'Resources/*'}
+  s.ios.resource_bundle         = {'Resources' => 'Resources/*'}
   s.header_mappings_dir         = 'Code'
   s.ios.frameworks              = 'UIKit, CoreLocation, MobileCoreServices, '
   s.ios.deployment_target       = '7.0'
