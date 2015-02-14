@@ -1,8 +1,20 @@
 # LayerUIKit Change Log
 
+## 0.8.0
+
+### Public API Changes
+
+* Changed all class prefixes from `LYRUI` to `ATL`.
+* Added `conversationListViewController:didSearchForText:completion` to `ATLConversationListViewController`.
+
+### Enhancements
+
+* Added search functionality to the `ATLConversationListViewController`.
+
 ## 0.7.0
 
 ### Public API Changes
+
 * Changed `setPermanent` to `disable` on  `LYRUIAddressBarViewController`.
 * Changed `isPermanent` to `isDisabled` on  `LYRUIAddressBarViewController`.
 * Changed `updateWithConversationLabel:` to `updateWithConversationTitle:` on `LYRUIConversationPresenting`.
