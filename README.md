@@ -13,7 +13,7 @@ Atlas is a lightweight, flexible set of user interface components designed to en
 
 ## Overview
 
-Atlas provides several complete user interface experiences as well as a large library of individual views. It was designed for to address three use cases simulatenously:
+Atlas provides several complete user interface experiences as well as a large library of individual views. It was designed to address three use cases simulatenously:
 
 1. Provide good looking, high quality implementations of familiar messaging experiences out of the box. By default Atlas is styled to look much like iMessage.
 2. Enable quick and easy branding of the user experience via integration with `UIAppearance` and Interface Builder. All fonts, colors, etc. can be customized via an extensive set of `UIAppearance` selectors. This enables developers to quickly add messaging to an existing application and match the components with the existing style.
