@@ -18,6 +18,7 @@
 //  limitations under the License.
 //
 #import "ATLTestInterface.h"
+#import "ProgrammaticAppDelegate.h"
 
 @interface ATLTestInterface ()
 
@@ -56,18 +57,18 @@
 {
     if (!self.layerClient.authenticatedUserID) return @"Not auth'd";
     NSMutableSet *participantIdentifiers = [conversation.participants mutableCopy];
-    [participantIdentifiers minusSet:[NSSet setWithObject:self.layerClient.authenticatedUserID]];
+    [participantIdentifiers removeObject:self.layerClient.authenticatedUserID];
     
-    if (!participantIdentifiers.count > 0) return @"Personal Conversation";
+    if (participantIdentifiers.count == 0) return @"Personal Conversation";
     
-    NSMutableSet *participants = [[LYRUserMock participantsForIdentifiers:conversation.participants] mutableCopy];
-    if (!participants.count > 0) return @"No Matching Participants";
+    NSMutableSet *participants = [[LYRUserMock participantsForIdentifiers:participantIdentifiers] mutableCopy];
+    if (participants.count == 0) return @"No Matching Participants";
     
     // Put the latest message sender's name first
     LYRUserMock *firstUser;
-    if (![conversation.lastMessage.sentByUserID isEqualToString:self.layerClient.authenticatedUserID]){
+    if (![conversation.lastMessage.sentByUserID isEqualToString:self.layerClient.authenticatedUserID]) {
         if (conversation.lastMessage) {
-            NSPredicate *searchPredicate = [NSPredicate predicateWithFormat:@"SELF.userID IN %@", conversation.lastMessage.sentByUserID];
+            NSPredicate *searchPredicate = [NSPredicate predicateWithFormat:@"SELF.participantIdentifier IN %@", conversation.lastMessage.sentByUserID];
             LYRUserMock *lastMessageSender = [[[participants filteredSetUsingPredicate:searchPredicate] allObjects] lastObject];
             if (lastMessageSender) {
                 firstUser = lastMessageSender;
@@ -88,11 +89,9 @@
 
 - (void)setRootViewController:(UIViewController *)controller
 {
-    LSAppDelegate *delegate = [[UIApplication sharedApplication] delegate];
-    if (!delegate.window) {
-        delegate.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-        [delegate.window makeKeyAndVisible];
-    }
+    ProgrammaticAppDelegate *delegate = [[UIApplication sharedApplication] delegate];
+    delegate.window.rootViewController = nil;
+    
     UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
     [delegate.window setRootViewController:navigationController];
     [delegate.window makeKeyAndVisible];
@@ -100,12 +99,9 @@
 
 - (void)pushViewController:(UIViewController *)controller
 {
-    LSAppDelegate *delegate = [[UIApplication sharedApplication] delegate];
-    if (!delegate.window.rootViewController) {
-        delegate.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-        delegate.window.rootViewController = controller;
-        [delegate.window makeKeyAndVisible];
-    }
+    ProgrammaticAppDelegate *delegate = [[UIApplication sharedApplication] delegate];
+    delegate.window.rootViewController = nil;
+    
     [delegate.window setRootViewController:controller];
     [delegate.window makeKeyAndVisible];
 }

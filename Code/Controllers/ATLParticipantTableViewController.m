@@ -98,6 +98,7 @@ NSString *const ATLParticipantTableViewAccessibilityIdentifier = @"Participant T
     self.searchBar.translucent = NO;
     self.searchBar.accessibilityLabel = @"Search Bar";
     self.searchBar.delegate = self;
+    self.searchBar.userInteractionEnabled = YES;
     self.tableView.tableHeaderView = self.searchBar;
     
     self.searchController = [[UISearchDisplayController alloc] initWithSearchBar:self.searchBar contentsController:self];
@@ -111,7 +112,6 @@ NSString *const ATLParticipantTableViewAccessibilityIdentifier = @"Participant T
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    if (!self.sortType) self.sortType = ATLParticipantPickerSortTypeFirstName;
     if (!self.hasAppeared) {
         self.tableView.rowHeight = self.rowHeight;
         self.tableView.allowsMultipleSelection = self.allowsMultipleSelection;

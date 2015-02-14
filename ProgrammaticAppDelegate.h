@@ -1,6 +1,6 @@
 //
-//  main.m
-//  Storyboard
+//  ProgrammaticAppDelegate.h
+//  Atlas Storyboard
 //
 //  Created by Kevin Coleman on 2/11/15.
 //  Copyright (c) 2015 Layer. All rights reserved.
@@ -17,11 +17,11 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 //
-#import <UIKit/UIKit.h>
-#import "StoryboardAppDelegate.h"
 
-int main(int argc, char * argv[]) {
-    @autoreleasepool {
-        return UIApplicationMain(argc, argv, nil, NSStringFromClass([StoryboardAppDelegate class]));
-    }
-}
+#import <UIKit/UIKit.h>
+
+@interface ProgrammaticAppDelegate : UIResponder <UIApplicationDelegate>
+
+@property (strong, nonatomic) UIWindow *window;
+
+@end

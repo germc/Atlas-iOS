@@ -125,16 +125,14 @@ NSString *const ATLParticipantTableViewAccessibilityIdentifier;
     NSSet *participants = [LYRUserMock allMockParticipants];
     NSArray *sortedParticipantsFirst = [[participants allObjects] sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"firstName" ascending:YES]]];
     LYRUserMock *firstUser = (LYRUserMock *)[sortedParticipantsFirst firstObject];
-    ATLParticipantTableViewCell *cell = (ATLParticipantTableViewCell *)[tester waitForCellAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:1]
-                                                                   inTableViewWithAccessibilityIdentifier:ATLParticipantTableViewAccessibilityIdentifier];
+    ATLParticipantTableViewCell *cell = (ATLParticipantTableViewCell *)[tester waitForViewWithAccessibilityLabel:firstUser.fullName];
     expect(cell.nameLabel.text).to.equal(firstUser.fullName);
     
     NSArray *sortedParticipantsLast = [[participants allObjects] sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"lastName" ascending:YES]]];
     self.controller = [ATLSampleParticipantTableViewController participantTableViewControllerWithParticipants:participants sortType:ATLParticipantPickerSortTypeLastName];
     [self setRootViewController];
     firstUser = (LYRUserMock *)[sortedParticipantsLast firstObject];
-    cell = (ATLParticipantTableViewCell *)[tester waitForCellAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]
-                                    inTableViewWithAccessibilityIdentifier:@"Participant TableView Controller"];
+    cell = (ATLParticipantTableViewCell *)[tester waitForViewWithAccessibilityLabel:firstUser.fullName];
     expect(cell.nameLabel.text).to.equal(firstUser.fullName);
 }
 
@@ -159,10 +157,11 @@ NSString *const ATLParticipantTableViewAccessibilityIdentifier;
     self.controller.delegate = delegateMock;
     [self setRootViewController];
     [[[delegateMock expect] andDo:^(NSInvocation *invocation) {
-        //
+    //
     }] participantTableViewController:[OCMArg any] didSearchWithString:[OCMArg any] completion:nil];
-    
-    [tester enterText:@"Search" intoViewWithAccessibilityLabel:@"Search"];
+
+    [tester tapViewWithAccessibilityLabel:@"Search Bar"];
+    [tester enterText:@"S" intoViewWithAccessibilityLabel:@"Search Bar"];
     [delegateMock verify];
 }
 
@@ -173,9 +172,11 @@ NSString *const ATLParticipantTableViewAccessibilityIdentifier;
     self.controller.delegate = delegateMock;
     [[[delegateMock expect] andDo:^(NSInvocation *invocation) {
 
+        
     }] participantTableViewController:[OCMArg any] didSelectParticipant:[OCMArg any]];
     
-    [tester tapRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] inTableViewWithAccessibilityIdentifier:@"Participant TableView Controller"];
+    LYRUserMock *mock = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameBobby];
+    [tester tapViewWithAccessibilityLabel:mock.fullName];
     [delegateMock verify];
 }
 
