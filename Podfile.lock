@@ -37,12 +37,12 @@ CHECKOUT OPTIONS:
     :git: git@github.com:layerhq/LYRCountDownLatch.git
 
 SPEC CHECKSUMS:
-  Atlas: 12ec273de13f18588ce3f0aa6ed99e5f586a9f1f
+  Atlas: 4ddf9640b847d6227c8e49ba9149a38a5f36a25a
   Expecta: ee641011fe10aa1855d487b40e4976dac50ec342
   KIF: 068074b24dd455025e7f2a488ba4fb07b9ce047b
-  KIFViewControllerActions: 6d680038a329864d62526928dd89556c0177bc55
+  KIFViewControllerActions: 73085acd975ebbfc954f7895ca1aaa9faa36b3c6
   LayerKit: 11c3fe473d16c95ea5d0d660ecd4494875c5b540
-  LYRCountDownLatch: 2187adb9194b398e7f62b00da1e1fb42c22baaaf
+  LYRCountDownLatch: 72a444f729ca5a8c6157c0b58f335a44e6702b48
   OCMock: ecdd510b73ef397f2f97274785c1e87fd147c49f
 
-COCOAPODS: 0.35.0
+COCOAPODS: 0.36.0.beta.2
