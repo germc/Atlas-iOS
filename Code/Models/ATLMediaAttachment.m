@@ -19,8 +19,8 @@
 //
 
 #import "ATLMediaAttachment.h"
-#import "LYRUIMessagingUtilities.h"
-#import "LYRUIMediaInputStream.h"
+#import "ATLMessagingUtilities.h"
+#import "ATLMediaInputStream.h"
 #import <MobileCoreServices/MobileCoreServices.h>
 
 /**
@@ -30,6 +30,8 @@
  @return An `ALAsset` if successfully retrieved from asset library, otherwise `nil`.
  */
 ALAsset *ATLMediaAttachmentFromAssetURL(NSURL *assetURL, ALAssetsLibrary *assetLibrary);
+
+static char const ATLMediaAttachmentAsyncToBlockingQueueName[] = "com.layer.Atlas.ATLMediaAttachment.blocking";
 
 @interface ATLMediaAttachment ()
 
@@ -70,16 +72,16 @@ ALAsset *ATLMediaAttachmentFromAssetURL(NSURL *assetURL, ALAssetsLibrary *assetL
         // --------------------------------------------------------------------
         // Prepare the input stream and MIMEType for the full size media.
         // --------------------------------------------------------------------
-        _mediaInputStream = [LYRUIMediaInputStream mediaInputStreamWithAssetURL:asset.defaultRepresentation.url];
+        _mediaInputStream = [ATLMediaInputStream mediaInputStreamWithAssetURL:asset.defaultRepresentation.url];
         _mediaMIMEType = (__bridge NSString *)(UTTypeCopyPreferredTagWithClass((__bridge CFStringRef)(asset.defaultRepresentation.UTI), kUTTagClassMIMEType));
         
         // --------------------------------------------------------------------
         // Prepare the input stream and MIMEType for the thumbnail.
         // --------------------------------------------------------------------
-        _thumbnailInputStream = [LYRUIMediaInputStream mediaInputStreamWithAssetURL:asset.defaultRepresentation.url];
-        ((LYRUIMediaInputStream *)_thumbnailInputStream).maximumSize = thumbnailSize;
-        ((LYRUIMediaInputStream *)_thumbnailInputStream).compressionQuality = 0.5;
-        _thumbnailMIMEType = LYRUIMIMETypeImageJPEGPreview;
+        _thumbnailInputStream = [ATLMediaInputStream mediaInputStreamWithAssetURL:asset.defaultRepresentation.url];
+        ((ATLMediaInputStream *)_thumbnailInputStream).maximumSize = thumbnailSize;
+        ((ATLMediaInputStream *)_thumbnailInputStream).compressionQuality = 0.5;
+        _thumbnailMIMEType = ATLMIMETypeImageJPEGPreview;
         
         // --------------------------------------------------------------------
         // Prepare the input stream and MIMEType for the metadata
@@ -126,7 +128,7 @@ ALAsset *ATLMediaAttachmentFromAssetURL(NSURL *assetURL, ALAssetsLibrary *assetL
             @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"Cannot initialize %@ with `nil` image.", self.class] userInfo:nil];
         }
         _mediaType = ATLMediaAttachmentTypeImage;
-        _mediaInputStream = [LYRUIMediaInputStream mediaInputStreamWithImage:image];
+        _mediaInputStream = [ATLMediaInputStream mediaInputStreamWithImage:image];
         _inputImage = image;
         _thumbnailSize = thumbnailSize;
         _textRepresentation = @"Attachment: Image";
@@ -142,7 +144,7 @@ ALAsset *ATLMediaAttachmentFromAssetURL(NSURL *assetURL, ALAssetsLibrary *assetL
             @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"Cannot initialize %@ with `nil` text.", self.class] userInfo:nil];
         }
         _mediaType = ATLMediaAttachmentTypeText;
-        _mediaMIMEType = LYRUIMIMETypeTextPlain;
+        _mediaMIMEType = ATLMIMETypeTextPlain;
         _mediaInputStream = [NSInputStream inputStreamWithData:[text dataUsingEncoding:NSUTF8StringEncoding]];
         _textRepresentation = text;
     }
@@ -157,8 +159,9 @@ ALAsset *ATLMediaAttachmentFromAssetURL(NSURL *assetURL, ALAssetsLibrary *assetL
             @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"Cannot initialize %@ with `nil` location.", self.class] userInfo:nil];
         }
         _mediaType = ATLMediaAttachmentTypeText;
-        _mediaMIMEType = LYRUIMIMETypeTextPlain;
-        NSData *data = [NSJSONSerialization dataWithJSONObject:@{LYRUILocationLatitudeKey: @(location.coordinate.latitude), LYRUILocationLongitudeKey:  @(location.coordinate.longitude)} options:0 error:nil];
+        _mediaMIMEType = ATLMIMETypeTextPlain;
+        NSData *data = [NSJSONSerialization dataWithJSONObject:@{ ATLLocationLatitudeKey: @(location.coordinate.latitude),
+                                                                  ATLLocationLongitudeKey:  @(location.coordinate.longitude) } options:0 error:nil];
         _mediaInputStream = [NSInputStream inputStreamWithData:data];
         _textRepresentation = @"Attachment: Location";
     }
@@ -195,7 +198,7 @@ ALAsset *ATLMediaAttachmentFromAssetURL(NSURL *assetURL, ALAssetsLibrary *assetL
 - (CGRect)attachmentBoundsForTextContainer:(NSTextContainer *)textContainer proposedLineFragment:(CGRect)lineFrag glyphPosition:(CGPoint)position characterIndex:(NSUInteger)charIndex
 {
     CGRect systemImageRect = [super attachmentBoundsForTextContainer:textContainer proposedLineFragment:lineFrag glyphPosition:position characterIndex:charIndex];
-    return LYRUIImageRectConstrainedToSize(systemImageRect.size, CGSizeMake(150, 150));
+    return ATLImageRectConstrainedToSize(systemImageRect.size, CGSizeMake(150, 150));
 }
 
 @end
@@ -203,7 +206,7 @@ ALAsset *ATLMediaAttachmentFromAssetURL(NSURL *assetURL, ALAssetsLibrary *assetL
 ALAsset *ATLMediaAttachmentFromAssetURL(NSURL *assetURL, ALAssetsLibrary *assetLibrary)
 {
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-    dispatch_queue_t asyncQueue = dispatch_queue_create("com.layer.LYRUIAssetTestObtainLastImage.async", DISPATCH_QUEUE_CONCURRENT);
+    dispatch_queue_t asyncQueue = dispatch_queue_create(ATLMediaAttachmentAsyncToBlockingQueueName, DISPATCH_QUEUE_CONCURRENT);
     __block ALAsset *resultAsset;
     dispatch_async(asyncQueue, ^{
         [assetLibrary assetForURL:assetURL resultBlock:^(ALAsset *asset) {
