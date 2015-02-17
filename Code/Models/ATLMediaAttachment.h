@@ -94,26 +94,53 @@ typedef NS_ENUM(NSUInteger, ATLMediaAttachmentType) {
 /// @name Media Item Attributes
 ///----------------------------
 
+/**
+ @abstract Describes what kind of media type does the attachment contain.
+ */
 @property (nonatomic, readonly) ATLMediaAttachmentType mediaType;
+/**
+ @abstract Returns the thumbnail size in pixels the media attachment was initialized with.
+ */
 @property (nonatomic, readonly) NSUInteger thumbnailSize;
 
 ///----------------------------
 /// @name Consumable Attributes
 ///----------------------------
 
-/* A text representation of the media, useful for push alert texts or cells that don't display media items (like conversation list view) */
+/**
+ @abstract A text representation of the media, useful for push alert texts or cells that don't display media items (like conversation list view).
+ @see `ATLMediaAttachmentType` what `textRepresentation` contains for different media attachment types.
+ */
 @property (nonatomic, readonly) NSString *textRepresentation;
 
-/* MIMEType of the asset and input stream providing content. */
+/**
+ @abstract MIMEType of the main media this media attachment instance contains.
+ */
 @property (nonatomic, readonly) NSString *mediaMIMEType;
+/**
+ @abstract A closed NSInputStream ready to stream the content of the main media this media attachment instance contains.
+ @warning NSInputStream is not reusable and may only be used once for streaming.
+ */
 @property (nonatomic, readonly) NSInputStream *mediaInputStream;
 
-/* MIMEType of the thumbnail and input stream providing the thumbnail content. */
+/**
+ @abstract MIMEType of the thumbnail representing the main media this media attachment instance contains, or `nil` if the attachment doesn't contain the thumbnail.
+ */
 @property (nonatomic, readonly) NSString *thumbnailMIMEType;
+/**
+ @abstract A closed NSInputStream ready to stream thumbnail content this media attachment instance contains, or `nil` if the attachment doesn't contain the thumbnail.
+ @warning NSInputStream is not reusable and may only be used once for streaming.
+ */
 @property (nonatomic, readonly) NSInputStream *thumbnailInputStream;
 
-/* MIMEType of additional data that accompanies the main media and an input stream providing serialized data. */
+/**
+ @abstract MIMEType of any additional data that accompanies the main media (such as image resolution, length of audio or video content, etc.), or `nil` if the attachment doesn't contain the metadata.
+ */
 @property (nonatomic, readonly) NSString *metadataMIMEType;
+/**
+ @abstract A closed NSInputStream ready to stream the metadata content this media attachment instance contains, or `nil` if the attachment doesn't contain the metadata.
+ @warning NSInputStream is not reusable and may only be used once for streaming.
+ */
 @property (nonatomic, readonly) NSInputStream *metadataInputStream;
 
 @end

@@ -136,21 +136,6 @@ static char const ATLMediaAttachmentAsyncToBlockingQueueName[] = "com.layer.Atla
     return self;
 }
 
-- (instancetype)initWithText:(NSString *)text
-{
-    self = [super init];
-    if (self) {
-        if (!text) {
-            @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"Cannot initialize %@ with `nil` text.", self.class] userInfo:nil];
-        }
-        _mediaType = ATLMediaAttachmentTypeText;
-        _mediaMIMEType = ATLMIMETypeTextPlain;
-        _mediaInputStream = [NSInputStream inputStreamWithData:[text dataUsingEncoding:NSUTF8StringEncoding]];
-        _textRepresentation = text;
-    }
-    return self;
-}
-
 - (instancetype)initWithLocation:(CLLocation *)location
 {
     self = [super init];
@@ -164,6 +149,21 @@ static char const ATLMediaAttachmentAsyncToBlockingQueueName[] = "com.layer.Atla
                                                                   ATLLocationLongitudeKey:  @(location.coordinate.longitude) } options:0 error:nil];
         _mediaInputStream = [NSInputStream inputStreamWithData:data];
         _textRepresentation = @"Attachment: Location";
+    }
+    return self;
+}
+
+- (instancetype)initWithText:(NSString *)text
+{
+    self = [super init];
+    if (self) {
+        if (!text) {
+            @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"Cannot initialize %@ with `nil` text.", self.class] userInfo:nil];
+        }
+        _mediaType = ATLMediaAttachmentTypeText;
+        _mediaMIMEType = ATLMIMETypeTextPlain;
+        _mediaInputStream = [NSInputStream inputStreamWithData:[text dataUsingEncoding:NSUTF8StringEncoding]];
+        _textRepresentation = text;
     }
     return self;
 }
