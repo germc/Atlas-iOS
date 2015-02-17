@@ -93,7 +93,7 @@ static char const ATLMediaAttachmentAsyncToBlockingQueueName[] = "com.layer.Atla
         NSData *JSONData = [NSJSONSerialization dataWithJSONObject:imageMetadata options:NSJSONWritingPrettyPrinted error:&JSONSerializerError];
         if (JSONData) {
             _metadataInputStream = [NSInputStream inputStreamWithData:JSONData];
-            _metadataMIMEType = @"application/json";
+            _metadataMIMEType = ATLMIMETypeImageSize;
         } else {
             NSLog(@"ATLMediaAttachment failed to generate a JSON object for image metadata");
         }
