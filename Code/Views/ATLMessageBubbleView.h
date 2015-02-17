@@ -22,8 +22,8 @@
 #import <MapKit/MapKit.h>
 #import "ATLProgressView.h"
 
-extern CGFloat const ATLMessageBubbleLabelHorizontalPadding;
 extern CGFloat const ATLMessageBubbleLabelVerticalPadding;
+extern CGFloat const ATLMessageBubbleLabelHorizontalPadding;
 extern CGFloat const ATLMessageBubbleMapWidth;
 extern CGFloat const ATLMessageBubbleMapHeight;
 extern CGFloat const ATLMessageBubbleDefaultHeight;

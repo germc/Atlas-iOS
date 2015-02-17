@@ -30,8 +30,9 @@
 #import "ATLDataSourceChange.h"
 #import "ATLConversationView.h"
 #import "ATLConversationDataSource.h"
+#import "ATLLocationManager.h"
 
-@interface ATLConversationViewController () <UICollectionViewDataSource, UICollectionViewDelegate, ATLMessageInputToolbarDelegate, UIActionSheetDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, LYRQueryControllerDelegate>
+@interface ATLConversationViewController () <UICollectionViewDataSource, UICollectionViewDelegate, ATLMessageInputToolbarDelegate, UIActionSheetDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, LYRQueryControllerDelegate, ATLLocationManagerDelegate>
 
 @property (nonatomic) ATLConversationCollectionView *collectionView;
 @property (nonatomic) ATLConversationDataSource *conversationDataSource;
@@ -47,6 +48,7 @@
 @property (nonatomic, getter=isFirstAppearance) BOOL firstAppearance;
 @property (nonatomic) BOOL showingMoreMessagesIndicator;
 @property (nonatomic) BOOL hasAppeared;
+@property (nonatomic) ATLLocationManager *locationManager;
 
 @end
 
@@ -82,7 +84,7 @@ static NSInteger const ATLMoreMessagesSection = 0;
 
 - (void)lyr_commonInit
 {
-    _dateDisplayTimeInterval = 60*15;
+    _dateDisplayTimeInterval = 60*60;
     _marksMessagesAsRead = YES;
     _displaysAddressBar = NO;
     _typingParticipantIDs = [NSMutableArray new];
@@ -370,7 +372,11 @@ static NSInteger const ATLMoreMessagesSection = 0;
     if ([self shouldDisplayReadReceiptForSection:section]) {
         readReceipt = [self attributedStringForRecipientStatusOfMessage:[self.conversationDataSource messageAtCollectionViewSection:section]];
     }
-    CGFloat height = [ATLConversationCollectionViewFooter footerHeightWithRecipientStatus:readReceipt];
+    BOOL shouldClusterMessage = NO;
+    if ([self shouldClusterMessageForSection:section]) {
+        shouldClusterMessage = YES;
+    }
+    CGFloat height = [ATLConversationCollectionViewFooter footerHeightWithRecipientStatus:readReceipt clustered:shouldClusterMessage];
     return CGSizeMake(0, height);
 }
 
@@ -490,6 +496,22 @@ static NSInteger const ATLMoreMessagesSection = 0;
     return YES;
 }
 
+- (BOOL)shouldClusterMessageForSection:(NSUInteger)section
+{
+    if (section == self.collectionView.numberOfSections - 1) return NO;
+    
+    LYRMessage *message = [self.conversationDataSource messageAtCollectionViewSection:section];
+    LYRMessage *nextMessage = [self.conversationDataSource messageAtCollectionViewSection:section + 1];
+    if (!nextMessage.sentAt) return NO;
+    
+    NSDate *date = message.sentAt ?: [NSDate date];
+    NSTimeInterval interval = [nextMessage.sentAt timeIntervalSinceDate:date];
+    if (interval < 60) {
+        return YES;
+    }
+    return NO;
+}
+
 - (BOOL)shouldDisplayAvatarItemAtIndexPath:(NSIndexPath *)indexPath
 {
     if (!self.shouldDisplayAvatarItem) return NO;
@@ -525,10 +547,14 @@ static NSInteger const ATLMoreMessagesSection = 0;
 
 - (void)messageInputToolbar:(ATLMessageInputToolbar *)messageInputToolbar didTapRightAccessoryButton:(UIButton *)rightAccessoryButton
 {
-    if (!self.conversation || !messageInputToolbar.messageParts.count) return;
-    NSOrderedSet *messages = [self messagesForContentParts:messageInputToolbar.messageParts];
-    for (LYRMessage *message in messages) {
-        [self sendMessage:message];
+    if (!self.conversation) return;
+    if (messageInputToolbar.messageParts.count) {
+        NSOrderedSet *messages = [self messagesForContentParts:messageInputToolbar.messageParts];
+        for (LYRMessage *message in messages) {
+            [self sendMessage:message];
+        }
+    } else {
+        [self shareLocation];
     }
     if (self.addressBarController) [self.addressBarController disable];
 }
@@ -573,8 +599,8 @@ static NSInteger const ATLMoreMessagesSection = 0;
 - (LYRMessage *)messageForMessageParts:(NSArray *)parts pushText:(NSString *)pushText;
 {
     NSString *senderName = [[self participantForIdentifier:self.layerClient.authenticatedUserID] fullName];
-    NSDictionary *pushOptions = @{LYRMessageOptionsPushNotificationAlertKey: [NSString stringWithFormat:@"%@: %@", senderName, pushText],
-                                  LYRMessageOptionsPushNotificationSoundNameKey: @"default"};
+    NSDictionary *pushOptions = @{LYRMessageOptionsPushNotificationAlertKey : [NSString stringWithFormat:@"%@: %@", senderName, pushText],
+                                  LYRMessageOptionsPushNotificationSoundNameKey : @"layerbell.caf"};
     NSError *error;
     LYRMessage *message = [self.layerClient newMessageWithParts:parts options:pushOptions error:&error];
     if (error) {
@@ -592,6 +618,23 @@ static NSInteger const ATLMoreMessagesSection = 0;
     } else {
         [self notifyDelegateOfMessageSendFailure:message error:error];
     }
+}
+
+- (void)shareLocation
+{
+    if (!self.locationManager) {
+        self.locationManager = [[ATLLocationManager alloc] init];
+        self.locationManager.delegate = self;
+    }
+    if ([self.locationManager locationServicesEnabled]) {
+        [self.locationManager startLocationServices];
+    }
+}
+
+- (void)locationManager:(ATLLocationManager *)locationManager didUpdateLocation:(CLLocation *)location
+{
+    LYRMessage *message = [self messageForMessageParts:@[ATLMessagePartWithLocation(location)] pushText:@"Attachement: Location"];
+    [self sendMessage:message];
 }
 
 #pragma mark - UIActionSheetDelegate
@@ -711,7 +754,6 @@ static NSInteger const ATLMoreMessagesSection = 0;
     CGFloat keyboardHeight = MAX(self.keyboardHeight, CGRectGetHeight(self.messageInputToolbar.frame));
     insets.bottom = keyboardHeight;
     self.collectionView.scrollIndicatorInsets = insets;
-    insets.bottom += ATLTypingIndicatorHeight;
     self.collectionView.contentInset = insets;
 }
 
@@ -957,12 +999,16 @@ static NSInteger const ATLMoreMessagesSection = 0;
 
 - (void)configureSendButtonEnablement
 {
-    self.messageInputToolbar.canEnableSendButton = [self shouldAllowSendButtonEnablement];
+    BOOL shouldEnableButton = [self shouldAllowSendButtonEnablement];
+    self.messageInputToolbar.rightAccessoryButton.enabled = shouldEnableButton;
+    self.messageInputToolbar.leftAccessoryButton.enabled = shouldEnableButton;
 }
 
 - (BOOL)shouldAllowSendButtonEnablement
 {
-    if (!self.conversation) return NO;
+    if (!self.conversation) {
+        return NO;
+    }
     return YES;
 }
 

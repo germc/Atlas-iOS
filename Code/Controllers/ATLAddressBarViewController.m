@@ -140,6 +140,11 @@ static NSString *const ATLAddressBarParticipantAttributeName = @"ATLAddressBarPa
 
 #pragma mark - UITableViewDataSource
 
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 56;
+}
+
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
     return 1;
@@ -155,7 +160,8 @@ static NSString *const ATLAddressBarParticipantAttributeName = @"ATLAddressBarPa
     UITableViewCell *cell =[tableView dequeueReusableCellWithIdentifier:LSParticpantCellIdentifier];
     id<ATLParticipant> participant = self.participants[indexPath.row];
     cell.textLabel.text = participant.fullName;
-    cell.textLabel.font = ATLMediumFont(14);
+    cell.textLabel.font = ATLMediumFont(16);
+    cell.textLabel.textColor = ATLBlueColor();
     return cell;
 }
 

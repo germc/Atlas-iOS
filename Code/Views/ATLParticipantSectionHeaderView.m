@@ -49,7 +49,7 @@ NSString *const ATLParticipantSectionHeaderViewAccessibilityLabel = @"Section He
     
     self.sectionHeaderLabel = [[UILabel alloc] init];
     self.sectionHeaderLabel.translatesAutoresizingMaskIntoConstraints = NO;
-    self.sectionHeaderLabel.font = [UIFont boldSystemFontOfSize:14];
+    self.sectionHeaderLabel.font = [UIFont boldSystemFontOfSize:16];
     self.sectionHeaderLabel.textColor = [UIColor blackColor];
     [self.contentView addSubview:self.sectionHeaderLabel];
     [self configureHeaderLabelConstraints];

@@ -34,6 +34,7 @@
 @implementation ATLMessageCollectionViewCell
 
 CGFloat const ATLMessageCellMinimumHeight = 10;
+CGFloat const ATLMessageCellHorizontalMargin = 16;
 
 + (ATLMessageCollectionViewCell *)sharedCell
 {
@@ -70,7 +71,7 @@ CGFloat const ATLMessageCellMinimumHeight = 10;
     _messageTextColor = [UIColor blackColor];
     _messageLinkTextColor = [UIColor blueColor];
     _bubbleViewColor = [UIColor grayColor];
-    _bubbleViewCornerRadius = 16;
+    _bubbleViewCornerRadius = 17;
     
     _bubbleView = [[ATLMessageBubbleView alloc] init];
     _bubbleView.translatesAutoresizingMaskIntoConstraints = NO;

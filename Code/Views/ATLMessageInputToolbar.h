@@ -90,18 +90,12 @@ extern NSString *const ATLMessageInputToolbarDidChangeHeightNotification;
  @discussion By default, the button displays a camera icon.
  */
 @property (nonatomic) UIButton *leftAccessoryButton;
-
+ 
 /**
  @abstract The right accessory button for the view.
  @discussion By default, the button displays the text "SEND".
  */
 @property (nonatomic) UIButton *rightAccessoryButton;
-
-/**
- @abstract A boolean value indicating whether the receiver can enable its send button.
- @discussion By default, the button can be enabled.
- */
-@property (nonatomic) BOOL canEnableSendButton;
 
 /**
  @abstract An automatically resizing message composition field.
