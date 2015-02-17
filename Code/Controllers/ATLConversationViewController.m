@@ -526,8 +526,8 @@ static NSInteger const ATLMoreMessagesSection = 0;
 
 - (void)messageInputToolbar:(ATLMessageInputToolbar *)messageInputToolbar didTapRightAccessoryButton:(UIButton *)rightAccessoryButton
 {
-    if (!self.conversation || !messageInputToolbar.messageParts.count) return;
-    NSOrderedSet *messages = [self messagesForContentParts:messageInputToolbar.messageParts];
+    if (!self.conversation || !messageInputToolbar.mediaAttachments.count) return;
+    NSOrderedSet *messages = [self messagesForMediaAttachments:messageInputToolbar.mediaAttachments];
     for (LYRMessage *message in messages) {
         [self sendMessage:message];
     }
@@ -548,10 +548,10 @@ static NSInteger const ATLMoreMessagesSection = 0;
 
 #pragma mark - Message Sending
 
-- (NSOrderedSet *)defaultMessagesForMessageParts:(NSArray *)messageParts
+- (NSOrderedSet *)defaultMessagesForMediaAttachments:(NSArray *)mediaAttachments
 {
     NSMutableOrderedSet *messages = [NSMutableOrderedSet new];
-    for (ATLMediaAttachment *attachment in messageParts){
+    for (ATLMediaAttachment *attachment in mediaAttachments){
         NSArray *messageParts = ATLMessagePartsWithMediaAttachment(attachment);
         LYRMessage *message = [self messageForMessageParts:messageParts pushText:attachment.textRepresentation];
         if (message)[messages addObject:message];
@@ -625,7 +625,7 @@ static NSInteger const ATLMoreMessagesSection = 0;
         if (error) {
             NSLog(@"Failed to capture last photo with error: %@", [error localizedDescription]);
         } else {
-            ATLMediaAttachment *mediaAttachment = [ATLMediaAttachment mediaAttachmentWithAssetURL:assetURL thumbnailSize:ATLThumbnailSize];
+            ATLMediaAttachment *mediaAttachment = [ATLMediaAttachment mediaAttachmentWithAssetURL:assetURL thumbnailSize:ATLDefaultThumbnailSize];
             [self.messageInputToolbar insertMediaAttachment:mediaAttachment];
         }
     });
@@ -638,7 +638,7 @@ static NSInteger const ATLMoreMessagesSection = 0;
     NSString *mediaType = info[UIImagePickerControllerMediaType];
     if ([mediaType isEqualToString:(__bridge NSString *)kUTTypeImage]) {
         NSURL *assetURL = (NSURL *)info[UIImagePickerControllerReferenceURL];
-        ATLMediaAttachment *mediaAttachment = [ATLMediaAttachment mediaAttachmentWithAssetURL:assetURL thumbnailSize:ATLThumbnailSize];
+        ATLMediaAttachment *mediaAttachment = [ATLMediaAttachment mediaAttachmentWithAssetURL:assetURL thumbnailSize:ATLDefaultThumbnailSize];
         [self.messageInputToolbar insertMediaAttachment:mediaAttachment];
     }
     [self.navigationController dismissViewControllerAnimated:YES completion:nil];
@@ -1088,16 +1088,16 @@ static NSInteger const ATLMoreMessagesSection = 0;
     return CGSizeMake(width, height);
 }
 
-- (NSOrderedSet *)messagesForContentParts:(NSArray *)contentParts
+- (NSOrderedSet *)messagesForMediaAttachments:(NSArray *)mediaAttachments
 {
     NSOrderedSet *messages;
-    if ([self.delegate respondsToSelector:@selector(conversationViewController:messagesForContentParts:)]) {
-        messages = [self.delegate conversationViewController:self messagesForContentParts:contentParts];
+    if ([self.delegate respondsToSelector:@selector(conversationViewController:messagesForMediaAttachments:)]) {
+        messages = [self.delegate conversationViewController:self messagesForMediaAttachments:mediaAttachments];
         // If delegate returns an empty set, don't send any messages.
         if (messages && !messages.count) return nil;
     }
     // If delegate returns nil, we fall back to default behavior.
-    if (!messages) messages = [self defaultMessagesForMessageParts:contentParts];
+    if (!messages) messages = [self defaultMessagesForMediaAttachments:mediaAttachments];
     return messages;
 }
 
