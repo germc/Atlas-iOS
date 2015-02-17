@@ -24,32 +24,43 @@
 extern NSString *const ATLMediaInputStreamErrorDomain;
 
 typedef NS_ENUM(NSUInteger, ATLMediaInputStreamError) {
+    /**
+     @abstract An error to open stream if initializing asset provider failed.
+     */
     ATLMediaInputStreamErrorFailedInitializingAssetProvider        = 1000,
+    /**
+     @abstract An error to open stream if initializing asset consumer failed.
+     */
     ATLMediaInputStreamErrorFailedInitializingImageIOConsumer      = 1001,
+    /**
+     @abstract An error to open stream if initializing asset destination failed.
+     */
     ATLMediaInputStreamErrorFailedFinalizingDestination            = 1002,
+    /**
+     @abstract An error to open stream if the source asset doesn't contain any items.
+     */
     ATLMediaInputStreamErrorAssetHasNoImages                       = 1003,
 };
 
 /**
  @abstract The `ATLMediaInputStream` class is responsible for streaming
-           media content to the receiver.
+ media content to the receiver.
            
-           It provides direct (lossless) content streaming or resampled and
-           compressed image streaming. Depending on the input source, which
-           can be either an `ALAsset` URL or an `UIImage`, streaming,
-           resampling and compression will be performed without bringing
-           the full image data into the memory.
+ It provides direct (lossless) content streaming or resampled and compressed
+ image streaming. Depending on the input source, which can be either
+ an `ALAsset` URL or an `UIImage`, streaming, resampling and compression will
+ be performed without bringing the full image data into the memory.
  
  @discussion Compression and resampling are enabled with setting the
-             `compressionQuality` and `maximumSize` respectively.
+ `compressionQuality` and `maximumSize` respectively.
             
-             If setting the `maximumSize = 0` and `compressionQuality = 0.0f`,
-             media content will be directly transferred from the `ALAsset` or
-             `UIImage`, depending on the source. Property `isLossless`
-             indicates if the streaming will be lossless.
+ If setting the `maximumSize = 0` and `compressionQuality = 0.0f`, media content
+ will be directly transferred from the `ALAsset` or `UIImage`, depending
+ on the source. Property `isLossless` indicates if the streaming
+ will be lossless.
  
- @warning `ATLMediaInputStream` is GCD based and doesn't utilize `NSRunLoop`.
-          It may be unrealiable, if paired with a network stream.
+ @warning `ATLMediaInputStream` is GCD based and doesn't utilize `NSRunLoops`.
+ It may be unrealiable, if paired with a network stream.
  */
 @interface ATLMediaInputStream : NSInputStream
 
@@ -58,14 +69,14 @@ typedef NS_ENUM(NSUInteger, ATLMediaInputStreamError) {
  @param assetURL `NSURL` path of the asset (URL starts with `asset://`).
  @return A `ATLMediaInputStream` instance ready to be open.
  */
-+ (id)mediaInputStreamWithAssetURL:(NSURL *)assetURL;
++ (instancetype)mediaInputStreamWithAssetURL:(NSURL *)assetURL;
 
 /**
  @abstract Creates an input stream capable of direct streaming of the UIImage's content.
  @param image `UIImage` instance
  @return A `ATLMediaInputStream` instance ready to be open.
  */
-+ (id)mediaInputStreamWithImage:(UIImage *)image;
++ (instancetype)mediaInputStreamWithImage:(UIImage *)image;
 
 /**
  @abstract The source media asset in a form of an `NSURL`.
@@ -83,18 +94,18 @@ typedef NS_ENUM(NSUInteger, ATLMediaInputStreamError) {
 @property (nonatomic, readonly) BOOL isLossless;
 
 /**
- @abstract The size in pixels of the output image when being streamed.
+ @abstract The size in pixels of the output image when being streamed. Default is set to 0.
  @discussion If set to zero `0`, resampling is disabled.
  */
 @property (nonatomic) NSUInteger maximumSize;
 
 /**
- @abstract The compression quality in percent.
+ @abstract The compression quality in percent. Default is set to 0.0f.
  @discussion 1.0f sets the quality to 100% which perserves details in images,
-             but also makes a larger output. 0.1f sets the quality to 10% which
-             is the lowest quality, and makes the file size smaller.
+ but also makes a larger output. 0.1f sets the quality to 10% which
+ is the lowest quality, and makes the file size smaller.
              
-             Setting the property value to zero `0.0f` will disable compression.
+ Setting the property value to zero `0.0f` will disable compression.
  */
 @property (nonatomic) float compressionQuality;
 

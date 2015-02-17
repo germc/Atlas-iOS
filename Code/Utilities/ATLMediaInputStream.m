@@ -1,5 +1,5 @@
 //
-//  ATLMediaInputStream.h
+//  ATLMediaInputStream.m
 //  Atlas
 //
 //  Created by Klemen Verdnik on 2/13/15.
@@ -24,12 +24,13 @@
 #ifdef DEBUG_ATLMediaInputStreamLog
 #define ATLMediaInputStreamLog(fmt, ...) NSLog(fmt, ##__VA_ARGS__)
 #else
-#define ATLMediaInputStreamLog(fmt, ... )
+#define ATLMediaInputStreamLog(fmt, ...)
 #endif
 
 NSString *const ATLMediaInputStreamErrorDomain = @"com.layer.Atlas.ATLMediaInputStream";
 static char const ATLMediaInputConsumerAsyncQueueName[] = "com.layer.Atlas.ATLMediaInputStream.asyncConsumerQueue";
 static char const ATLMediaInputConsumerSerialTransferQueueName[] = "com.layer.Atlas.ATLMediaInputStream.serialTransferQueue";
+static char const ATLMediaInputStreamAsyncToBlockingQueueName[] = "com.layer.Atlas.ATLMediaInputStream.blocking";
 
 /* Core I/O callbacks */
 ALAsset *ATLMediaInputStreamAssetForAssetURL(NSURL *assetURL, ALAssetsLibrary *assetLibrary, NSError **error);
@@ -106,6 +107,8 @@ static void ATLMediaInputStreamReleaseStreamCallback(void *assetStreamRef);
     _dataConsumed = [NSData data];
     _numberOfBytesRequested = 0;
     _numberOfBytesProvided = 0;
+    _maximumSize = 0;
+    _compressionQuality = 0.0f;
     _streamFlowRequesterSemaphore = dispatch_semaphore_create(0);
     _streamFlowProviderSemaphore = dispatch_semaphore_create(0);
     _consumerAsyncQueue = dispatch_queue_create(ATLMediaInputConsumerAsyncQueueName, DISPATCH_QUEUE_CONCURRENT);
@@ -113,12 +116,12 @@ static void ATLMediaInputStreamReleaseStreamCallback(void *assetStreamRef);
     [self updateIsLossless];
 }
 
-+ (id)mediaInputStreamWithAssetURL:(NSURL *)assetURL
++ (instancetype)mediaInputStreamWithAssetURL:(NSURL *)assetURL
 {
     return [[self alloc] initWithAssetURL:assetURL];
 }
 
-+ (id)mediaInputStreamWithImage:(UIImage *)image
++ (instancetype)mediaInputStreamWithImage:(UIImage *)image
 {
     return [[self alloc] initWithImage:image];
 }
@@ -413,8 +416,12 @@ static void ATLMediaInputStreamReleaseStreamCallback(void *assetStreamRef);
 
 ALAsset *ATLMediaInputStreamAssetForAssetURL(NSURL *assetURL, ALAssetsLibrary *assetLibrary, NSError **error)
 {
+    static dispatch_queue_t asyncQueue;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        asyncQueue = dispatch_queue_create(ATLMediaInputStreamAsyncToBlockingQueueName, DISPATCH_QUEUE_CONCURRENT);
+    });
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-    dispatch_queue_t asyncQueue = dispatch_queue_create("com.layer.ATLAssetTestObtainLastImage.async", DISPATCH_QUEUE_CONCURRENT);
     __block ALAsset *resultAsset;
     dispatch_async(asyncQueue, ^{
         [assetLibrary assetForURL:assetURL resultBlock:^(ALAsset *asset) {
