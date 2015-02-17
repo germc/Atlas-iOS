@@ -26,6 +26,21 @@
     return self;
 }
 
+- (BOOL)locationServicesEnabled
+{
+    if (![CLLocationManager locationServicesEnabled]) {
+        return NO;
+    }
+    switch ([CLLocationManager authorizationStatus]) {
+        case kCLAuthorizationStatusDenied:
+        case kCLAuthorizationStatusRestricted:
+            return NO;
+        default:
+            break;
+    }
+    return YES;
+}
+
 - (void)updateLocation
 {
     if ([self respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
@@ -35,34 +50,15 @@
     [self stopUpdatingLocation];
 }
 
-- (BOOL)locationServicesEnabled
+- (void)displayLocationEnablementAlert
 {
-    if (![CLLocationManager locationServicesEnabled]) {
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Location Services Required"
-                                                            message:@"To share your location, enable location services in the Privacy section of the Settings app."
-                                                           delegate:nil
-                                                  cancelButtonTitle:@"OK"
-                                                  otherButtonTitles:nil];
-        [alertView show];
-        return NO;
-    }
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Location Access Required"
+                                                        message:@"To share your location, enable location services for this app in the Privacy section of the Settings app."
+                                                       delegate:nil
+                                              cancelButtonTitle:@"OK"
+                                              otherButtonTitles:nil];
+     [alertView show];
     
-    switch ([CLLocationManager authorizationStatus]) {
-        case kCLAuthorizationStatusDenied:
-        case kCLAuthorizationStatusRestricted: {
-            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Location Access Required"
-                                                                message:@"To share your location, enable location services for this app in the Privacy section of the Settings app."
-                                                               delegate:nil
-                                                      cancelButtonTitle:@"OK"
-                                                      otherButtonTitles:nil];
-            [alertView show];
-        }
-            return NO;
-            
-        default:
-            break;
-    }
-    return YES;
 }
 
 @end

@@ -13,7 +13,6 @@
 
 /**
  @abstract Returns a boolean value indicating whether location services are enabled for the application.
- @discussion If location services are not enabled, an alert with instructions on enabling will be shown.
  */
 - (BOOL)locationServicesEnabled;
 
@@ -21,5 +20,10 @@
  @abstract Updates the location of the receiver by starting and immediately stopping location updates.
  */
 - (void)updateLocation;
+
+/**
+ @abstract Displays a `UIAlertView` with instructions on enabling location services for the application.
+ */
+- (void)displayLocationEnablementAlert;
 
 @end
