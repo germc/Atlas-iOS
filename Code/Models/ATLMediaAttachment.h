@@ -101,14 +101,14 @@ typedef NS_ENUM(NSUInteger, ATLMediaAttachmentType) {
 /// @name Consumable Attributes
 ///----------------------------
 
-/* A text representation of the media */
+/* A text representation of the media, useful for push alert texts or cells that don't display media items (like conversation list view) */
 @property (nonatomic, readonly) NSString *textRepresentation;
 
-/* MIMEType of the asset and input stream providing content */
+/* MIMEType of the asset and input stream providing content. */
 @property (nonatomic, readonly) NSString *mediaMIMEType;
 @property (nonatomic, readonly) NSInputStream *mediaInputStream;
 
-/* MIMEType of the thumbnail and input stream providing the thumbnail content */
+/* MIMEType of the thumbnail and input stream providing the thumbnail content. */
 @property (nonatomic, readonly) NSString *thumbnailMIMEType;
 @property (nonatomic, readonly) NSInputStream *thumbnailInputStream;
 
