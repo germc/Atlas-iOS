@@ -76,7 +76,14 @@ ALAsset *ATLAssetTestObtainLastImageFromAssetLibrary(ALAssetsLibrary *library)
     [super tearDown];
 }
 
-- (void)testAssetStreamOpensStream
+- (void)testMediaStreamDesignatedInitFails
+{
+    expect(^{
+        __unused ATLMediaInputStream *streamDirect = [[ATLMediaInputStream alloc] init];
+    }).to.raise(NSInternalInconsistencyException);
+}
+
+- (void)testMediaStreamOpensStream
 {
     ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
     ALAsset *sourceAsset = ATLAssetTestObtainLastImageFromAssetLibrary(library);
@@ -103,7 +110,7 @@ ALAsset *ATLAssetTestObtainLastImageFromAssetLibrary(ALAssetsLibrary *library)
     expect(streamResample.streamError).to.beNil();
 }
 
-- (void)testAssetStreamClosesStream
+- (void)testMediaStreamClosesStream
 {
     ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
     ALAsset *sourceAsset = ATLAssetTestObtainLastImageFromAssetLibrary(library);
@@ -134,7 +141,7 @@ ALAsset *ATLAssetTestObtainLastImageFromAssetLibrary(ALAssetsLibrary *library)
     expect(streamResample.streamError).to.beNil();
 }
 
-- (void)testAssetStreamReadsStream
+- (void)testMediaStreamReadsStream
 {
     ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
     ALAsset *sourceAsset = ATLAssetTestObtainLastImageFromAssetLibrary(library);
@@ -168,7 +175,7 @@ ALAsset *ATLAssetTestObtainLastImageFromAssetLibrary(ALAssetsLibrary *library)
     NSLog(@"check file: %@ length=%lu", path, data.length);
 }
 
-- (void)testAssetStreamReadsStreamFromDifferentThread
+- (void)testMediaStreamReadsStreamFromDifferentThread
 {
     ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
     ALAsset *sourceAsset = ATLAssetTestObtainLastImageFromAssetLibrary(library);

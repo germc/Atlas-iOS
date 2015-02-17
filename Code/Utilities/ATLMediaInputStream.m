@@ -70,9 +70,19 @@ static void ATLMediaInputStreamReleaseStreamCallback(void *assetStreamRef);
 
 @end
 
-@implementation ATLMediaInputStream
+@interface ATLAssetInputStream : ATLMediaInputStream
 
-#pragma mark - Initializers
+- (instancetype)initWithAssetURL:(NSURL *)assetURL;
+
+@end
+
+@interface ATLImageInputStream : ATLMediaInputStream
+
+- (instancetype)initWithImage:(UIImage *)image;
+
+@end
+
+@implementation ATLAssetInputStream
 
 - (instancetype)initWithAssetURL:(NSURL *)assetURL
 {
@@ -81,11 +91,14 @@ static void ATLMediaInputStreamReleaseStreamCallback(void *assetStreamRef);
         if (!assetURL) {
             @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"Cannot initialize %@ with `nil` assetURL.", self.class] userInfo:nil];
         }
-        _assetURL = assetURL;
-        [self commonInit];
+        self.assetURL = assetURL;
     }
     return self;
 }
+
+@end
+
+@implementation ATLImageInputStream
 
 - (instancetype)initWithImage:(UIImage *)image
 {
@@ -94,35 +107,47 @@ static void ATLMediaInputStreamReleaseStreamCallback(void *assetStreamRef);
         if (!image) {
             @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"Cannot initialize %@ with `nil` image.", self.class] userInfo:nil];
         }
-        _image = image;
-        [self commonInit];
+        self.image = image;
     }
     return self;
 }
 
-- (void)commonInit
+@end
+
+@implementation ATLMediaInputStream
+
+#pragma mark - Initializers
+
+- (instancetype)init
 {
-    _mediaStreamStatus = NSStreamStatusNotOpen;
-    _mediaStreamError = nil;
-    _dataConsumed = [NSData data];
-    _numberOfBytesRequested = 0;
-    _numberOfBytesProvided = 0;
-    _maximumSize = 0;
-    _compressionQuality = 0.0f;
-    _streamFlowRequesterSemaphore = dispatch_semaphore_create(0);
-    _streamFlowProviderSemaphore = dispatch_semaphore_create(0);
-    _consumerAsyncQueue = dispatch_queue_create(ATLMediaInputConsumerAsyncQueueName, DISPATCH_QUEUE_CONCURRENT);
-    _transferBufferSerialGuard = dispatch_queue_create(ATLMediaInputConsumerSerialTransferQueueName, DISPATCH_QUEUE_SERIAL);
+    self = [super init];
+    if (self) {
+        if ([[self class] isEqual:[ATLMediaInputStream class]]) {
+            @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"Failed to call designated initializer. Use one of the following initialiers: %@", [@[ NSStringFromSelector(@selector(mediaInputStreamWithAssetURL:)), NSStringFromSelector(@selector(mediaInputStreamWithImage:)) ] componentsJoinedByString:@","]] userInfo:nil];
+        }
+        _mediaStreamStatus = NSStreamStatusNotOpen;
+        _mediaStreamError = nil;
+        _dataConsumed = [NSData data];
+        _numberOfBytesRequested = 0;
+        _numberOfBytesProvided = 0;
+        _maximumSize = 0;
+        _compressionQuality = 0.0f;
+        _streamFlowRequesterSemaphore = dispatch_semaphore_create(0);
+        _streamFlowProviderSemaphore = dispatch_semaphore_create(0);
+        _consumerAsyncQueue = dispatch_queue_create(ATLMediaInputConsumerAsyncQueueName, DISPATCH_QUEUE_CONCURRENT);
+        _transferBufferSerialGuard = dispatch_queue_create(ATLMediaInputConsumerSerialTransferQueueName, DISPATCH_QUEUE_SERIAL);
+    }
+    return self;
 }
 
 + (instancetype)mediaInputStreamWithAssetURL:(NSURL *)assetURL
 {
-    return [[self alloc] initWithAssetURL:assetURL];
+    return [[ATLAssetInputStream alloc] initWithAssetURL:assetURL];
 }
 
 + (instancetype)mediaInputStreamWithImage:(UIImage *)image
 {
-    return [[self alloc] initWithImage:image];
+    return [[ATLImageInputStream alloc] initWithImage:image];
 }
 
 - (void)dealloc
