@@ -205,8 +205,12 @@ static char const ATLMediaAttachmentAsyncToBlockingQueueName[] = "com.layer.Atla
 
 ALAsset *ATLMediaAttachmentFromAssetURL(NSURL *assetURL, ALAssetsLibrary *assetLibrary)
 {
+    static dispatch_queue_t asyncQueue;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        asyncQueue = dispatch_queue_create(ATLMediaAttachmentAsyncToBlockingQueueName, DISPATCH_QUEUE_CONCURRENT);
+    });
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-    dispatch_queue_t asyncQueue = dispatch_queue_create(ATLMediaAttachmentAsyncToBlockingQueueName, DISPATCH_QUEUE_CONCURRENT);
     __block ALAsset *resultAsset;
     dispatch_async(asyncQueue, ^{
         [assetLibrary assetForURL:assetURL resultBlock:^(ALAsset *asset) {
