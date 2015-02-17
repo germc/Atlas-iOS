@@ -72,7 +72,7 @@ static NSDateFormatter *ATLShortTimeFormatter()
 @implementation ATLConversationTableViewCell
 
 static CGFloat const ATLConversationLabelTopPadding = 8.0f;
-static CGFloat const ATLDateLabelRightPadding = 32;
+static CGFloat const ATLDateLabelRightPadding = 32.0f;
 static CGFloat const ATLLastMessageLabelRightPadding = 16;
 static CGFloat const ATLConversationTitleLabelRightPadding = 2.0f;
 static CGFloat const ATLUnreadMessageCountLabelSize = 14.0f;
@@ -364,7 +364,6 @@ NSString *const ATLLocationMIMETypePlaceholderText = @"Attachment: Location";
     [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.unreadMessageIndicator attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self.conversationTitleLabel attribute:NSLayoutAttributeLeft multiplier:1.0 constant:-8]];
     [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.unreadMessageIndicator attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self.conversationTitleLabel attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0]];
 }
-
 
 - (void)configureChevronIconViewConstraints
 {
