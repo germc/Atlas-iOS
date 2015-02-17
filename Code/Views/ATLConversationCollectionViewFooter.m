@@ -17,9 +17,11 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 //
+
 #import "ATLConversationCollectionViewFooter.h"
 #import "ATLConstants.h"
 #import "ATLMessagingUtilities.h"
+#import "ATLMessageCollectionViewCell.h"
 
 @interface ATLConversationCollectionViewFooter ()
 
@@ -34,8 +36,8 @@
 
 NSString *const ATLConversationViewFooterIdentifier = @"ATLConversationViewFooterIdentifier";
 CGFloat const ATLConversationViewFooterTopPadding = 2;
-CGFloat const ATLConversationViewFooterBottomPadding = 7;
-CGFloat const ATLConversationViewFooterEmptyHeight = 2;
+CGFloat const ATLConversationViewFooterEmptyHeight = 1;
+CGFloat const ATLConversationViewFooterUnClusteredPadding = 7;
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -78,13 +80,21 @@ CGFloat const ATLConversationViewFooterEmptyHeight = 2;
     self.recipientStatusLabel.attributedText = recipientStatus;
 }
 
-+ (CGFloat)footerHeightWithRecipientStatus:(NSAttributedString *)recipientStatus
+#pragma mark - Height Calculations
+
++ (CGFloat)footerHeightWithRecipientStatus:(NSAttributedString *)recipientStatus clustered:(BOOL)clustered
 {
-    if (!recipientStatus.length) return ATLConversationViewFooterEmptyHeight;
+    CGFloat height = ATLConversationViewFooterEmptyHeight;
+    if (!clustered) {
+        height += ATLConversationViewFooterUnClusteredPadding;
+    }
+    if (!recipientStatus.length) {
+        return height;
+    }
     UIFont *defaultFont = [self defaultRecipientStatusFont];
     NSAttributedString *recipientStatusWithDefaultFont = [self attributedStringWithDefaultFont:defaultFont attributedString:recipientStatus];
     CGFloat recipientStatusHeight = [self heightForAttributedString:recipientStatusWithDefaultFont];
-    return ATLConversationViewFooterTopPadding + ceil(recipientStatusHeight) + ATLConversationViewFooterBottomPadding;
+    return ATLConversationViewFooterTopPadding + ceil(recipientStatusHeight) + height;
 }
 
 + (NSAttributedString *)attributedStringWithDefaultFont:(UIFont *)defaultFont attributedString:(NSAttributedString *)attributedString
@@ -114,7 +124,7 @@ CGFloat const ATLConversationViewFooterEmptyHeight = 2;
 {
     [self addConstraint:[NSLayoutConstraint constraintWithItem:self.recipientStatusLabel attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1.0 constant:ATLConversationViewFooterTopPadding]];
     [self addConstraint:[NSLayoutConstraint constraintWithItem:self.recipientStatusLabel attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1.0 constant:20]];
-    NSLayoutConstraint *recipientStatusLabelRightConstraint = [NSLayoutConstraint constraintWithItem:self.recipientStatusLabel attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeRight multiplier:1.0 constant:-20];
+    NSLayoutConstraint *recipientStatusLabelRightConstraint = [NSLayoutConstraint constraintWithItem:self.recipientStatusLabel attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeRight multiplier:1.0 constant:-ATLMessageCellHorizontalMargin];
     // To work around an apparent system bug that initially requires the view to have zero width, instead of a required priority, we use a priority one higher than the content compression resistance.
     recipientStatusLabelRightConstraint.priority = UILayoutPriorityDefaultHigh + 1;
     [self addConstraint:recipientStatusLabelRightConstraint];

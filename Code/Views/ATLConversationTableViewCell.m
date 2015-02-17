@@ -65,14 +65,18 @@ static NSDateFormatter *ATLShortTimeFormatter()
 @property (nonatomic) UILabel *dateLabel;
 @property (nonatomic) UILabel *lastMessageLabel;
 @property (nonatomic) UIView *unreadMessageIndicator;
+@property (nonatomic) UIImageView *chevronIconView;
 
 @end
 
 @implementation ATLConversationTableViewCell
 
-static CGFloat const ATLCellVerticalMargin = 10.0f;
-static CGFloat const ATLConversationTitleLabelRightPadding = -6.0f;
+static CGFloat const ATLConversationLabelTopPadding = 8.0f;
+static CGFloat const ATLDateLabelRightPadding = 32.0f;
+static CGFloat const ATLLastMessageLabelRightPadding = 16;
+static CGFloat const ATLConversationTitleLabelRightPadding = 2.0f;
 static CGFloat const ATLUnreadMessageCountLabelSize = 14.0f;
+static CGFloat const ATLChevronIconViewRightPadding = 14.0f;
 
 NSString *const ATLImageMIMETypePlaceholderText = @"Attachment: Image";
 NSString *const ATLLocationMIMETypePlaceholderText = @"Attachment: Location";
@@ -111,51 +115,56 @@ NSString *const ATLLocationMIMETypePlaceholderText = @"Attachment: Location";
 
 - (void)lyr_commonInit
 {
+    self.backgroundColor = _cellBackgroundColor;
+    
     // Initialize Avatar Image
-    self.conversationImageView = [[ATLAvatarImageView alloc] init];
-    self.conversationImageView.translatesAutoresizingMaskIntoConstraints = NO;
-    self.conversationImageView.layer.masksToBounds = YES;
-    self.conversationImageView.hidden = YES;
-    [self.contentView addSubview:self.conversationImageView];
+    _conversationImageView = [[ATLAvatarImageView alloc] init];
+    _conversationImageView.translatesAutoresizingMaskIntoConstraints = NO;
+    _conversationImageView.layer.masksToBounds = YES;
+    _conversationImageView.hidden = YES;
+    [self.contentView addSubview:_conversationImageView];
     
     // Initialize Sender Image
-    self.conversationTitleLabel = [[UILabel alloc] init];
-    self.conversationTitleLabel.translatesAutoresizingMaskIntoConstraints = NO;
-    self.conversationTitleLabel.font = _conversationTitleLabelFont;
-    self.conversationTitleLabel.textColor = _conversationTitleLabelColor;
-    [self.contentView addSubview:self.conversationTitleLabel];
+    _conversationTitleLabel = [[UILabel alloc] init];
+    _conversationTitleLabel.translatesAutoresizingMaskIntoConstraints = NO;
+    _conversationTitleLabel.font = _conversationTitleLabelFont;
+    _conversationTitleLabel.textColor = _conversationTitleLabelColor;
+    [self.contentView addSubview:_conversationTitleLabel];
     
     // Initialize Message Label
-    self.lastMessageLabel = [[UILabel alloc] init];
-    self.lastMessageLabel.translatesAutoresizingMaskIntoConstraints = NO;
-    self.lastMessageLabel.font = _lastMessageLabelFont;
-    self.lastMessageLabel.textColor = _lastMessageLabelColor;
-    self.lastMessageLabel.numberOfLines = 2;
-    [self.contentView addSubview:self.lastMessageLabel];
+    _lastMessageLabel = [[UILabel alloc] init];
+    _lastMessageLabel.translatesAutoresizingMaskIntoConstraints = NO;
+    _lastMessageLabel.font = _lastMessageLabelFont;
+    _lastMessageLabel.textColor = _lastMessageLabelColor;
+    _lastMessageLabel.numberOfLines = 2;
+    [self.contentView addSubview:_lastMessageLabel];
     
     // Initialize Date Label
-    self.dateLabel = [[UILabel alloc] init];
-    self.dateLabel.translatesAutoresizingMaskIntoConstraints = NO;
-    self.dateLabel.textAlignment = NSTextAlignmentRight;
-    self.dateLabel.font = _dateLabelFont;
-    self.dateLabel.textColor = _dateLabelColor;
-    [self.contentView addSubview:self.dateLabel];
+    _dateLabel = [[UILabel alloc] init];
+    _dateLabel.translatesAutoresizingMaskIntoConstraints = NO;
+    _dateLabel.textAlignment = NSTextAlignmentRight;
+    _dateLabel.font = _dateLabelFont;
+    _dateLabel.textColor = _dateLabelColor;
+    [self.contentView addSubview:_dateLabel];
     
-    self.unreadMessageIndicator = [[UIView alloc] init];
-    self.unreadMessageIndicator.layer.cornerRadius = ATLUnreadMessageCountLabelSize / 2;
-    self.unreadMessageIndicator.clipsToBounds = YES;
-    self.unreadMessageIndicator.translatesAutoresizingMaskIntoConstraints = NO;
-    self.unreadMessageIndicator.backgroundColor = _unreadMessageIndicatorBackgroundColor;
-    [self.contentView addSubview:self.unreadMessageIndicator];
+    _unreadMessageIndicator = [[UIView alloc] init];
+    _unreadMessageIndicator.layer.cornerRadius = ATLUnreadMessageCountLabelSize / 2;
+    _unreadMessageIndicator.clipsToBounds = YES;
+    _unreadMessageIndicator.translatesAutoresizingMaskIntoConstraints = NO;
+    _unreadMessageIndicator.backgroundColor = _unreadMessageIndicatorBackgroundColor;
+    [self.contentView addSubview:_unreadMessageIndicator];
     
-    self.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-    self.backgroundColor = _cellBackgroundColor;
+    _chevronIconView = [[UIImageView alloc] init];
+    _chevronIconView.translatesAutoresizingMaskIntoConstraints = NO;
+    _chevronIconView.image = [UIImage imageNamed:@"AtlasResource.bundle/chevron"];
+    [self.contentView addSubview:_chevronIconView];
     
     [self configureConversationImageViewLayoutContraints];
     [self configureconversationTitleLabelLayoutContraints];
     [self configureDateLabelLayoutContstraints];
     [self configureLastMessageLayoutConstraints];
     [self configureUnreadMessageIndicatorLayoutConstraints];
+    [self configureChevronIconViewConstraints];
 }
 
 - (void)updateConstraints
@@ -253,7 +262,8 @@ NSString *const ATLLocationMIMETypePlaceholderText = @"Attachment: Location";
     LYRMessage *message = conversation.lastMessage;
     LYRMessagePart *messagePart = message.parts.firstObject;
     if ([messagePart.MIMEType isEqualToString:ATLMIMETypeTextPlain]) {
-        self.lastMessageLabel.text = [[NSString alloc] initWithData:messagePart.data encoding:NSUTF8StringEncoding];
+        NSString *messageText = [[NSString alloc] initWithData:messagePart.data encoding:NSUTF8StringEncoding];
+        self.lastMessageLabel.attributedText = [self attributedStringForMessageText:messageText];
     } else if ([messagePart.MIMEType isEqualToString:ATLMIMETypeImageJPEG]) {
         self.lastMessageLabel.text = ATLImageMIMETypePlaceholderText;
     } else if ([messagePart.MIMEType isEqualToString:ATLMIMETypeImagePNG]) {
@@ -264,6 +274,19 @@ NSString *const ATLLocationMIMETypePlaceholderText = @"Attachment: Location";
         self.lastMessageLabel.text = ATLImageMIMETypePlaceholderText;
     }
     [self updateUnreadMessageIndicatorWithConversation:conversation];
+}
+
+- (NSAttributedString *)attributedStringForMessageText:(NSString *)messageText
+{
+    NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
+    paragraphStyle.lineSpacing = 3;
+    NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:messageText];
+    if (self.lastMessageLabelFont) {
+        [attributedString addAttribute:NSFontAttributeName value:self.lastMessageLabelFont range:NSMakeRange(0, attributedString.length)];
+        [attributedString addAttribute:NSForegroundColorAttributeName value:self.lastMessageLabelColor range:NSMakeRange(0, attributedString.length)];
+    }
+    [attributedString addAttribute:NSParagraphStyleAttributeName value:paragraphStyle range:NSMakeRange(0, attributedString.length)];
+    return attributedString;
 }
 
 - (void)updateWithAvatarItem:(id<ATLAvatarItem>)avatarItem
@@ -295,7 +318,7 @@ NSString *const ATLLocationMIMETypePlaceholderText = @"Attachment: Location";
     if (!lastMessage) return @"";
     if (!lastMessage.sentAt) return @"";
     
-    if (ATLIsDateInToday(lastMessage.sentAt)) {
+    if (ATLIsDateInToday(lastMessage.receivedAt)) {
         return [ATLShortTimeFormatter() stringFromDate:lastMessage.receivedAt];
     } else {
         return [ATLRelativeDateFormatter() stringFromDate:lastMessage.receivedAt];
@@ -314,13 +337,13 @@ NSString *const ATLLocationMIMETypePlaceholderText = @"Attachment: Location";
 {
     self.conversationTitleLabelWithImageLeftConstraint = [NSLayoutConstraint constraintWithItem:self.conversationTitleLabel attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.conversationImageView attribute:NSLayoutAttributeRight multiplier:1.0 constant:10];
     self.conversationTitleLabelWithoutImageLeftConstraint = [NSLayoutConstraint constraintWithItem:self.conversationTitleLabel attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeLeft multiplier:1.0 constant:30];
-    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.conversationTitleLabel attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self.dateLabel attribute:NSLayoutAttributeLeft multiplier:1.0 constant:ATLConversationTitleLabelRightPadding]];
-    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.conversationTitleLabel attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeTop multiplier:1.0 constant:ATLCellVerticalMargin]];
+    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.conversationTitleLabel attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self.dateLabel attribute:NSLayoutAttributeLeft multiplier:1.0 constant:-ATLConversationTitleLabelRightPadding]];
+    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.conversationTitleLabel attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeTop multiplier:1.0 constant:ATLConversationLabelTopPadding]];
 }
 
 - (void)configureDateLabelLayoutContstraints
 {
-    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.dateLabel attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeRight multiplier:1.0 constant:0]];
+    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.dateLabel attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeRight multiplier:1.0 constant:-ATLDateLabelRightPadding]];
     [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.dateLabel attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self.conversationTitleLabel attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0.0f]];
     // We want the conversation label to compress if needed instead of the date label.
     [self.dateLabel setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh + 1 forAxis:UILayoutConstraintAxisHorizontal];
@@ -329,7 +352,7 @@ NSString *const ATLLocationMIMETypePlaceholderText = @"Attachment: Location";
 - (void)configureLastMessageLayoutConstraints
 {
     [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.lastMessageLabel attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.conversationTitleLabel attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0]];
-    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.lastMessageLabel attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeRight multiplier:1.0 constant:0]];
+    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.lastMessageLabel attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeRight multiplier:1.0 constant:-ATLLastMessageLabelRightPadding]];
     [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.lastMessageLabel attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.conversationTitleLabel attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0]];
     [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.lastMessageLabel attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationLessThanOrEqual toItem:self.contentView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:-8]];
 }
@@ -340,6 +363,12 @@ NSString *const ATLLocationMIMETypePlaceholderText = @"Attachment: Location";
     [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.unreadMessageIndicator attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:ATLUnreadMessageCountLabelSize]];
     [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.unreadMessageIndicator attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self.conversationTitleLabel attribute:NSLayoutAttributeLeft multiplier:1.0 constant:-8]];
     [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.unreadMessageIndicator attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self.conversationTitleLabel attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0]];
+}
+
+- (void)configureChevronIconViewConstraints
+{
+    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.chevronIconView attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeRight multiplier:1.0 constant:-ATLChevronIconViewRightPadding]];
+    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.chevronIconView attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self.dateLabel attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0]];
 }
 
 @end

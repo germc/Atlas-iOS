@@ -23,10 +23,14 @@
 @interface ATLAddressBarView ()
 
 @property (nonatomic) UIView *bottomBorder;
+@property (nonatomic) NSLayoutConstraint *addContactsButtonTopConstraint;
+@property (nonatomic) CGFloat addContactsButtonTopConstant;
 
 @end
 
 @implementation ATLAddressBarView
+
+CGFloat const ATLAddressBarTextViewPadding = 4;
 
 - (id)init
 {
@@ -73,14 +77,15 @@
 - (void)configureAddressBarTextViewConstrants
 {
     [self addConstraint:[NSLayoutConstraint constraintWithItem:_addressBarTextView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeWidth multiplier:1.0 constant:-40]];
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:_addressBarTextView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1.0 constant:0]];
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:_addressBarTextView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0]];
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:_addressBarTextView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1.0 constant:ATLAddressBarTextViewPadding]];
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:_addressBarTextView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeBottom multiplier:1.0 constant:-ATLAddressBarTextViewPadding]];
 }
 
 - (void)configureAddContactsButtonConstraints
 {
     [self addConstraint:[NSLayoutConstraint constraintWithItem:_addContactsButton attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:_addressBarTextView attribute:NSLayoutAttributeRight multiplier:1.0 constant:8]];
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:_addContactsButton attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1.0 constant:6]];
+    self.addContactsButtonTopConstraint = [NSLayoutConstraint constraintWithItem:_addContactsButton attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1.0 constant:0];
+    [self addConstraint:self.addContactsButtonTopConstraint];
 }
 
 - (void)configureBottomBorderConstraints
@@ -89,6 +94,16 @@
     [self addConstraint:[NSLayoutConstraint constraintWithItem:_bottomBorder attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeBottom multiplier:1.0 constant:-0.5]];
     [self addConstraint:[NSLayoutConstraint constraintWithItem:_bottomBorder attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:0.5]];
     [self addConstraint:[NSLayoutConstraint constraintWithItem:_bottomBorder attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0]];
+}
+
+- (void)layoutSubviews
+{
+    [super layoutSubviews];
+    if (!self.addContactsButtonTopConstant) {
+        // We calculate top constant here to accomodate for variable font support. 
+        self.addContactsButtonTopConstant = (self.frame.size.height / 2) - (self.addContactsButton.frame.size.height / 2);
+        self.addContactsButtonTopConstraint.constant = self.addContactsButtonTopConstant;
+    }
 }
 
 @end

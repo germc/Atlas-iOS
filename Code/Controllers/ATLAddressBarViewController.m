@@ -58,6 +58,7 @@ static NSString *const ATLAddressBarParticipantAttributeName = @"ATLAddressBarPa
     self.tableView.translatesAutoresizingMaskIntoConstraints = NO;
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
+    self.tableView.rowHeight = 56;
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:LSParticpantCellIdentifier];
     self.tableView.keyboardDismissMode = UIScrollViewKeyboardDismissModeOnDrag;
     self.tableView.hidden = YES;
@@ -155,7 +156,8 @@ static NSString *const ATLAddressBarParticipantAttributeName = @"ATLAddressBarPa
     UITableViewCell *cell =[tableView dequeueReusableCellWithIdentifier:LSParticpantCellIdentifier];
     id<ATLParticipant> participant = self.participants[indexPath.row];
     cell.textLabel.text = participant.fullName;
-    cell.textLabel.font = ATLMediumFont(14);
+    cell.textLabel.font = ATLMediumFont(16);
+    cell.textLabel.textColor = ATLBlueColor();
     return cell;
 }
 

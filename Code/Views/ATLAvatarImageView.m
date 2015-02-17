@@ -59,7 +59,7 @@ NSString *const ATLAvatarImageViewAccessibilityLabel = @"ATLAvatarImageViewAcces
     // Default UI Appearance
     _initialsFont = [UIFont systemFontOfSize:14];
     _initialsColor = [UIColor blackColor];
-    _avatarImageViewDiameter = 30;
+    _avatarImageViewDiameter = 27;
     
     self.clipsToBounds = YES;
     self.layer.cornerRadius = _avatarImageViewDiameter / 2;

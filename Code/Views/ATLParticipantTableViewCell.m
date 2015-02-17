@@ -36,8 +36,6 @@
 
 @implementation ATLParticipantTableViewCell
 
-static CGFloat const LSSelectionIndicatorSize = 30;
-
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
@@ -59,8 +57,8 @@ static CGFloat const LSSelectionIndicatorSize = 30;
 - (void)lyr_commonInit
 {
     // UIAppearance Defaults
-    _boldTitleFont = [UIFont boldSystemFontOfSize:14];
-    _titleFont = [UIFont systemFontOfSize:14];
+    _boldTitleFont = [UIFont boldSystemFontOfSize:17];
+    _titleFont = [UIFont systemFontOfSize:17];
     _titleColor =[UIColor blackColor];
     
     self.nameLabel = [UILabel new];
@@ -69,7 +67,6 @@ static CGFloat const LSSelectionIndicatorSize = 30;
     
     self.avatarImageView = [[ATLAvatarImageView alloc] init];
     self.avatarImageView.backgroundColor = ATLLightGrayColor();
-    self.avatarImageView.layer.cornerRadius = LSSelectionIndicatorSize / 2;
     self.avatarImageView.translatesAutoresizingMaskIntoConstraints = NO;
     [self.contentView addSubview:self.avatarImageView];
     

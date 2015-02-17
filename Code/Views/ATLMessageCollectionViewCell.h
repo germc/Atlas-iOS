@@ -24,6 +24,8 @@
 #import "ATLConstants.h"
 #import "ATLAvatarImageView.h"
 
+extern CGFloat const ATLMessageCellHorizontalMargin;
+
 /**
  @abstract The `ATLMessageCollectionViewCell` class provides a lightweight, customizable collection
  view cell for presenting Layer message objects. The class is subclassed by `ATLIncomingMessageCollectionViewCell`
