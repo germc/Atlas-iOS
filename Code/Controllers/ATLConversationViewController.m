@@ -33,7 +33,7 @@
 #import "ATLMediaAttachment.h"
 #import "ATLLocationManager.h"
 
-@interface ATLConversationViewController () <UICollectionViewDataSource, UICollectionViewDelegate, ATLMessageInputToolbarDelegate, UIActionSheetDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, LYRQueryControllerDelegate, ATLLocationManagerDelegate>
+@interface ATLConversationViewController () <UICollectionViewDataSource, UICollectionViewDelegate, ATLMessageInputToolbarDelegate, UIActionSheetDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, LYRQueryControllerDelegate>
 
 @property (nonatomic) ATLConversationCollectionView *collectionView;
 @property (nonatomic) ATLConversationDataSource *conversationDataSource;
@@ -613,15 +613,11 @@ static NSInteger const ATLMoreMessagesSection = 0;
 {
     if (!self.locationManager) {
         self.locationManager = [[ATLLocationManager alloc] init];
-        self.locationManager.delegate = self;
     }
     if ([self.locationManager locationServicesEnabled]) {
         [self.locationManager startLocationServices];
     }
-}
-
-- (void)locationManager:(ATLLocationManager *)locationManager didUpdateLocation:(CLLocation *)location
-{
+    CLLocation *location = self.locationManager.location;
     LYRMessage *message = [self messageForMessageParts:@[ATLMessagePartWithLocation(location)] pushText:@"Attachement: Location"];
     [self sendMessage:message];
 }
