@@ -273,8 +273,11 @@ static CGFloat const ATLButtonHeight = 28;
         NSAttributedString *attributedSubstring = [attributedString attributedSubstringFromRange:range];
         NSString *substring = attributedSubstring.string;
         NSString *trimmedSubstring = [substring stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-        if (trimmedSubstring.length == 0) return;
-        [messageParts addObject:trimmedSubstring];
+        if (trimmedSubstring.length == 0) {
+            return;
+        }
+        ATLMediaAttachment *mediaAttachment = [ATLMediaAttachment mediaAttachmentWithText:trimmedSubstring];
+        [messageParts addObject:mediaAttachment];
     }];
     return messageParts;
 }
