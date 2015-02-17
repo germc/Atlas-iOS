@@ -17,6 +17,7 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 //
+
 #import "ATLMessagingUtilities.h"
 #import "ATLErrors.h"
 #import <AssetsLibrary/AssetsLibrary.h>
@@ -29,6 +30,8 @@ NSString *const ATLMIMETypeImageJPEG = @"image/jpeg";
 NSString *const ATLMIMETypeImageJPEGPreview = @"image/jpeg+preview";
 NSString *const ATLMIMETypeLocation = @"location/coordinate";
 NSString *const ATLMIMETypeDate = @"text/date";
+
+NSUInteger const LYRUIThumbnailSize = 512;
 
 NSString *const ATLImagePreviewWidthKey = @"width";
 NSString *const ATLImagePreviewHeightKey = @"height";

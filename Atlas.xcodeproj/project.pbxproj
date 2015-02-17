@@ -22,7 +22,6 @@
 		D6F405CA1A8FDDE300AE9581 /* LYRQueryControllerMock.m in Sources */ = {isa = PBXBuildFile; fileRef = D6F405C11A8FDDE300AE9581 /* LYRQueryControllerMock.m */; };
 		D6F405CB1A8FDDE300AE9581 /* LYRUserMock.m in Sources */ = {isa = PBXBuildFile; fileRef = D6F405C31A8FDDE300AE9581 /* LYRUserMock.m */; };
 		D6F405D81A8FDE1B00AE9581 /* ATLTestConversationListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D6F405CE1A8FDE1B00AE9581 /* ATLTestConversationListViewController.m */; };
-		D6F405E51A8FDE3900AE9581 /* .DS_Store in Resources */ = {isa = PBXBuildFile; fileRef = D6F405DE1A8FDE3900AE9581 /* .DS_Store */; };
 		D6F405E71A8FDE3900AE9581 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D6F405E21A8FDE3900AE9581 /* Images.xcassets */; };
 		D6F405E91A8FDE3900AE9581 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = D6F405E41A8FDE3900AE9581 /* main.m */; };
 		D6F405F01A8FDEAB00AE9581 /* Conversation_Details.jpg in Resources */ = {isa = PBXBuildFile; fileRef = D6F405EB1A8FDEAB00AE9581 /* Conversation_Details.jpg */; };
@@ -554,7 +553,6 @@
 				D6F405F21A8FDEAB00AE9581 /* Conversation_View.jpg in Resources */,
 				D6F405F41A8FDEAB00AE9581 /* Participant_Selection.jpg in Resources */,
 				D6F405FF1A8FDEDD00AE9581 /* warning-black@2x.png in Resources */,
-				D6F405E51A8FDE3900AE9581 /* .DS_Store in Resources */,
 				D6F405FC1A8FDEDD00AE9581 /* download.png in Resources */,
 				D6F405FB1A8FDEDD00AE9581 /* camera@2x.png in Resources */,
 				D6F405FE1A8FDEDD00AE9581 /* warning-black.png in Resources */,

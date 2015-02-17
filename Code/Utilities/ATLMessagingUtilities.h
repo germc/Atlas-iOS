@@ -17,6 +17,7 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 //
+
 #import <Foundation/Foundation.h>
 #import <LayerKit/LayerKit.h>
 #import <MapKit/MapKit.h>
@@ -30,22 +31,24 @@ extern NSString *const ATLMIMETypeImageSize;          // application/json+imageS
 extern NSString *const ATLMIMETypeLocation;           // location/coordinate
 extern NSString *const ATLMIMETypeDate;               // text/date
 
+extern NSUInteger const ATLThumbnailSize;             // 512px
+
 extern NSString *const ATLImagePreviewWidthKey;
 extern NSString *const ATLImagePreviewHeightKey;
 extern NSString *const ATLLocationLatitudeKey;
 extern NSString *const ATLLocationLongitudeKey;
 
-//****************************
-// Max Cell Dimensions
-//****************************
+//--------------------------
+// @name Max Cell Dimensions
+//--------------------------
 
 CGFloat ATLMaxCellWidth();
 
 CGFloat ATLMaxCellHeight();
 
-//****************************
-// Image Utilities
-//****************************
+//----------------------
+// @name Image Utilities
+//----------------------
 
 CGSize ATLImageSizeForData(NSData *data);
 
@@ -57,9 +60,9 @@ CGSize ATLTextPlainSize(NSString *string, UIFont *font);
 
 CGRect ATLImageRectConstrainedToSize(CGSize imageSize, CGSize maxSize);
 
-//****************************
-// Message Part Constructors
-//****************************
+//--------------------------------
+// @name Message Part Constructors
+//--------------------------------
 
 LYRMessagePart *ATLMessagePartWithText(NSString *text);
 
@@ -69,9 +72,9 @@ LYRMessagePart *ATLMessagePartForImageSize(UIImage *image);
 
 LYRMessagePart *ATLMessagePartWithLocation(CLLocation *location);
 
-//****************************
-// Image Capture Utilities
-//****************************
+//------------------------------
+// @name Image Capture Utilities
+//------------------------------
 
 void ATLLastPhotoTaken(void(^completionHandler)(UIImage *image, NSError *error));
 
