@@ -551,21 +551,9 @@ static NSInteger const ATLMoreMessagesSection = 0;
 - (NSOrderedSet *)defaultMessagesForMessageParts:(NSArray *)messageParts
 {
     NSMutableOrderedSet *messages = [NSMutableOrderedSet new];
-    for (id part in messageParts){
-        NSString *pushText;
-        NSMutableArray *parts = [NSMutableArray new];
-        if ([part isKindOfClass:[NSString class]]) {
-            pushText = part;
-            [parts addObject:ATLMessagePartWithText(part)];
-        } else if ([part isKindOfClass:[UIImage class]]) {
-            pushText = @"Attachment: Image";
-            UIImage *image = part;
-            [parts addObject:ATLMessagePartWithJPEGImage(image)];
-        } else if ([part isKindOfClass:[CLLocation class]]) {
-            pushText = @"Attachment: Location";
-            [parts addObject:ATLMessagePartWithLocation(part)];
-        }
-        LYRMessage *message = [self messageForMessageParts:parts pushText:pushText];
+    for (ATLMediaAttachment *attachment in messageParts){
+        NSArray *messageParts = ATLMessagePartsWithMediaAttachment(attachment);
+        LYRMessage *message = [self messageForMessageParts:messageParts pushText:attachment.textRepresentation];
         if (message)[messages addObject:message];
     }
     return messages;
