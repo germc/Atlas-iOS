@@ -1,8 +1,8 @@
 //
-//  ATLUIMediaItem.h
+//  ATLMediaAttachment.h
 //  Atlas
 //
-//  Created by Klenen Verdnik on 2/14/15.
+//  Created by Klemen Verdnik on 2/14/15.
 //  Copyright (c) 2015 Layer, Inc. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,80 +21,80 @@
 #import <UIKit/UIKit.h>
 #import <CoreLocation/CoreLocation.h>
 
-typedef NS_ENUM(NSUInteger, LYRUIMediaItemType) {
+typedef NS_ENUM(NSUInteger, ATLMediaAttachmentType) {
     /**
      @constant Media attachment containing text.
      @discussion Sets mediaMIMEType = @"text/plain"; textRepresentation = input text defined at init;
      */
-    LYRUIMediaItemTypeText,
+    ATLMediaAttachmentTypeText,
     /**
      @constant Media attachment containing GPS location.
      @discussion Sets mediaMIMEType = @"location/coordinate"; textRepresentation = @"Attachment: location";
      */
-    LYRUIMediaItemTypeLocation,
+    ATLMediaAttachmentTypeLocation,
     /**
      @constant Media attachment containing image data.
      @discussion Sets mediaMIMEType = @"image/jpeg"; thumbnailMIMEType = @"image/jpeg+preview"; metadataMIMEType = @"application/json+imageSize"; textRepresentation = @"Attachment: Image";
      */
-    LYRUIMediaItemTypeImage,
+    ATLMediaAttachmentTypeImage,
     /**
      @constant Media attachment containing image data.
      @discussion Sets mediaMIMEType = @"audio/aacp"; thumbnailMIMEType = @"image/jpeg+preview"; metadataMIMEType = @"application/json+length"; textRepresentation = @"Attachment: Audio";
      */
-    LYRUIMediaItemTypeAudio,
+    ATLMediaAttachmentTypeAudio,
     /**
      @constant Media attachment containing image data.
      @discussion Sets mediaMIMEType = @"video/mp4"; thumbnailMIMEType = @"image/jpeg+preview"; metadataMIMEType = @"application/json+length"; textRepresentation = @"Attachment: Video";
      */
-    LYRUIMediaItemTypeVideo,
+    ATLMediaAttachmentTypeVideo,
 };
 
 /**
- @abstract The `LYRUIMediaItem` class configures the appropriate size
- for an NSTextAttachment to comfortably fit inside of a `LYRUIMessageInputToolbar`.
- `LYRUIMediaItem` provides input streams ready to stream full media and its thumbnail.
+ @abstract The `ATLMediaAttachment` class serves as a media container and as
+ an inlined text attachment for the UITextView. Use an appropriate initializer
+ for desired media type.
  */
-@interface ATLMediaItem : NSTextAttachment
+@interface ATLMediaAttachment : NSTextAttachment
 
 ///-------------------
 /// @name Initializers
 ///-------------------
 
 /**
- @abstract Creates a new `LYRUIMediaItem` instance of type `LYRUIMediaItemTypeImage` based on Apple's Photo Library's `ALAsset` URL identifier.
+ @abstract Creates a new `ATLMediaAttachment` instance of type `ATLMediaAttachmentTypeImage` based on Apple's Photo Library's `ALAsset` URL identifier.
  @param assetURL URL path of the media asset.
  @param thumbnailSize The size of the thumbnail.
- @return Instance of `LYRUIMediaItem` containing streams.
+ @return Instance of `ATLMediaAttachment` containing streams.
  */
-+ (instancetype)mediaItemWithAssetURL:(NSURL *)assetURL thumbnailSize:(NSUInteger)thumbnailSize;
++ (instancetype)mediaAttachmentWithAssetURL:(NSURL *)assetURL thumbnailSize:(NSUInteger)thumbnailSize;
 
 /**
- @abstract Creates a new `LYRUIMediaItem` instance of type `LYRUIMediaItemTypeImage` based on `UIImage`.
+ @abstract Creates a new `ATLMediaAttachment` instance of type `ATLMediaAttachmentTypeImage` based on `UIImage`.
  @param assetURL Image in a form of `UIImage`.
  @param thumbnailSize The size of the thumbnail.
- @return Instance of `LYRUIMediaItem` containing streams.
+ @return Instance of `ATLMediaAttachment` containing streams.
  */
-+ (instancetype)mediaItemWithImage:(UIImage *)image thumbnailSize:(NSUInteger)thumbnailSize;
++ (instancetype)mediaAttachmentWithImage:(UIImage *)image thumbnailSize:(NSUInteger)thumbnailSize;
 
 /**
- @abstract Creates a new `LYRUIMediaItem` instance of type `LYRUIMediaItemTypeText` based on `NSString` text.
+ @abstract Creates a new `ATLMediaAttachment` instance of type `ATLMediaAttachmentTypeText` based on `NSString` text.
  @param text Text in a form of `NSString`.
- @return Instance of `LYRUIMediaItem` containing streams.
+ @return Instance of `ATLMediaAttachment` containing streams.
  */
-+ (instancetype)mediaItemWithText:(NSString *)text;
++ (instancetype)mediaAttachmentWithText:(NSString *)text;
 
 /**
- @abstract Creates a new `LYRUIMediaItem` instance of type `LYRUIMediaItemTypeLocation` based on `CLLocation` GPS coordinates.
+ @abstract Creates a new `ATLMediaAttachment` instance of type `ATLMediaAttachmentTypeLocation` based on `CLLocation` GPS coordinates.
  @param location Location data in a form of `CLLocation`.
- @return Instance of `LYRUIMediaItem` containing streams.
+ @return Instance of `ATLMediaAttachment` containing streams.
  */
-+ (instancetype)mediaItemWithLocation:(CLLocation *)location;
++ (instancetype)mediaAttachmentWithLocation:(CLLocation *)location;
 
 ///----------------------------
 /// @name Media Item Attributes
 ///----------------------------
 
-@property (nonatomic, readonly) LYRUIMediaItemType mediaType;
+@property (nonatomic, readonly) ATLMediaAttachmentType mediaType;
 @property (nonatomic, readonly) NSUInteger thumbnailSize;
 
 ///----------------------------

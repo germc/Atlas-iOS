@@ -1,8 +1,8 @@
 //
-//  ATLUIMediaItem.h
+//  ATLMediaAttachment.h
 //  Atlas
 //
-//  Created by Klenen Verdnik on 2/14/15.
+//  Created by Klemen Verdnik on 2/14/15.
 //  Copyright (c) 2015 Layer, Inc. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,7 +18,7 @@
 //  limitations under the License.
 //
 
-#import "ATLMediaItem.h"
+#import "ATLMediaAttachment.h"
 #import "LYRUIMessagingUtilities.h"
 #import "LYRUIMediaInputStream.h"
 #import <MobileCoreServices/MobileCoreServices.h>
@@ -29,9 +29,9 @@
  @param assetLibrary Library instance from whence to fetch the asset.
  @return An `ALAsset` if successfully retrieved from asset library, otherwise `nil`.
  */
-ALAsset *LYRUIMediaItemFromAssetURL(NSURL *assetURL, ALAssetsLibrary *assetLibrary);
+ALAsset *ATLMediaAttachmentFromAssetURL(NSURL *assetURL, ALAssetsLibrary *assetLibrary);
 
-@interface LYRUIMediaItem ()
+@interface ATLMediaAttachment ()
 
 @property (nonatomic) NSURL *inputAssetURL; // when initialized with initWithAssetURL:
 @property (nonatomic) UIImage *inputImage; // when initialized with initWithImage:
@@ -41,7 +41,7 @@ ALAsset *LYRUIMediaItemFromAssetURL(NSURL *assetURL, ALAssetsLibrary *assetLibra
 
 @end
 
-@implementation LYRUIMediaItem
+@implementation ATLMediaAttachment
 
 #pragma mark - Initializers
 
@@ -60,7 +60,7 @@ ALAsset *LYRUIMediaItemFromAssetURL(NSURL *assetURL, ALAssetsLibrary *assetLibra
         // it into this thread.
         // --------------------------------------------------------------------
         ALAssetsLibrary *assetLibrary = [[ALAssetsLibrary alloc] init];
-        ALAsset *asset = LYRUIMediaItemFromAssetURL(assetURL, assetLibrary);
+        ALAsset *asset = ATLMediaAttachmentFromAssetURL(assetURL, assetLibrary);
         if (!asset) {
             // Asset not found
             return nil;
@@ -93,7 +93,7 @@ ALAsset *LYRUIMediaItemFromAssetURL(NSURL *assetURL, ALAssetsLibrary *assetLibra
             _metadataInputStream = [NSInputStream inputStreamWithData:JSONData];
             _metadataMIMEType = @"application/json";
         } else {
-            NSLog(@"LYRUIMediaItem failed to generate a JSON object for image metadata");
+            NSLog(@"ATLMediaAttachment failed to generate a JSON object for image metadata");
         }
         
         // --------------------------------------------------------------------
@@ -106,9 +106,9 @@ ALAsset *LYRUIMediaItemFromAssetURL(NSURL *assetURL, ALAssetsLibrary *assetLibra
         // Set the type - public property.
         // --------------------------------------------------------------------
         if ([assetType isEqualToString:ALAssetTypePhoto]) {
-            _mediaType = LYRUIMediaItemTypeImage;
+            _mediaType = ATLMediaAttachmentTypeImage;
         } else if ([assetType isEqualToString:ALAssetTypeVideo]) {
-            _mediaType = LYRUIMediaItemTypeVideo;
+            _mediaType = ATLMediaAttachmentTypeVideo;
         } else {
             return nil;
         }
@@ -125,7 +125,7 @@ ALAsset *LYRUIMediaItemFromAssetURL(NSURL *assetURL, ALAssetsLibrary *assetLibra
         if (!image) {
             @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"Cannot initialize %@ with `nil` image.", self.class] userInfo:nil];
         }
-        _mediaType = LYRUIMediaItemTypeImage;
+        _mediaType = ATLMediaAttachmentTypeImage;
         _mediaInputStream = [LYRUIMediaInputStream mediaInputStreamWithImage:image];
         _inputImage = image;
         _thumbnailSize = thumbnailSize;
@@ -141,7 +141,7 @@ ALAsset *LYRUIMediaItemFromAssetURL(NSURL *assetURL, ALAssetsLibrary *assetLibra
         if (!text) {
             @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"Cannot initialize %@ with `nil` text.", self.class] userInfo:nil];
         }
-        _mediaType = LYRUIMediaItemTypeText;
+        _mediaType = ATLMediaAttachmentTypeText;
         _mediaMIMEType = LYRUIMIMETypeTextPlain;
         _mediaInputStream = [NSInputStream inputStreamWithData:[text dataUsingEncoding:NSUTF8StringEncoding]];
         _textRepresentation = text;
@@ -156,7 +156,7 @@ ALAsset *LYRUIMediaItemFromAssetURL(NSURL *assetURL, ALAssetsLibrary *assetLibra
         if (!location) {
             @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"Cannot initialize %@ with `nil` location.", self.class] userInfo:nil];
         }
-        _mediaType = LYRUIMediaItemTypeText;
+        _mediaType = ATLMediaAttachmentTypeText;
         _mediaMIMEType = LYRUIMIMETypeTextPlain;
         NSData *data = [NSJSONSerialization dataWithJSONObject:@{LYRUILocationLatitudeKey: @(location.coordinate.latitude), LYRUILocationLongitudeKey:  @(location.coordinate.longitude)} options:0 error:nil];
         _mediaInputStream = [NSInputStream inputStreamWithData:data];
@@ -165,22 +165,22 @@ ALAsset *LYRUIMediaItemFromAssetURL(NSURL *assetURL, ALAssetsLibrary *assetLibra
     return self;
 }
 
-+ (instancetype)mediaItemWithAssetURL:(NSURL *)assetURL thumbnailSize:(NSUInteger)thumbnailSize
++ (instancetype)mediaAttachmentWithAssetURL:(NSURL *)assetURL thumbnailSize:(NSUInteger)thumbnailSize
 {
     return [[self alloc] initWithAssetURL:assetURL thumbnailSize:thumbnailSize];
 }
 
-+ (instancetype)mediaItemWithImage:(UIImage *)image thumbnailSize:(NSUInteger)thumbnailSize
++ (instancetype)mediaAttachmentWithImage:(UIImage *)image thumbnailSize:(NSUInteger)thumbnailSize
 {
     return [[self alloc] initWithImage:image thumbnailSize:thumbnailSize];
 }
 
-+ (instancetype)mediaItemWithText:(NSString *)text
++ (instancetype)mediaAttachmentWithText:(NSString *)text
 {
     return [[self alloc] initWithText:text];
 }
 
-+ (instancetype)mediaItemWithLocation:(CLLocation *)location
++ (instancetype)mediaAttachmentWithLocation:(CLLocation *)location
 {
     return [[self alloc] initWithLocation:location];
 }
@@ -200,7 +200,7 @@ ALAsset *LYRUIMediaItemFromAssetURL(NSURL *assetURL, ALAssetsLibrary *assetLibra
 
 @end
 
-ALAsset *LYRUIMediaItemFromAssetURL(NSURL *assetURL, ALAssetsLibrary *assetLibrary)
+ALAsset *ATLMediaAttachmentFromAssetURL(NSURL *assetURL, ALAssetsLibrary *assetLibrary)
 {
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
     dispatch_queue_t asyncQueue = dispatch_queue_create("com.layer.LYRUIAssetTestObtainLastImage.async", DISPATCH_QUEUE_CONCURRENT);
