@@ -50,7 +50,7 @@ static char const ATLMediaAttachmentAsyncToBlockingQueueName[] = "com.layer.Atla
 
 @end
 
-@interface ATLAssetMediaAttachment :ATLMediaAttachment
+@interface ATLAssetMediaAttachment : ATLMediaAttachment
 
 @property (nonatomic) NSURL *inputAssetURL;
 
@@ -58,7 +58,7 @@ static char const ATLMediaAttachmentAsyncToBlockingQueueName[] = "com.layer.Atla
 
 @end
 
-@interface ATLImageMediaAttachment :ATLMediaAttachment
+@interface ATLImageMediaAttachment : ATLMediaAttachment
 
 @property (nonatomic) UIImage *inputImage;
 
@@ -66,13 +66,13 @@ static char const ATLMediaAttachmentAsyncToBlockingQueueName[] = "com.layer.Atla
 
 @end
 
-@interface ATLLocationMediaAttachment :ATLMediaAttachment
+@interface ATLLocationMediaAttachment : ATLMediaAttachment
 
 - (instancetype)initWithLocation:(CLLocation *)location;
 
 @end
 
-@interface ATLTextMediaAttachment :ATLMediaAttachment
+@interface ATLTextMediaAttachment : ATLMediaAttachment
 
 - (instancetype)initWithText:(NSString *)text;
 
