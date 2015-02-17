@@ -259,15 +259,22 @@ CGFloat const ATLMessageCellMinimumHeight = 10;
 
 + (CGFloat)cellHeightForImageMessage:(LYRMessage *)message
 {
-    LYRMessagePart *part = message.parts.firstObject;
-    UIImage *image = [UIImage imageWithData:part.data];
-    CGFloat height;
-    if (image) {
-        height = ATLImageSize(image).height;
-    } else {
-        height = 0;
+    CGSize size = CGSizeZero;
+    LYRMessagePart *sizePart = ATLMessagePartForMIMEType(message, ATLMIMETypeImageSize);
+    if (sizePart) {
+        size = ATLImageSizeForJSONData(sizePart.data);
+        size = ATLConstrainImageSizeToCellSize(size);
     }
-    return height;
+    if (CGSizeEqualToSize(size, CGSizeZero)) {
+        LYRMessagePart *imagePart = ATLMessagePartForMIMEType(message, ATLMIMETypeImageJPEGPreview);
+        if (!imagePart) {
+            // If no preview image part found, resort to the full-resolution image.
+            imagePart = ATLMessagePartForMIMEType(message, ATLMIMETypeImageJPEG);
+        }
+        // Resort to image's size, if no dimensions metadata message parts found.
+        size = ATLImageSizeForData(imagePart.data);
+    }
+    return size.height;
 }
 
 @end
