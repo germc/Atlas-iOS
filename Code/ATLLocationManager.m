@@ -20,29 +20,22 @@
 {
     self = [super init];
     if (self) {
-        self.locationManager = [[CLLocationManager alloc] init];
-        self.locationManager.delegate = self;
-        self.locationManager.desiredAccuracy = kCLLocationAccuracyBest;
+        self.delegate = self;
+        self.desiredAccuracy = kCLLocationAccuracyBest;
     }
     return self;
 }
 
 - (void)startLocationServices
 {
-    if ([self.locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
-        [self.locationManager requestWhenInUseAuthorization];
+    if ([self respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
+        [self requestWhenInUseAuthorization];
     }
-    [self.locationManager startUpdatingLocation];
+    [self startUpdatingLocation];
+    [self stopUpdatingLocation];
 }
 
 #pragma mark - CLLocationManagerDelegate
-
-- (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations
-{
-    if (manager != self.locationManager) return;
-    [manager stopUpdatingLocation];
-    [self.delegate locationManager:self didUpdateLocation:locations.firstObject];
-}
 
 - (BOOL)locationServicesEnabled
 {
