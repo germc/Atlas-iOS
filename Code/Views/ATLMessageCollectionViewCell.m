@@ -119,9 +119,29 @@ CGFloat const ATLMessageCellMinimumHeight = 10;
 {
     self.accessibilityLabel = [NSString stringWithFormat:@"Message: Photo"];
     
-    LYRMessagePart *imagePart = self.message.parts.firstObject;
-    CGSize size = ATLImageSizeForData(imagePart.data);
-    [self.bubbleView updateWithImage:[UIImage imageWithData:imagePart.data] width:size.width];
+    UIImage *displayingImage;
+    LYRMessagePart *imagePart = ATLMessagePartForMIMEType(self.message, ATLMIMETypeImageJPEGPreview);
+    if (!imagePart) {
+        // If no preview image part found, resort to the full-resolution image.
+        imagePart = ATLMessagePartForMIMEType(self.message, ATLMIMETypeImageJPEG);
+    }
+    if (imagePart.fileURL) {
+        displayingImage = [UIImage imageWithContentsOfFile:imagePart.fileURL.path];
+    } else {
+        displayingImage = [UIImage imageWithData:imagePart.data];
+    }
+    
+    CGSize size = CGSizeZero;
+    LYRMessagePart *sizePart = ATLMessagePartForMIMEType(self.message, ATLMIMETypeImageSize);
+    if (sizePart) {
+        size = ATLImageSizeForJSONData(sizePart.data);
+        size = ATLConstrainImageSizeToCellSize(size);
+    }
+    if (CGSizeEqualToSize(size, CGSizeZero)) {
+        // Resort to image's size, if no dimensions metadata message parts found.
+        size = ATLImageSizeForData(imagePart.data);
+    }
+    [self.bubbleView updateWithImage:displayingImage width:size.width];
 }
 
 - (void)configureBubbleViewForLocationContent
