@@ -113,7 +113,6 @@ static void ATLMediaInputStreamReleaseStreamCallback(void *assetStreamRef);
     _streamFlowProviderSemaphore = dispatch_semaphore_create(0);
     _consumerAsyncQueue = dispatch_queue_create(ATLMediaInputConsumerAsyncQueueName, DISPATCH_QUEUE_CONCURRENT);
     _transferBufferSerialGuard = dispatch_queue_create(ATLMediaInputConsumerSerialTransferQueueName, DISPATCH_QUEUE_SERIAL);
-    [self updateIsLossless];
 }
 
 + (instancetype)mediaInputStreamWithAssetURL:(NSURL *)assetURL
@@ -133,29 +132,21 @@ static void ATLMediaInputStreamReleaseStreamCallback(void *assetStreamRef);
     }
 }
 
-#pragma mark - Public Accessors
+#pragma mark - Transient isLossless implementation
 
-- (void)setMaximumSize:(NSUInteger)maximumSize
++ (NSSet *)keyPathsForValuesAffectingValueForKey:(NSString *)key
 {
-    _maximumSize = maximumSize;
-    [self updateIsLossless];
-}
-
-- (void)setCompressionQuality:(float)compressionQuality
-{
-    _compressionQuality = compressionQuality;
-    [self updateIsLossless];
-}
-
-- (void)updateIsLossless
-{
-    if (self.maximumSize == 0 && self.compressionQuality == 0.0f) {
-        // If the transfer is going to be lossless.
-        self.isLossless = YES;
-    } else {
-        // If the transfer includes re-sampling and compression.
-        self.isLossless = NO;
+    NSSet *keyPaths = [super keyPathsForValuesAffectingValueForKey:key];
+    if ([key isEqualToString:@"isLossless"]) {
+        NSSet *affectingKey = [NSSet setWithObjects:@"maximumSize", @"compressionQuality", nil];
+        keyPaths = [keyPaths setByAddingObjectsFromSet:affectingKey];
     }
+    return keyPaths;
+}
+
+- (BOOL)isLossless
+{
+    return (self.maximumSize == 0 && self.compressionQuality == 0.0f);
 }
 
 #pragma mark - Public Overrides
