@@ -32,12 +32,12 @@
 
 NSString *const ATLConversationViewHeaderIdentifier = @"ATLConversationViewHeaderIdentifier";
 
-CGFloat const ATLConversationViewHeaderParticipantLeftPadding = 50;
+CGFloat const ATLConversationViewHeaderParticipantLeftPadding = 60;
 CGFloat const ATLConversationViewHeaderHorizontalPadding = 10;
-CGFloat const ATLConversationViewHeaderTopPadding = 18;
-CGFloat const ATLConversationViewHeaderDateBottomPadding = 18;
-CGFloat const ATLConversationViewHeaderParticipantNameBottomPadding = 2;
-CGFloat const ATLConversationViewHeaderEmptyHeight = 2;
+CGFloat const ATLConversationViewHeaderTopPadding = 10;
+CGFloat const ATLConversationViewHeaderDateBottomPadding = 8;
+CGFloat const ATLConversationViewHeaderParticipantNameBottomPadding = 3;
+CGFloat const ATLConversationViewHeaderEmptyHeight = 1;
 
 + (ATLConversationCollectionViewHeader *)sharedHeader
 {
@@ -53,7 +53,7 @@ CGFloat const ATLConversationViewHeaderEmptyHeight = 2;
 {
     ATLConversationCollectionViewHeader *proxy = [self appearance];
     proxy.participantLabelTextColor = [UIColor grayColor];
-    proxy.participantLabelFont = [UIFont systemFontOfSize:10];
+    proxy.participantLabelFont = [UIFont systemFontOfSize:11];
 }
 
 - (id)initWithFrame:(CGRect)frame

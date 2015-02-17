@@ -19,6 +19,8 @@
 //
 
 #import "ATLMessageComposeTextView.h"
+#import "ATLMessagingUtilities.h"
+#import "ATLConstants.h"
 
 @interface ATLMessageComposeTextView ()
 
@@ -34,7 +36,10 @@ static NSString *const ATLPlaceholderText = @"Enter Message";
 {
     self = [super init];
     if (self) {
-        self.textContainerInset = UIEdgeInsetsMake(8, 0, 8, 0);
+        
+        self.attributedText = [[NSAttributedString alloc] initWithString:@"" attributes:@{NSFontAttributeName : [UIFont systemFontOfSize:17],
+                                                                                         NSForegroundColorAttributeName : ATLGrayColor()}];
+        self.textContainerInset = UIEdgeInsetsMake(4, 4, 4, 4);
         self.font = [UIFont systemFontOfSize:17];
         self.dataDetectorTypes = UIDataDetectorTypeLink;
         self.placeholder = ATLPlaceholderText;

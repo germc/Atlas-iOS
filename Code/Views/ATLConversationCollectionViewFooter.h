@@ -46,6 +46,6 @@ extern NSString *const ATLConversationViewFooterIdentifier;
  @param recipientStatus An `NSAttributedString` containing attributes that will be used in the calculation.
  @return The height for the footer.
  */
-+ (CGFloat)footerHeightWithRecipientStatus:(NSAttributedString *)recipientStatus;
++ (CGFloat)footerHeightWithRecipientStatus:(NSAttributedString *)recipientStatus  clustered:(BOOL)clustered;
 
 @end

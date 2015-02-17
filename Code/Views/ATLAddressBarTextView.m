@@ -58,7 +58,7 @@ static CGFloat const ATLLineSpacing = 6;
 
 - (void)lyr_commonInit
 {
-    _addressBarFont = ATLMediumFont(14);
+    _addressBarFont = ATLMediumFont(15);
     _addressBarTextColor = [UIColor blackColor];
     _addressBarHighlightColor = ATLBlueColor();
     
@@ -66,7 +66,7 @@ static CGFloat const ATLLineSpacing = 6;
     self.textContainerInset = UIEdgeInsetsMake(10, 0, 10, 0);
     
     NSMutableParagraphStyle *paragraphStyle = [NSMutableParagraphStyle new];
-    paragraphStyle.firstLineHeadIndent = 28.0f;
+    paragraphStyle.firstLineHeadIndent = 34.0f;
     paragraphStyle.lineSpacing = ATLLineSpacing;
     self.typingAttributes = @{NSParagraphStyleAttributeName: paragraphStyle, NSForegroundColorAttributeName: self.addressBarTextColor};
     self.font = self.addressBarFont;
@@ -74,7 +74,7 @@ static CGFloat const ATLLineSpacing = 6;
     self.toLabel = [UILabel new];
     self.toLabel.translatesAutoresizingMaskIntoConstraints = NO;
     self.toLabel.text = @"To:";
-    self.toLabel.textColor = ATLGrayColor();
+    self.toLabel.textColor = [UIColor grayColor];
     self.toLabel.font = self.addressBarFont;
     [self addSubview:self.toLabel];
     
@@ -146,7 +146,7 @@ static CGFloat const ATLLineSpacing = 6;
 
 - (void)configureToLabelConstraints
 {
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:self.toLabel attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1.0 constant:12]];
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:self.toLabel attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1.0 constant:14]];
     [self addConstraint:[NSLayoutConstraint constraintWithItem:self.toLabel attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1.0 constant:10]];
     // Adding the constraint below works around a crash on iOS 7.1. It will be overriden by the content size.
     [self addConstraint:[NSLayoutConstraint constraintWithItem:self.toLabel attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeRight multiplier:1.0 constant:0]];
