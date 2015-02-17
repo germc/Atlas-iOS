@@ -186,8 +186,8 @@ static char const ATLMediaAttachmentAsyncToBlockingQueueName[] = "com.layer.Atla
         if (!location) {
             @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"Cannot initialize %@ with `nil` location.", self.class] userInfo:nil];
         }
-        self.mediaType = ATLMediaAttachmentTypeText;
-        self.mediaMIMEType = ATLMIMETypeTextPlain;
+        self.mediaType = ATLMediaAttachmentTypeLocation;
+        self.mediaMIMEType = ATLMIMETypeLocation;
         NSData *data = [NSJSONSerialization dataWithJSONObject:@{ ATLLocationLatitudeKey: @(location.coordinate.latitude),
                                                                   ATLLocationLongitudeKey:  @(location.coordinate.longitude) } options:0 error:nil];
         self.mediaInputStream = [NSInputStream inputStreamWithData:data];

@@ -548,8 +548,8 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
     if (!self.conversation) {
         return;
     }
-    if (messageInputToolbar.messageParts.count) {
-        NSOrderedSet *messages = [self messagesForContentParts:messageInputToolbar.messageParts];
+    if (messageInputToolbar.mediaAttachments.count) {
+        NSOrderedSet *messages = [self defaultMessagesForMediaAttachments:messageInputToolbar.mediaAttachments];
         for (LYRMessage *message in messages) {
             [self sendMessage:message];
         }
@@ -617,7 +617,8 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
         [self.locationManager updateLocation];
     }
     CLLocation *location = self.locationManager.location;
-    LYRMessage *message = [self messageForMessageParts:@[ATLMessagePartWithLocation(location)] pushText:@"Attachement: Location"];
+    ATLMediaAttachment *attachement = [ATLMediaAttachment mediaAttachmentWithLocation:location];
+    LYRMessage *message = [self messageForMessageParts:ATLMessagePartsWithMediaAttachment(attachement) pushText:@"Attachement: Location"];
     [self sendMessage:message];
 }
 
