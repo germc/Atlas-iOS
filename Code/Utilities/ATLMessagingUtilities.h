@@ -32,7 +32,7 @@ extern NSString *const ATLMIMETypeImageSize;          // application/json+imageS
 extern NSString *const ATLMIMETypeLocation;           // location/coordinate
 extern NSString *const ATLMIMETypeDate;               // text/date
 
-extern NSUInteger const ATLDefaultThumbnailSize;             // 512px
+extern NSUInteger const ATLDefaultThumbnailSize;      // 256px
 
 extern NSString *const ATLImagePreviewWidthKey;
 extern NSString *const ATLImagePreviewHeightKey;
@@ -57,6 +57,11 @@ CGSize ATLImageSizeForJSONData(NSData *data);
 
 CGSize ATLImageSize(UIImage *image);
 
+/**
+ @abstract Constraints the CGSize to the default cell size (defined in ATLMaxCellWidth() and ATLMaxCellHeight()) and preserving the original aspec ratio.
+ @param imageSize The size of the source image that should be shrunk or enlarged.
+ @return Returns a CGSize constrained to the cell size with the same aspect ratio as the source CGSize.
+ */
 CGSize ATLConstrainImageSizeToCellSize(CGSize imageSize);
 
 CGSize ATLTextPlainSize(NSString *string, UIFont *font);
