@@ -22,6 +22,7 @@
 #import <LayerKit/LayerKit.h>
 #import <MapKit/MapKit.h>
 #import <ImageIO/ImageIO.h>
+#import "ATLMediaAttachment.h"
 
 extern NSString *const ATLMIMETypeTextPlain;          // text/plain
 extern NSString *const ATLMIMETypeImagePNG;           // image/png
@@ -56,27 +57,27 @@ CGSize ATLImageSizeForJSONData(NSData *data);
 
 CGSize ATLImageSize(UIImage *image);
 
+CGSize ATLConstrainImageSizeToCellSize(CGSize imageSize);
+
 CGSize ATLTextPlainSize(NSString *string, UIFont *font);
 
 CGRect ATLImageRectConstrainedToSize(CGSize imageSize, CGSize maxSize);
 
-//--------------------------------
-// @name Message Part Constructors
-//--------------------------------
+//-----------------------------
+// @name Message Part Utilities
+//-----------------------------
 
-LYRMessagePart *ATLMessagePartWithText(NSString *text);
+NSArray *ATLMessagePartsWithMediaAttachment(ATLMediaAttachment *mediaAttachment);
 
-LYRMessagePart *ATLMessagePartWithJPEGImage(UIImage *image);
-
-LYRMessagePart *ATLMessagePartForImageSize(UIImage *image);
-
-LYRMessagePart *ATLMessagePartWithLocation(CLLocation *location);
+LYRMessagePart *ATLMessagePartForMIMEType(LYRMessage *message, NSString *MIMEType);
 
 //------------------------------
 // @name Image Capture Utilities
 //------------------------------
 
 void ATLAssetURLOfLastPhotoTaken(void(^completionHandler)(NSURL *assetURL, NSError *error));
+
+void ATLLastPhotoTaken(void(^completionHandler)(UIImage *image, NSError *error));
 
 UIImage *ATLPinPhotoForSnapshot(MKMapSnapshot *snapshot, CLLocationCoordinate2D location);
 
