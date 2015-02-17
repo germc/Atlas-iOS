@@ -99,7 +99,7 @@
 		9337BCDD41DBBADF3D4BBD19 /* Pods-Conversation.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Conversation.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Conversation/Pods-Conversation.debug.xcconfig"; sourceTree = "<group>"; };
 		A0B1D3F36BC9D9E13AAB5363 /* Pods-UnitTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-UnitTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-UnitTests/Pods-UnitTests.release.xcconfig"; sourceTree = "<group>"; };
 		A7D0B7A467DAA6337116AE43 /* Pods-UnitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-UnitTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-UnitTests/Pods-UnitTests.debug.xcconfig"; sourceTree = "<group>"; };
-		D08320991A92BEFE00CA4965 /* Unit tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = "Unit tests.xctest"; path = UnitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D08320991A92BEFE00CA4965 /* UnitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UnitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D083209C1A92BEFE00CA4965 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D08320A41A92C01000CA4965 /* ATLMediaStreamTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ATLMediaStreamTests.m; path = Tests/ATLMediaStreamTests.m; sourceTree = SOURCE_ROOT; };
 		D6F405A71A8FDDAA00AE9581 /* ATLConversationAvatarItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ATLConversationAvatarItem.h; path = Examples/ATLConversationAvatarItem.h; sourceTree = SOURCE_ROOT; };
@@ -298,7 +298,7 @@
 				D6F57E421A8BE4AF00B62BD9 /* ProgrammaticTests.xctest */,
 				D6F57E541A8BE4B500B62BD9 /* Storyboard.app */,
 				D6F57E6C1A8BE4B500B62BD9 /* StoryboardTests.xctest */,
-				D08320991A92BEFE00CA4965 /* Unit tests.xctest */,
+				D08320991A92BEFE00CA4965 /* UnitTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -480,7 +480,7 @@
 			);
 			name = UnitTests;
 			productName = "Unit tests";
-			productReference = D08320991A92BEFE00CA4965 /* Unit tests.xctest */;
+			productReference = D08320991A92BEFE00CA4965 /* UnitTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		D6F57E291A8BE4AF00B62BD9 /* Programmatic */ = {
