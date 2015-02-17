@@ -57,6 +57,7 @@
 
 static CGFloat const ATLTypingIndicatorHeight = 20;
 static NSInteger const ATLMoreMessagesSection = 0;
+static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
 
 + (instancetype)conversationViewControllerWithLayerClient:(LYRClient *)layerClient;
 {
@@ -496,18 +497,17 @@ static NSInteger const ATLMoreMessagesSection = 0;
 
 - (BOOL)shouldClusterMessageAtSection:(NSUInteger)section
 {
-    if (section == self.collectionView.numberOfSections - 1) return NO;
-    
+    if (section == self.collectionView.numberOfSections - 1) {
+        return NO;
+    }
     LYRMessage *message = [self.conversationDataSource messageAtCollectionViewSection:section];
     LYRMessage *nextMessage = [self.conversationDataSource messageAtCollectionViewSection:section + 1];
-    if (!nextMessage.sentAt) return NO;
-    
+    if (!nextMessage.sentAt) {
+        return NO;
+    }
     NSDate *date = message.sentAt ?: [NSDate date];
     NSTimeInterval interval = [nextMessage.sentAt timeIntervalSinceDate:date];
-    if (interval < 60) {
-        return YES;
-    }
-    return NO;
+    return (interval < 60);
 }
 
 - (BOOL)shouldDisplayAvatarItemAtIndexPath:(NSIndexPath *)indexPath
@@ -545,7 +545,9 @@ static NSInteger const ATLMoreMessagesSection = 0;
 
 - (void)messageInputToolbar:(ATLMessageInputToolbar *)messageInputToolbar didTapRightAccessoryButton:(UIButton *)rightAccessoryButton
 {
-    if (!self.conversation) return;
+    if (!self.conversation) {
+        return;
+    }
     if (messageInputToolbar.messageParts.count) {
         NSOrderedSet *messages = [self messagesForContentParts:messageInputToolbar.messageParts];
         for (LYRMessage *message in messages) {
@@ -586,7 +588,7 @@ static NSInteger const ATLMoreMessagesSection = 0;
 {
     NSString *senderName = [[self participantForIdentifier:self.layerClient.authenticatedUserID] fullName];
     NSDictionary *pushOptions = @{LYRMessageOptionsPushNotificationAlertKey : [NSString stringWithFormat:@"%@: %@", senderName, pushText],
-                                  LYRMessageOptionsPushNotificationSoundNameKey : @"layerbell.caf"};
+                                  LYRMessageOptionsPushNotificationSoundNameKey : ATLPushNotificationSoundName};
     NSError *error;
     LYRMessage *message = [self.layerClient newMessageWithParts:parts options:pushOptions error:&error];
     if (error) {

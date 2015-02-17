@@ -58,6 +58,7 @@ static NSString *const ATLAddressBarParticipantAttributeName = @"ATLAddressBarPa
     self.tableView.translatesAutoresizingMaskIntoConstraints = NO;
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
+    self.tableView.rowHeight = 56;
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:LSParticpantCellIdentifier];
     self.tableView.keyboardDismissMode = UIScrollViewKeyboardDismissModeOnDrag;
     self.tableView.hidden = YES;
@@ -139,11 +140,6 @@ static NSString *const ATLAddressBarParticipantAttributeName = @"ATLAddressBarPa
 }
 
 #pragma mark - UITableViewDataSource
-
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    return 56;
-}
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {

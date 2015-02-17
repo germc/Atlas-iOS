@@ -9,7 +9,7 @@
 #import "ProgrammaticAppDelegate.h"
 #import "ATLSampleConversationListViewController.h"
 #import "LayerKitMock.h"
-
+#import <Atlas/Atlas.h>
 @interface ProgrammaticAppDelegate ()
 
 @end
