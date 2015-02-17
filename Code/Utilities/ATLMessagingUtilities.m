@@ -31,7 +31,7 @@ NSString *const ATLMIMETypeImageJPEGPreview = @"image/jpeg+preview";
 NSString *const ATLMIMETypeLocation = @"location/coordinate";
 NSString *const ATLMIMETypeDate = @"text/date";
 
-NSUInteger const LYRUIThumbnailSize = 512;
+NSUInteger const ATLThumbnailSize = 512;
 
 NSString *const ATLImagePreviewWidthKey = @"width";
 NSString *const ATLImagePreviewHeightKey = @"height";
@@ -171,7 +171,7 @@ LYRMessagePart *ATLMessagePartWithLocation(CLLocation *location)
 
 #pragma mark - Image Capture Utilities
 
-void ATLLastPhotoTaken(void(^completionHandler)(UIImage *image, NSError *error))
+void ATLAssetURLOfLastPhotoTaken(void(^completionHandler)(NSURL *assetURL, NSError *error))
 {
     // Credit goes to @iBrad Apps on Stack Overflow
     // http://stackoverflow.com/questions/8867496/get-last-image-from-photos-app
@@ -195,13 +195,10 @@ void ATLLastPhotoTaken(void(^completionHandler)(UIImage *image, NSError *error))
             // When done, the asset enumeration block is called another time with result set to nil.
             if (!result) return;
 
-            ALAssetRepresentation *representation = [result defaultRepresentation];
-            UIImage *latestPhoto = [UIImage imageWithCGImage:[representation fullScreenImage]];
-            
             // Stop the enumerations
             *innerStop = YES;
             *stop = YES;
-            completionHandler(latestPhoto, nil);
+            completionHandler(result.defaultRepresentation.url, nil);
         }];
     } failureBlock:^(NSError *error) {
         completionHandler(nil, error);

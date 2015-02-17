@@ -141,7 +141,8 @@ static CGFloat const ATLButtonHeight = 28;
     NSArray *images = [UIPasteboard generalPasteboard].images;
     if (images.count > 0) {
         for (UIImage *image in images) {
-            [self insertImage:image];
+            ATLMediaAttachment *mediaAttachment = [ATLMediaAttachment mediaAttachmentWithImage:image thumbnailSize:ATLThumbnailSize];
+            [self insertMediaAttachment:mediaAttachment];
         }
         return;
     }
@@ -157,7 +158,7 @@ static CGFloat const ATLButtonHeight = 28;
     [self setNeedsLayout];
 }
 
-- (void)insertImage:(UIImage *)image
+- (void)insertMediaAttachment:(ATLMediaAttachment *)mediaAttachment
 {
     UITextView *textView = self.textInputView;
 
@@ -167,12 +168,9 @@ static CGFloat const ATLButtonHeight = 28;
         [attributedString appendAttributedString:lineBreak];
     }
 
-    ATLMediaAttachment *textAttachment = [ATLMediaAttachment new];
-    textAttachment.image = image;
-    NSMutableAttributedString *attachmentString = [[NSAttributedString attributedStringWithAttachment:textAttachment] mutableCopy];
+    NSMutableAttributedString *attachmentString = [[NSAttributedString attributedStringWithAttachment:mediaAttachment] mutableCopy];
     [attachmentString addAttribute:NSFontAttributeName value:textView.font range:NSMakeRange(0, attachmentString.length)];
     [attributedString appendAttributedString:attachmentString];
-
     [attributedString appendAttributedString:lineBreak];
 
     textView.attributedText = attributedString;
@@ -269,7 +267,7 @@ static CGFloat const ATLButtonHeight = 28;
     [attributedString enumerateAttribute:NSAttachmentAttributeName inRange:NSMakeRange(0, attributedString.length) options:0 usingBlock:^(id attachment, NSRange range, BOOL *stop) {
         if ([attachment isKindOfClass:[ATLMediaAttachment class]]) {
             ATLMediaAttachment *mediaAttachment = (ATLMediaAttachment *)attachment;
-            [messageParts addObject:mediaAttachment.image];
+            [messageParts addObject:mediaAttachment];
             return;
         }
         NSAttributedString *attributedSubstring = [attributedString attributedSubstringFromRange:range];

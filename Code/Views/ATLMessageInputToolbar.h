@@ -20,6 +20,7 @@
 
 #import <UIKit/UIKit.h>
 #import "ATLMessageComposeTextView.h"
+#import "ATLMediaAttachment.h"
 
 @class ATLMessageInputToolbar;
 
@@ -74,12 +75,13 @@ extern NSString *const ATLMessageInputToolbarDidChangeHeightNotification;
 //------------------------------
 
 /**
- @abstract Displays an image in the textInputView.
- @discussion The view will automatically resize the image and itself to comfortably
- fit the image content. The image will also be cached and is accessible via the messageParts
+ @abstract Inserts the mediaAttachment as an attributed text attachment which is inlined with text.
+ @param mediaAttachment The `LYRUIMediaAttachment` instance containing information about the media.
+ @discussion The view will automatically resize the attachment's thumbnail and itself to comfortably
+ fit the thumbnail content. The image will also be cached and is accessible via the messageParts
  property.
  */
-- (void)insertImage:(UIImage *)image;
+- (void)insertMediaAttachment:(ATLMediaAttachment *)mediaAttachment;
 
 //-----------------------------
 // UI Customization

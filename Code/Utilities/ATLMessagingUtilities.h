@@ -76,7 +76,7 @@ LYRMessagePart *ATLMessagePartWithLocation(CLLocation *location);
 // @name Image Capture Utilities
 //------------------------------
 
-void ATLLastPhotoTaken(void(^completionHandler)(UIImage *image, NSError *error));
+void ATLAssetURLOfLastPhotoTaken(void(^completionHandler)(NSURL *assetURL, NSError *error));
 
 UIImage *ATLPinPhotoForSnapshot(MKMapSnapshot *snapshot, CLLocationCoordinate2D location);
 

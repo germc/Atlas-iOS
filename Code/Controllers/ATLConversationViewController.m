@@ -30,6 +30,7 @@
 #import "ATLDataSourceChange.h"
 #import "ATLConversationView.h"
 #import "ATLConversationDataSource.h"
+#import "ATLMediaAttachment.h"
 
 @interface ATLConversationViewController () <UICollectionViewDataSource, UICollectionViewDelegate, ATLMessageInputToolbarDelegate, UIActionSheetDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, LYRQueryControllerDelegate>
 
@@ -632,11 +633,12 @@ static NSInteger const ATLMoreMessagesSection = 0;
 
 - (void)captureLastPhotoTaken
 {
-    ATLLastPhotoTaken(^(UIImage *image, NSError *error) {
+    ATLAssetURLOfLastPhotoTaken(^(NSURL *assetURL, NSError *error) {
         if (error) {
             NSLog(@"Failed to capture last photo with error: %@", [error localizedDescription]);
         } else {
-            [self.messageInputToolbar insertImage:image];
+            ATLMediaAttachment *mediaAttachment = [ATLMediaAttachment mediaAttachmentWithAssetURL:assetURL thumbnailSize:ATLThumbnailSize];
+            [self.messageInputToolbar insertMediaAttachment:mediaAttachment];
         }
     });
 }
@@ -647,8 +649,9 @@ static NSInteger const ATLMoreMessagesSection = 0;
 {
     NSString *mediaType = info[UIImagePickerControllerMediaType];
     if ([mediaType isEqualToString:(__bridge NSString *)kUTTypeImage]) {
-        UIImage *selectedImage = (UIImage *)info[UIImagePickerControllerOriginalImage];
-        [self.messageInputToolbar insertImage:selectedImage];
+        NSURL *assetURL = (NSURL *)info[UIImagePickerControllerReferenceURL];
+        ATLMediaAttachment *mediaAttachment = [ATLMediaAttachment mediaAttachmentWithAssetURL:assetURL thumbnailSize:ATLThumbnailSize];
+        [self.messageInputToolbar insertMediaAttachment:mediaAttachment];
     }
     [self.navigationController dismissViewControllerAnimated:YES completion:nil];
     [self.view becomeFirstResponder];
