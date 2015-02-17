@@ -30,5 +30,10 @@ target 'StoryboardTests' do
   pod 'OCMock'
 end
 
+target 'UnitTests' do
+  pod 'Expecta'
+  pod 'OCMock'
+end
+
  #pod 'LayerKit', git: 'git@github.com:layerhq/LayerKit.git'
 #pod 'LayerKit', git: 'git@github.com:layerhq/LayerKit.git'
