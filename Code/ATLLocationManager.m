@@ -26,7 +26,7 @@
     return self;
 }
 
-- (void)startLocationServices
+- (void)updateLocation
 {
     if ([self respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
         [self requestWhenInUseAuthorization];
@@ -34,8 +34,6 @@
     [self startUpdatingLocation];
     [self stopUpdatingLocation];
 }
-
-#pragma mark - CLLocationManagerDelegate
 
 - (BOOL)locationServicesEnabled
 {

@@ -205,8 +205,8 @@
 ///---------------------------------------
 
 /**
- @abstract The time interval at which message dates should be displayed in seconds. Default is 15 minutes meaning that
- dates will appear centered above a message only if the previous message was sent over 15 minutes ago.
+ @abstract The time interval at which message dates should be displayed in seconds. Default is 60 minutes meaning that
+ dates will appear centered above a message only if the previous message was sent over 60 minutes ago.
  */
 @property (nonatomic) NSTimeInterval dateDisplayTimeInterval;
 

@@ -372,10 +372,7 @@ static NSInteger const ATLMoreMessagesSection = 0;
     if ([self shouldDisplayReadReceiptForSection:section]) {
         readReceipt = [self attributedStringForRecipientStatusOfMessage:[self.conversationDataSource messageAtCollectionViewSection:section]];
     }
-    BOOL shouldClusterMessage = NO;
-    if ([self shouldClusterMessageForSection:section]) {
-        shouldClusterMessage = YES;
-    }
+    BOOL shouldClusterMessage = [self shouldClusterMessageAtSection:section];
     CGFloat height = [ATLConversationCollectionViewFooter footerHeightWithRecipientStatus:readReceipt clustered:shouldClusterMessage];
     return CGSizeMake(0, height);
 }
@@ -496,7 +493,7 @@ static NSInteger const ATLMoreMessagesSection = 0;
     return YES;
 }
 
-- (BOOL)shouldClusterMessageForSection:(NSUInteger)section
+- (BOOL)shouldClusterMessageAtSection:(NSUInteger)section
 {
     if (section == self.collectionView.numberOfSections - 1) return NO;
     
@@ -626,7 +623,7 @@ static NSInteger const ATLMoreMessagesSection = 0;
         self.locationManager = [[ATLLocationManager alloc] init];
     }
     if ([self.locationManager locationServicesEnabled]) {
-        [self.locationManager startLocationServices];
+        [self.locationManager updateLocation];
     }
     CLLocation *location = self.locationManager.location;
     LYRMessage *message = [self messageForMessageParts:@[ATLMessagePartWithLocation(location)] pushText:@"Attachement: Location"];
