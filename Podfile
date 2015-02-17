@@ -6,12 +6,12 @@ source 'https://github.com/CocoaPods/Specs.git'
 
 target 'Programmatic' do
   pod 'Atlas', path: '.'
-  pod 'LayerKit', '0.9.7'
+  pod 'LayerKit', git: 'git@github.com:layerhq/LayerKit.git'
 end
 
 target 'Storyboard' do
   pod 'Atlas', path: '.'
-  pod 'LayerKit', '0.9.7'
+  pod 'LayerKit', git: 'git@github.com:layerhq/LayerKit.git'
 end
 
 target 'ProgrammaticTests' do
@@ -30,5 +30,9 @@ target 'StoryboardTests' do
   pod 'OCMock'
 end
 
- #pod 'LayerKit', git: 'git@github.com:layerhq/LayerKit.git'
+target 'UnitTests' do
+  pod 'Expecta'
+  pod 'OCMock'
+end
+
 #pod 'LayerKit', git: 'git@github.com:layerhq/LayerKit.git'

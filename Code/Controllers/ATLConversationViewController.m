@@ -30,6 +30,7 @@
 #import "ATLDataSourceChange.h"
 #import "ATLConversationView.h"
 #import "ATLConversationDataSource.h"
+#import "ATLMediaAttachment.h"
 
 @interface ATLConversationViewController () <UICollectionViewDataSource, UICollectionViewDelegate, ATLMessageInputToolbarDelegate, UIActionSheetDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, LYRQueryControllerDelegate>
 
@@ -525,8 +526,8 @@ static NSInteger const ATLMoreMessagesSection = 0;
 
 - (void)messageInputToolbar:(ATLMessageInputToolbar *)messageInputToolbar didTapRightAccessoryButton:(UIButton *)rightAccessoryButton
 {
-    if (!self.conversation || !messageInputToolbar.messageParts.count) return;
-    NSOrderedSet *messages = [self messagesForContentParts:messageInputToolbar.messageParts];
+    if (!self.conversation || !messageInputToolbar.mediaAttachments.count) return;
+    NSOrderedSet *messages = [self messagesForMediaAttachments:messageInputToolbar.mediaAttachments];
     for (LYRMessage *message in messages) {
         [self sendMessage:message];
     }
@@ -547,24 +548,12 @@ static NSInteger const ATLMoreMessagesSection = 0;
 
 #pragma mark - Message Sending
 
-- (NSOrderedSet *)defaultMessagesForMessageParts:(NSArray *)messageParts
+- (NSOrderedSet *)defaultMessagesForMediaAttachments:(NSArray *)mediaAttachments
 {
     NSMutableOrderedSet *messages = [NSMutableOrderedSet new];
-    for (id part in messageParts){
-        NSString *pushText;
-        NSMutableArray *parts = [NSMutableArray new];
-        if ([part isKindOfClass:[NSString class]]) {
-            pushText = part;
-            [parts addObject:ATLMessagePartWithText(part)];
-        } else if ([part isKindOfClass:[UIImage class]]) {
-            pushText = @"Attachment: Image";
-            UIImage *image = part;
-            [parts addObject:ATLMessagePartWithJPEGImage(image)];
-        } else if ([part isKindOfClass:[CLLocation class]]) {
-            pushText = @"Attachment: Location";
-            [parts addObject:ATLMessagePartWithLocation(part)];
-        }
-        LYRMessage *message = [self messageForMessageParts:parts pushText:pushText];
+    for (ATLMediaAttachment *attachment in mediaAttachments){
+        NSArray *messageParts = ATLMessagePartsWithMediaAttachment(attachment);
+        LYRMessage *message = [self messageForMessageParts:messageParts pushText:attachment.textRepresentation];
         if (message)[messages addObject:message];
     }
     return messages;
@@ -632,11 +621,12 @@ static NSInteger const ATLMoreMessagesSection = 0;
 
 - (void)captureLastPhotoTaken
 {
-    ATLLastPhotoTaken(^(UIImage *image, NSError *error) {
+    ATLAssetURLOfLastPhotoTaken(^(NSURL *assetURL, NSError *error) {
         if (error) {
             NSLog(@"Failed to capture last photo with error: %@", [error localizedDescription]);
         } else {
-            [self.messageInputToolbar insertImage:image];
+            ATLMediaAttachment *mediaAttachment = [ATLMediaAttachment mediaAttachmentWithAssetURL:assetURL thumbnailSize:ATLDefaultThumbnailSize];
+            [self.messageInputToolbar insertMediaAttachment:mediaAttachment];
         }
     });
 }
@@ -647,8 +637,9 @@ static NSInteger const ATLMoreMessagesSection = 0;
 {
     NSString *mediaType = info[UIImagePickerControllerMediaType];
     if ([mediaType isEqualToString:(__bridge NSString *)kUTTypeImage]) {
-        UIImage *selectedImage = (UIImage *)info[UIImagePickerControllerOriginalImage];
-        [self.messageInputToolbar insertImage:selectedImage];
+        NSURL *assetURL = (NSURL *)info[UIImagePickerControllerReferenceURL];
+        ATLMediaAttachment *mediaAttachment = [ATLMediaAttachment mediaAttachmentWithAssetURL:assetURL thumbnailSize:ATLDefaultThumbnailSize];
+        [self.messageInputToolbar insertMediaAttachment:mediaAttachment];
     }
     [self.navigationController dismissViewControllerAnimated:YES completion:nil];
     [self.view becomeFirstResponder];
@@ -1097,16 +1088,16 @@ static NSInteger const ATLMoreMessagesSection = 0;
     return CGSizeMake(width, height);
 }
 
-- (NSOrderedSet *)messagesForContentParts:(NSArray *)contentParts
+- (NSOrderedSet *)messagesForMediaAttachments:(NSArray *)mediaAttachments
 {
     NSOrderedSet *messages;
-    if ([self.delegate respondsToSelector:@selector(conversationViewController:messagesForContentParts:)]) {
-        messages = [self.delegate conversationViewController:self messagesForContentParts:contentParts];
+    if ([self.delegate respondsToSelector:@selector(conversationViewController:messagesForMediaAttachments:)]) {
+        messages = [self.delegate conversationViewController:self messagesForMediaAttachments:mediaAttachments];
         // If delegate returns an empty set, don't send any messages.
         if (messages && !messages.count) return nil;
     }
     // If delegate returns nil, we fall back to default behavior.
-    if (!messages) messages = [self defaultMessagesForMessageParts:contentParts];
+    if (!messages) messages = [self defaultMessagesForMediaAttachments:mediaAttachments];
     return messages;
 }
 

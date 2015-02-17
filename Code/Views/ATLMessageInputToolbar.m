@@ -26,7 +26,7 @@ NSString *const ATLMessageInputToolbarDidChangeHeightNotification = @"ATLMessage
 
 @interface ATLMessageInputToolbar () <UITextViewDelegate>
 
-@property (nonatomic) NSArray *messageParts;
+@property (nonatomic) NSArray *mediaAttachments;
 @property (nonatomic, copy) NSAttributedString *attributedStringForMessageParts;
 @property (nonatomic) UITextView *dummyTextView;
 @property (nonatomic) CGFloat textViewMaxHeight;
@@ -141,7 +141,8 @@ static CGFloat const ATLButtonHeight = 28;
     NSArray *images = [UIPasteboard generalPasteboard].images;
     if (images.count > 0) {
         for (UIImage *image in images) {
-            [self insertImage:image];
+            ATLMediaAttachment *mediaAttachment = [ATLMediaAttachment mediaAttachmentWithImage:image thumbnailSize:ATLDefaultThumbnailSize];
+            [self insertMediaAttachment:mediaAttachment];
         }
         return;
     }
@@ -157,7 +158,7 @@ static CGFloat const ATLButtonHeight = 28;
     [self setNeedsLayout];
 }
 
-- (void)insertImage:(UIImage *)image
+- (void)insertMediaAttachment:(ATLMediaAttachment *)mediaAttachment
 {
     UITextView *textView = self.textInputView;
 
@@ -167,12 +168,9 @@ static CGFloat const ATLButtonHeight = 28;
         [attributedString appendAttributedString:lineBreak];
     }
 
-    ATLMediaAttachment *textAttachment = [ATLMediaAttachment new];
-    textAttachment.image = image;
-    NSMutableAttributedString *attachmentString = [[NSAttributedString attributedStringWithAttachment:textAttachment] mutableCopy];
+    NSMutableAttributedString *attachmentString = [[NSAttributedString attributedStringWithAttachment:mediaAttachment] mutableCopy];
     [attachmentString addAttribute:NSFontAttributeName value:textView.font range:NSMakeRange(0, attachmentString.length)];
     [attributedString appendAttributedString:attachmentString];
-
     [attributedString appendAttributedString:lineBreak];
 
     textView.attributedText = attributedString;
@@ -183,14 +181,14 @@ static CGFloat const ATLButtonHeight = 28;
     [self configureSendButtonEnablement];
 }
 
-- (NSArray *)messageParts
+- (NSArray *)mediaAttachments
 {
     NSAttributedString *attributedString = self.textInputView.attributedText;
-    if (!_messageParts || ![attributedString isEqualToAttributedString:self.attributedStringForMessageParts]) {
+    if (!_mediaAttachments || ![attributedString isEqualToAttributedString:self.attributedStringForMessageParts]) {
         self.attributedStringForMessageParts = attributedString;
-        self.messageParts = [self messagePartsFromAttributedString:attributedString];
+        _mediaAttachments = [self mediaAttachmentsFromAttributedString:attributedString];
     }
-    return _messageParts;
+    return _mediaAttachments;
 }
 
 #pragma mark - Actions
@@ -211,7 +209,7 @@ static CGFloat const ATLButtonHeight = 28;
     self.rightAccessoryButton.enabled = NO;
     self.textInputView.text = @"";
     [self setNeedsLayout];
-    self.messageParts = nil;
+    self.mediaAttachments = nil;
     self.attributedStringForMessageParts = nil;
     [self configureSendButtonEnablement];
 }
@@ -263,22 +261,25 @@ static CGFloat const ATLButtonHeight = 28;
 
 #pragma mark - Helpers
 
-- (NSArray *)messagePartsFromAttributedString:(NSAttributedString *)attributedString
+- (NSArray *)mediaAttachmentsFromAttributedString:(NSAttributedString *)attributedString
 {
-    NSMutableArray *messageParts = [NSMutableArray new];
+    NSMutableArray *mediaAttachments = [NSMutableArray new];
     [attributedString enumerateAttribute:NSAttachmentAttributeName inRange:NSMakeRange(0, attributedString.length) options:0 usingBlock:^(id attachment, NSRange range, BOOL *stop) {
         if ([attachment isKindOfClass:[ATLMediaAttachment class]]) {
             ATLMediaAttachment *mediaAttachment = (ATLMediaAttachment *)attachment;
-            [messageParts addObject:mediaAttachment.image];
+            [mediaAttachments addObject:mediaAttachment];
             return;
         }
         NSAttributedString *attributedSubstring = [attributedString attributedSubstringFromRange:range];
         NSString *substring = attributedSubstring.string;
         NSString *trimmedSubstring = [substring stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-        if (trimmedSubstring.length == 0) return;
-        [messageParts addObject:trimmedSubstring];
+        if (trimmedSubstring.length == 0) {
+            return;
+        }
+        ATLMediaAttachment *mediaAttachment = [ATLMediaAttachment mediaAttachmentWithText:trimmedSubstring];
+        [mediaAttachments addObject:mediaAttachment];
     }];
-    return messageParts;
+    return mediaAttachments;
 }
 
 - (void)acceptAutoCorrectionSuggestion

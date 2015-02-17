@@ -17,10 +17,12 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 //
+
 #import <Foundation/Foundation.h>
 #import <LayerKit/LayerKit.h>
 #import <MapKit/MapKit.h>
 #import <ImageIO/ImageIO.h>
+#import "ATLMediaAttachment.h"
 
 extern NSString *const ATLMIMETypeTextPlain;          // text/plain
 extern NSString *const ATLMIMETypeImagePNG;           // image/png
@@ -30,22 +32,24 @@ extern NSString *const ATLMIMETypeImageSize;          // application/json+imageS
 extern NSString *const ATLMIMETypeLocation;           // location/coordinate
 extern NSString *const ATLMIMETypeDate;               // text/date
 
+extern NSUInteger const ATLDefaultThumbnailSize;      // 256px
+
 extern NSString *const ATLImagePreviewWidthKey;
 extern NSString *const ATLImagePreviewHeightKey;
 extern NSString *const ATLLocationLatitudeKey;
 extern NSString *const ATLLocationLongitudeKey;
 
-//****************************
-// Max Cell Dimensions
-//****************************
+//--------------------------
+// @name Max Cell Dimensions
+//--------------------------
 
 CGFloat ATLMaxCellWidth();
 
 CGFloat ATLMaxCellHeight();
 
-//****************************
-// Image Utilities
-//****************************
+//----------------------
+// @name Image Utilities
+//----------------------
 
 CGSize ATLImageSizeForData(NSData *data);
 
@@ -53,25 +57,30 @@ CGSize ATLImageSizeForJSONData(NSData *data);
 
 CGSize ATLImageSize(UIImage *image);
 
+/**
+ @abstract Constraints the CGSize to the default cell size (defined in ATLMaxCellWidth() and ATLMaxCellHeight()) and preserving the original aspec ratio.
+ @param imageSize The size of the source image that should be shrunk or enlarged.
+ @return Returns a CGSize constrained to the cell size with the same aspect ratio as the source CGSize.
+ */
+CGSize ATLConstrainImageSizeToCellSize(CGSize imageSize);
+
 CGSize ATLTextPlainSize(NSString *string, UIFont *font);
 
 CGRect ATLImageRectConstrainedToSize(CGSize imageSize, CGSize maxSize);
 
-//****************************
-// Message Part Constructors
-//****************************
+//-----------------------------
+// @name Message Part Utilities
+//-----------------------------
 
-LYRMessagePart *ATLMessagePartWithText(NSString *text);
+NSArray *ATLMessagePartsWithMediaAttachment(ATLMediaAttachment *mediaAttachment);
 
-LYRMessagePart *ATLMessagePartWithJPEGImage(UIImage *image);
+LYRMessagePart *ATLMessagePartForMIMEType(LYRMessage *message, NSString *MIMEType);
 
-LYRMessagePart *ATLMessagePartForImageSize(UIImage *image);
+//------------------------------
+// @name Image Capture Utilities
+//------------------------------
 
-LYRMessagePart *ATLMessagePartWithLocation(CLLocation *location);
-
-//****************************
-// Image Capture Utilities
-//****************************
+void ATLAssetURLOfLastPhotoTaken(void(^completionHandler)(NSURL *assetURL, NSError *error));
 
 void ATLLastPhotoTaken(void(^completionHandler)(UIImage *image, NSError *error));
 

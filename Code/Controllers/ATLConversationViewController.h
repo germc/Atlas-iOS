@@ -71,17 +71,17 @@
 /**
  @abstract Asks the delegate for an `NSOrderedSet` of `LYRMessage` objects representing an `NSArray` of content parts.
  @param viewController The `ATLConversationViewController` supplying the content parts.
- @param contentParts The array of content parts supplied via user input into the `messageInputToolbar` property of the controller.
+ @param mediaAttachments The array of `ATLMediaAttachment` items supplied via user input into the `messageInputToolbar` property of the controller.
  @return An `NSOrderedSet` of `LYRMessage` objects. If `nil` is returned, the controller will fall back to default behavior. If an empty
  `NSOrderedSet` is returned, the controller will not send any messages.
- @discussion Called when a user taps the `SEND` button on an `ATLMessageInputToolbar`. The contentParts array supplied can contain
- either `NSString` or `UIImage` objects. Applications who wish to send `LYRMessage` objects with custom `LYRMessagePart`
+ @discussion Called when a user taps the `SEND` button on an `ATLMessageInputToolbar`. The media attachments array supplied can contain
+ any media type, such as text, images, GPS location information. Applications who wish to send `LYRMessage` objects with custom `LYRMessagePart`
  MIME types not supported by default by LayerUIKit can do so by implementing this method. All `LYRMessage` objects returned will be immediately 
  sent into the current conversation for the controller. If implemented, applications should also register custom `UICollectionViewCell` classes 
  with the controller via a call to `registerClass:forMessageCellWithReuseIdentifier:`. They should also implement the optional data source method,
  `conversationViewController:reuseIdentifierForMessage:`.
  */
-- (NSOrderedSet *)conversationViewController:(ATLConversationViewController *)viewController messagesForContentParts:(NSArray *)contentParts;
+- (NSOrderedSet *)conversationViewController:(ATLConversationViewController *)viewController messagesForMediaAttachments:(NSArray *)mediaAttachments;
 
 @end
 

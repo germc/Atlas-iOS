@@ -17,6 +17,7 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 //
+
 #import "ATLMessagingUtilities.h"
 #import "ATLErrors.h"
 #import <AssetsLibrary/AssetsLibrary.h>
@@ -29,6 +30,8 @@ NSString *const ATLMIMETypeImageJPEG = @"image/jpeg";
 NSString *const ATLMIMETypeImageJPEGPreview = @"image/jpeg+preview";
 NSString *const ATLMIMETypeLocation = @"location/coordinate";
 NSString *const ATLMIMETypeDate = @"text/date";
+
+NSUInteger const ATLDefaultThumbnailSize = 256;
 
 NSString *const ATLImagePreviewWidthKey = @"width";
 NSString *const ATLImagePreviewHeightKey = @"height";
@@ -81,7 +84,12 @@ CGSize ATLImageSizeForData(NSData *data)
 
 CGSize ATLImageSizeForJSONData(NSData *data)
 {
-    NSDictionary *sizeDictionary = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:nil];
+    NSError *error;
+    NSDictionary *sizeDictionary = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:&error];
+    if (!sizeDictionary) {
+        NSLog(@"failed to deserialize image dimensions JSON with %@", error);
+        return CGSizeZero;
+    }
     CGFloat width = [sizeDictionary[ATLImagePreviewWidthKey] floatValue];
     CGFloat height = [sizeDictionary[ATLImagePreviewHeightKey] floatValue];
     return CGSizeMake(width, height);
@@ -91,6 +99,13 @@ CGSize ATLImageSize(UIImage *image)
 {
     CGSize maxSize = CGSizeMake(ATLMaxCellWidth(), ATLMaxCellHeight());
     CGSize itemSize = ATLSizeProportionallyConstrainedToSize(image.size, maxSize);
+    return itemSize;
+}
+
+CGSize ATLConstrainImageSizeToCellSize(CGSize imageSize)
+{
+    CGSize maxSize = CGSizeMake(ATLMaxCellWidth(), ATLMaxCellHeight());
+    CGSize itemSize = ATLSizeProportionallyConstrainedToSize(imageSize, maxSize);
     return itemSize;
 }
 
@@ -134,41 +149,39 @@ CGSize  ATLSizeFromOriginalSizeWithConstraint(CGSize originalSize, CGFloat const
     return originalSize;
 }
 
-#pragma mark - Message Parts Constructors
+#pragma mark - Message Parts Utilities
 
-LYRMessagePart *ATLMessagePartWithText(NSString *text)
+NSArray *ATLMessagePartsWithMediaAttachment(ATLMediaAttachment *mediaAttachment)
 {
-    return [LYRMessagePart messagePartWithMIMEType:@"text/plain" data:[text dataUsingEncoding:NSUTF8StringEncoding]];
+    NSMutableArray *messageParts = [NSMutableArray array];
+    if (!mediaAttachment.mediaInputStream) {
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Cannot create an LYRMessagePart with `nil` mediaInputStream." userInfo:nil];
+    }
+    
+    // Create the message part for the main media (should be on index zero).
+    [messageParts addObject:[LYRMessagePart messagePartWithMIMEType:mediaAttachment.mediaMIMEType stream:mediaAttachment.mediaInputStream]];
+    
+    // If there's a thumbnail in the attachment, add it to the message parts on the second index.
+    if (mediaAttachment.thumbnailInputStream) {
+        [messageParts addObject:[LYRMessagePart messagePartWithMIMEType:mediaAttachment.thumbnailMIMEType stream:mediaAttachment.thumbnailInputStream]];
+    }
+
+    // If there's any additional metadata, add it to the message parts on the third index.
+    if (mediaAttachment.metadataInputStream) {
+        [messageParts addObject:[LYRMessagePart messagePartWithMIMEType:mediaAttachment.metadataMIMEType stream:mediaAttachment.metadataInputStream]];
+    }
+    return messageParts;
 }
 
-LYRMessagePart *ATLMessagePartWithJPEGImage(UIImage *image)
+LYRMessagePart *ATLMessagePartForMIMEType(LYRMessage *message, NSString *MIMEType)
 {
-    UIImage *adjustedImage = ATLAdjustOrientationForImage(image);
-    NSData *imageData = ATLJPEGDataForImageWithConstraint(adjustedImage, 768, 0.8f);
-    return [LYRMessagePart messagePartWithMIMEType:ATLMIMETypeImageJPEG
-                                              data:imageData];
-}
-
-LYRMessagePart *ATLMessagePartForImageSize(UIImage *image)
-{
-    CGSize size = ATLImageSize(image);
-    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:@{ATLImagePreviewWidthKey : @(size.width), ATLImagePreviewHeightKey : @(size.height)}
-                                                       options:NSJSONWritingPrettyPrinted
-                                                         error:nil];
-    return [LYRMessagePart messagePartWithMIMEType:ATLMIMETypeImageSize data:jsonData];
-}
-
-LYRMessagePart *ATLMessagePartWithLocation(CLLocation *location)
-{
-    NSNumber *lat = @(location.coordinate.latitude);
-    NSNumber *lon = @(location.coordinate.longitude);
-    NSData *data = [NSJSONSerialization dataWithJSONObject:@{ATLLocationLatitudeKey: lat, ATLLocationLongitudeKey: lon} options:0 error:nil];
-    return [LYRMessagePart messagePartWithMIMEType:ATLMIMETypeLocation data:data];
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"MIMEType == %@", MIMEType];
+    return [[message.parts filteredArrayUsingPredicate:predicate] firstObject];
 }
 
 #pragma mark - Image Capture Utilities
 
-void ATLLastPhotoTaken(void(^completionHandler)(UIImage *image, NSError *error))
+void ATLAssetURLOfLastPhotoTaken(void(^completionHandler)(NSURL *assetURL, NSError *error))
 {
     // Credit goes to @iBrad Apps on Stack Overflow
     // http://stackoverflow.com/questions/8867496/get-last-image-from-photos-app
@@ -192,6 +205,40 @@ void ATLLastPhotoTaken(void(^completionHandler)(UIImage *image, NSError *error))
             // When done, the asset enumeration block is called another time with result set to nil.
             if (!result) return;
 
+            // Stop the enumerations
+            *innerStop = YES;
+            *stop = YES;
+            completionHandler(result.defaultRepresentation.url, nil);
+        }];
+    } failureBlock:^(NSError *error) {
+        completionHandler(nil, error);
+    }];
+}
+
+void ATLLastPhotoTaken(void(^completionHandler)(UIImage *image, NSError *error))
+{
+    // Credit goes to @iBrad Apps on Stack Overflow
+    // http://stackoverflow.com/questions/8867496/get-last-image-from-photos-app
+    
+    ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
+    
+    // Enumerate just the photos and videos group by using ALAssetsGroupSavedPhotos.
+    [library enumerateGroupsWithTypes:ALAssetsGroupSavedPhotos usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
+        // When done, the group enumeration block is called another time with group set to nil.
+        if (!group) return;
+        
+        // Within the group enumeration block, filter to enumerate just photos.
+        [group setAssetsFilter:[ALAssetsFilter allPhotos]];
+        
+        if ([group numberOfAssets] == 0) {
+            completionHandler(nil, [NSError errorWithDomain:ATLErrorDomain code:ATLErrorNoPhotos userInfo:@{NSLocalizedDescriptionKey: @"There are no photos."}]);
+            return;
+        }
+        
+        [group enumerateAssetsWithOptions:NSEnumerationReverse usingBlock:^(ALAsset *result, NSUInteger index, BOOL *innerStop) {
+            // When done, the asset enumeration block is called another time with result set to nil.
+            if (!result) return;
+            
             ALAssetRepresentation *representation = [result defaultRepresentation];
             UIImage *latestPhoto = [UIImage imageWithCGImage:[representation fullScreenImage]];
             
