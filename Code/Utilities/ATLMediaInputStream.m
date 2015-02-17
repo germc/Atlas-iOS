@@ -172,7 +172,7 @@ static void ATLMediaInputStreamReleaseStreamCallback(void *assetStreamRef);
     // Tell receiver we're openning the stream.
     self.mediaStreamStatus = NSStreamStatusOpening;
     
-    ATLMediaInputStreamLog(@"opening stream...", length);
+    ATLMediaInputStreamLog(@"opening stream...");
     
     // Setup data provider.
     BOOL success;
@@ -208,7 +208,7 @@ static void ATLMediaInputStreamReleaseStreamCallback(void *assetStreamRef);
     if (self.mediaStreamStatus == NSStreamStatusReading) {
         // Close the stream gracefully.
         self.numberOfBytesRequested = 0;
-        ATLMediaInputStreamLog(@"closing stream...", length);
+        ATLMediaInputStreamLog(@"closing stream...");
     }
     // Release Image I/O references
     if (self.destination) {
