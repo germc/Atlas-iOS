@@ -30,7 +30,6 @@ NSString *const ATLMessageInputToolbarDidChangeHeightNotification = @"ATLMessage
 @property (nonatomic, copy) NSAttributedString *attributedStringForMessageParts;
 @property (nonatomic) UITextView *dummyTextView;
 @property (nonatomic) CGFloat textViewMaxHeight;
-@property (nonatomic) UIBarButtonItem *item;
 @property (nonatomic) CGFloat buttonCenterY;
 
 @end
@@ -40,14 +39,14 @@ NSString *const ATLMessageInputToolbarDidChangeHeightNotification = @"ATLMessage
 NSString *const ATLMessageInputToolbarAccessibilityLabel = @"Message Input Toolbar";
 
 // Compose View Margin Constants
-static CGFloat const ATLLeftButtonHorizontalMargin = 6;
-static CGFloat const ATLRightButtonHorizontalMargin = 4;
-static CGFloat const ATLVerticalMargin = 7;
+static CGFloat const ATLLeftButtonHorizontalMargin = 6.0f;
+static CGFloat const ATLRightButtonHorizontalMargin = 4.0f;
+static CGFloat const ATLVerticalMargin = 7.0f;
 
 // Compose View Button Constants
-static CGFloat const ATLLeftAccessoryButtonWidth = 40;
-static CGFloat const ATLRightAccessoryButtonWidth = 46;
-static CGFloat const ATLButtonHeight = 28;
+static CGFloat const ATLLeftAccessoryButtonWidth = 40.0f;
+static CGFloat const ATLRightAccessoryButtonWidth = 46.0f;
+static CGFloat const ATLButtonHeight = 28.0f;
 
 - (id)init
 {
@@ -80,7 +79,6 @@ static CGFloat const ATLButtonHeight = 28;
 
         // Calling sizeThatFits: or contentSize on the displayed UITextView causes the cursor's position to momentarily appear out of place and prevent scrolling to the selected range. So we use another text view for height calculations.
         self.dummyTextView = [[ATLMessageComposeTextView alloc] init];
-
         self.maxNumberOfLines = 8;
     }
     return self;
@@ -115,10 +113,10 @@ static CGFloat const ATLButtonHeight = 28;
     frame.size.height = CGRectGetHeight(textViewFrame) + ATLVerticalMargin * 2;
     frame.origin.y -= frame.size.height - CGRectGetHeight(self.frame);
  
+    // Only calculate button centerY once to anchor it to bottom of bar.
     if (!self.buttonCenterY) {
         self.buttonCenterY = (CGRectGetHeight(frame) - CGRectGetHeight(leftButtonFrame)) / 2;
     }
-    
     leftButtonFrame.origin.y = frame.size.height - leftButtonFrame.size.height - self.buttonCenterY;
     rightButtonFrame.origin.y = frame.size.height - rightButtonFrame.size.height - self.buttonCenterY;
     
@@ -312,13 +310,8 @@ static CGFloat const ATLButtonHeight = 28;
 
 - (void)configureButtonEnablement
 {
-    self.leftAccessoryButton.enabled = [self shouldEnableSendButton];
-    self.rightAccessoryButton.enabled = [self shouldEnableSendButton];
-}
-
-- (BOOL)shouldEnableSendButton
-{
-    return YES;
+    self.leftAccessoryButton.enabled = YES;
+    self.rightAccessoryButton.enabled = YES;
 }
 
 @end

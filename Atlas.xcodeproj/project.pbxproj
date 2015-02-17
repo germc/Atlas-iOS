@@ -30,11 +30,6 @@
 		D6F405F21A8FDEAB00AE9581 /* Conversation_View.jpg in Resources */ = {isa = PBXBuildFile; fileRef = D6F405ED1A8FDEAB00AE9581 /* Conversation_View.jpg */; };
 		D6F405F31A8FDEAB00AE9581 /* New_Message.jpg in Resources */ = {isa = PBXBuildFile; fileRef = D6F405EE1A8FDEAB00AE9581 /* New_Message.jpg */; };
 		D6F405F41A8FDEAB00AE9581 /* Participant_Selection.jpg in Resources */ = {isa = PBXBuildFile; fileRef = D6F405EF1A8FDEAB00AE9581 /* Participant_Selection.jpg */; };
-		D6F405FB1A8FDEDD00AE9581 /* camera@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D6F405F61A8FDEDD00AE9581 /* camera@2x.png */; };
-		D6F405FC1A8FDEDD00AE9581 /* download.png in Resources */ = {isa = PBXBuildFile; fileRef = D6F405F71A8FDEDD00AE9581 /* download.png */; };
-		D6F405FD1A8FDEDD00AE9581 /* download@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D6F405F81A8FDEDD00AE9581 /* download@2x.png */; };
-		D6F405FE1A8FDEDD00AE9581 /* warning-black.png in Resources */ = {isa = PBXBuildFile; fileRef = D6F405F91A8FDEDD00AE9581 /* warning-black.png */; };
-		D6F405FF1A8FDEDD00AE9581 /* warning-black@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D6F405FA1A8FDEDD00AE9581 /* warning-black@2x.png */; };
 		D6F406261A8FDF5900AE9581 /* StoryboardAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = D6F405D61A8FDE1B00AE9581 /* StoryboardAppDelegate.m */; };
 		D6F406291A8FDFBB00AE9581 /* ProgrammaticAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = D6F406281A8FDFBB00AE9581 /* ProgrammaticAppDelegate.m */; };
 		D6F4062B1A8FE20D00AE9581 /* StoryboardTests-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = D6F406101A8FDEEB00AE9581 /* StoryboardTests-Info.plist */; };
@@ -550,14 +545,9 @@
 				D6F405F01A8FDEAB00AE9581 /* Conversation_Details.jpg in Resources */,
 				D6F405F31A8FDEAB00AE9581 /* New_Message.jpg in Resources */,
 				D6F405E71A8FDE3900AE9581 /* Images.xcassets in Resources */,
-				D6F405FD1A8FDEDD00AE9581 /* download@2x.png in Resources */,
 				D6F405F21A8FDEAB00AE9581 /* Conversation_View.jpg in Resources */,
 				D6F405F41A8FDEAB00AE9581 /* Participant_Selection.jpg in Resources */,
-				D6F405FF1A8FDEDD00AE9581 /* warning-black@2x.png in Resources */,
 				D6F405E51A8FDE3900AE9581 /* .DS_Store in Resources */,
-				D6F405FC1A8FDEDD00AE9581 /* download.png in Resources */,
-				D6F405FB1A8FDEDD00AE9581 /* camera@2x.png in Resources */,
-				D6F405FE1A8FDEDD00AE9581 /* warning-black.png in Resources */,
 				D6F405F11A8FDEAB00AE9581 /* Conversation_List.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

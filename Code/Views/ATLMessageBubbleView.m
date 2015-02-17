@@ -21,12 +21,12 @@
 #import "ATLMessageBubbleView.h"
 #import "ATLMessagingUtilities.h"
 
-CGFloat const ATLMessageBubbleLabelVerticalPadding = 8;
-CGFloat const ATLMessageBubbleLabelHorizontalPadding = 13;
+CGFloat const ATLMessageBubbleLabelVerticalPadding = 8.0f;
+CGFloat const ATLMessageBubbleLabelHorizontalPadding = 13.0f;
 
-CGFloat const ATLMessageBubbleMapWidth = 200;
-CGFloat const ATLMessageBubbleMapHeight = 200;
-CGFloat const ATLMessageBubbleDefaultHeight = 40;
+CGFloat const ATLMessageBubbleMapWidth = 200.0f;
+CGFloat const ATLMessageBubbleMapHeight = 200.0f;
+CGFloat const ATLMessageBubbleDefaultHeight = 40.0f;
 
 NSString *const ATLUserDidTapLinkNotification = @"ATLUserDidTapLinkNotification";
 
