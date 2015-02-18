@@ -33,7 +33,7 @@
 @implementation ATLAddressBarViewController
 
 NSString *const ATLAddressBarAccessibilityLabel = @"Address Bar";
-static NSString *const LSParticpantCellIdentifier = @"participantCellIdentifier";
+static NSString *const ATLMParticpantCellIdentifier = @"participantCellIdentifier";
 static NSString *const ATLAddressBarParticipantAttributeName = @"ATLAddressBarParticipant";
 
 - (void)loadView
@@ -59,7 +59,7 @@ static NSString *const ATLAddressBarParticipantAttributeName = @"ATLAddressBarPa
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     self.tableView.rowHeight = 56;
-    [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:LSParticpantCellIdentifier];
+    [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:ATLMParticpantCellIdentifier];
     self.tableView.keyboardDismissMode = UIScrollViewKeyboardDismissModeOnDrag;
     self.tableView.hidden = YES;
     [self.view addSubview:self.tableView];
@@ -153,7 +153,7 @@ static NSString *const ATLAddressBarParticipantAttributeName = @"ATLAddressBarPa
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell *cell =[tableView dequeueReusableCellWithIdentifier:LSParticpantCellIdentifier];
+    UITableViewCell *cell =[tableView dequeueReusableCellWithIdentifier:ATLMParticpantCellIdentifier];
     id<ATLParticipant> participant = self.participants[indexPath.row];
     cell.textLabel.text = participant.fullName;
     cell.textLabel.font = ATLMediumFont(16);
