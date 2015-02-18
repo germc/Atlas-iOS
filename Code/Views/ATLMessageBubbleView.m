@@ -45,6 +45,7 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
 @property (nonatomic) NSURL *tappedURL;
 @property (nonatomic) NSLayoutConstraint *imageWidthConstraint;
 @property (nonatomic) MKMapSnapshotter *snapshotter;
+@property (nonatomic) ATLProgressView *progressView;
 
 @end
 
@@ -79,6 +80,11 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
         self.bubbleImageView.contentMode = UIViewContentModeScaleAspectFill;
         [self addSubview:self.bubbleImageView];
         
+        self.progressView = [[ATLProgressView alloc] initWithFrame:CGRectMake(0, 0, 128.0f, 128.0f)];
+        self.progressView.translatesAutoresizingMaskIntoConstraints = NO;
+        self.progressView.alpha = 1.0f;
+        [self addSubview:self.progressView];
+        
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleViewLabel attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1.0 constant:ATLMessageBubbleLabelVerticalPadding]];
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleViewLabel attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1.0 constant:ATLMessageBubbleLabelHorizontalPadding]];
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleViewLabel attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeRight multiplier:1.0 constant:-ATLMessageBubbleLabelHorizontalPadding]];
@@ -90,19 +96,35 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
         [self addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleImageView attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0]];
         self.imageWidthConstraint = [NSLayoutConstraint constraintWithItem:self.bubbleImageView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:0];
         
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.progressView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0]];
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.progressView attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0]];
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.progressView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:64.0f]];
+        [self addConstraint:[NSLayoutConstraint constraintWithItem:self.progressView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:64.0f]];
+  
         self.tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleLabelTap:)];
         self.tapGestureRecognizer.delegate = self;
         [self.bubbleViewLabel addGestureRecognizer:self.tapGestureRecognizer];
         
         UILongPressGestureRecognizer *gestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
         [self addGestureRecognizer:gestureRecognizer];
+        
+        [self prepareForReuse];
     }
     return self;
+}
+
+- (void)updateProgressIndicatorWithProgress:(float)progress visible:(BOOL)visible animated:(BOOL)animated
+{
+    [self.progressView setProgress:progress animated:animated];
+    [UIView animateWithDuration:animated ? 0.25f : 0.0f animations:^{
+        self.progressView.alpha = visible ? 1.0f : 0.0f;
+    }];
 }
 
 - (void)prepareForReuse
 {
     self.bubbleImageView.image = nil;
+    self.progressView.alpha = 0.0f;
     [self applyImageWidthConstraint:NO];
     [self setBubbleViewContentType:ATLBubbleViewContentTypeText];
 }

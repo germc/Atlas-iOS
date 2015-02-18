@@ -70,8 +70,8 @@ float ATLDegreeToRadians(float degrees)
     _progressRingLayer = [CAShapeLayer layer];
     [self.layer addSublayer:_backRingLayer];
     [self.layer addSublayer:_progressRingLayer];
-    _defaultBackgroundRingColor = [UIColor colorWithRed:0.8f green:0.0f blue:0.0f alpha:0.3f];
-    _defaultForegroundRingColor = [UIColor colorWithRed:0.8f green:0.0f blue:0.0f alpha:0.5f];
+    _defaultBackgroundRingColor = [UIColor colorWithWhite:0.8f alpha:0.5f];
+    _defaultForegroundRingColor = [UIColor colorWithWhite:0.8f alpha:0.8f];
     _progress = 0.0f;
 }
 
