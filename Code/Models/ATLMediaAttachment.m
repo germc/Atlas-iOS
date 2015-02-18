@@ -30,8 +30,11 @@
  @return An `ALAsset` if successfully retrieved from asset library, otherwise `nil`.
  */
 ALAsset *ATLMediaAttachmentFromAssetURL(NSURL *assetURL, ALAssetsLibrary *assetLibrary);
+NSData *ATLMediaAttachmentDataFromInputStream(NSInputStream *inputStream);
 
 static char const ATLMediaAttachmentAsyncToBlockingQueueName[] = "com.layer.Atlas.ATLMediaAttachment.blocking";
+static NSUInteger const ATLMediaAttachmentDataFromStreamBufferSize = 1024 * 1024;
+static float const ATLMediaAttachmentDefaultThumbnailJPEGCompression = 0.5f;
 
 #pragma mark - Private class definitions
 
@@ -62,7 +65,7 @@ static char const ATLMediaAttachmentAsyncToBlockingQueueName[] = "com.layer.Atla
 
 @property (nonatomic) UIImage *inputImage;
 
-- (instancetype)initWithImage:(UIImage *)image thumbnailSize:(NSUInteger)thumbnailSize;
+- (instancetype)initWithImage:(UIImage *)image metadata:(NSDictionary *)metadata thumbnailSize:(NSUInteger)thumbnailSize;
 
 @end
 
@@ -115,7 +118,7 @@ static char const ATLMediaAttachmentAsyncToBlockingQueueName[] = "com.layer.Atla
         // --------------------------------------------------------------------
         self.thumbnailInputStream = [ATLMediaInputStream mediaInputStreamWithAssetURL:asset.defaultRepresentation.url];
         ((ATLMediaInputStream *)self.thumbnailInputStream).maximumSize = thumbnailSize;
-        ((ATLMediaInputStream *)self.thumbnailInputStream).compressionQuality = 0.5;
+        ((ATLMediaInputStream *)self.thumbnailInputStream).compressionQuality = ATLMediaAttachmentDefaultThumbnailJPEGCompression;
         self.thumbnailMIMEType = ATLMIMETypeImageJPEGPreview;
         
         // --------------------------------------------------------------------
@@ -159,17 +162,62 @@ static char const ATLMediaAttachmentAsyncToBlockingQueueName[] = "com.layer.Atla
 
 @implementation ATLImageMediaAttachment
 
-- (instancetype)initWithImage:(UIImage *)image thumbnailSize:(NSUInteger)thumbnailSize
+- (instancetype)initWithImage:(UIImage *)image metadata:(NSDictionary *)metadata thumbnailSize:(NSUInteger)thumbnailSize
 {
     self = [super init];
     if (self) {
         if (!image) {
             @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"Cannot initialize %@ with `nil` image.", self.class] userInfo:nil];
         }
-        self.mediaType = ATLMediaAttachmentTypeImage;
-        self.mediaInputStream = [ATLMediaInputStream mediaInputStreamWithImage:image];
         self.inputImage = image;
+        
+        // --------------------------------------------------------------------
+        // Prepare the input stream and MIMEType for the full size media.
+        // --------------------------------------------------------------------
+        self.mediaInputStream = [ATLMediaInputStream mediaInputStreamWithImage:image metadata:metadata];
+        self.mediaMIMEType = ATLMIMETypeImageJPEG;
+
+        // --------------------------------------------------------------------
+        // Prepare the input stream and MIMEType for the thumbnail.
+        // --------------------------------------------------------------------
+        self.thumbnailInputStream = [ATLMediaInputStream mediaInputStreamWithImage:image metadata:metadata];
+        ((ATLMediaInputStream *)self.thumbnailInputStream).maximumSize = thumbnailSize;
+        ((ATLMediaInputStream *)self.thumbnailInputStream).compressionQuality = ATLMediaAttachmentDefaultThumbnailJPEGCompression;
+        self.thumbnailMIMEType = ATLMIMETypeImageJPEGPreview;
+
+        // --------------------------------------------------------------------
+        // Prepare the input stream and MIMEType for the metadata
+        // about the asset.
+        // --------------------------------------------------------------------
+        NSDictionary *imageMetadata = @{ @"width": @(image.size.width),
+                                         @"height": @(image.size.height) };
+        NSError *JSONSerializerError;
+        NSData *JSONData = [NSJSONSerialization dataWithJSONObject:imageMetadata options:NSJSONWritingPrettyPrinted error:&JSONSerializerError];
+        if (JSONData) {
+            self.metadataInputStream = [NSInputStream inputStreamWithData:JSONData];
+            self.metadataMIMEType = ATLMIMETypeImageSize;
+        } else {
+            NSLog(@"ATLMediaAttachment failed to generate a JSON object for image metadata");
+        }
+
+        // --------------------------------------------------------------------
+        // Prepare the attachable thumbnail meant for the UI (which is inlined
+        // with text in the message composer).
+        //
+        // Since we got the full resolution UIImage, we need to create a
+        // thumbnail size in the initializer.
+        // --------------------------------------------------------------------
+        ATLMediaInputStream *attachableThumbnailInputStream = [ATLMediaInputStream mediaInputStreamWithImage:image metadata:metadata];
+        attachableThumbnailInputStream.maximumSize = thumbnailSize;
+        attachableThumbnailInputStream.compressionQuality = ATLMediaAttachmentDefaultThumbnailJPEGCompression;
+        NSData *resampledImageData = ATLMediaAttachmentDataFromInputStream(attachableThumbnailInputStream);
+        self.attachableThumbnailImage = [UIImage imageWithData:resampledImageData scale:image.scale];
+        
+        // --------------------------------------------------------------------
+        // Set the type and the rest of the public properties.
+        // --------------------------------------------------------------------
         self.thumbnailSize = thumbnailSize;
+        self.mediaType = ATLMediaAttachmentTypeImage;
         self.textRepresentation = @"Attachment: Image";
     }
     return self;
@@ -226,9 +274,9 @@ static char const ATLMediaAttachmentAsyncToBlockingQueueName[] = "com.layer.Atla
     return [[ATLAssetMediaAttachment alloc] initWithAssetURL:assetURL thumbnailSize:thumbnailSize];
 }
 
-+ (instancetype)mediaAttachmentWithImage:(UIImage *)image thumbnailSize:(NSUInteger)thumbnailSize
++ (instancetype)mediaAttachmentWithImage:(UIImage *)image metadata:(NSDictionary *)metadata thumbnailSize:(NSUInteger)thumbnailSize;
 {
-    return [[ATLImageMediaAttachment alloc] initWithImage:image thumbnailSize:thumbnailSize];
+    return [[ATLImageMediaAttachment alloc] initWithImage:image metadata:(NSDictionary *)metadata thumbnailSize:thumbnailSize];
 }
 
 + (instancetype)mediaAttachmentWithText:(NSString *)text
@@ -275,4 +323,38 @@ ALAsset *ATLMediaAttachmentFromAssetURL(NSURL *assetURL, ALAssetsLibrary *assetL
     });
     dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
     return resultAsset;
+}
+
+NSData *ATLMediaAttachmentDataFromInputStream(NSInputStream *inputStream)
+{
+    if (!inputStream) {
+        @throw [NSException exceptionWithName:NSInvalidArgumentException reason:@"inputStream cannot be `nil`." userInfo:nil];
+    }
+    NSMutableData *dataFromStream = [NSMutableData data];
+
+    // Open stream
+    [inputStream open];
+    if (inputStream.streamError) {
+        NSLog(@"Failed to stream image content with %@", inputStream.streamError);
+        return nil;
+    }
+    
+    // Start streaming
+    uint8_t *buffer = malloc(ATLMediaAttachmentDataFromStreamBufferSize);
+    BOOL endOfStream = NO;
+    while (endOfStream != YES) {
+        NSUInteger bytesRead = [inputStream read:buffer maxLength:(unsigned long)ATLMediaAttachmentDataFromStreamBufferSize];
+        if (bytesRead == 0) {
+            endOfStream = YES;
+            break;
+        }
+        [dataFromStream appendBytes:buffer length:bytesRead];
+    }
+    free(buffer);
+    
+    // Close stream
+    [inputStream close];
+    
+    // Done
+    return dataFromStream;
 }

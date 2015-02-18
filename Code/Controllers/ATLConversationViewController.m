@@ -679,7 +679,16 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
     NSString *mediaType = info[UIImagePickerControllerMediaType];
     if ([mediaType isEqualToString:(__bridge NSString *)kUTTypeImage]) {
         NSURL *assetURL = (NSURL *)info[UIImagePickerControllerReferenceURL];
-        ATLMediaAttachment *mediaAttachment = [ATLMediaAttachment mediaAttachmentWithAssetURL:assetURL thumbnailSize:ATLDefaultThumbnailSize];
+        ATLMediaAttachment *mediaAttachment;
+        if (assetURL) {
+            mediaAttachment = [ATLMediaAttachment mediaAttachmentWithAssetURL:assetURL thumbnailSize:ATLDefaultThumbnailSize];
+        } else if (info[UIImagePickerControllerOriginalImage]) {
+            mediaAttachment = [ATLMediaAttachment mediaAttachmentWithImage:info[UIImagePickerControllerOriginalImage]
+                                                                  metadata:info[UIImagePickerControllerMediaMetadata]
+                                                             thumbnailSize:ATLDefaultThumbnailSize];
+        } else {
+            return;
+        }
         [self.messageInputToolbar insertMediaAttachment:mediaAttachment];
     }
     [self.navigationController dismissViewControllerAnimated:YES completion:nil];

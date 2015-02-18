@@ -71,10 +71,11 @@ typedef NS_ENUM(NSUInteger, ATLMediaAttachmentType) {
 /**
  @abstract Creates a new `ATLMediaAttachment` instance of type `ATLMediaAttachmentTypeImage` based on `UIImage`.
  @param assetURL Image in a form of `UIImage`.
+ @param metadata The metadata that will be attached to the image content (such as EXIF).
  @param thumbnailSize The size of the thumbnail.
  @return Instance of `ATLMediaAttachment` containing streams.
  */
-+ (instancetype)mediaAttachmentWithImage:(UIImage *)image thumbnailSize:(NSUInteger)thumbnailSize;
++ (instancetype)mediaAttachmentWithImage:(UIImage *)image metadata:(NSDictionary *)metadata thumbnailSize:(NSUInteger)thumbnailSize;
 
 /**
  @abstract Creates a new `ATLMediaAttachment` instance of type `ATLMediaAttachmentTypeText` based on `NSString` text.

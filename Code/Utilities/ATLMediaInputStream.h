@@ -66,17 +66,18 @@ typedef NS_ENUM(NSUInteger, ATLMediaInputStreamError) {
 
 /**
  @abstract Creates an input stream capable of direct streaming of an ALAsset's content.
- @param assetURL `NSURL` path of the asset (URL starts with `asset://`).
+ @param assetURL `NSURL` path of the asset (URL starts with `asset://`) that will be seriazlied for streaming.
  @return A `ATLMediaInputStream` instance ready to be open.
  */
 + (instancetype)mediaInputStreamWithAssetURL:(NSURL *)assetURL;
 
 /**
  @abstract Creates an input stream capable of direct streaming of the UIImage's content.
- @param image `UIImage` instance
+ @param image `UIImage` instance that will be serialized for streaming.
+ @param metadata A `NSDictionary` of metadata that will be attached in the seriazlied data. Passing `nil` won't attach any metadata to the serialized image.
  @return A `ATLMediaInputStream` instance ready to be open.
  */
-+ (instancetype)mediaInputStreamWithImage:(UIImage *)image;
++ (instancetype)mediaInputStreamWithImage:(UIImage *)image metadata:(NSDictionary *)metadata;
 
 /**
  @abstract The source media asset in a form of an `NSURL`.
