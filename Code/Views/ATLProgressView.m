@@ -126,4 +126,9 @@ float ATLDegreeToRadians(float degrees)
     _progress = newProgress;
 }
 
+- (BOOL)isUserInteractionEnabled
+{
+    return NO;
+}
+
 @end
