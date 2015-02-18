@@ -31,7 +31,7 @@ NSString *const ATLMIMETypeImageJPEGPreview = @"image/jpeg+preview";
 NSString *const ATLMIMETypeLocation = @"location/coordinate";
 NSString *const ATLMIMETypeDate = @"text/date";
 
-NSUInteger const ATLDefaultThumbnailSize = 256;
+NSUInteger const ATLDefaultThumbnailSize = 512;
 
 NSString *const ATLImagePreviewWidthKey = @"width";
 NSString *const ATLImagePreviewHeightKey = @"height";

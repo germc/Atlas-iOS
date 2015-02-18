@@ -32,7 +32,7 @@ extern NSString *const ATLMIMETypeImageSize;          // application/json+imageS
 extern NSString *const ATLMIMETypeLocation;           // location/coordinate
 extern NSString *const ATLMIMETypeDate;               // text/date
 
-extern NSUInteger const ATLDefaultThumbnailSize;      // 256px
+extern NSUInteger const ATLDefaultThumbnailSize;      // 512px
 
 extern NSString *const ATLImagePreviewWidthKey;
 extern NSString *const ATLImagePreviewHeightKey;

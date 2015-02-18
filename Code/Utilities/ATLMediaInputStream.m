@@ -20,6 +20,7 @@
 
 #import "ATLMediaInputStream.h"
 #import <ImageIO/ImageIO.h>
+#import <MobileCoreServices/MobileCoreServices.h>
 
 #ifdef DEBUG_ATLMediaInputStreamLog
 #define ATLMediaInputStreamLog(fmt, ...) NSLog(fmt, ##__VA_ARGS__)
@@ -31,6 +32,7 @@ NSString *const ATLMediaInputStreamErrorDomain = @"com.layer.Atlas.ATLMediaInput
 static char const ATLMediaInputConsumerAsyncQueueName[] = "com.layer.Atlas.ATLMediaInputStream.asyncConsumerQueue";
 static char const ATLMediaInputConsumerSerialTransferQueueName[] = "com.layer.Atlas.ATLMediaInputStream.serialTransferQueue";
 static char const ATLMediaInputStreamAsyncToBlockingQueueName[] = "com.layer.Atlas.ATLMediaInputStream.blocking";
+NSString *const ATLMediaInputStreamAppleCameraTIFFOptionsKey = @"{TIFF}";
 
 /* Core I/O callbacks */
 ALAsset *ATLMediaInputStreamAssetForAssetURL(NSURL *assetURL, ALAssetsLibrary *assetLibrary, NSError **error);
@@ -42,8 +44,9 @@ static void ATLMediaInputStreamReleaseStreamCallback(void *assetStreamRef);
 @interface ATLMediaInputStream ()
 
 /* Private and public properties */
-@property (nonatomic, readwrite) NSURL *assetURL;
-@property (nonatomic, readwrite) UIImage *image;
+@property (nonatomic, readwrite) NSURL *sourceAssetURL;
+@property (nonatomic, readwrite) UIImage *sourceImage;
+@property (nonatomic, readwrite) NSDictionary *metadata;
 @property (nonatomic, readwrite) BOOL isLossless;
 @property (nonatomic) NSStreamStatus mediaStreamStatus;
 @property (nonatomic) NSError *mediaStreamError;
@@ -91,7 +94,7 @@ static void ATLMediaInputStreamReleaseStreamCallback(void *assetStreamRef);
         if (!assetURL) {
             @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"Cannot initialize %@ with `nil` assetURL.", self.class] userInfo:nil];
         }
-        self.assetURL = assetURL;
+        self.sourceAssetURL = assetURL;
     }
     return self;
 }
@@ -100,14 +103,15 @@ static void ATLMediaInputStreamReleaseStreamCallback(void *assetStreamRef);
 
 @implementation ATLImageInputStream
 
-- (instancetype)initWithImage:(UIImage *)image
+- (instancetype)initWithImage:(UIImage *)image metadata:(NSDictionary *)metadata;
 {
     self = [super init];
     if (self) {
         if (!image) {
             @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"Cannot initialize %@ with `nil` image.", self.class] userInfo:nil];
         }
-        self.image = image;
+        self.sourceImage = image;
+        self.metadata = metadata;
     }
     return self;
 }
@@ -123,7 +127,7 @@ static void ATLMediaInputStreamReleaseStreamCallback(void *assetStreamRef);
     self = [super init];
     if (self) {
         if ([[self class] isEqual:[ATLMediaInputStream class]]) {
-            @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"Failed to call designated initializer. Use one of the following initialiers: %@", [@[ NSStringFromSelector(@selector(mediaInputStreamWithAssetURL:)), NSStringFromSelector(@selector(mediaInputStreamWithImage:)) ] componentsJoinedByString:@","]] userInfo:nil];
+            @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"Failed to call designated initializer. Use one of the following initialiers: %@", [@[ NSStringFromSelector(@selector(mediaInputStreamWithAssetURL:)), NSStringFromSelector(@selector(mediaInputStreamWithImage:metadata:)) ] componentsJoinedByString:@","]] userInfo:nil];
         }
         _mediaStreamStatus = NSStreamStatusNotOpen;
         _mediaStreamError = nil;
@@ -145,9 +149,9 @@ static void ATLMediaInputStreamReleaseStreamCallback(void *assetStreamRef);
     return [[ATLAssetInputStream alloc] initWithAssetURL:assetURL];
 }
 
-+ (instancetype)mediaInputStreamWithImage:(UIImage *)image
++ (instancetype)mediaInputStreamWithImage:(UIImage *)image metadata:(NSDictionary *)metadata;
 {
-    return [[ATLImageInputStream alloc] initWithImage:image];
+    return [[ATLImageInputStream alloc] initWithImage:image metadata:metadata];
 }
 
 - (void)dealloc
@@ -196,10 +200,11 @@ static void ATLMediaInputStreamReleaseStreamCallback(void *assetStreamRef);
     // Setup data provider.
     BOOL success;
     NSError *error;
-    if (self.assetURL) {
+    if (self.sourceAssetURL) {
         success = [self setupProviderForAssetStreamingWithError:&error];
-    } else if (self.image) {
-        success = [self setupProviderForImageDataStreamingWithError:&error];
+    } else if (self.sourceImage) {
+        // UIImages don't need a data provider, we're adding them to CGImageDestination directly.
+        success = YES;
     } else {
         @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Failed setting up data provider because source media not defined." userInfo:nil];
     }
@@ -302,17 +307,9 @@ static void ATLMediaInputStreamReleaseStreamCallback(void *assetStreamRef);
             // image data on a async queue.
             ATLMediaInputStreamLog(@"input stream: starting the consumer...");
             BOOL success;
-            if (self.isLossless) {
-                CFErrorRef error;
-                success = CGImageDestinationCopyImageSource(self.destination, self.source, NULL, &error);
-                if (!success) {
-                    self.mediaStreamError = (__bridge NSError *)error;
-                }
-            } else {
-                success = CGImageDestinationFinalize(self.destination);
-                if (!success) {
-                    self.mediaStreamError = [NSError errorWithDomain:ATLMediaInputStreamErrorDomain code:ATLMediaInputStreamErrorFailedFinalizingDestination userInfo:nil];
-                }
+            success = CGImageDestinationFinalize(self.destination);
+            if (!success) {
+                self.mediaStreamError = [NSError errorWithDomain:ATLMediaInputStreamErrorDomain code:ATLMediaInputStreamErrorFailedFinalizingDestination userInfo:nil];
             }
             ATLMediaInputStreamLog(@"input stream: stopping the consumer...");
             
@@ -334,7 +331,7 @@ static void ATLMediaInputStreamReleaseStreamCallback(void *assetStreamRef);
     
     // Retrieve the asset, based on the URL (blocking method).
     NSError *assetFetchError;
-    self.asset = ATLMediaInputStreamAssetForAssetURL(self.assetURL, self.assetLibrary, &assetFetchError);
+    self.asset = ATLMediaInputStreamAssetForAssetURL(self.sourceAssetURL, self.assetLibrary, &assetFetchError);
     if (!self.asset) {
         if (error) {
             *error = assetFetchError;
@@ -373,24 +370,6 @@ static void ATLMediaInputStreamReleaseStreamCallback(void *assetStreamRef);
 }
 
 /**
- @abstract Prepares the CGDataProvider which slurps data directly from the UIImage based on the self.image defined at init.
- @return Returns `YES` if setup was successful; On failures, method sets the `error` and returns `NO`.
- */
-- (BOOL)setupProviderForImageDataStreamingWithError:(NSError **)error
-{
-    // Setting up source-reader (provider) that will grab data from the `UIImage`.
-    self.provider = CGImageGetDataProvider(self.image.CGImage);
-    self.source = CGImageSourceCreateWithDataProvider(self.provider, NULL);
-    if (self.provider == NULL || self.source == NULL) {
-        if (error) {
-            *error = [NSError errorWithDomain:ATLMediaInputStreamErrorDomain code:ATLMediaInputStreamErrorFailedInitializingAssetProvider userInfo:nil];
-        }
-        return NO;
-    }
-    return YES;
-}
-
-/**
  @abstract Prepares the CGDataConsumer which provides data to the stream.
  @return Returns `YES` if setup was successful; On failures, method sets the `error` and returns `NO`.
  */
@@ -402,7 +381,14 @@ static void ATLMediaInputStreamReleaseStreamCallback(void *assetStreamRef);
         .releaseConsumer = ATLMediaInputStreamReleaseStreamCallback,
     };
     self.consumer = CGDataConsumerCreate((void *)CFBridgingRetain(self), &dataConsumerCallbacks);
-    self.destination = CGImageDestinationCreateWithDataConsumer(self.consumer, (CFStringRef)self.assetRepresentation.UTI, 1, NULL);
+    if (self.assetRepresentation) {
+        // In case source is the ALAsset.
+        self.destination = CGImageDestinationCreateWithDataConsumer(self.consumer, (CFStringRef)self.assetRepresentation.UTI, 1, NULL);
+    } else {
+        // In case source is the UIImage.
+        self.destination = CGImageDestinationCreateWithDataConsumer(self.consumer, kUTTypeJPEG, 1, NULL);
+    }
+
     if (self.consumer == NULL || self.destination == NULL) {
         if (error) {
             *error = [NSError errorWithDomain:ATLMediaInputStreamErrorDomain code:ATLMediaInputStreamErrorFailedInitializingImageIOConsumer userInfo:nil];
@@ -410,19 +396,25 @@ static void ATLMediaInputStreamReleaseStreamCallback(void *assetStreamRef);
         return NO;
     }
     
-    NSDictionary *compressionConfiguration = @{ };
-    if (self.maximumSize > 0 && self.compressionQuality > 0) {
-        // If image should be resampled and compressed.
-        compressionConfiguration = @{ (NSString *)kCGImageDestinationLossyCompressionQuality : @(self.compressionQuality),
-                                      (NSString *)kCGImageDestinationImageMaxPixelSize : @(self.maximumSize) };
-    } else if (self.maximumSize > 0 && self.compressionQuality == 0) {
-        // If image should only be resampled.
-        compressionConfiguration = @{ (NSString *)kCGImageDestinationImageMaxPixelSize : @(self.maximumSize) };
-    } else if (self.maximumSize == 0 && self.compressionQuality > 0) {
-        // If image should only be compressed.
-        compressionConfiguration = @{ (NSString *)kCGImageDestinationLossyCompressionQuality : @(self.compressionQuality) };
+    NSMutableDictionary *destinationOptions = self.metadata ? [self.metadata mutableCopy] : [NSMutableDictionary dictionary];
+    if (self.maximumSize > 0) {
+        // If image should be resampled.
+        [destinationOptions setObject:@(self.maximumSize) forKey:(NSString *)kCGImageDestinationImageMaxPixelSize];
     }
-    CGImageDestinationAddImageFromSource(self.destination, self.source, 0, (__bridge CFDictionaryRef)compressionConfiguration);
+    if (self.compressionQuality > 0) {
+        // If image should only be compressed.
+        [destinationOptions setObject:@(self.compressionQuality) forKey:(NSString *)kCGImageDestinationLossyCompressionQuality];
+    }
+    if (self.metadata && self.metadata[ATLMediaInputStreamAppleCameraTIFFOptionsKey]) {
+        NSMutableDictionary *mutableTiffDict = [self.metadata[ATLMediaInputStreamAppleCameraTIFFOptionsKey] mutableCopy];
+        [mutableTiffDict setObject:self.metadata[(NSString *)kCGImagePropertyOrientation] forKey:(NSString *)kCGImagePropertyTIFFOrientation];
+        [destinationOptions setObject:mutableTiffDict forKey:ATLMediaInputStreamAppleCameraTIFFOptionsKey];
+    }
+    if (self.assetRepresentation) {
+        CGImageDestinationAddImageFromSource(self.destination, self.source, 0, (__bridge CFDictionaryRef)destinationOptions);
+    } else {
+        CGImageDestinationAddImage(self.destination, self.sourceImage.CGImage, (__bridge CFDictionaryRef)destinationOptions);
+    }
     return YES;
 }
 

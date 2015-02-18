@@ -683,7 +683,9 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
         if (assetURL) {
             mediaAttachment = [ATLMediaAttachment mediaAttachmentWithAssetURL:assetURL thumbnailSize:ATLDefaultThumbnailSize];
         } else if (info[UIImagePickerControllerOriginalImage]) {
-            mediaAttachment = [ATLMediaAttachment mediaAttachmentWithImage:info[UIImagePickerControllerOriginalImage] thumbnailSize:ATLDefaultThumbnailSize];
+            mediaAttachment = [ATLMediaAttachment mediaAttachmentWithImage:info[UIImagePickerControllerOriginalImage]
+                                                                  metadata:info[UIImagePickerControllerMediaMetadata]
+                                                             thumbnailSize:ATLDefaultThumbnailSize];
         } else {
             return;
         }
