@@ -61,7 +61,7 @@
  @abstract Informs the delegate that a search has been made with the given search string.
  @param conversationListViewController The controller in which the search was performed.
  @param searchText The search text that was used for search.
- @param completion The block has has no return value and accepts a single argument: an NSSet of objects conforming to the LYRUIParticipant protocol that were found to match the search text.
+ @param completion The block has has no return value and accepts a single argument: an NSSet of objects conforming to the ATLParticipant protocol that were found to match the search text.
  */
 - (void)conversationListViewController:(ATLConversationListViewController *)conversationListViewController didSearchForText:(NSString *)searchText completion:(void (^)(NSSet *filteredParticipants))completion;
 

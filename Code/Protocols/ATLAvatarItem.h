@@ -21,8 +21,8 @@
 #import <Foundation/Foundation.h>
 
 /**
- @abstract Objects conforming to the `LYRUIAvatarItem` protocol will be used to display images or
- initials in a `LYRUIAvatarImageView`.
+ @abstract Objects conforming to the `ATLAvatarItem` protocol will be used to display images or
+ initials in a `ATLAvatarImageView`.
  */
 @protocol ATLAvatarItem <NSObject>
 

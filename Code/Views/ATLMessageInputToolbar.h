@@ -76,7 +76,7 @@ extern NSString *const ATLMessageInputToolbarDidChangeHeightNotification;
 
 /**
  @abstract Inserts the mediaAttachment as an attributed text attachment which is inlined with text.
- @param mediaAttachment The `LYRUIMediaAttachment` instance containing information about the media.
+ @param mediaAttachment The `ATLMediaAttachment` instance containing information about the media.
  @discussion The view will automatically resize the attachment's thumbnail and itself to comfortably
  fit the thumbnail content. The image will also be cached and is accessible via the mediaAttachments
  property.
