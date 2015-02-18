@@ -29,8 +29,15 @@
 
 + (instancetype)messagePartWithText:(NSString *)text;
 
-@property (nonatomic, readonly) NSString *MIMEType;
-@property (nonatomic, readonly) NSData *data;
+@property (nonatomic, readonly) NSURL *identifier LYR_QUERYABLE_PROPERTY;
+@property (nonatomic, readonly) NSUInteger index LYR_QUERYABLE_PROPERTY;
+@property (nonatomic, readonly) LYRMessage *message LYR_QUERYABLE_PROPERTY;
+@property (nonatomic, readonly) NSString *MIMEType LYR_QUERYABLE_PROPERTY LYR_QUERYABLE_FROM(LYRMessage);
+@property (nonatomic) NSData *data;
+@property (nonatomic) NSURL *fileURL;
+@property (nonatomic, readonly) NSUInteger size LYR_QUERYABLE_PROPERTY LYR_QUERYABLE_FROM(LYRMessage);
+@property (nonatomic, readonly) LYRContentTransferStatus transferStatus LYR_QUERYABLE_PROPERTY LYR_QUERYABLE_FROM(LYRMessage);
+@property (nonatomic, readonly) LYRProgress *progress;
 
 - (NSInputStream *)inputStream;
 

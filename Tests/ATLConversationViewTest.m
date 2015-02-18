@@ -41,6 +41,8 @@ extern NSString *const ATLAvatarImageViewAccessibilityLabel;
 
 @implementation ATLConversationViewTest
 
+extern NSString *const ATLMessageInputToolbarAccessibilityLabel;
+
 - (void)setUp
 {
     [super setUp];
@@ -56,7 +58,6 @@ extern NSString *const ATLAvatarImageViewAccessibilityLabel;
 - (void)tearDown
 {
     [[LYRMockContentStore sharedStore] resetContentStore];
-    self.viewController.queryController = nil;
     self.testInterface = nil;
     
     [super tearDown];
@@ -67,7 +68,6 @@ extern NSString *const ATLAvatarImageViewAccessibilityLabel;
 {
     [self setupConversationViewController];
     [self setRootViewController:self.viewController];
-    
     [self sendMessageWithText:@"This is a test"];
 }
 
@@ -242,7 +242,7 @@ extern NSString *const ATLAvatarImageViewAccessibilityLabel;
 
 - (void)sendMessageWithText:(NSString *)messageText
 {
-    [tester enterText:messageText intoViewWithAccessibilityLabel:@"Text Input View"];
+    [tester enterText:messageText intoViewWithAccessibilityLabel:ATLMessageInputToolbarAccessibilityLabel];
     [tester tapViewWithAccessibilityLabel:@"Send Button"];
     [tester waitForViewWithAccessibilityLabel:[NSString stringWithFormat:@"%@", messageText]];
 }

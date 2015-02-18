@@ -24,14 +24,6 @@
 
 NSString *const ATLOutgoingMessageCellIdentifier = @"ATLOutgoingMessageCellIdentifier";
 
-+ (void)initialize
-{
-    ATLOutgoingMessageCollectionViewCell *proxy = [self appearance];
-    proxy.bubbleViewColor = ATLBlueColor();
-    proxy.messageTextColor = [UIColor whiteColor];
-    proxy.messageLinkTextColor = [UIColor whiteColor];
-}
-
 - (id)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];

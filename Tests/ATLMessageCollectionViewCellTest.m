@@ -83,9 +83,8 @@ extern NSString *const ATLConversationCollectionViewAccessibilityIdentifier;
 
 - (void)testToVerifyMessageBubbleViewWithImage
 {
-    UIImage *image = [UIImage imageNamed:@"test"];
-    LYRMessagePartMock *part = (LYRMessagePartMock *)ATLMessagePartWithJPEGImage(image);
-    LYRMessageMock *message = [self.testInterface.layerClient newMessageWithParts:@[part] options:nil error:nil];
+    LYRMessagePartMock *imagePart = ATLMessagePartWithJPEGImage([UIImage new]);
+    LYRMessageMock *message = [self.testInterface.layerClient newMessageWithParts:@[imagePart] options:nil error:nil];
     
     ATLMessageCollectionViewCell *cell = [ATLMessageCollectionViewCell new];
     [cell presentMessage:(LYRMessage *)message];
@@ -96,8 +95,9 @@ extern NSString *const ATLConversationCollectionViewAccessibilityIdentifier;
 - (void)testToVerifyMessageBubbleViewWithLocation
 {
     CLLocation *location = [[CLLocation alloc] initWithLatitude:37.7833 longitude:122.4167];
-    LYRMessagePartMock *part = (LYRMessagePartMock *)ATLMessagePartWithLocation(location);
-    LYRMessageMock *message = [self.testInterface.layerClient newMessageWithParts:@[part] options:nil error:nil];
+    
+    LYRMessagePartMock *locationPart = ATLMessagePartWithLocation(location);
+    LYRMessageMock *message = [self.testInterface.layerClient newMessageWithParts:@[locationPart] options:nil error:nil];
 
     ATLMessageCollectionViewCell *cell = [ATLMessageCollectionViewCell new];
     [cell presentMessage:(LYRMessage *)message];
@@ -129,12 +129,12 @@ extern NSString *const ATLConversationCollectionViewAccessibilityIdentifier;
 
 - (void)testToVerifyCustomMessageLinkTextColor
 {
+    NSString *testText = @"www.layer.com";
     UIColor *color = [UIColor redColor];
     [[ATLMessageCollectionViewCell appearance] setMessageLinkTextColor:color];
-    [self sendMessageWithText:@"www.layer.com"];
+    [self sendMessageWithText:testText];
 
-    ATLMessageCollectionViewCell *cell = (ATLMessageCollectionViewCell *)[tester waitForCellAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:1]
-                                                                inCollectionViewWithAccessibilityIdentifier:ATLConversationCollectionViewAccessibilityIdentifier];
+    ATLMessageCollectionViewCell *cell = (ATLMessageCollectionViewCell *)[tester waitForViewWithAccessibilityLabel:[NSString stringWithFormat:@"Message: %@", testText]];
     expect(cell.messageLinkTextColor).to.equal(color);
 }
 
@@ -168,6 +168,7 @@ extern NSString *const ATLConversationCollectionViewAccessibilityIdentifier;
     
     LYRMessagePartMock *part = [LYRMessagePartMock messagePartWithText:@"test"];
     LYRMessageMock *message = [layerClient newMessageWithParts:@[part] options:nil error:nil];
+    [tester waitForTimeInterval:0.5];
     [self.conversation sendMessage:message error:nil];
     
     ATLMessageCollectionViewCell *cell = (ATLMessageCollectionViewCell *)[tester waitForCellAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:1]
@@ -184,7 +185,7 @@ extern NSString *const ATLConversationCollectionViewAccessibilityIdentifier;
     
     LYRMessagePartMock *part = [LYRMessagePartMock messagePartWithText:@"test"];
     LYRMessageMock *message = [layerClient newMessageWithParts:@[part] options:nil error:nil];
-    
+    [tester waitForTimeInterval:0.5];
     [self.conversation sendMessage:message error:nil];
 
     ATLMessageCollectionViewCell *cell = (ATLMessageCollectionViewCell *)[tester waitForCellAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:1]
@@ -194,6 +195,7 @@ extern NSString *const ATLConversationCollectionViewAccessibilityIdentifier;
 
 - (void)sendMessageWithText:(NSString *)text
 {
+    [tester waitForTimeInterval:0.5];
     LYRMessagePartMock *part = [LYRMessagePartMock messagePartWithText:text];
     LYRMessageMock *message = [self.testInterface.layerClient newMessageWithParts:@[part] options:nil error:nil];
     [self.conversation sendMessage:message error:nil];

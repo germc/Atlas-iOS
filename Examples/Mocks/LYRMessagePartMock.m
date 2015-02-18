@@ -22,7 +22,6 @@
 @interface LYRMessagePartMock ()
 
 @property (nonatomic, readwrite) NSString *MIMEType;
-@property (nonatomic, readwrite) NSData *data;
 
 @end
 

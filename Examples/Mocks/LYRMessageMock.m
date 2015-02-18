@@ -23,7 +23,6 @@
 @interface LYRMessageMock ()
 
 @property (nonatomic, readwrite) NSURL *identifier;
-@property (nonatomic, readwrite) NSArray *parts;
 @property (nonatomic, readwrite) BOOL isSent;
 @property (nonatomic, readwrite) BOOL isDeleted;
 @property (nonatomic, readwrite) BOOL isUnread;

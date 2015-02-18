@@ -20,6 +20,37 @@
 
 #import "ATLTestInterface.h"
 #import "ProgrammaticAppDelegate.h"
+#import "LYRMessagePartMock.h"
+
+#pragma mark - Message Parts Constructors
+
+LYRMessagePartMock *ATLMessagePartWithText(NSString *text)
+{
+    return [LYRMessagePartMock messagePartWithMIMEType:ATLMIMETypeTextPlain data:[text dataUsingEncoding:NSUTF8StringEncoding]];
+}
+
+LYRMessagePartMock *ATLMessagePartWithJPEGImage(UIImage *image)
+{
+    return [LYRMessagePartMock messagePartWithMIMEType:ATLMIMETypeImageJPEG
+                                              data:UIImageJPEGRepresentation(image, 0.1)];
+}
+
+LYRMessagePartMock *ATLMessagePartForImageSize(UIImage *image)
+{
+    CGSize size = ATLImageSize(image);
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:@{ATLImagePreviewWidthKey : @(size.width), ATLImagePreviewHeightKey : @(size.height)}
+                                                       options:NSJSONWritingPrettyPrinted
+                                                         error:nil];
+    return [LYRMessagePartMock messagePartWithMIMEType:ATLMIMETypeImageSize data:jsonData];
+}
+
+LYRMessagePartMock *ATLMessagePartWithLocation(CLLocation *location)
+{
+    NSNumber *lat = @(location.coordinate.latitude);
+    NSNumber *lon = @(location.coordinate.longitude);
+    NSData *data = [NSJSONSerialization dataWithJSONObject:@{ATLLocationLatitudeKey: lat, ATLLocationLongitudeKey: lon} options:0 error:nil];
+    return [LYRMessagePartMock messagePartWithMIMEType:ATLMIMETypeLocation data:data];
+}
 
 @interface ATLTestInterface ()
 

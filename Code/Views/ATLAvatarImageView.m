@@ -64,6 +64,7 @@ NSString *const ATLAvatarImageViewAccessibilityLabel = @"ATLAvatarImageViewAcces
     self.clipsToBounds = YES;
     self.layer.cornerRadius = _avatarImageViewDiameter / 2;
     self.contentMode = UIViewContentModeScaleAspectFill;
+    self.accessibilityLabel = ATLAvatarImageViewAccessibilityLabel;
     
     _initialsLabel = [[UILabel alloc] init];
     _initialsLabel.translatesAutoresizingMaskIntoConstraints = NO;

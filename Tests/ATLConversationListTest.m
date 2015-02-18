@@ -180,8 +180,8 @@
     UIFont *testFont = [UIFont systemFontOfSize:20];
     UIColor *testColor = [UIColor redColor];
     
-    [[ATLConversationTableViewCell appearance] setConversationLabelFont:testFont];
-    [[ATLConversationTableViewCell appearance] setConversationLabelColor:testColor];
+    [[ATLConversationTableViewCell appearance] setConversationTitleLabelFont:testFont];
+    [[ATLConversationTableViewCell appearance] setConversationTitleLabelColor:testColor];
     
     NSString *message1 = @"Message1";
     LYRUserMock *mockUser1 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameMarshawn];
@@ -192,8 +192,8 @@
     NSString *conversationLabel = [self.testInterface conversationLabelForConversation:conversation1];
     
     ATLConversationTableViewCell *cell = (ATLConversationTableViewCell *)[tester waitForViewWithAccessibilityLabel:conversationLabel];
-    expect(cell.conversationLabelFont).to.equal(testFont);
-    expect(cell.conversationLabelColor).to.equal(testColor);
+    expect(cell.conversationTitleLabelFont).to.equal(testFont);
+    expect(cell.conversationTitleLabelColor).to.equal(testColor);
 }
 
 //Customize the row height and ensure that it is respected.
@@ -306,8 +306,8 @@
 
 - (void)resetAppearance
 {
-    [[ATLConversationTableViewCell appearance] setConversationLabelFont:[UIFont systemFontOfSize:14]];
-    [[ATLConversationTableViewCell appearance] setConversationLabelColor:[UIColor blackColor]];
+    [[ATLConversationTableViewCell appearance] setConversationTitleLabelFont:[UIFont systemFontOfSize:14]];
+    [[ATLConversationTableViewCell appearance] setConversationTitleLabelColor:[UIColor blackColor]];
     [[ATLConversationTableViewCell appearance] setLastMessageLabelFont:[UIFont systemFontOfSize:12]];
     [[ATLConversationTableViewCell appearance] setLastMessageLabelColor:[UIColor grayColor]];
     [[ATLConversationTableViewCell appearance] setDateLabelFont:[UIFont systemFontOfSize:12]];
