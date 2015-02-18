@@ -32,9 +32,9 @@
     [super presentConversation:conversation];
 }
 
-- (void)updateWithConversationLabel:(NSString *)conversationLabel
+- (void)updateWithConversationTitle:(NSString *)conversationTitle
 {
-    [super updateWithConversationLabel:conversationLabel];
+    [super updateWithConversationTitle:conversationTitle];
 }
 
 - (void)updateWithConversationImage:(UIImage *)image
@@ -53,14 +53,14 @@
     [super presentMessage:message];
 }
 
-- (void)updateWithParticipant:(id<ATLParticipant>)participant
+- (void)updateWithSender:(id<ATLParticipant>)sender
 {
-    [super updateWithParticipant:participant];
+    [super updateWithSender:sender];
 }
 
-- (void)shouldDisplayAvatarImage:(BOOL)shouldDisplayAvatarImage
+- (void)shouldDisplayAvatarItem:(BOOL)shouldDisplayAvatarItem
 {
-    [super shouldDisplayAvatarImage:shouldDisplayAvatarImage];
+    [super shouldDisplayAvatarItem:shouldDisplayAvatarItem];
 }
 
 @end

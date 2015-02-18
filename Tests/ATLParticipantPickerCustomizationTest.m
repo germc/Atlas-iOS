@@ -56,7 +56,8 @@ extern NSString *const ATLParticipantSectionHeaderViewAccessibilityLabel;
     [[ATLParticipantTableViewCell appearance] setTitleColor:testColor];
     [self presentParticipantPicker];
     
-    ATLParticipantTableViewCell *cell = (ATLParticipantTableViewCell *)[tester waitForCellAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] inTableViewWithAccessibilityIdentifier:ATLParticipantTableViewAccessibilityIdentifier];
+    LYRUserMock *mock = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameBobby];
+    ATLParticipantTableViewCell *cell = (ATLParticipantTableViewCell *)[tester waitForViewWithAccessibilityLabel:mock.fullName];
     expect(cell.titleColor).to.equal(testColor);
 }
 
@@ -66,7 +67,8 @@ extern NSString *const ATLParticipantSectionHeaderViewAccessibilityLabel;
     [[ATLParticipantTableViewCell appearance] setTitleFont:testFont];
     [self presentParticipantPicker];
     
-    ATLParticipantTableViewCell *cell = (ATLParticipantTableViewCell *)[tester waitForCellAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] inTableViewWithAccessibilityIdentifier:ATLParticipantTableViewAccessibilityIdentifier];
+    LYRUserMock *mock = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameBobby];
+    ATLParticipantTableViewCell *cell = (ATLParticipantTableViewCell *)[tester waitForViewWithAccessibilityLabel:mock.fullName];
     expect(cell.titleFont).to.equal(testFont);
 }
 
@@ -76,7 +78,8 @@ extern NSString *const ATLParticipantSectionHeaderViewAccessibilityLabel;
     [[ATLParticipantTableViewCell appearance] setBoldTitleFont:testFont];
     [self presentParticipantPicker];
     
-    ATLParticipantTableViewCell *cell = (ATLParticipantTableViewCell *)[tester waitForCellAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0] inTableViewWithAccessibilityIdentifier:ATLParticipantTableViewAccessibilityIdentifier];
+    LYRUserMock *mock = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameBobby];
+    ATLParticipantTableViewCell *cell = (ATLParticipantTableViewCell *)[tester waitForViewWithAccessibilityLabel:mock.fullName];
     expect(cell.boldTitleFont).to.equal(testFont);
 }
 

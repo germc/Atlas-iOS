@@ -25,6 +25,7 @@
 @class ATLMessageInputToolbar;
 
 extern NSString *const ATLMessageInputToolbarDidChangeHeightNotification;
+extern NSString *const ATLMessageInputToolbarAccessibilityLabel;
 
 //---------------------------------
 // Message Input Toolbar Delegate

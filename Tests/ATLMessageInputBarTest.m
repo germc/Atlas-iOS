@@ -61,7 +61,6 @@ static NSString *const LSCameraButtonLabel = @"Camera Button";
 - (void)tearDown
 {
     [[LYRMockContentStore sharedStore] resetContentStore];
-    self.viewController.queryController = nil;
     self.testInterface = nil;
     
     [super tearDown];
@@ -76,9 +75,9 @@ static NSString *const LSCameraButtonLabel = @"Camera Button";
     
     __block NSString *testText = @"This is a test";
     [[[delegateMock expect] andDo:^(NSInvocation *invocation) {
-        NSArray *parts = toolBar.messageParts;
+        NSArray *parts = toolBar.mediaAttachments;
         expect(parts.count).to.equal(1);
-        expect([parts objectAtIndex:0]).to.equal(testText);
+        expect([parts objectAtIndex:0]).to.beKindOf([ATLMediaAttachment class]);
     }] messageInputToolbar:[OCMArg any] didTapRightAccessoryButton:[OCMArg any]];
     
     [tester enterText:testText intoViewWithAccessibilityLabel:LSTextInputViewLabel];
@@ -119,19 +118,19 @@ static NSString *const LSCameraButtonLabel = @"Camera Button";
     toolBar.inputToolBarDelegate = delegateMock;
     
     __block NSString *testText = @"This is a test";
-    __block UIImage *testImage = [UIImage imageNamed:@"test"];
     [[[delegateMock expect] andDo:^(NSInvocation *invocation) {
         ATLMessageInputToolbar *newToolbar;
         [invocation getArgument:&newToolbar atIndex:2];
         expect(newToolbar).to.equal(toolBar);
-        NSArray *parts = [newToolbar messageParts];
+        NSArray *parts = newToolbar.mediaAttachments;
         expect(parts.count).to.equal(2);
-        expect([parts objectAtIndex:0]).to.equal(testText);
-        expect([parts objectAtIndex:1]).to.equal(testImage);
+        expect([parts objectAtIndex:0]).to.beKindOf([ATLMediaAttachment class]);
+        expect([parts objectAtIndex:1]).to.beKindOf([ATLMediaAttachment class]);
     }] messageInputToolbar:[OCMArg any] didTapRightAccessoryButton:[OCMArg any]];
     
     [tester enterText:testText intoViewWithAccessibilityLabel:LSTextInputViewLabel];
-    [toolBar insertImage:testImage];
+    ATLMediaAttachment *imageAttachement = [ATLMediaAttachment mediaAttachmentWithImage:[UIImage new] thumbnailSize:100];
+    [toolBar insertMediaAttachment:imageAttachement];
     [tester tapViewWithAccessibilityLabel:LSSendButtonLabel];
     [delegateMock verify];
 }
@@ -143,19 +142,19 @@ static NSString *const LSCameraButtonLabel = @"Camera Button";
     toolBar.inputToolBarDelegate = delegateMock;
     
     __block NSString *testText = @"This is a test";
-    __block UIImage *testImage = [UIImage imageNamed:@"test"];
     [[[delegateMock expect] andDo:^(NSInvocation *invocation) {
-        NSArray *parts = toolBar.messageParts;
+        NSArray *parts = toolBar.mediaAttachments;
         expect(parts.count).to.equal(3);
-        expect([parts objectAtIndex:0]).to.equal(testText);
-        expect([parts objectAtIndex:1]).to.equal(testImage);
-        expect([parts objectAtIndex:1]).to.equal(testImage);
+        expect([parts objectAtIndex:0]).to.beKindOf([ATLMediaAttachment class]);
+        expect([parts objectAtIndex:1]).to.beKindOf([ATLMediaAttachment class]);
+        expect([parts objectAtIndex:1]).to.beKindOf([ATLMediaAttachment class]);
     }] messageInputToolbar:toolBar didTapRightAccessoryButton:[OCMArg any]];
     
     [tester enterText:testText intoViewWithAccessibilityLabel:LSTextInputViewLabel];
-    [toolBar insertImage:testImage];
-    [toolBar insertImage:testImage];
     
+    ATLMediaAttachment *imageAttachement = [ATLMediaAttachment mediaAttachmentWithImage:[UIImage new] thumbnailSize:100];
+    [toolBar insertMediaAttachment:imageAttachement];
+    [toolBar insertMediaAttachment:imageAttachement];
     [tester tapViewWithAccessibilityLabel:LSSendButtonLabel];
     [delegateMock verify];
 }
@@ -165,23 +164,24 @@ static NSString *const LSCameraButtonLabel = @"Camera Button";
     ATLMessageInputToolbar *toolBar = (ATLMessageInputToolbar *)[tester waitForViewWithAccessibilityLabel:@"Message Input Toolbar"];
     id delegateMock = OCMProtocolMock(@protocol(ATLMessageInputToolbarDelegate));
     toolBar.inputToolBarDelegate = delegateMock;
-
-    __block UIImage *testImage = [UIImage imageNamed:@"test"];
+    
     [[[delegateMock expect] andDo:^(NSInvocation *invocation) {
-        NSArray *parts = toolBar.messageParts;
+        NSArray *parts = toolBar.mediaAttachments;
         expect(parts.count).to.equal(5);
-        expect([parts objectAtIndex:0]).to.equal(testImage);
-        expect([parts objectAtIndex:1]).to.equal(testImage);
-        expect([parts objectAtIndex:2]).to.equal(testImage);
-        expect([parts objectAtIndex:3]).to.equal(testImage);
-        expect([parts objectAtIndex:4]).to.equal(testImage);
+        expect([parts objectAtIndex:0]).to.beKindOf([ATLMediaAttachment class]);
+        expect([parts objectAtIndex:1]).to.beKindOf([ATLMediaAttachment class]);
+        expect([parts objectAtIndex:2]).to.beKindOf([ATLMediaAttachment class]);
+        expect([parts objectAtIndex:3]).to.beKindOf([ATLMediaAttachment class]);
+        expect([parts objectAtIndex:4]).to.beKindOf([ATLMediaAttachment class]);
     }] messageInputToolbar:toolBar didTapRightAccessoryButton:[OCMArg any]];
     
-    [toolBar insertImage:testImage];
-    [toolBar insertImage:testImage];
-    [toolBar insertImage:testImage];
-    [toolBar insertImage:testImage];
-    [toolBar insertImage:testImage];
+    ATLMediaAttachment *imageAttachement = [ATLMediaAttachment mediaAttachmentWithImage:[UIImage new] thumbnailSize:100];
+    [toolBar insertMediaAttachment:imageAttachement];
+    [toolBar insertMediaAttachment:imageAttachement];
+    [toolBar insertMediaAttachment:imageAttachement];
+    [toolBar insertMediaAttachment:imageAttachement];
+    [toolBar insertMediaAttachment:imageAttachement];
+    
     [tester tapViewWithAccessibilityLabel:LSSendButtonLabel];
     [delegateMock verify];
 }
@@ -218,7 +218,8 @@ static NSString *const LSCameraButtonLabel = @"Camera Button";
 {
     ATLMessageInputToolbar *toolBar = (ATLMessageInputToolbar *)[tester waitForViewWithAccessibilityLabel:@"Message Input Toolbar"];
     UIFont *font = toolBar.textInputView.font;
-    [toolBar insertImage:[UIImage imageNamed:@"testImage"]];
+    ATLMediaAttachment *imageAttachement = [ATLMediaAttachment mediaAttachmentWithImage:[UIImage new] thumbnailSize:100];
+    [toolBar insertMediaAttachment:imageAttachement];
     [tester clearTextFromViewWithAccessibilityLabel:LSTextInputViewLabel];
     expect(font).to.equal(toolBar.textInputView.font);
 }

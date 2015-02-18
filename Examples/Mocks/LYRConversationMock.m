@@ -20,6 +20,35 @@
 #import "LYRConversationMock.h"
 #import "LYRMockContentStore.h"
 
+NSData *MediaAttachmentDataFromInputStream(NSInputStream *inputStream)
+{
+    if (!inputStream) {
+        @throw [NSException exceptionWithName:NSInvalidArgumentException reason:@"inputStream cannot be `nil`." userInfo:nil];
+    }
+    NSMutableData *dataFromStream = [NSMutableData data];
+    
+    // Open stream
+    [inputStream open];
+    if (inputStream.streamError) {
+        NSLog(@"Failed to stream image content with %@", inputStream.streamError);
+        return nil;
+    }
+    
+    // Start streaming
+    uint8_t *buffer = malloc(1024*1024);
+    do {
+        NSUInteger bytesRead = [inputStream read:buffer maxLength:(unsigned long)1024*1024];
+        [dataFromStream appendBytes:buffer length:bytesRead];
+    } while ([inputStream streamStatus] != NSStreamStatusAtEnd);
+    free(buffer);
+    
+    // Close stream
+    [inputStream close];
+    
+    // Done
+    return dataFromStream;
+}
+
 @interface LYRConversationMock ()
 
 @property (nonatomic, readwrite) NSURL *identifier;
@@ -79,7 +108,16 @@
     } else {
         message.index = ((int)self.lastMessage.index + 1);
     }
-    
+    if (![message.parts.firstObject data] && [message.parts.firstObject inputStream]) {
+        NSMutableArray *parts = [NSMutableArray new];
+        for (LYRMessagePart *part in message.parts) {
+            NSData *data = MediaAttachmentDataFromInputStream(part.inputStream);
+            LYRMessagePartMock *mock = [LYRMessagePartMock messagePartWithMIMEType:part.MIMEType data:data];
+            mock.fileURL = part.fileURL;
+            [parts addObject:mock];
+        }
+        message.parts = parts;
+    }
     NSMutableDictionary *recipientStatus = [NSMutableDictionary new];
     [self.participants enumerateObjectsUsingBlock:^(id obj, BOOL *stop) {
         [recipientStatus setValue:[NSNumber numberWithInteger:LYRRecipientStatusRead] forKey:obj];

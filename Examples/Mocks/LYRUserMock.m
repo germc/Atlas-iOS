@@ -128,4 +128,9 @@ NSString *const LYRMockUserIDDoug = @"0000000007";
     return _fullName;
 }
 
+- (NSString *)avatarInitials
+{
+    return @"FI";
+}
+
 @end

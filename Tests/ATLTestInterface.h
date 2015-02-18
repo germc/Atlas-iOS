@@ -32,6 +32,14 @@
 #import "ATLTestClasses.h"
 #import "LYRMockContentStore.h"
 
+LYRMessagePartMock *ATLMessagePartWithText(NSString *text);
+
+LYRMessagePartMock *ATLMessagePartWithJPEGImage(UIImage *image);
+
+LYRMessagePartMock *ATLMessagePartForImageSize(UIImage *image);
+
+LYRMessagePartMock *ATLMessagePartWithLocation(CLLocation *location);
+
 @interface ATLTestInterface : NSObject
 
 @property (nonatomic)LYRClientMock *layerClient;

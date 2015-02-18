@@ -58,21 +58,21 @@ extern NSString *const ATLLocationMIMETypePlaceholderText;
 - (void)testToVerifyCustomConversationLabelFont
 {
     UIFont *font = [UIFont systemFontOfSize:16];
-    [[ATLConversationTableViewCell appearance] setConversationLabelFont:font];
+    [[ATLConversationTableViewCell appearance] setConversationTitleLabelFont:font];
     [self createNewConversation];
     ATLConversationTableViewCell *cell = (ATLConversationTableViewCell *)[tester waitForCellAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]
                                                                      inTableViewWithAccessibilityIdentifier:ATLConversationTableViewAccessibilityIdentifier];
-    expect(cell.conversationLabelFont).to.equal(font);
+    expect(cell.conversationTitleLabelFont).to.equal(font);
 }
 
 - (void)testToVerifyCustomConversationLabelColor
 {
     UIColor *redColor = [UIColor redColor];
-    [[ATLConversationTableViewCell appearance] setConversationLabelColor:redColor];
+    [[ATLConversationTableViewCell appearance] setConversationTitleLabelColor:redColor];
     [self createNewConversation];
     ATLConversationTableViewCell *cell = (ATLConversationTableViewCell *)[tester waitForCellAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]
                                                                      inTableViewWithAccessibilityIdentifier:ATLConversationTableViewAccessibilityIdentifier];
-    expect(cell.conversationLabelColor).to.equal(redColor);
+    expect(cell.conversationTitleLabelColor).to.equal(redColor);
 }
 
 - (void)testToVerifyCustomLastMessageLabelFont
@@ -139,8 +139,8 @@ extern NSString *const ATLLocationMIMETypePlaceholderText;
 - (void)testToVerifyLastMessageTextWhenMessageIsAnImage
 {
     [self createNewConversation];
-    LYRMessagePart *part = ATLMessagePartWithJPEGImage([UIImage imageNamed:@"test"]);
-    LYRMessageMock *message = [self.testInterface.layerClient newMessageWithParts:@[part] options:nil error:nil];
+    LYRMessagePartMock *imagePart = ATLMessagePartWithJPEGImage([UIImage new]);
+    LYRMessageMock *message = [self.testInterface.layerClient newMessageWithParts:@[imagePart] options:nil error:nil];
     [self.conversation sendMessage:message error:nil];
     [tester waitForViewWithAccessibilityLabel:ATLImageMIMETypePlaceholderText];
 }
@@ -149,8 +149,9 @@ extern NSString *const ATLLocationMIMETypePlaceholderText;
 {
     [self createNewConversation];
     CLLocation *location = [[CLLocation alloc] initWithLatitude:123.00 longitude:54.00];
-    LYRMessagePart *part = ATLMessagePartWithLocation(location);
-    LYRMessageMock *message = [self.testInterface.layerClient newMessageWithParts:@[part] options:nil error:nil];
+    ATLMediaAttachment *attachement = [ATLMediaAttachment mediaAttachmentWithLocation:location];
+    NSArray *parts = ATLMessagePartsWithMediaAttachment(attachement);
+    LYRMessageMock *message = [self.testInterface.layerClient newMessageWithParts:parts options:nil error:nil];
     [self.conversation sendMessage:message error:nil];
     [tester waitForViewWithAccessibilityLabel:ATLLocationMIMETypePlaceholderText];
 }
@@ -166,8 +167,8 @@ extern NSString *const ATLLocationMIMETypePlaceholderText;
 
 - (void)resetAppearance
 {
-    [[ATLConversationTableViewCell appearance] setConversationLabelFont:[UIFont systemFontOfSize:14]];
-    [[ATLConversationTableViewCell appearance] setConversationLabelColor:[UIColor blackColor]];
+    [[ATLConversationTableViewCell appearance] setConversationTitleLabelFont:[UIFont systemFontOfSize:14]];
+    [[ATLConversationTableViewCell appearance] setConversationTitleLabelColor:[UIColor blackColor]];
     [[ATLConversationTableViewCell appearance] setLastMessageLabelFont:[UIFont systemFontOfSize:12]];
     [[ATLConversationTableViewCell appearance] setLastMessageLabelColor:[UIColor grayColor]];
     [[ATLConversationTableViewCell appearance] setDateLabelFont:[UIFont systemFontOfSize:12]];

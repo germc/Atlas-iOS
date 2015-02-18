@@ -502,11 +502,11 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
     }
     LYRMessage *message = [self.conversationDataSource messageAtCollectionViewSection:section];
     LYRMessage *nextMessage = [self.conversationDataSource messageAtCollectionViewSection:section + 1];
-    if (!nextMessage.sentAt) {
+    if (!nextMessage.receivedAt) {
         return NO;
     }
-    NSDate *date = message.sentAt ?: [NSDate date];
-    NSTimeInterval interval = [nextMessage.sentAt timeIntervalSinceDate:date];
+    NSDate *date = message.receivedAt ?: [NSDate date];
+    NSTimeInterval interval = [nextMessage.receivedAt timeIntervalSinceDate:date];
     return (interval < 60);
 }
 

@@ -24,10 +24,10 @@
 
 @interface LYRMessageMock : NSObject <LYRQueryable>
 
-@property (nonatomic) NSUInteger index LYR_QUERYABLE_PROPERTY;
 @property (nonatomic, readonly) NSURL *identifier LYR_QUERYABLE_PROPERTY;
+@property (nonatomic) NSUInteger index LYR_QUERYABLE_PROPERTY;
 @property (nonatomic) LYRConversationMock *conversation LYR_QUERYABLE_PROPERTY;
-@property (nonatomic, readonly) NSArray *parts;
+@property (nonatomic) NSArray *parts;
 @property (nonatomic, readonly) BOOL isSent LYR_QUERYABLE_PROPERTY;
 @property (nonatomic, readonly) BOOL isDeleted;
 @property (nonatomic, readonly) BOOL isUnread LYR_QUERYABLE_PROPERTY;
