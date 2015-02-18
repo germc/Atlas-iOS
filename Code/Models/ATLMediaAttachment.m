@@ -168,6 +168,8 @@ static NSUInteger const ATLMediaAttachmentDataFromStreamBufferSize = 1024 * 1024
         if (!image) {
             @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"Cannot initialize %@ with `nil` image.", self.class] userInfo:nil];
         }
+        self.inputImage = image;
+        
         // --------------------------------------------------------------------
         // Prepare the input stream and MIMEType for the full size media.
         // --------------------------------------------------------------------
@@ -208,12 +210,14 @@ static NSUInteger const ATLMediaAttachmentDataFromStreamBufferSize = 1024 * 1024
         attachableThumbnailInputStream.maximumSize = thumbnailSize;
         attachableThumbnailInputStream.compressionQuality = 0.5;
         NSData *resampledImageData = ATLMediaAttachmentDataFromInputStream(attachableThumbnailInputStream);
-        self.attachableThumbnailImage = [UIImage imageWithData:resampledImageData scale:2];
+        self.attachableThumbnailImage = [UIImage imageWithData:resampledImageData scale:image.scale];
         
         // --------------------------------------------------------------------
-        // Set the type - public property.
+        // Set the type and the rest of the public properties.
         // --------------------------------------------------------------------
+        self.thumbnailSize = thumbnailSize;
         self.mediaType = ATLMediaAttachmentTypeImage;
+        self.textRepresentation = @"Attachment: Image";
     }
     return self;
 }
