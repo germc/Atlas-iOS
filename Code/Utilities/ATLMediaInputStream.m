@@ -81,7 +81,7 @@ static void ATLMediaInputStreamReleaseStreamCallback(void *assetStreamRef);
 
 @interface ATLImageInputStream : ATLMediaInputStream
 
-- (instancetype)initWithImage:(UIImage *)image;
+- (instancetype)initWithImage:(UIImage *)image metadata:(NSDictionary *)metadata;;
 
 @end
 
