@@ -34,6 +34,7 @@ NSData *ATLMediaAttachmentDataFromInputStream(NSInputStream *inputStream);
 
 static char const ATLMediaAttachmentAsyncToBlockingQueueName[] = "com.layer.Atlas.ATLMediaAttachment.blocking";
 static NSUInteger const ATLMediaAttachmentDataFromStreamBufferSize = 1024 * 1024;
+static float const ATLMediaAttachmentDefaultThumbnailJPEGCompression = 0.5f;
 
 #pragma mark - Private class definitions
 
@@ -117,7 +118,7 @@ static NSUInteger const ATLMediaAttachmentDataFromStreamBufferSize = 1024 * 1024
         // --------------------------------------------------------------------
         self.thumbnailInputStream = [ATLMediaInputStream mediaInputStreamWithAssetURL:asset.defaultRepresentation.url];
         ((ATLMediaInputStream *)self.thumbnailInputStream).maximumSize = thumbnailSize;
-        ((ATLMediaInputStream *)self.thumbnailInputStream).compressionQuality = 0.5;
+        ((ATLMediaInputStream *)self.thumbnailInputStream).compressionQuality = ATLMediaAttachmentDefaultThumbnailJPEGCompression;
         self.thumbnailMIMEType = ATLMIMETypeImageJPEGPreview;
         
         // --------------------------------------------------------------------
@@ -181,7 +182,7 @@ static NSUInteger const ATLMediaAttachmentDataFromStreamBufferSize = 1024 * 1024
         // --------------------------------------------------------------------
         self.thumbnailInputStream = [ATLMediaInputStream mediaInputStreamWithImage:image metadata:metadata];
         ((ATLMediaInputStream *)self.thumbnailInputStream).maximumSize = thumbnailSize;
-        ((ATLMediaInputStream *)self.thumbnailInputStream).compressionQuality = 0.5;
+        ((ATLMediaInputStream *)self.thumbnailInputStream).compressionQuality = ATLMediaAttachmentDefaultThumbnailJPEGCompression;
         self.thumbnailMIMEType = ATLMIMETypeImageJPEGPreview;
 
         // --------------------------------------------------------------------
@@ -208,7 +209,7 @@ static NSUInteger const ATLMediaAttachmentDataFromStreamBufferSize = 1024 * 1024
         // --------------------------------------------------------------------
         ATLMediaInputStream *attachableThumbnailInputStream = [ATLMediaInputStream mediaInputStreamWithImage:image metadata:metadata];
         attachableThumbnailInputStream.maximumSize = thumbnailSize;
-        attachableThumbnailInputStream.compressionQuality = 0.5;
+        attachableThumbnailInputStream.compressionQuality = ATLMediaAttachmentDefaultThumbnailJPEGCompression;
         NSData *resampledImageData = ATLMediaAttachmentDataFromInputStream(attachableThumbnailInputStream);
         self.attachableThumbnailImage = [UIImage imageWithData:resampledImageData scale:image.scale];
         
