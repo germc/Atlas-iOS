@@ -75,6 +75,11 @@
 @property (nonatomic) NSSet *participants;
 
 /**
+ @abstract An `NSSet` of identifiers representing blocked participants.
+ */
+@property (nonatomic) NSSet *blockedParticipantIdentifiers;
+
+/**
  @abstract Defines the sort ordering of the participant list.
  @default `ATLParticipantPickerSortTypeFirstName`.
  @raises NSInternalInconsistencyException Raised if the value is mutated after the receiver has been presented.
