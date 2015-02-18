@@ -24,10 +24,11 @@
 #import "ATLOutgoingMessageCollectionViewCell.h"
 #import <LayerKit/LayerKit.h> 
 
-@interface ATLMessageCollectionViewCell ()
+@interface ATLMessageCollectionViewCell () <LYRProgressDelegate>
 
 @property (nonatomic) BOOL messageSentState;
 @property (nonatomic) LYRMessage *message;
+@property (nonatomic) LYRProgress *progress;
 
 @end
 
@@ -89,6 +90,10 @@ CGFloat const ATLMessageCellHorizontalMargin = 16.0f;
 - (void)prepareForReuse
 {
     [super prepareForReuse];
+    // Remove self from any previously assigned LYRProgress instance.
+    if (self.progress) {
+        self.progress.delegate = nil;
+    }
     [self.bubbleView prepareForReuse];
 }
 
@@ -120,16 +125,25 @@ CGFloat const ATLMessageCellHorizontalMargin = 16.0f;
 {
     self.accessibilityLabel = [NSString stringWithFormat:@"Message: Photo"];
     
-    UIImage *displayingImage;
-    LYRMessagePart *imagePart = ATLMessagePartForMIMEType(self.message, ATLMIMETypeImageJPEGPreview);
-    if (!imagePart) {
-        // If no preview image part found, resort to the full-resolution image.
-        imagePart = ATLMessagePartForMIMEType(self.message, ATLMIMETypeImageJPEG);
+    LYRMessagePart *fullResImagePart = ATLMessagePartForMIMEType(self.message, ATLMIMETypeImageJPEG);
+    if ((fullResImagePart.transferStatus == LYRContentTransferAwaitingUpload) ||
+        (fullResImagePart.transferStatus == LYRContentTransferUploading)) {
+        // Set self for delegation, if full resolution message part
+        // hasn't been uploaded yet, or is still uploading.
+        LYRProgress *progress = fullResImagePart.progress;
+        [progress setDelegate:self];
     }
-    if (imagePart.fileURL) {
-        displayingImage = [UIImage imageWithContentsOfFile:imagePart.fileURL.path];
+    
+    UIImage *displayingImage;
+    LYRMessagePart *previewImagePart = ATLMessagePartForMIMEType(self.message, ATLMIMETypeImageJPEGPreview);
+    if (!previewImagePart) {
+        // If no preview image part found, resort to the full-resolution image.
+        previewImagePart = fullResImagePart;
+    }
+    if (previewImagePart.fileURL) {
+        displayingImage = [UIImage imageWithContentsOfFile:previewImagePart.fileURL.path];
     } else {
-        displayingImage = [UIImage imageWithData:imagePart.data];
+        displayingImage = [UIImage imageWithData:previewImagePart.data];
     }
     
     CGSize size = CGSizeZero;
@@ -140,7 +154,7 @@ CGFloat const ATLMessageCellHorizontalMargin = 16.0f;
     }
     if (CGSizeEqualToSize(size, CGSizeZero)) {
         // Resort to image's size, if no dimensions metadata message parts found.
-        size = ATLImageSizeForData(imagePart.data);
+        size = ATLImageSizeForData(fullResImagePart.data);
     }
     [self.bubbleView updateWithImage:displayingImage width:size.width];
 }
@@ -184,6 +198,22 @@ CGFloat const ATLMessageCellHorizontalMargin = 16.0f;
 {
     _bubbleViewCornerRadius = bubbleViewCornerRadius;
     self.bubbleView.layer.cornerRadius = bubbleViewCornerRadius;
+}
+
+#pragma mark - LYRProgress Delegate Implementation
+
+- (void)progressDidChange:(LYRProgress *)progress
+{
+    // Queue UI updates onto the main thread, since LYRProgress performs
+    // delegate callbacks from a background thread.
+    dispatch_sync(dispatch_get_main_queue(), ^{
+        BOOL progressCompleted = progress.fractionCompleted == 1.0f;
+        [self.bubbleView updateProgressIndicatorWithProgress:progress.fractionCompleted visible:progressCompleted ? NO : YES animated:YES];
+        // After transfer completes, remove self for delegation.
+        if (progressCompleted) {
+            progress.delegate = nil;
+        }
+    });
 }
 
 #pragma mark - Helpers
