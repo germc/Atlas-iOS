@@ -20,7 +20,6 @@
 {
     self = [super init];
     if (self) {
-        self.delegate = self;
         self.desiredAccuracy = kCLLocationAccuracyBest;
     }
     return self;
@@ -41,14 +40,6 @@
     return YES;
 }
 
-- (void)updateLocation
-{
-    if ([self respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
-        [self requestWhenInUseAuthorization];
-    }
-    [self startUpdatingLocation];
-}
-
 - (void)displayLocationEnablementAlert
 {
     UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Location Access Required"
@@ -58,11 +49,6 @@
                                               otherButtonTitles:nil];
      [alertView show];
     
-}
-
-- (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations
-{
-    [self stopUpdatingLocation];
 }
 
 @end

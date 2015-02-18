@@ -33,7 +33,7 @@
 #import "ATLMediaAttachment.h"
 #import "ATLLocationManager.h"
 
-@interface ATLConversationViewController () <UICollectionViewDataSource, UICollectionViewDelegate, ATLMessageInputToolbarDelegate, UIActionSheetDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, LYRQueryControllerDelegate>
+@interface ATLConversationViewController () <UICollectionViewDataSource, UICollectionViewDelegate, ATLMessageInputToolbarDelegate, UIActionSheetDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, LYRQueryControllerDelegate, CLLocationManagerDelegate>
 
 @property (nonatomic) ATLConversationCollectionView *collectionView;
 @property (nonatomic) ATLConversationDataSource *conversationDataSource;
@@ -50,6 +50,7 @@
 @property (nonatomic) BOOL showingMoreMessagesIndicator;
 @property (nonatomic) BOOL hasAppeared;
 @property (nonatomic) ATLLocationManager *locationManager;
+@property (nonatomic) BOOL shouldShareLocation;
 
 @end
 
@@ -558,7 +559,6 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
     }
     if (self.addressBarController) [self.addressBarController disable];
 }
-
 - (void)messageInputToolbarDidType:(ATLMessageInputToolbar *)messageInputToolbar
 {
     if (!self.conversation) return;
@@ -610,18 +610,31 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
 
 - (void)shareLocation
 {
+    self.shouldShareLocation = YES;
     if (!self.locationManager) {
         self.locationManager = [[ATLLocationManager alloc] init];
+        self.locationManager.delegate = self;
+        [self.locationManager requestWhenInUseAuthorization];
     }
     if ([self.locationManager locationServicesEnabled]) {
-        [self.locationManager updateLocation];
+        [self.locationManager startUpdatingLocation];
     }
-    CLLocation *location = self.locationManager.location;
-    if (location) {
-        ATLMediaAttachment *attachement = [ATLMediaAttachment mediaAttachmentWithLocation:location];
-        LYRMessage *message = [self messageForMessageParts:ATLMessagePartsWithMediaAttachment(attachement) pushText:@"Attachement: Location"];
-        [self sendMessage:message];
+}
+- (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations
+{
+    if (!self.shouldShareLocation) return;
+    if (locations.firstObject) {
+        self.shouldShareLocation = NO;
+        [self sendMessageWithLocation:locations.firstObject];
+        [self.locationManager stopUpdatingLocation];
     }
+}
+
+- (void)sendMessageWithLocation:(CLLocation *)location
+{
+    ATLMediaAttachment *attachement = [ATLMediaAttachment mediaAttachmentWithLocation:location];
+    LYRMessage *message = [self messageForMessageParts:ATLMessagePartsWithMediaAttachment(attachement) pushText:@"Attachement: Location"];
+    [self sendMessage:message];
 }
 
 #pragma mark - UIActionSheetDelegate
