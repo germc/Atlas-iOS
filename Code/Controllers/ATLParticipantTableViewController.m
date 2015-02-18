@@ -300,9 +300,4 @@ NSString *const ATLParticipantTableViewAccessibilityIdentifier = @"Participant T
     return indexPath;
 }
 
-- (BOOL)participantIsBlocked:(id<ATLParticipant>)participant
-{
-    
-}
-
 @end
