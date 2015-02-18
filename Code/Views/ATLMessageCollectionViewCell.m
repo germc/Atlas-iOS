@@ -69,7 +69,7 @@ CGFloat const ATLMessageCellHorizontalMargin = 16.0f;
 {
     // Default UIAppearance
     _messageTextFont = [UIFont systemFontOfSize:17];
-    _messageTextColor = [UIColor whiteColor];
+    _messageTextColor = [UIColor blackColor];
     _messageLinkTextColor = [UIColor whiteColor];
     _bubbleViewColor = ATLBlueColor();
     _bubbleViewCornerRadius = 17.0f;
