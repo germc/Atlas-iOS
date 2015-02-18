@@ -229,6 +229,10 @@ static void ATLMediaInputStreamReleaseStreamCallback(void *assetStreamRef);
 
 - (void)close
 {
+    if (self.mediaStreamStatus == NSStreamStatusClosed) {
+        return;
+    }
+    
     if (self.mediaStreamStatus == NSStreamStatusReading) {
         // Close the stream gracefully.
         self.numberOfBytesRequested = 0;
@@ -237,15 +241,19 @@ static void ATLMediaInputStreamReleaseStreamCallback(void *assetStreamRef);
     // Release Image I/O references
     if (self.destination) {
         CFRelease(self.destination);
+        self.destination = NULL;
     }
     if (self.consumer) {
         CFRelease(self.consumer);
+        self.consumer = NULL;
     }
     if (self.source) {
         CFRelease(self.source);
+        self.source = NULL;
     }
     if (self.provider) {
         CFRelease(self.provider);
+        self.provider = NULL;
     }
     self.asset = nil;
     self.assetLibrary = nil;
