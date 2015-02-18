@@ -47,7 +47,6 @@
         [self requestWhenInUseAuthorization];
     }
     [self startUpdatingLocation];
-    
 }
 
 - (void)displayLocationEnablementAlert
