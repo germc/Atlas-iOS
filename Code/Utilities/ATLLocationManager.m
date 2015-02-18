@@ -47,7 +47,6 @@
         [self requestWhenInUseAuthorization];
     }
     [self startUpdatingLocation];
-    [self stopUpdatingLocation];
 }
 
 - (void)displayLocationEnablementAlert
@@ -59,6 +58,11 @@
                                               otherButtonTitles:nil];
      [alertView show];
     
+}
+
+- (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations
+{
+    [self stopUpdatingLocation];
 }
 
 @end

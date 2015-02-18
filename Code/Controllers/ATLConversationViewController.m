@@ -617,9 +617,11 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
         [self.locationManager updateLocation];
     }
     CLLocation *location = self.locationManager.location;
-    ATLMediaAttachment *attachement = [ATLMediaAttachment mediaAttachmentWithLocation:location];
-    LYRMessage *message = [self messageForMessageParts:ATLMessagePartsWithMediaAttachment(attachement) pushText:@"Attachement: Location"];
-    [self sendMessage:message];
+    if (location) {
+        ATLMediaAttachment *attachement = [ATLMediaAttachment mediaAttachmentWithLocation:location];
+        LYRMessage *message = [self messageForMessageParts:ATLMessagePartsWithMediaAttachment(attachement) pushText:@"Attachement: Location"];
+        [self sendMessage:message];
+    }
 }
 
 #pragma mark - UIActionSheetDelegate
