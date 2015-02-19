@@ -83,7 +83,7 @@ static NSString *const ATLAddressBarParticipantAttributeName = @"ATLAddressBarPa
     self.addressBarView.addressBarTextView.text = [self disabledStringForParticipants:self.selectedParticipants];
     self.addressBarView.addressBarTextView.textColor = ATLGrayColor();
     self.addressBarView.addressBarTextView.editable = NO;
-    [self.addressBarView.addContactsButton removeFromSuperview];
+    self.addressBarView.addContactsButton.hidden = YES;
     [self sizeAddressBarView];
 }
 
@@ -101,16 +101,6 @@ static NSString *const ATLAddressBarParticipantAttributeName = @"ATLAddressBarPa
     if (!selectedParticipants && !_selectedParticipants) return;
     if ([selectedParticipants isEqual:_selectedParticipants]) return;
 
-    NSOrderedSet *existingParticipants = _selectedParticipants;
-
-    _selectedParticipants = selectedParticipants;
-
-    NSMutableOrderedSet *removedParticipants = [NSMutableOrderedSet orderedSetWithOrderedSet:existingParticipants];
-    if (selectedParticipants) [removedParticipants minusOrderedSet:selectedParticipants];
-
-    NSMutableOrderedSet *addedParticipants = [NSMutableOrderedSet orderedSetWithOrderedSet:selectedParticipants];
-    if (existingParticipants) [addedParticipants minusOrderedSet:existingParticipants];
-
     if (self.isDisabled) {
         NSString *text = [self disabledStringForParticipants:selectedParticipants];
         self.addressBarView.addressBarTextView.text = text;
@@ -119,18 +109,18 @@ static NSString *const ATLAddressBarParticipantAttributeName = @"ATLAddressBarPa
         self.addressBarView.addressBarTextView.attributedText = attributedText;
     }
     [self sizeAddressBarView];
-
-    if ([self.delegate respondsToSelector:@selector(addressBarViewController:didRemoveParticipant:)]) {
-        for (id<ATLParticipant> removedParticipant in removedParticipants) {
-            [self.delegate addressBarViewController:self didRemoveParticipant:removedParticipant];
-        }
-    }
-
-    if ([self.delegate respondsToSelector:@selector(addressBarViewController:didSelectParticipant:)]) {
-        for (id<ATLParticipant> addedParticipant in addedParticipants) {
-            [self.delegate addressBarViewController:self didSelectParticipant:addedParticipant];
-        }
-    }
+    
+    NSOrderedSet *existingParticipants = _selectedParticipants;
+    _selectedParticipants = selectedParticipants;
+    
+    NSMutableOrderedSet *removedParticipants = [NSMutableOrderedSet orderedSetWithOrderedSet:existingParticipants];
+    if (selectedParticipants) [removedParticipants minusOrderedSet:selectedParticipants];
+    [self notifyDelegateOfRemovedParticipants:removedParticipants];
+    
+    NSMutableOrderedSet *addedParticipants = [NSMutableOrderedSet orderedSetWithOrderedSet:selectedParticipants];
+    if (existingParticipants) [addedParticipants minusOrderedSet:existingParticipants];
+    [self notifyDelegateOfSelectedParticipants:addedParticipants];
+    
     [self searchEnded];
 }
 
@@ -275,7 +265,6 @@ static NSString *const ATLAddressBarParticipantAttributeName = @"ATLAddressBarPa
         [self.addressBarView.addressBarTextView becomeFirstResponder];
     }
     
-    
     // Calculate the tap index
     UITextView *textView = (UITextView *)recognizer.view;
     CGPoint tapPoint = [recognizer locationInView:textView];
@@ -299,13 +288,46 @@ static NSString *const ATLAddressBarParticipantAttributeName = @"ATLAddressBarPa
     }
 }
 
+- (void)contactButtonTapped:(UIButton *)sender
+{
+    [self notifyDelegateOfContactButtonTap:sender];
+}
+
+#pragma mark - Delegate Implementation
+
+- (void)notifyDelegateOfSelectedParticipants:(NSMutableOrderedSet *)selectedParticipants
+{
+    if ([self.delegate respondsToSelector:@selector(addressBarViewController:didSelectParticipant:)]) {
+        for (id<ATLParticipant> addedParticipant in selectedParticipants) {
+            [self.delegate addressBarViewController:self didSelectParticipant:addedParticipant];
+        }
+    }
+}
+
+- (void)notifyDelegateOfRemovedParticipants:(NSMutableOrderedSet *)removedParticipants
+{
+    if ([self.delegate respondsToSelector:@selector(addressBarViewController:didRemoveParticipant:)]) {
+        for (id<ATLParticipant> removedParticipant in removedParticipants) {
+            [self.delegate addressBarViewController:self didRemoveParticipant:removedParticipant];
+        }
+    }
+}
+
+- (void)notifyDelegateOfSearchEnd
+{
+    if ([self.delegate respondsToSelector:@selector(addressBarViewControllerDidEndSearching:)]) {
+        [self.delegate addressBarViewControllerDidEndSearching:self];
+    }
+}
+
 - (void)notifyDelegateOfDisableTap
 {
     if ([self.delegate respondsToSelector:@selector(addressBarViewControllerDidSelectWhileDisabled:)]) {
         [self.delegate addressBarViewControllerDidSelectWhileDisabled:self];
     }
 }
-- (void)contactButtonTapped:(UIButton *)sender
+
+- (void)notifyDelegateOfContactButtonTap:(id)sender
 {
     if ([self.delegate respondsToSelector:@selector(addressBarViewController:didTapAddContactsButton:)]) {
         [self.delegate addressBarViewController:self didTapAddContactsButton:sender];
@@ -345,9 +367,7 @@ static NSString *const ATLAddressBarParticipantAttributeName = @"ATLAddressBarPa
 - (void)searchEnded
 {
     if (self.tableView.isHidden) return;
-    if ([self.delegate respondsToSelector:@selector(addressBarViewControllerDidEndSearching:)]) {
-        [self.delegate addressBarViewControllerDidEndSearching:self];
-    }
+    [self notifyDelegateOfSearchEnd];
     self.participants = nil;
     self.tableView.hidden = YES;
     [self.tableView reloadData];
