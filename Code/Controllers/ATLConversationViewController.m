@@ -51,6 +51,7 @@
 @property (nonatomic) BOOL hasAppeared;
 @property (nonatomic) ATLLocationManager *locationManager;
 @property (nonatomic) BOOL shouldShareLocation;
+@property (nonatomic) NSUInteger typingIndicatorInset;
 
 @end
 
@@ -763,9 +764,12 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
     [self.messageInputToolbar layoutIfNeeded];
     UIEdgeInsets insets = self.collectionView.contentInset;
     CGFloat keyboardHeight = MAX(self.keyboardHeight, CGRectGetHeight(self.messageInputToolbar.frame));
-    insets.bottom = keyboardHeight;
+    insets.bottom = keyboardHeight + self.typingIndicatorInset;
     self.collectionView.scrollIndicatorInsets = insets;
     self.collectionView.contentInset = insets;
+    if ([self shouldScrollToBottomOfCollectionView]) {
+        [self scrollToBottomOfCollectionViewAnimated:YES];
+    }
 }
 
 - (CGPoint)bottomOffsetForContentSize:(CGSize)contentSize
@@ -878,6 +882,13 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
         if (participant) [knownParticipantsTyping addObject:participant];
     }];
     [self.typingIndicatorViewController updateWithParticipants:knownParticipantsTyping animated:animated];
+    
+    if (knownParticipantsTyping.count) {
+        self.typingIndicatorInset = self.typingIndicatorViewController.view.frame.size.height;
+    } else {
+        self.typingIndicatorInset = 0.0f;
+    }
+    [self updateCollectionViewInsets];
 }
 
 
@@ -916,12 +927,9 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
         [self configureMoreMessagesIndicatorVisibility];
         return;
     }
-
-    // If we were to use the collection view layout's content size here, it appears that at times it can trigger the layout to contact the data source to update its sections, rows and cells which leads to an 'invalide update' crash because the layout has already been updated with the new data prior to the performBatchUpdates:completion: call.
-    CGPoint bottomOffset = [self bottomOffsetForContentSize:self.collectionView.contentSize];
-    CGFloat distanceToBottom = bottomOffset.y - self.collectionView.contentOffset.y;
-    BOOL shouldScrollToBottom = distanceToBottom <= 50 && !self.collectionView.isTracking && !self.collectionView.isDragging && !self.collectionView.isDecelerating;
-
+    
+    // Prevent scrolling if user has scrolled up into the conversation history.
+    BOOL shouldScrollToBottom = [self shouldScrollToBottomOfCollectionView];
     [self.collectionView performBatchUpdates:^{
         for (ATLDataSourceChange *change in self.objectChanges) {
             switch (change.type) {
@@ -982,6 +990,15 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
         NSIndexPath *collectionViewIndexPath = [self.conversationDataSource collectionViewIndexPathForQueryControllerIndexPath:queryControllerIndexPath];
         [self configureFooter:footer atIndexPath:collectionViewIndexPath];
     }
+}
+
+- (BOOL)shouldScrollToBottomOfCollectionView
+{
+    // If we were to use the collection view layout's content size here, it appears that at times it can trigger the layout to contact the data source to update its sections, rows and cells which leads to an 'invalide update' crash because the layout has already been updated with the new data prior to the performBatchUpdates:completion: call.
+    CGPoint bottomOffset = [self bottomOffsetForContentSize:self.collectionView.contentSize];
+    CGFloat distanceToBottom = bottomOffset.y - self.collectionView.contentOffset.y;
+    BOOL shouldScrollToBottom = distanceToBottom <= 50 && !self.collectionView.isTracking && !self.collectionView.isDragging && !self.collectionView.isDecelerating;
+    return shouldScrollToBottom;
 }
 
 #pragma mark - ATLAddressBarViewControllerDelegate
