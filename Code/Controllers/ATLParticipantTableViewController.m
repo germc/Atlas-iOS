@@ -235,6 +235,9 @@ NSString *const ATLParticipantTableViewAccessibilityIdentifier = @"Participant T
 {
     id<ATLParticipant> participant = [self participantForTableView:tableView atIndexPath:indexPath];
     [cell presentParticipant:participant withSortType:self.sortType shouldShowAvatarItem:YES];
+    if ([self.blockedParticipantIdentifiers containsObject:[participant participantIdentifier]]) {
+        cell.accessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"AtlasResource.bundle/block"]];
+    }
 }
 
 #pragma mark - UITableViewDelegate

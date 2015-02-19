@@ -1,5 +1,11 @@
 # LayerUIKit Change Log
 
+## 0.8.2
+
+### Public API Changes
+
+* Added property `blockedParticipantIdentifiers` to `ATLParticipantTableViewController`.
+
 ## 0.8.0
 
 ### Public API Changes
