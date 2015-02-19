@@ -127,8 +127,11 @@ CGFloat const ATLMessageCellHorizontalMargin = 16.0f;
     self.accessibilityLabel = [NSString stringWithFormat:@"Message: Photo"];
     
     LYRMessagePart *fullResImagePart = ATLMessagePartForMIMEType(self.message, ATLMIMETypeImageJPEG);
-    if ((fullResImagePart.transferStatus == LYRContentTransferAwaitingUpload) ||
-        (fullResImagePart.transferStatus == LYRContentTransferUploading)) {
+    if (!fullResImagePart) {
+        fullResImagePart = ATLMessagePartForMIMEType(self.message, ATLMIMETypeImagePNG);
+    }
+    if (fullResImagePart && ((fullResImagePart.transferStatus == LYRContentTransferAwaitingUpload) ||
+                             (fullResImagePart.transferStatus == LYRContentTransferUploading))) {
         // Set self for delegation, if full resolution message part
         // hasn't been uploaded yet, or is still uploading.
         LYRProgress *progress = fullResImagePart.progress;
@@ -136,7 +139,7 @@ CGFloat const ATLMessageCellHorizontalMargin = 16.0f;
         self.progress = progress;
         [self.bubbleView updateProgressIndicatorWithProgress:progress.fractionCompleted visible:YES animated:NO];
     } else {
-        [self.bubbleView updateProgressIndicatorWithProgress:0.0 visible:NO animated:YES];
+        [self.bubbleView updateProgressIndicatorWithProgress:1.0 visible:NO animated:YES];
     }
     
     UIImage *displayingImage;
