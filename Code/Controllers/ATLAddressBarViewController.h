@@ -67,6 +67,12 @@
  */
 - (void)addressBarViewController:(ATLAddressBarViewController *)addressBarViewController didTapAddContactsButton:(UIButton *)addContactsButton;
 
+/**
+ @abstract Informs the delegate that the user tapped on the controller while in a disabled state.
+ @param addressBarViewController The `ATLAddressBarViewController` in which the tap occurred.
+ */
+- (void)addressBarViewControllerDidSelectWhileDisabled:(ATLAddressBarViewController *)addressBarViewController;
+
 @end
 
 ///---------------------------------------
