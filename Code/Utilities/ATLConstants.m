@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 Layer, Inc. All rights reserved.
 //
 
+#import <UIKit/UIKit.h>
+
 NSString *const ATLConversationName = @"ATLConversationName";
 
 UIColor *ATLBlueColor()

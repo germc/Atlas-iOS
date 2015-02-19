@@ -18,7 +18,7 @@
 //  limitations under the License.
 //
 
-#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 /**
  @abstract Objects conforming to the `ATLAvatarItem` protocol will be used to display images or

@@ -145,7 +145,7 @@ The `ATLConversationListViewController` provides a customizable UITableViewContr
 The `ATLConversationListViewController` is initialized with a LYRClient object.
 
 ```objc
-LYRUIConversationListViewController *viewController = [ATLConversationListViewController conversationListViewControllerWithLayerClient:layerClient];
+ATLConversationListViewController *viewController = [ATLConversationListViewController conversationListViewControllerWithLayerClient:layerClient];
 ```
 
 #### Customization
@@ -164,7 +164,7 @@ The `ATLConversationViewController` provides a customizable `UICollectionViewCon
 #### Initialization
 
 ```objc
-LYRUIConversationViewController *viewController = [ATLConversationViewController conversationViewControllerWithConversation:conversation layerClient:self.layerClient];
+ATLConverationViewController *viewController = [ATLConversationViewController conversationViewControllerWithConversation:conversation layerClient:self.layerClient];
 ```
 
 #### Customization
@@ -186,8 +186,8 @@ The `ATLParticipantPickerController` provides a `UINavigationController` subclas
 The `ATLParticipantPickerController` is initialized with an object conforming to the `ATLParticipantPickerDataSource` and a sortType.
 
 ```objc
-LYRUIParticipantPickerSortType sortType = LYRUIParticipantPickerControllerSortTypeFirst;
-LYRUIParticipantPickerController *controller = [ATLParticipantPickerController participantPickerWithDataSource:dataSource
+ATLParticipantPickerSortType sortType = ATLParticipantPickerControllerSortTypeFirst;
+ATLParticipantPickerController *controller = [ATLParticipantPickerController participantPickerWithDataSource:dataSource
                                                                                                         sortType:sortType];
 ```
 
@@ -229,8 +229,10 @@ Atlas is licensed under the terms of the [Apache License, version 2.0](http://ww
 
 ## Contact
 
-Atlas was developed in San Francisco by the Layer team. If you have any technical questions or concerns about this project feel free to reach out to engineers responsible for the development:
+Atlas was developed in San Francisco by the Layer team. If you have any technical questions or concerns about this project feel free to reach out to [Layer Support](mailto:support@layer.com).
 
-* [Kevin Coleman](mailto:kevin@layer.com)
-* [Klemen Verdnik](mailto:klemen@layer.com)
-* [Blake Watters](mailto:blake@layer.com)
+## Credits
+
+* [Kevin Coleman](https://github.com/kcoleman731)
+* [Klemen Verdnik](https://github.com/chipxsd)
+* [Blake Watters](https://github.com/blakewatters)
