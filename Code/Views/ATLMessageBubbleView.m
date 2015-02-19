@@ -124,7 +124,6 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
 - (void)prepareForReuse
 {
     self.bubbleImageView.image = nil;
-    self.progressView.alpha = 0.0f;
     [self applyImageWidthConstraint:NO];
     [self setBubbleViewContentType:ATLBubbleViewContentTypeText];
 }

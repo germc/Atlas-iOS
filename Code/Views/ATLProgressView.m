@@ -71,7 +71,7 @@ float ATLDegreeToRadians(float degrees)
     [self.layer addSublayer:_backRingLayer];
     [self.layer addSublayer:_progressRingLayer];
     _defaultBackgroundRingColor = [UIColor colorWithWhite:0.8f alpha:0.5f];
-    _defaultForegroundRingColor = [UIColor colorWithWhite:0.8f alpha:0.8f];
+    _defaultForegroundRingColor = [UIColor colorWithWhite:1.0f alpha:0.8f];
     _progress = 0.0f;
 }
 
@@ -112,7 +112,7 @@ float ATLDegreeToRadians(float degrees)
 {
     // Animate only if the animation is request, and if the new value
     // is bigger than the previous one.
-    if (animated && (newProgress > self.progress)) {
+    if (animated) {
         CABasicAnimation *strokeEndAnimation = [CABasicAnimation animationWithKeyPath:@"strokeEnd"];
         strokeEndAnimation.duration = self.animationDuration;
         [strokeEndAnimation setFillMode:kCAFillModeForwards];
