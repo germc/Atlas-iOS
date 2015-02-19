@@ -4,6 +4,7 @@
 
 ### Public API Changes
 
+* Added `addressBarViewControllerDidSelectWhileDisabled:` to `ATLAddressBarViewController`.
 * Changed all class prefixes from `LYRUI` to `ATL`.
 * Added `conversationListViewController:didSearchForText:completion` to `ATLConversationListViewController`.
 
