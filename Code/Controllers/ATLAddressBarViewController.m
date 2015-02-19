@@ -84,6 +84,8 @@ static NSString *const ATLAddressBarParticipantAttributeName = @"ATLAddressBarPa
 - (void)disable
 {
     if (self.isDisabled) return;
+    if (self.addressBarView.addressBarTextView.isFirstResponder) return;
+    
     self.disabled = YES;
 
     self.addressBarView.addressBarTextView.text = [self disabledStringForParticipants:self.selectedParticipants];
