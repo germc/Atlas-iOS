@@ -67,7 +67,7 @@ static NSString *const ATLAddressBarParticipantAttributeName = @"ATLAddressBarPa
     [self configureLayoutConstraintsForAddressBarView];
     [self configureLayoutConstraintsForTableView];
     
-    UITapGestureRecognizer *gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(addressBarTextViewTapped:)];
+    UITapGestureRecognizer *gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(addressBarViewTapped:)];
     [self.addressBarView.addressBarTextView addGestureRecognizer:gestureRecognizer];
 }
 
@@ -83,7 +83,12 @@ static NSString *const ATLAddressBarParticipantAttributeName = @"ATLAddressBarPa
     self.addressBarView.addressBarTextView.text = [self disabledStringForParticipants:self.selectedParticipants];
     self.addressBarView.addressBarTextView.textColor = ATLGrayColor();
     self.addressBarView.addressBarTextView.editable = NO;
+    self.addressBarView.addressBarTextView.userInteractionEnabled = NO;
     self.addressBarView.addContactsButton.hidden = YES;
+    
+    UITapGestureRecognizer *gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(addressBarViewTapped:)];
+    [self.view addGestureRecognizer:gestureRecognizer];
+    
     [self sizeAddressBarView];
 }
 
@@ -255,10 +260,7 @@ static NSString *const ATLAddressBarParticipantAttributeName = @"ATLAddressBarPa
 
 - (void)addressBarTextViewTapped:(UITapGestureRecognizer *)recognizer
 {
-    if (self.disabled) {
-        [self notifyDelegateOfDisableTap];
-        return;
-    }
+    if (self.disabled) return;
     
     // Make sure the addressTextView is first responder
     if (!self.addressBarView.addressBarTextView.isFirstResponder) {
@@ -286,6 +288,11 @@ static NSString *const ATLAddressBarParticipantAttributeName = @"ATLAddressBarPa
     } else {
         textView.selectedRange = NSMakeRange(tapIndex, 0);
     }
+}
+
+- (void)addressBarViewTapped:(UITapGestureRecognizer *)recognizer
+{
+    [self notifyDelegateOfDisableTap];
 }
 
 - (void)contactButtonTapped:(UIButton *)sender
@@ -338,9 +345,8 @@ static NSString *const ATLAddressBarParticipantAttributeName = @"ATLAddressBarPa
 
 - (void)sizeAddressBarView
 {
-    // We force layout to calculate the size of addressBarTextView's frame which drives the address bar size.
-    [self.addressBarView layoutSubviews];
-    [self.addressBarView.addressBarTextView setNeedsUpdateConstraints];
+    // We layout addressBarTextView as it drives the address bar size.
+    [self.addressBarView.addressBarTextView updateConstraintsIfNeeded];
 }
 
 - (NSString *)textForSearchFromTextView:(UITextView *)textView

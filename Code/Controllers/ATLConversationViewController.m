@@ -614,12 +614,15 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
     if (!self.locationManager) {
         self.locationManager = [[ATLLocationManager alloc] init];
         self.locationManager.delegate = self;
-        [self.locationManager requestWhenInUseAuthorization];
+        if ([self.locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
+            [self.locationManager requestWhenInUseAuthorization];
+        }
     }
     if ([self.locationManager locationServicesEnabled]) {
         [self.locationManager startUpdatingLocation];
     }
 }
+
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations
 {
     if (!self.shouldShareLocation) return;
