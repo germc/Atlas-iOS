@@ -1,0 +1,14 @@
+.lyr-logo
+  img
+    transform: rotate(0);
+    
+  &:hover
+    img
+      animation: rotateAnim ease-in-out .5s 1, infinite
+      
+      
+@keyframes rotateAnim {
+   to {
+       transform: rotate(360deg)       
+   }
+}

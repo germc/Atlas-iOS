@@ -1,0 +1,54 @@
+.nav-bar
+  width: 100%
+  height: 69px
+  border-bottom: 1px solid white
+  line-height: 69px
+  position: relative
+  
+  a
+    text-decoration: none
+    color: #FFFFFF
+  
+  .logo
+    font-family: AvenirNext-UltraLight
+    font-size: 36px
+    vertical-align: bottom
+    letter-spacing: 10px
+    line-height: 45px
+  
+  ul
+    display: inline-block
+    vertical-align: bottom
+    line-height: 1em
+    margin-left: 10px
+    
+    li
+      line-height: 34px
+      margin-right: 20px
+      font-family: HelveticaNeue-Thin
+      font-size: 14px
+      float: left
+      cursor: pointer
+      
+  .left-nav
+    @media (max-width: $screen-md)
+      display: none
+    li
+      padding-bottom: 3px
+      line-height: 31px
+      
+      &:hover
+        padding-bottom: 0
+        border-bottom: 3px solid white
+    
+  .right-nav
+    position: absolute
+    right: 0
+    bottom: 0
+    
+    @media (max-width: $screen-xxs)
+      a
+        color: transparent
+    
+    img
+      vertical-align: text-bottom
