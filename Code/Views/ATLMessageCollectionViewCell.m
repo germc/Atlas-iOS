@@ -85,6 +85,8 @@ CGFloat const ATLMessageCellHorizontalMargin = 16.0f;
     _avatarImageView.translatesAutoresizingMaskIntoConstraints = NO;
     [self.contentView addSubview:_avatarImageView];
     
+    [self.bubbleView updateProgressIndicatorWithProgress:0.0 visible:NO animated:NO];
+    
     [self configureLayoutConstraints];
 }
 
