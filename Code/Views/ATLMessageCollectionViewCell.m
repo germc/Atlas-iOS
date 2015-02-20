@@ -213,12 +213,6 @@ CGFloat const ATLMessageCellHorizontalMargin = 16.0f;
 
 - (void)progressDidChange:(LYRProgress *)progress
 {
-    NSUInteger newProgressFractionCompleted = progress.fractionCompleted * 100;
-    if (newProgressFractionCompleted <= self.lastProgressFractionCompleted) {
-        return;
-    }
-    _lastProgressFractionCompleted = progress.fractionCompleted * 100;
-    
     // Queue UI updates onto the main thread, since LYRProgress performs
     // delegate callbacks from a background thread.
     dispatch_async(dispatch_get_main_queue(), ^{
