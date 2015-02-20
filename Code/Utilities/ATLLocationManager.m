@@ -40,11 +40,6 @@
     return YES;
 }
 
--(void)requestLocationPermissions
-{
-
-}
-
 - (void)displayLocationEnablementAlert
 {
     UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Location Access Required"

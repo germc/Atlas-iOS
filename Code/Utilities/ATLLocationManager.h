@@ -21,6 +21,4 @@
  */
 - (void)displayLocationEnablementAlert;
 
-- (void)requestLocationPermissions;
-
 @end
