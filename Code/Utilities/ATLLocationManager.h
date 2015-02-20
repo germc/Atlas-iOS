@@ -17,11 +17,6 @@
 - (BOOL)locationServicesEnabled;
 
 /**
- @abstract Updates the location of the receiver by starting and immediately stopping location updates.
- */
-- (void)updateLocation;
-
-/**
  @abstract Displays a `UIAlertView` with instructions on enabling location services for the application.
  */
 - (void)displayLocationEnablementAlert;
