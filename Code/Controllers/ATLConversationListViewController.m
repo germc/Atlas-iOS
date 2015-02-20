@@ -218,6 +218,7 @@ NSString *const ATLConversationTableViewAccessibilityIdentifier = @"Conversation
     NSError *error;
     BOOL success = [self.queryController execute:&error];
     if (!success) NSLog(@"LayerKit failed to execute query with error: %@", error);
+    [self.tableView reloadData];
 }
 
 #pragma mark - UITableViewDataSource
@@ -333,7 +334,6 @@ NSString *const ATLConversationTableViewAccessibilityIdentifier = @"Conversation
         selectedConversation = [self.queryController objectAtIndexPath:indexPath];
     }
     self.conversationSelectedBeforeContentChange = selectedConversation;
-
     [self.tableView beginUpdates];
 }
 
@@ -370,7 +370,6 @@ NSString *const ATLConversationTableViewAccessibilityIdentifier = @"Conversation
 - (void)queryControllerDidChangeContent:(LYRQueryController *)queryController
 {
     [self.tableView endUpdates];
-
     if (self.conversationSelectedBeforeContentChange) {
         NSIndexPath *indexPath = [self.queryController indexPathForObject:self.conversationSelectedBeforeContentChange];
         if (indexPath) {
