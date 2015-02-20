@@ -124,18 +124,17 @@ NSString *const ATLConversationTableViewAccessibilityIdentifier = @"Conversation
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    
     // Hide the search bar
     if (!self.hasAppeared) {
         CGFloat contentOffset = self.tableView.contentOffset.y + self.searchBar.frame.size.height;
-        [self.tableView setContentOffset:CGPointMake(0, contentOffset)];
-    }
-    [self setupConversationDataSource];
-    if (!self.hasAppeared) {
-        [self.tableView registerClass:self.cellClass forCellReuseIdentifier:ATLConversationCellReuseIdentifier];
+        self.tableView.contentOffset = CGPointMake(0, contentOffset);
         self.tableView.rowHeight = self.rowHeight;
+        [self.tableView registerClass:self.cellClass forCellReuseIdentifier:ATLConversationCellReuseIdentifier];
         if (self.allowsEditing) [self addEditButton];
     }
-
+    [self setupConversationDataSource];
+   
     NSIndexPath *selectedIndexPath = [self.tableView indexPathForSelectedRow];
     if (selectedIndexPath && self.clearsSelectionOnViewWillAppear) {
         [self.tableView deselectRowAtIndexPath:selectedIndexPath animated:animated];

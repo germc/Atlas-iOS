@@ -338,9 +338,8 @@ static NSString *const ATLAddressBarParticipantAttributeName = @"ATLAddressBarPa
 
 - (void)sizeAddressBarView
 {
-    // We force layout to calculate the size of addressBarTextView's frame which drives the address bar size.
-    [self.addressBarView layoutSubviews];
-    [self.addressBarView.addressBarTextView setNeedsUpdateConstraints];
+    // We layout addressBarTextView as it drives the address bar size.
+    [self.addressBarView.addressBarTextView updateConstraintsIfNeeded];
 }
 
 - (NSString *)textForSearchFromTextView:(UITextView *)textView

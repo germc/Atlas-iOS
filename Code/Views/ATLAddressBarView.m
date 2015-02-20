@@ -102,12 +102,12 @@ CGFloat const ATLAddContactButtonRightPadding = -8;
 
 - (void)layoutSubviews
 {
-    [super layoutSubviews];
     if (!self.addContactsButtonTopConstant && self.frame.size.height) {
-        // We calculate top constant here to accomodate for variable font support. 
+        // We calculate top constant here to accomodate for variable font support.
         self.addContactsButtonTopConstant = (self.frame.size.height / 2) - (self.addContactsButton.frame.size.height / 2);
         self.addContactsButtonTopConstraint.constant = self.addContactsButtonTopConstant;
     }
+    [super layoutSubviews];
 }
 
 @end

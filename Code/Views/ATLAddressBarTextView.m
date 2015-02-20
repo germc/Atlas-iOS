@@ -93,7 +93,6 @@ static CGFloat const ATLLineSpacing = 6;
         size.height = self.maxHeight;
     }
     self.heightConstraint.constant = size.height;
-
     [super updateConstraints];
 }
 
@@ -160,4 +159,10 @@ static CGFloat const ATLLineSpacing = 6;
     self.maxHeight = ceil(size.height) * 2 + ATLLineSpacing + self.textContainerInset.top + self.textContainerInset.bottom;
 }
 
+- (void)layoutSubviews
+{
+    [super layoutSubviews];
+    // We update constraints to allow text view to properly size its height given its width.
+    [self updateConstraints];
+}
 @end
