@@ -74,6 +74,12 @@
     [self configureAvatarImageViewConstraints];
 }
 
+- (void)prepareForReuse
+{
+    [super prepareForReuse];
+    self.accessoryView = nil;
+}
+
 - (void)setHighlighted:(BOOL)highlighted animated:(BOOL)animated
 {
     // We don't want the default behavior that changes image view backgrounds to transparent while highlighted.
