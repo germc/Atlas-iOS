@@ -156,7 +156,7 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
         [self.addressBarController didMoveToParentViewController:self];
         [self configureAddressBarLayoutConstraints];
     }
-    [self registerForNotifications];
+    [self atl_registerForNotifications];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -1295,7 +1295,6 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
 - (void)scrollToBottomOfCollectionViewAnimated:(BOOL)animated
 {
     CGSize contentSize = self.collectionView.contentSize;
-    NSLog(@"Content size %f", contentSize.height);
     [self.collectionView setContentOffset:[self bottomOffsetForContentSize:contentSize] animated:animated];
 }
 
@@ -1346,7 +1345,7 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
 
 #pragma mark - NSNotification Center Registration
 
-- (void)registerForNotifications
+- (void)atl_registerForNotifications
 {
     // Keyboard Notifications
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
