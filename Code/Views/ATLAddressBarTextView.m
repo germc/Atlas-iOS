@@ -35,6 +35,8 @@ NSString *const ATLAddressBarDelimiterPart = @"delimiter";
 
 @implementation ATLAddressBarTextView
 
+CGFloat const ATLAddressBarTextViewIndent = 34.0f;
+CGFloat const ATLAddressBarTextContainerInset = 10.0f;
 static CGFloat const ATLLineSpacing = 6;
 
 - (id)init
@@ -63,10 +65,10 @@ static CGFloat const ATLLineSpacing = 6;
     _addressBarHighlightColor = ATLBlueColor();
     
     self.backgroundColor = [UIColor clearColor];
-    self.textContainerInset = UIEdgeInsetsMake(10, 0, 10, 0);
+    self.textContainerInset = UIEdgeInsetsMake(ATLAddressBarTextContainerInset, 0, ATLAddressBarTextContainerInset, 0);
     
     NSMutableParagraphStyle *paragraphStyle = [NSMutableParagraphStyle new];
-    paragraphStyle.firstLineHeadIndent = 34.0f;
+    paragraphStyle.firstLineHeadIndent = ATLAddressBarTextViewIndent;
     paragraphStyle.lineSpacing = ATLLineSpacing;
     self.typingAttributes = @{NSParagraphStyleAttributeName: paragraphStyle, NSForegroundColorAttributeName: self.addressBarTextColor};
     self.font = self.addressBarFont;

@@ -21,9 +21,11 @@
 #import <UIKit/UIKit.h>
 
 extern NSString *const ATLAddressBarPartAttributeName;
-
 extern NSString *const ATLAddressBarNamePart;
 extern NSString *const ATLAddressBarDelimiterPart;
+
+extern CGFloat const ATLAddressBarTextViewIndent;
+extern CGFloat const ATLAddressBarTextContainerInset;
 
 @interface ATLAddressBarTextView : UITextView
 

@@ -64,14 +64,8 @@ static NSString *const ATLAddressBarParticipantAttributeName = @"ATLAddressBarPa
     self.tableView.hidden = YES;
     [self.view addSubview:self.tableView];
     
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.addressBarView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0]];
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.addressBarView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeTop multiplier:1.0 constant:0]];
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.addressBarView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0]];
-    
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.tableView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0]];
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.tableView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0]];
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.tableView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.addressBarView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0]];
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.tableView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0]];
+    [self configureLayoutConstraintsForAddressBarView];
+    [self configureLayoutConstraintsForTableView];
     
     UITapGestureRecognizer *gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(addressBarTextViewTapped:)];
     [self.addressBarView.addressBarTextView addGestureRecognizer:gestureRecognizer];
@@ -82,12 +76,14 @@ static NSString *const ATLAddressBarParticipantAttributeName = @"ATLAddressBarPa
 - (void)disable
 {
     if (self.isDisabled) return;
+    if (self.addressBarView.addressBarTextView.isFirstResponder) return;
+    
     self.disabled = YES;
 
     self.addressBarView.addressBarTextView.text = [self disabledStringForParticipants:self.selectedParticipants];
     self.addressBarView.addressBarTextView.textColor = ATLGrayColor();
-    self.addressBarView.addressBarTextView.userInteractionEnabled = NO;
     self.addressBarView.addressBarTextView.editable = NO;
+    self.addressBarView.addContactsButton.hidden = YES;
     [self sizeAddressBarView];
 }
 
@@ -105,16 +101,6 @@ static NSString *const ATLAddressBarParticipantAttributeName = @"ATLAddressBarPa
     if (!selectedParticipants && !_selectedParticipants) return;
     if ([selectedParticipants isEqual:_selectedParticipants]) return;
 
-    NSOrderedSet *existingParticipants = _selectedParticipants;
-
-    _selectedParticipants = selectedParticipants;
-
-    NSMutableOrderedSet *removedParticipants = [NSMutableOrderedSet orderedSetWithOrderedSet:existingParticipants];
-    if (selectedParticipants) [removedParticipants minusOrderedSet:selectedParticipants];
-
-    NSMutableOrderedSet *addedParticipants = [NSMutableOrderedSet orderedSetWithOrderedSet:selectedParticipants];
-    if (existingParticipants) [addedParticipants minusOrderedSet:existingParticipants];
-
     if (self.isDisabled) {
         NSString *text = [self disabledStringForParticipants:selectedParticipants];
         self.addressBarView.addressBarTextView.text = text;
@@ -123,19 +109,18 @@ static NSString *const ATLAddressBarParticipantAttributeName = @"ATLAddressBarPa
         self.addressBarView.addressBarTextView.attributedText = attributedText;
     }
     [self sizeAddressBarView];
-
-    if ([self.delegate respondsToSelector:@selector(addressBarViewController:didRemoveParticipant:)]) {
-        for (id<ATLParticipant> removedParticipant in removedParticipants) {
-            [self.delegate addressBarViewController:self didRemoveParticipant:removedParticipant];
-        }
-    }
-
-    if ([self.delegate respondsToSelector:@selector(addressBarViewController:didSelectParticipant:)]) {
-        for (id<ATLParticipant> addedParticipant in addedParticipants) {
-            [self.delegate addressBarViewController:self didSelectParticipant:addedParticipant];
-        }
-    }
-
+    
+    NSOrderedSet *existingParticipants = _selectedParticipants;
+    _selectedParticipants = selectedParticipants;
+    
+    NSMutableOrderedSet *removedParticipants = [NSMutableOrderedSet orderedSetWithOrderedSet:existingParticipants];
+    if (selectedParticipants) [removedParticipants minusOrderedSet:selectedParticipants];
+    [self notifyDelegateOfRemovedParticipants:removedParticipants];
+    
+    NSMutableOrderedSet *addedParticipants = [NSMutableOrderedSet orderedSetWithOrderedSet:selectedParticipants];
+    if (existingParticipants) [addedParticipants minusOrderedSet:existingParticipants];
+    [self notifyDelegateOfSelectedParticipants:addedParticipants];
+    
     [self searchEnded];
 }
 
@@ -224,7 +209,6 @@ static NSString *const ATLAddressBarParticipantAttributeName = @"ATLAddressBarPa
     if (!NSEqualRanges(acceptableRange, selectedRange)) {
         textView.selectedRange = acceptableRange;
     }
-
     // Workaround for automatic scrolling not occurring in some cases after text entry.
     [textView scrollRangeToVisible:textView.selectedRange];
 }
@@ -271,6 +255,11 @@ static NSString *const ATLAddressBarParticipantAttributeName = @"ATLAddressBarPa
 
 - (void)addressBarTextViewTapped:(UITapGestureRecognizer *)recognizer
 {
+    if (self.disabled) {
+        [self notifyDelegateOfDisableTap];
+        return;
+    }
+    
     // Make sure the addressTextView is first responder
     if (!self.addressBarView.addressBarTextView.isFirstResponder) {
         [self.addressBarView.addressBarTextView becomeFirstResponder];
@@ -301,6 +290,45 @@ static NSString *const ATLAddressBarParticipantAttributeName = @"ATLAddressBarPa
 
 - (void)contactButtonTapped:(UIButton *)sender
 {
+    [self notifyDelegateOfContactButtonTap:sender];
+}
+
+#pragma mark - Delegate Implementation
+
+- (void)notifyDelegateOfSelectedParticipants:(NSMutableOrderedSet *)selectedParticipants
+{
+    if ([self.delegate respondsToSelector:@selector(addressBarViewController:didSelectParticipant:)]) {
+        for (id<ATLParticipant> addedParticipant in selectedParticipants) {
+            [self.delegate addressBarViewController:self didSelectParticipant:addedParticipant];
+        }
+    }
+}
+
+- (void)notifyDelegateOfRemovedParticipants:(NSMutableOrderedSet *)removedParticipants
+{
+    if ([self.delegate respondsToSelector:@selector(addressBarViewController:didRemoveParticipant:)]) {
+        for (id<ATLParticipant> removedParticipant in removedParticipants) {
+            [self.delegate addressBarViewController:self didRemoveParticipant:removedParticipant];
+        }
+    }
+}
+
+- (void)notifyDelegateOfSearchEnd
+{
+    if ([self.delegate respondsToSelector:@selector(addressBarViewControllerDidEndSearching:)]) {
+        [self.delegate addressBarViewControllerDidEndSearching:self];
+    }
+}
+
+- (void)notifyDelegateOfDisableTap
+{
+    if ([self.delegate respondsToSelector:@selector(addressBarViewControllerDidSelectWhileDisabled:)]) {
+        [self.delegate addressBarViewControllerDidSelectWhileDisabled:self];
+    }
+}
+
+- (void)notifyDelegateOfContactButtonTap:(id)sender
+{
     if ([self.delegate respondsToSelector:@selector(addressBarViewController:didTapAddContactsButton:)]) {
         [self.delegate addressBarViewController:self didTapAddContactsButton:sender];
     }
@@ -310,6 +338,8 @@ static NSString *const ATLAddressBarParticipantAttributeName = @"ATLAddressBarPa
 
 - (void)sizeAddressBarView
 {
+    // We force layout to calculate the size of addressBarTextView's frame which drives the address bar size.
+    [self.addressBarView layoutSubviews];
     [self.addressBarView.addressBarTextView setNeedsUpdateConstraints];
 }
 
@@ -338,9 +368,7 @@ static NSString *const ATLAddressBarParticipantAttributeName = @"ATLAddressBarPa
 - (void)searchEnded
 {
     if (self.tableView.isHidden) return;
-    if ([self.delegate respondsToSelector:@selector(addressBarViewControllerDidEndSearching:)]) {
-        [self.delegate addressBarViewControllerDidEndSearching:self];
-    }
+    [self notifyDelegateOfSearchEnd];
     self.participants = nil;
     self.tableView.hidden = YES;
     [self.tableView reloadData];
@@ -354,18 +382,6 @@ static NSString *const ATLAddressBarParticipantAttributeName = @"ATLAddressBarPa
         [participants addObject:participant];
     }];
     return participants;
-}
-
-- (NSString *)disabledStringForParticipants:(NSOrderedSet *)participants
-{
-    NSMutableArray *names = [NSMutableArray new];
-    for (id<ATLParticipant> participant in participants) {
-        NSString *name = participant.firstName;
-        if (name.length == 0) continue;
-        [names addObject:name];
-    }
-    NSString *string = [names componentsJoinedByString:@", "];
-    return string;
 }
 
 - (NSAttributedString *)attributedStringForParticipants:(NSOrderedSet *)participants
@@ -423,6 +439,54 @@ static NSString *const ATLAddressBarParticipantAttributeName = @"ATLAddressBarPa
     }];
 
     return adjustedRange;
+}
+
+# pragma mark - Disabled String Helpers
+
+- (NSString *)disabledStringForParticipants:(NSOrderedSet *)participants
+{
+    __block NSString *disabledString = [participants.firstObject firstName];
+    NSMutableOrderedSet *mutableParticipants = [participants mutableCopy];
+    [mutableParticipants removeObject:participants.firstObject];
+    
+    [mutableParticipants enumerateObjectsUsingBlock:^(id<ATLParticipant> participant, NSUInteger idx, BOOL *stop) {
+        NSString *expandedString = [NSString stringWithFormat:@"%@, %@", disabledString, participant.firstName];
+        if (![self textViewHasSpaceForParticipantString:expandedString]) {
+            *stop = YES;
+        }
+        NSUInteger remainingParticipants = mutableParticipants.count - idx;
+        NSString *truncatedString = [NSString stringWithFormat:@"%@, and %lu others", expandedString, (unsigned long)remainingParticipants];
+        if (![self textViewHasSpaceForParticipantString:truncatedString]) {
+            disabledString = [NSString stringWithFormat:@"%@, & %lu others", disabledString, (unsigned long)remainingParticipants + 1];
+            *stop = YES;
+        } else {
+            disabledString = expandedString;
+        }
+    }];
+    return disabledString;
+}
+
+- (BOOL)textViewHasSpaceForParticipantString:(NSString *)participantString
+{
+    CGSize fittedSize = [participantString sizeWithAttributes:@{NSFontAttributeName: self.addressBarView.addressBarTextView.font}];
+    return fittedSize.width <= (CGRectGetWidth(self.addressBarView.addressBarTextView.frame) - ATLAddressBarTextViewIndent - ATLAddressBarTextContainerInset);
+}
+
+#pragma mark - Auto Layout
+
+- (void)configureLayoutConstraintsForAddressBarView
+{
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.addressBarView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0]];
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.addressBarView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeTop multiplier:1.0 constant:0]];
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.addressBarView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0]];
+}
+
+- (void)configureLayoutConstraintsForTableView
+{
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.tableView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0]];
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.tableView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0]];
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.tableView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.addressBarView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0]];
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.tableView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0]];
 }
 
 @end

@@ -149,7 +149,7 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
     [self configureTypingIndicatorLayoutConstraints];
     
     // Add address bar if needed
-    if (!self.conversation && self.displaysAddressBar) {
+    if (self.displaysAddressBar) {
         self.addressBarController = [[ATLAddressBarViewController alloc] init];
         self.addressBarController.delegate = self;
         [self addChildViewController:self.addressBarController];
@@ -165,6 +165,9 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
     [super viewWillAppear:animated];
     if (!self.conversationDataSource) {
         [self fetchLayerMessages];
+    }
+    if (self.displaysAddressBar) {
+        [self configureAddressBarForChangedParticipants];
     }
     [self updateCollectionViewInsets];
     [self configureControllerForConversation];
@@ -261,10 +264,9 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
 {
     [self configureAvatarImageDisplay];
     [self configureSendButtonEnablement];
-    NSError *error;
-    [self.conversation markAllMessagesAsRead:&error];
-    if (error) {
-        NSLog(@"Failed marking all messages as read with error: %@", error);
+    [self.conversation markAllMessagesAsRead:nil];
+    if (self.conversation) {
+        [self.addressBarController disable];
     }
 }
 
@@ -1089,7 +1091,7 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
     self.conversation = conversation;
 }
 
-#pragma mark - Address Bar Configuration 
+#pragma mark - Address Bar Configuration
 
 - (void)configureAddressBarForChangedParticipants
 {
