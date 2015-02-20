@@ -16,7 +16,7 @@
 		D63C68DE1A9411E000D235D5 /* ProgrammaticTests-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = D6F4060F1A8FDEEB00AE9581 /* ProgrammaticTests-Info.plist */; };
 		D63C68E01A94250000D235D5 /* test-logo.png in Resources */ = {isa = PBXBuildFile; fileRef = D63C68DF1A94250000D235D5 /* test-logo.png */; };
 		D63C68E11A94250000D235D5 /* test-logo.png in Resources */ = {isa = PBXBuildFile; fileRef = D63C68DF1A94250000D235D5 /* test-logo.png */; };
-		D6F405AF1A8FDDAA00AE9581 /* ATLConversationAvatarItem.m in Sources */ = {isa = PBXBuildFile; fileRef = D6F405A81A8FDDAA00AE9581 /* ATLConversationAvatarItem.m */; };
+		D6F405AF1A8FDDAA00AE9581 /* ATLSampleConversationAvatarItem.m in Sources */ = {isa = PBXBuildFile; fileRef = D6F405A81A8FDDAA00AE9581 /* ATLSampleConversationAvatarItem.m */; };
 		D6F405B01A8FDDAA00AE9581 /* ATLSampleConversationListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D6F405AA1A8FDDAA00AE9581 /* ATLSampleConversationListViewController.m */; };
 		D6F405B11A8FDDAA00AE9581 /* ATLSampleConversationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D6F405AC1A8FDDAA00AE9581 /* ATLSampleConversationViewController.m */; };
 		D6F405B21A8FDDAA00AE9581 /* ATLSampleParticipantTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D6F405AE1A8FDDAA00AE9581 /* ATLSampleParticipantTableViewController.m */; };
@@ -99,8 +99,8 @@
 		D0294DE41A93F37000702856 /* ATLMediaStreamTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ATLMediaStreamTests.m; path = Tests/ATLMediaStreamTests.m; sourceTree = "<group>"; };
 		D0294DE61A93F37A00702856 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Tests/Info.plist; sourceTree = "<group>"; };
 		D63C68DF1A94250000D235D5 /* test-logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "test-logo.png"; sourceTree = "<group>"; };
-		D6F405A71A8FDDAA00AE9581 /* ATLConversationAvatarItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ATLConversationAvatarItem.h; path = Examples/ATLConversationAvatarItem.h; sourceTree = SOURCE_ROOT; };
-		D6F405A81A8FDDAA00AE9581 /* ATLConversationAvatarItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ATLConversationAvatarItem.m; path = Examples/ATLConversationAvatarItem.m; sourceTree = SOURCE_ROOT; };
+		D6F405A71A8FDDAA00AE9581 /* ATLSampleConversationAvatarItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ATLSampleConversationAvatarItem.h; path = Examples/ATLSampleConversationAvatarItem.h; sourceTree = SOURCE_ROOT; };
+		D6F405A81A8FDDAA00AE9581 /* ATLSampleConversationAvatarItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ATLSampleConversationAvatarItem.m; path = Examples/ATLSampleConversationAvatarItem.m; sourceTree = SOURCE_ROOT; };
 		D6F405A91A8FDDAA00AE9581 /* ATLSampleConversationListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ATLSampleConversationListViewController.h; path = Examples/ATLSampleConversationListViewController.h; sourceTree = SOURCE_ROOT; };
 		D6F405AA1A8FDDAA00AE9581 /* ATLSampleConversationListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ATLSampleConversationListViewController.m; path = Examples/ATLSampleConversationListViewController.m; sourceTree = SOURCE_ROOT; };
 		D6F405AB1A8FDDAA00AE9581 /* ATLSampleConversationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ATLSampleConversationViewController.h; path = Examples/ATLSampleConversationViewController.h; sourceTree = SOURCE_ROOT; };
@@ -316,8 +316,8 @@
 			children = (
 				D6F405EA1A8FDEAB00AE9581 /* Screenshots */,
 				D0E729491A02F1C700B76672 /* Mocks */,
-				D6F405A71A8FDDAA00AE9581 /* ATLConversationAvatarItem.h */,
-				D6F405A81A8FDDAA00AE9581 /* ATLConversationAvatarItem.m */,
+				D6F405A71A8FDDAA00AE9581 /* ATLSampleConversationAvatarItem.h */,
+				D6F405A81A8FDDAA00AE9581 /* ATLSampleConversationAvatarItem.m */,
 				D6F405A91A8FDDAA00AE9581 /* ATLSampleConversationListViewController.h */,
 				D6F405AA1A8FDDAA00AE9581 /* ATLSampleConversationListViewController.m */,
 				D6F405AB1A8FDDAA00AE9581 /* ATLSampleConversationViewController.h */,
@@ -797,7 +797,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D6F405AF1A8FDDAA00AE9581 /* ATLConversationAvatarItem.m in Sources */,
+				D6F405AF1A8FDDAA00AE9581 /* ATLSampleConversationAvatarItem.m in Sources */,
 				D6F406291A8FDFBB00AE9581 /* ProgrammaticAppDelegate.m in Sources */,
 				D6F405CB1A8FDDE300AE9581 /* LYRUserMock.m in Sources */,
 				D6F405D81A8FDE1B00AE9581 /* ATLTestConversationListViewController.m in Sources */,

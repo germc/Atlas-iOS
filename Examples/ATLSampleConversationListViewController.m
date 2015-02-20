@@ -22,7 +22,7 @@
 #import "ATLSampleConversationViewController.h"
 #import "LYRClientMock.h"
 #import "ATLParticipant.h"
-#import "ATLConversationAvatarItem.h"
+#import "ATLSampleConversationAvatarItem.h"
 
 @interface ATLSampleConversationListViewController () <ATLConversationListViewControllerDelegate, ATLConversationListViewControllerDataSource>
 
@@ -75,7 +75,7 @@
 
 - (id<ATLAvatarItem>)conversationListViewController:(ATLConversationListViewController *)conversationListViewController avatarItemForConversation:(LYRConversation *)conversation
 {
-    return [ATLConversationAvatarItem new];
+    return [ATLSampleConversationAvatarItem new];
 }
 
 #pragma mark - Conversation List View Controller Data Source Methods

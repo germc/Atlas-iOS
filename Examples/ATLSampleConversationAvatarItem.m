@@ -1,5 +1,5 @@
 //
-//  ATLUIConversationAvatarItem.h
+//  ATLUIConversationAvatarItem.m
 //  Atlas
 //
 //  Created by Kevin Coleman on 1/30/15.
@@ -17,9 +17,18 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 //
-#import <Foundation/Foundation.h>
-#import <Atlas/Atlas.h>
+#import "ATLSampleConversationAvatarItem.h"
 
-@interface ATLConversationAvatarItem : NSObject <ATLAvatarItem>
+@implementation ATLSampleConversationAvatarItem 
+
+- (NSString *)avatarItemFullName
+{
+    return @"Kevin Coleman";
+}
+
+- (UIImage *)avatarItemImage
+{
+    return nil;
+}
 
 @end
