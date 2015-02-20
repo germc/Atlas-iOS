@@ -449,9 +449,8 @@ static NSString *const ATLAddressBarParticipantAttributeName = @"ATLAddressBarPa
     NSMutableOrderedSet *mutableParticipants = [participants mutableCopy];
     [mutableParticipants removeObject:participants.firstObject];
     
-    [mutableParticipants enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-        NSString *firstName = [(id<ATLParticipant>)obj firstName];
-        NSString *expandedString = [NSString stringWithFormat:@"%@, %@", disabledString, firstName];
+    [mutableParticipants enumerateObjectsUsingBlock:^(id<ATLParticipant> participant, NSUInteger idx, BOOL *stop) {
+        NSString *expandedString = [NSString stringWithFormat:@"%@, %@", disabledString, participant.firstName];
         if (![self textViewHasSpaceForParticipantString:expandedString]) {
             *stop = YES;
         }
