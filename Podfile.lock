@@ -96,7 +96,7 @@ CHECKOUT OPTIONS:
     :commit: 41edeeade3ea0618c2ddac6c90a648f322f1b5a2
     :git: git@github.com:blakewatters/KIFViewControllerActions.git
   LayerKit:
-    :commit: 88dcdc0a7ea1b81fb4cd6fa86c344951bf5b2b95
+    :commit: 5f929143dacbfa977239177b5bdad383aaf8e144
     :git: git@github.com:layerhq/LayerKit.git
   LYRCountDownLatch:
     :commit: 02119f855ad14e7fc0dae32bbbf17c735a281cfe

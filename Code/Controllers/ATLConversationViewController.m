@@ -123,7 +123,6 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.view.backgroundColor = [UIColor whiteColor];
     
     // Collection View Setup
     self.collectionView = [[ATLConversationCollectionView alloc] initWithFrame:CGRectZero
@@ -157,7 +156,7 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
         [self.addressBarController didMoveToParentViewController:self];
         [self configureAddressBarLayoutConstraints];
     }
-    [self registerForNotifications];
+    [self atl_registerForNotifications];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -212,11 +211,9 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
     }
     if (self.isFirstAppearance) {
         self.firstAppearance = NO;
-        [self scrollToBottomOfCollectionViewAnimated:NO];
-        // This works around an issue where in some situations iOS 7.1 will crash with 'Auto Layout still required after
-        // sending -viewDidLayoutSubviews to the view controller.' apparently due to our usage of the collection view
-        // layout's content size when scrolling to the bottom in the above method call.
+        // We use the content size of the actual collection view when calculating the ammount to scroll. Hence, we layout the collection view before scrolling to the bottom.
         [self.view layoutIfNeeded];
+        [self scrollToBottomOfCollectionViewAnimated:NO];
     }
 }
 
@@ -1348,7 +1345,7 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
 
 #pragma mark - NSNotification Center Registration
 
-- (void)registerForNotifications
+- (void)atl_registerForNotifications
 {
     // Keyboard Notifications
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
