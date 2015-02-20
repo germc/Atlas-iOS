@@ -29,6 +29,7 @@
 @property (nonatomic) BOOL messageSentState;
 @property (nonatomic) LYRMessage *message;
 @property (nonatomic) LYRProgress *progress;
+@property (nonatomic) NSUInteger lastProgressFractionCompleted;
 
 @end
 
@@ -91,9 +92,8 @@ CGFloat const ATLMessageCellHorizontalMargin = 16.0f;
 {
     [super prepareForReuse];
     // Remove self from any previously assigned LYRProgress instance.
-    if (self.progress) {
-        self.progress.delegate = nil;
-    }
+    self.progress.delegate = nil;
+    self.lastProgressFractionCompleted = 0;
     [self.bubbleView prepareForReuse];
 }
 
@@ -118,6 +118,7 @@ CGFloat const ATLMessageCellHorizontalMargin = 16.0f;
     LYRMessagePart *messagePart = self.message.parts.firstObject;
     NSString *text = [[NSString alloc] initWithData:messagePart.data encoding:NSUTF8StringEncoding];
     [self.bubbleView updateWithAttributedText:[self attributedStringForText:text]];
+    [self.bubbleView updateProgressIndicatorWithProgress:0.0 visible:NO animated:NO];
     self.accessibilityLabel = [NSString stringWithFormat:@"Message: %@", text];
 }
 
@@ -126,12 +127,19 @@ CGFloat const ATLMessageCellHorizontalMargin = 16.0f;
     self.accessibilityLabel = [NSString stringWithFormat:@"Message: Photo"];
     
     LYRMessagePart *fullResImagePart = ATLMessagePartForMIMEType(self.message, ATLMIMETypeImageJPEG);
-    if ((fullResImagePart.transferStatus == LYRContentTransferAwaitingUpload) ||
-        (fullResImagePart.transferStatus == LYRContentTransferUploading)) {
+    if (!fullResImagePart) {
+        fullResImagePart = ATLMessagePartForMIMEType(self.message, ATLMIMETypeImagePNG);
+    }
+    if (fullResImagePart && ((fullResImagePart.transferStatus == LYRContentTransferAwaitingUpload) ||
+                             (fullResImagePart.transferStatus == LYRContentTransferUploading))) {
         // Set self for delegation, if full resolution message part
         // hasn't been uploaded yet, or is still uploading.
         LYRProgress *progress = fullResImagePart.progress;
         [progress setDelegate:self];
+        self.progress = progress;
+        [self.bubbleView updateProgressIndicatorWithProgress:progress.fractionCompleted visible:YES animated:NO];
+    } else {
+        [self.bubbleView updateProgressIndicatorWithProgress:1.0 visible:NO animated:YES];
     }
     
     UIImage *displayingImage;
@@ -168,6 +176,7 @@ CGFloat const ATLMessageCellHorizontalMargin = 16.0f;
     double lat = [dictionary[ATLLocationLatitudeKey] doubleValue];
     double lon = [dictionary[ATLLocationLongitudeKey] doubleValue];
     [self.bubbleView updateWithLocation:CLLocationCoordinate2DMake(lat, lon)];
+    [self.bubbleView updateProgressIndicatorWithProgress:0.0 visible:NO animated:NO];
 }
 
 - (void)setMessageTextFont:(UIFont *)messageTextFont
@@ -206,7 +215,11 @@ CGFloat const ATLMessageCellHorizontalMargin = 16.0f;
 {
     // Queue UI updates onto the main thread, since LYRProgress performs
     // delegate callbacks from a background thread.
-    dispatch_sync(dispatch_get_main_queue(), ^{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (progress.delegate == nil) {
+            // Do not do any UI changes, if receiver has been removed.
+            return;
+        }
         BOOL progressCompleted = progress.fractionCompleted == 1.0f;
         [self.bubbleView updateProgressIndicatorWithProgress:progress.fractionCompleted visible:progressCompleted ? NO : YES animated:YES];
         // After transfer completes, remove self for delegation.

@@ -38,8 +38,6 @@ NSString *const ATLMediaInputStreamAppleCameraTIFFOptionsKey = @"{TIFF}";
 ALAsset *ATLMediaInputStreamAssetForAssetURL(NSURL *assetURL, ALAssetsLibrary *assetLibrary, NSError **error);
 static size_t ATLMediaInputStreamGetBytesFromAssetCallback(void *assetStreamRef, void *buffer, off_t offset, size_t length);
 static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef, const void *buffer, size_t length);
-static void ATLMediaInputStreamReleaseAssetCallback(void *assetStreamRef);
-static void ATLMediaInputStreamReleaseStreamCallback(void *assetStreamRef);
 
 @interface ATLMediaInputStream ()
 
@@ -288,6 +286,10 @@ static void ATLMediaInputStreamReleaseStreamCallback(void *assetStreamRef);
     // Wait for the response.
     ATLMediaInputStreamLog(@"input stream: waiting for cosumer to prepare data");
     dispatch_semaphore_wait(self.streamFlowRequesterSemaphore, DISPATCH_TIME_FOREVER);
+    
+    if (self.mediaStreamStatus == NSStreamStatusError) {
+        return -1; // Operation failed, see self.streamError;
+    }
 
     // Copy the consumed image data to `buffer`.
     [self.dataConsumed getBytes:buffer];
@@ -318,12 +320,17 @@ static void ATLMediaInputStreamReleaseStreamCallback(void *assetStreamRef);
             success = CGImageDestinationFinalize(self.destination);
             if (!success) {
                 self.mediaStreamError = [NSError errorWithDomain:ATLMediaInputStreamErrorDomain code:ATLMediaInputStreamErrorFailedFinalizingDestination userInfo:nil];
+                ATLMediaInputStreamLog(@"input stream failed to finalize image destination with %@", self.mediaStreamError);
             }
             ATLMediaInputStreamLog(@"input stream: stopping the consumer...");
             
             // Notify requester that consumer is done.
             dispatch_semaphore_signal(self.streamFlowRequesterSemaphore);
-            self.mediaStreamStatus = NSStreamStatusAtEnd;
+            if (!success) {
+                self.mediaStreamStatus = NSStreamStatusError;
+            } else {
+                self.mediaStreamStatus = NSStreamStatusAtEnd;
+            }
         });
     });
 }
@@ -355,7 +362,7 @@ static void ATLMediaInputStreamReleaseStreamCallback(void *assetStreamRef);
         .getBytePointer = NULL,
         .releaseBytePointer = NULL,
         .getBytesAtPosition = ATLMediaInputStreamGetBytesFromAssetCallback,
-        .releaseInfo = ATLMediaInputStreamReleaseAssetCallback,
+        .releaseInfo = NULL
     };
     self.provider = CGDataProviderCreateDirect((void *)CFBridgingRetain(self), [self.assetRepresentation size], &dataProviderCallbacks);
     self.source = CGImageSourceCreateWithDataProvider(self.provider, NULL);
@@ -386,7 +393,7 @@ static void ATLMediaInputStreamReleaseStreamCallback(void *assetStreamRef);
     // Setting up destination-writer (consumer).
     CGDataConsumerCallbacks dataConsumerCallbacks = {
         .putBytes = ATLMediaInputStreamPutBytesIntoStreamCallback,
-        .releaseConsumer = ATLMediaInputStreamReleaseStreamCallback,
+        .releaseConsumer = NULL
     };
     self.consumer = CGDataConsumerCreate((void *)CFBridgingRetain(self), &dataConsumerCallbacks);
     if (self.assetRepresentation) {
@@ -467,32 +474,24 @@ static size_t ATLMediaInputStreamGetBytesFromAssetCallback(void *assetStreamRef,
     return bytesRead;
 }
 
-static void ATLMediaInputStreamReleaseAssetCallback(void *assetStreamRef)
-{
-    CFRelease(assetStreamRef);
-}
-
 static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef, const void *buffer, size_t length)
 {
     ATLMediaInputStream *assetStream = (__bridge ATLMediaInputStream *)assetStreamRef;
     
     // Consumption continues, after flow control logic in readBytes:len: signals it.
     dispatch_sync(assetStream.transferBufferSerialGuard, ^{
-        ATLMediaInputStreamLog(@"consumer: waiting for request from stream");
+        ATLMediaInputStreamLog(@"consumer: waiting for request from stream (have %lu bytes ready)", length);
         dispatch_semaphore_wait(assetStream.streamFlowProviderSemaphore, DISPATCH_TIME_FOREVER);
     });
     
     // Copy buffer into NSData that was consumed by Image I/O process.
-    NSData *dataConsumed = [NSData dataWithBytes:buffer length:MIN(assetStream.numberOfBytesRequested, length)];
+    NSUInteger bytesConsumed = MIN(assetStream.numberOfBytesRequested, length);
+    NSData *dataConsumed = [NSData dataWithBytes:buffer length:bytesConsumed];
     assetStream.dataConsumed = dataConsumed;
-    ATLMediaInputStreamLog(@"consumer: consumed %lu bytes (requested %lu bytes)", dataConsumed.length, assetStream.numberOfBytesRequested);
+    ATLMediaInputStreamLog(@"consumer: consumed %lu bytes (requested %lu bytes, provided %lu bytes)", dataConsumed.length, assetStream.numberOfBytesRequested, length);
     
     // Signal the requester data is ready for consumption.
     dispatch_semaphore_signal(assetStream.streamFlowRequesterSemaphore);
-    return assetStream.dataConsumed.length;
-}
-
-static void ATLMediaInputStreamReleaseStreamCallback(void *assetStreamRef)
-{
-    CFRelease(assetStreamRef);
+    ATLMediaInputStreamLog(@"return %lu", bytesConsumed);
+    return bytesConsumed;
 }
