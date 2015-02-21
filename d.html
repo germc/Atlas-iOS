@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>Atlas</title>
+        <title>Atlas by Layer</title>
         <meta name="description" content="Atlas Chat UI Kit">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -31,9 +31,14 @@
               </a>
             </div>
             <a class='btn' id='dl' href='#link-to-dl'>Download Atlas Messenger</a>
-            <div class='hide' id='platform'>
+            <div class='platform hide' id='platform'>
               <h3 >Atlas is iOS only for the moment. Check back for additional platforms.</h3>
-              <a class='btn' id='dl' href='http://layer.com'>Visit Layer.com</a>
+              <ul class='sub-nav'>
+                <li>
+                  <a class='btn' href='/'>ATLAS HOME</a>
+                </li>
+                <li><a class='btn' href='https://github.com/layerhq/Atlas-iOS'>ATLAS ON GITHUB</a></li>
+              </ul>
             </div>
             
           </div>
@@ -42,7 +47,7 @@
       <script>
         if(!navigator.userAgent.match(/(iPhone|iPod|iPad)/i)) {
           document.getElementById('dl').setAttribute('class', 'hide');
-          document.getElementById('platform').setAttribute('class', '');
+          document.getElementById('platform').setAttribute('class', 'platform');
         }
       </script>
     </body>

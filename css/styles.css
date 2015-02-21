@@ -429,7 +429,7 @@ section.download .logo {
 section.download h3 {
   font-family: HelveticaNeue-Thin;
 }
-section.download .btn,
+section.download .platform,
 section.download h3 {
   margin-top: 4rem;
 }
