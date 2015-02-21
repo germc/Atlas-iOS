@@ -1085,8 +1085,16 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
 {
     NSSet *participants = self.addressBarController.selectedParticipants.set;
     NSSet *participantIdentifiers = [participants valueForKey:@"participantIdentifier"];
+    
     if (!participantIdentifiers && !self.conversation.participants) return;
-    if ([participantIdentifiers isEqual:self.conversation.participants]) return;
+    
+    NSString *authenticatedUserID = self.layerClient.authenticatedUserID;
+    NSMutableSet *conversationParticipantsCopy = [self.conversation.participants mutableCopy];
+    if ([conversationParticipantsCopy containsObject:authenticatedUserID]) {
+        [conversationParticipantsCopy removeObject:authenticatedUserID];
+    }
+    if ([participantIdentifiers isEqual:conversationParticipantsCopy]) return;
+    
     LYRConversation *conversation = [self conversationWithParticipants:participants];
     self.conversation = conversation;
 }
