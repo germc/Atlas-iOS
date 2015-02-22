@@ -345,7 +345,7 @@ static NSString *const ATLAddressBarParticipantAttributeName = @"ATLAddressBarPa
 - (void)sizeAddressBarView
 {
     // We layout addressBarTextView as it drives the address bar size.
-    [self.addressBarView.addressBarTextView layoutSubviews];
+    [self.addressBarView.addressBarTextView setNeedsLayout];
 }
 
 - (NSString *)textForSearchFromTextView:(UITextView *)textView
