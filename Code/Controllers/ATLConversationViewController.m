@@ -165,11 +165,13 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
     if (!self.conversationDataSource) {
         [self fetchLayerMessages];
     }
-    if (self.displaysAddressBar) {
-        [self configureAddressBarForChangedParticipants];
+    if (self.addressBarController && self.conversation) {
+        [self.addressBarController disable];
+        [self configureAddressBarForConversation];
     }
     [self updateCollectionViewInsets];
     [self configureControllerForConversation];
+   
     
     // Workaround for a modal dismissal causing the message toolbar to remain offscreen on iOS 8.
     if (self.presentedViewController) {
@@ -225,28 +227,20 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
 
 #pragma mark - Conversation Setup
 
-- (void)fetchLayerMessages
-{
-    if (!self.conversation) return;
-    self.conversationDataSource = [ATLConversationDataSource dataSourceWithLayerClient:self.layerClient conversation:self.conversation];
-    self.conversationDataSource.queryController.delegate = self;
-    self.showingMoreMessagesIndicator = [self.conversationDataSource moreMessagesAvailable];
-    [self.collectionView reloadData];
-}
-
 - (void)setConversation:(LYRConversation *)conversation
 {
     if (!conversation && !_conversation) return;
     if ([conversation isEqual:_conversation]) return;
-
+    
     _conversation = conversation;
-
+    
     [self.typingParticipantIDs removeAllObjects];
     [self updateTypingIndicatorOverlay:NO];
     
+    // Set up the controller for the conversation
     [self configureControllerForConversation];
     [self configureAddressBarForChangedParticipants];
-
+    
     if (conversation) {
         [self fetchLayerMessages];
     } else {
@@ -257,14 +251,32 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
     [self.collectionView setContentOffset:[self bottomOffsetForContentSize:contentSize] animated:NO];
 }
 
+- (void)configureAddressBarForConversation
+{
+    if (!self.dataSource) return;
+    if (!self.addressBarController) return;
+
+    NSMutableOrderedSet *participantIdentifiers = [NSMutableOrderedSet orderedSetWithSet:self.conversation.participants];
+    if ([participantIdentifiers containsObject:self.layerClient.authenticatedUserID]) {
+        [participantIdentifiers removeObject:self.layerClient.authenticatedUserID];
+    }
+    [self.addressBarController setSelectedParticipants:[self participantsForIdentifiers:participantIdentifiers]];
+}
+
+- (void)fetchLayerMessages
+{
+    if (!self.conversation) return;
+    self.conversationDataSource = [ATLConversationDataSource dataSourceWithLayerClient:self.layerClient conversation:self.conversation];
+    self.conversationDataSource.queryController.delegate = self;
+    self.showingMoreMessagesIndicator = [self.conversationDataSource moreMessagesAvailable];
+    [self.collectionView reloadData];
+}
+
 - (void)configureControllerForConversation
 {
     [self configureAvatarImageDisplay];
     [self configureSendButtonEnablement];
     [self.conversation markAllMessagesAsRead:nil];
-    if (self.conversation) {
-        [self.addressBarController disable];
-    }
 }
 
 - (void)configureControllerForChangedParticipants
@@ -1107,6 +1119,7 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
 
     NSOrderedSet *existingParticipants = self.addressBarController.selectedParticipants;
     NSOrderedSet *existingParticipantIdentifiers = [existingParticipants valueForKey:@"participantIdentifier"];
+   
     if (!existingParticipantIdentifiers && !self.conversation.participants) return;
     if ([existingParticipantIdentifiers.set isEqual:self.conversation.participants]) return;
 
@@ -1115,6 +1128,7 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
 
     NSMutableOrderedSet *addedIdentifiers = [NSMutableOrderedSet orderedSetWithSet:self.conversation.participants];
     [addedIdentifiers minusOrderedSet:existingParticipantIdentifiers];
+    
     NSString *authenticatedUserID = self.layerClient.authenticatedUserID;
     if (authenticatedUserID) [addedIdentifiers removeObject:authenticatedUserID];
 

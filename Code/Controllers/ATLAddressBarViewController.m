@@ -115,6 +115,8 @@ static NSString *const ATLAddressBarParticipantAttributeName = @"ATLAddressBarPa
     NSOrderedSet *existingParticipants = _selectedParticipants;
     _selectedParticipants = selectedParticipants;
     
+    if (self.isDisabled) return;
+    
     NSMutableOrderedSet *removedParticipants = [NSMutableOrderedSet orderedSetWithOrderedSet:existingParticipants];
     if (selectedParticipants) [removedParticipants minusOrderedSet:selectedParticipants];
     [self notifyDelegateOfRemovedParticipants:removedParticipants];
