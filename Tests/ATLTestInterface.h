@@ -1,5 +1,5 @@
 //
-//  ATLUITestUtilities.h
+//  ATLUTestInterface.h
 //  Atlas
 //
 //  Created by Kevin Coleman on 12/16/14.
@@ -51,8 +51,8 @@ LYRMessagePartMock *ATLMessagePartWithLocation(CLLocation *location);
 
 - (NSString *)conversationLabelForConversation:(LYRConversationMock *)conversation;
 
-- (void)setRootViewController:(UIViewController *)controller;
+- (void)presentViewController:(UIViewController *)controller;
 
-- (void)pushViewController:(UIViewController *)controller;
+- (void)dismissPresentedViewController;
 
 @end

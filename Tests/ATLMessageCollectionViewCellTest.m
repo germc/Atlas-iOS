@@ -40,7 +40,6 @@ extern NSString *const ATLConversationCollectionViewAccessibilityIdentifier;
 - (void)setUp
 {
     [super setUp];
-    [[LYRMockContentStore sharedStore] resetContentStore];
     LYRUserMock *mockUser = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameRussell];
     LYRClientMock *layerClient = [LYRClientMock layerClientMockWithAuthenticatedUserID:mockUser.participantIdentifier];
     self.testInterface = [ATLTestInterface testIntefaceWithLayerClient:layerClient];
@@ -210,7 +209,7 @@ extern NSString *const ATLConversationCollectionViewAccessibilityIdentifier;
     NSLog(@"Conversation %@", self.conversation);
     ATLSampleConversationViewController *controller = [ATLSampleConversationViewController conversationViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];;
     controller.conversation = (LYRConversation *)self.conversation;
-    [self.testInterface setRootViewController:controller];
+    [self.testInterface presentViewController:controller];
 }
 
 - (void)resetAppearance

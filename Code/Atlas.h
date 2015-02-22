@@ -39,6 +39,7 @@
 #import "ATLDataSourceChange.h"
 #import "ATLMediaAttachment.h"
 #import "ATLParticipantTableDataSet.h"
+#import "ATLMediaAttachment.h"
 
 ///----------------
 /// @name Protocols

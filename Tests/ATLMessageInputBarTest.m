@@ -21,12 +21,12 @@
 #import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
 #import "ATLTestInterface.h"
-
 #import "ATLSampleConversationViewController.h"
+#import "ATLMediaAttachment.h"
 
 @interface ATLConversationViewController ()
 
-@property (nonatomic) LYRQueryController *queryController;
+@property (nonatomic) ATLConversationDataSource *conversationDataSource;
 
 @end
 
@@ -39,9 +39,12 @@
 
 @implementation ATLMessageInputBarTest
 
-static NSString *const LSTextInputViewLabel = @"Text Input View";
-static NSString *const LSSendButtonLabel = @"Send Button";
-static NSString *const LSCameraButtonLabel = @"Camera Button";
+extern NSString *const ATLMessageInputToolbarAccessibilityLabel;
+extern NSString *const ATLMessageInputToolbarTextInputView;
+extern NSString *const ATLMessageInputToolbarAccessibilityLabel;
+extern NSString *const ATLMessageInputToolbarCameraButton;
+extern NSString *const ATLMessageInputToolbarLocationButton;
+extern NSString *const ATLMessageInputToolbarSendButton;
 
 - (void)setUp
 {
@@ -52,7 +55,8 @@ static NSString *const LSCameraButtonLabel = @"Camera Button";
     self.testInterface = [ATLTestInterface testIntefaceWithLayerClient:layerClient];
     
     LYRUserMock *mockUser1 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameMarshawn];
-    LYRConversationMock *conversation1 = [self.testInterface conversationWithParticipants:[NSSet setWithObject:mockUser1.participantIdentifier] lastMessageText:@"Message1"];
+    LYRConversationMock *conversation1 = [self.testInterface conversationWithParticipants:[NSSet setWithObject:mockUser1.participantIdentifier] lastMessageText:nil];
+    
     self.viewController = [ATLSampleConversationViewController conversationViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];
     self.viewController.conversation = (LYRConversation *)conversation1;
     [self setRootViewController:self.viewController];
@@ -66,49 +70,106 @@ static NSString *const LSCameraButtonLabel = @"Camera Button";
     [super tearDown];
 }
 
-- (void)testToVerifyMessageEnteredIsConsitentWithMessageToBeSent
+- (void)testToVerifyMessageInputToolbarUI
 {
-    ATLMessageInputToolbar *toolBar = (ATLMessageInputToolbar *)[tester waitForViewWithAccessibilityLabel:@"Message Input Toolbar"];
+    [tester waitForViewWithAccessibilityLabel:ATLMessageInputToolbarCameraButton];
+    [tester waitForViewWithAccessibilityLabel:ATLMessageInputToolbarTextInputView];
+    [tester waitForViewWithAccessibilityLabel:ATLMessageInputToolbarLocationButton];
+    [tester waitForViewWithAccessibilityLabel:ATLMessageInputToolbarAccessibilityLabel];
+}
+
+- (void)testToVerifyToVerifyTextChangesLocationButtonToSendButton
+{
+    [tester waitForViewWithAccessibilityLabel:ATLMessageInputToolbarAccessibilityLabel];
+    [tester waitForViewWithAccessibilityLabel:ATLMessageInputToolbarLocationButton];
+    [tester enterText:@"A" intoViewWithAccessibilityLabel:ATLMessageInputToolbarTextInputView];
     
+    [tester waitForViewWithAccessibilityLabel:ATLMessageInputToolbarSendButton];
+    [tester waitForAbsenceOfViewWithAccessibilityLabel:ATLMessageInputToolbarLocationButton];
+    
+    [tester clearTextFromViewWithAccessibilityLabel:ATLMessageInputToolbarTextInputView];
+    [tester waitForViewWithAccessibilityLabel:ATLMessageInputToolbarLocationButton];
+    [tester waitForAbsenceOfViewWithAccessibilityLabel:ATLMessageInputToolbarSendButton];
+}
+
+- (void)testToVerifyRightAccessoryButtonDelegateFunctionality
+{
+    ATLMessageInputToolbar *toolBar = (ATLMessageInputToolbar *)[tester waitForViewWithAccessibilityLabel:ATLMessageInputToolbarAccessibilityLabel];
     id delegateMock = OCMProtocolMock(@protocol(ATLMessageInputToolbarDelegate));
     toolBar.inputToolBarDelegate = delegateMock;
     
-    __block NSString *testText = @"This is a test";
     [[[delegateMock expect] andDo:^(NSInvocation *invocation) {
-        NSArray *parts = toolBar.mediaAttachments;
-        expect(parts.count).to.equal(1);
-        expect([parts objectAtIndex:0]).to.beKindOf([ATLMediaAttachment class]);
+        ATLMessageInputToolbar *toolbar;
+        [invocation getArgument:&toolbar atIndex:2];
+        expect(toolBar).to.beKindOf([ATLMessageInputToolbar class]);
+    }] messageInputToolbar:[OCMArg any] didTapLeftAccessoryButton:[OCMArg any]];
+
+    [tester tapViewWithAccessibilityLabel:ATLMessageInputToolbarCameraButton];
+    [delegateMock verify];
+}
+
+- (void)testToVerifyLeftAccessoryButtonDelegateFunctionality
+{
+    ATLMessageInputToolbar *toolBar = (ATLMessageInputToolbar *)[tester waitForViewWithAccessibilityLabel:ATLMessageInputToolbarAccessibilityLabel];
+    id delegateMock = OCMProtocolMock(@protocol(ATLMessageInputToolbarDelegate));
+    toolBar.inputToolBarDelegate = delegateMock;
+    
+    [[[delegateMock expect] andDo:^(NSInvocation *invocation) {
+        ATLMessageInputToolbar *toolbar;
+        [invocation getArgument:&toolbar atIndex:2];
+        expect(toolBar).to.beKindOf([ATLMessageInputToolbar class]);
     }] messageInputToolbar:[OCMArg any] didTapRightAccessoryButton:[OCMArg any]];
     
-    [tester enterText:testText intoViewWithAccessibilityLabel:LSTextInputViewLabel];
-    [tester tapViewWithAccessibilityLabel:LSSendButtonLabel];
+    [tester tapViewWithAccessibilityLabel:ATLMessageInputToolbarLocationButton];
     [delegateMock verify];
 }
 
-//Verify that the "Send" button is not enabled until there is content (text, audio, or video) in the message composition field.
-- (void)testToVerifyThatSendButtonIsNotEnabledUntilContentIsInput
+- (void)testToVerifyMessageEnteredIsConsitentWithMessageToBeSent
 {
-    ATLMessageInputToolbar *toolBar = (ATLMessageInputToolbar *)[tester waitForViewWithAccessibilityLabel:@"Message Input Toolbar"];
-    expect(toolBar.rightAccessoryButton.highlighted).to.beFalsy;
-    expect(toolBar.rightAccessoryButton.enabled).to.beFalsy;
-    
-    [tester enterText:@"hi" intoViewWithAccessibilityLabel:@"Message Input Toolbar"];
-    expect(toolBar.rightAccessoryButton.highlighted).to.beTruthy;
-    expect(toolBar.rightAccessoryButton.enabled).to.beTruthy;
-}
-
-- (void)testToVerifyLeftAccessoryButtonFunctionality
-{
-    ATLMessageInputToolbar *toolBar = (ATLMessageInputToolbar *)[tester waitForViewWithAccessibilityLabel:@"Message Input Toolbar"];
+    ATLMessageInputToolbar *toolBar = (ATLMessageInputToolbar *)[tester waitForViewWithAccessibilityLabel:ATLMessageInputToolbarAccessibilityLabel];
     id delegateMock = OCMProtocolMock(@protocol(ATLMessageInputToolbarDelegate));
     toolBar.inputToolBarDelegate = delegateMock;
     
+    NSString *testText = @"This is a test";
     [[[delegateMock expect] andDo:^(NSInvocation *invocation) {
-
-    }] messageInputToolbar:[OCMArg any] didTapLeftAccessoryButton:[OCMArg any]];
+        ATLMessageInputToolbar *toolbar;
+        [invocation getArgument:&toolbar atIndex:2];
+        NSArray *attachments = toolbar.mediaAttachments;
+        expect(attachments.count).to.equal(1);
+        ATLMediaAttachment *attachment = [attachments objectAtIndex:0];
+        expect(attachment).to.beKindOf([ATLMediaAttachment class]);
+        expect(attachment.textRepresentation).to.equal(testText);
+    }] messageInputToolbar:[OCMArg any] didTapRightAccessoryButton:[OCMArg any]];
     
-    [tester tapViewWithAccessibilityLabel:LSCameraButtonLabel];
+    [tester enterText:testText intoViewWithAccessibilityLabel:ATLMessageInputToolbarTextInputView];
+    [tester tapViewWithAccessibilityLabel:ATLMessageInputToolbarSendButton];
     [delegateMock verify];
+}
+
+- (void)testToVerifyButtonEnablement
+{
+    ATLMessageInputToolbar *toolBar = (ATLMessageInputToolbar *)[tester waitForViewWithAccessibilityLabel:ATLMessageInputToolbarAccessibilityLabel];
+    expect(toolBar.rightAccessoryButton.highlighted).to.beTruthy;
+    expect(toolBar.rightAccessoryButton.enabled).to.beTruthy;
+    
+    expect(toolBar.leftAccessoryButton.highlighted).to.beTruthy;
+    expect(toolBar.leftAccessoryButton.enabled).to.beTruthy;
+}
+
+- (void)testToVerifyTextEnterendDoesNotEnableButtons
+{
+    self.viewController.conversation = nil;
+    
+    ATLMessageInputToolbar *toolBar = (ATLMessageInputToolbar *)[tester waitForViewWithAccessibilityLabel:ATLMessageInputToolbarAccessibilityLabel];
+    toolBar.rightAccessoryButton.enabled = NO;
+    toolBar.leftAccessoryButton.enabled = NO;
+    
+    expect(toolBar.rightAccessoryButton.enabled).to.beFalsy;
+    expect(toolBar.leftAccessoryButton.enabled).to.beFalsy;
+    
+    [tester enterText:@"hi" intoViewWithAccessibilityLabel:@"Message Input Toolbar"];
+    expect(toolBar.rightAccessoryButton.enabled).to.beFalsy;
+    expect(toolBar.leftAccessoryButton.enabled).to.beFalsy;
 }
 
 - (void)testToVerifySendingMessageWithPhoto
@@ -122,16 +183,19 @@ static NSString *const LSCameraButtonLabel = @"Camera Button";
         ATLMessageInputToolbar *newToolbar;
         [invocation getArgument:&newToolbar atIndex:2];
         expect(newToolbar).to.equal(toolBar);
+        
         NSArray *parts = newToolbar.mediaAttachments;
         expect(parts.count).to.equal(2);
         expect([parts objectAtIndex:0]).to.beKindOf([ATLMediaAttachment class]);
         expect([parts objectAtIndex:1]).to.beKindOf([ATLMediaAttachment class]);
     }] messageInputToolbar:[OCMArg any] didTapRightAccessoryButton:[OCMArg any]];
     
-    [tester enterText:testText intoViewWithAccessibilityLabel:LSTextInputViewLabel];
-    ATLMediaAttachment *imageAttachement = [ATLMediaAttachment mediaAttachmentWithImage:[UIImage new] thumbnailSize:100];
-    [toolBar insertMediaAttachment:imageAttachement];
-    [tester tapViewWithAccessibilityLabel:LSSendButtonLabel];
+    [tester enterText:testText intoViewWithAccessibilityLabel:ATLMessageInputToolbarTextInputView];
+    
+    UIImage *image = [UIImage imageNamed:@"test-logo"];
+    ATLMediaAttachment *imageAttachment = [ATLMediaAttachment mediaAttachmentWithImage:image metadata:nil thumbnailSize:100];
+    [toolBar insertMediaAttachment:imageAttachment];
+    [tester tapViewWithAccessibilityLabel:ATLMessageInputToolbarSendButton];
     [delegateMock verify];
 }
 
@@ -150,12 +214,12 @@ static NSString *const LSCameraButtonLabel = @"Camera Button";
         expect([parts objectAtIndex:1]).to.beKindOf([ATLMediaAttachment class]);
     }] messageInputToolbar:toolBar didTapRightAccessoryButton:[OCMArg any]];
     
-    [tester enterText:testText intoViewWithAccessibilityLabel:LSTextInputViewLabel];
-    
-    ATLMediaAttachment *imageAttachement = [ATLMediaAttachment mediaAttachmentWithImage:[UIImage new] thumbnailSize:100];
-    [toolBar insertMediaAttachment:imageAttachement];
-    [toolBar insertMediaAttachment:imageAttachement];
-    [tester tapViewWithAccessibilityLabel:LSSendButtonLabel];
+    [tester enterText:testText intoViewWithAccessibilityLabel:ATLMessageInputToolbarTextInputView];
+    UIImage *image = [UIImage imageNamed:@"test-logo"];
+    ATLMediaAttachment *imageAttachment = [ATLMediaAttachment mediaAttachmentWithImage:image metadata:nil thumbnailSize:100];
+    [toolBar insertMediaAttachment:imageAttachment];
+    [toolBar insertMediaAttachment:imageAttachment];
+    [tester tapViewWithAccessibilityLabel:ATLMessageInputToolbarSendButton];
     [delegateMock verify];
 }
 
@@ -175,14 +239,15 @@ static NSString *const LSCameraButtonLabel = @"Camera Button";
         expect([parts objectAtIndex:4]).to.beKindOf([ATLMediaAttachment class]);
     }] messageInputToolbar:toolBar didTapRightAccessoryButton:[OCMArg any]];
     
-    ATLMediaAttachment *imageAttachement = [ATLMediaAttachment mediaAttachmentWithImage:[UIImage new] thumbnailSize:100];
-    [toolBar insertMediaAttachment:imageAttachement];
-    [toolBar insertMediaAttachment:imageAttachement];
-    [toolBar insertMediaAttachment:imageAttachement];
-    [toolBar insertMediaAttachment:imageAttachement];
-    [toolBar insertMediaAttachment:imageAttachement];
+    UIImage *image = [UIImage imageNamed:@"test-logo"];
+    ATLMediaAttachment *imageAttachment = [ATLMediaAttachment mediaAttachmentWithImage:image metadata:nil thumbnailSize:100];
+    [toolBar insertMediaAttachment:imageAttachment];
+    [toolBar insertMediaAttachment:imageAttachment];
+    [toolBar insertMediaAttachment:imageAttachment];
+    [toolBar insertMediaAttachment:imageAttachment];
+    [toolBar insertMediaAttachment:imageAttachment];
     
-    [tester tapViewWithAccessibilityLabel:LSSendButtonLabel];
+    [tester tapViewWithAccessibilityLabel:ATLMessageInputToolbarSendButton];
     [delegateMock verify];
 }
 
@@ -193,7 +258,7 @@ static NSString *const LSCameraButtonLabel = @"Camera Button";
     CGFloat toolbarNewHeight;
     toolBar.maxNumberOfLines = 3;
     
-    [tester tapViewWithAccessibilityLabel:LSTextInputViewLabel];
+    [tester tapViewWithAccessibilityLabel:ATLMessageInputToolbarTextInputView];
     [tester tapViewWithAccessibilityLabel:@"RETURN"];
     toolbarNewHeight = toolBar.frame.size.height;
     expect(toolbarNewHeight).to.beGreaterThan(toolbarHeight);
@@ -218,15 +283,18 @@ static NSString *const LSCameraButtonLabel = @"Camera Button";
 {
     ATLMessageInputToolbar *toolBar = (ATLMessageInputToolbar *)[tester waitForViewWithAccessibilityLabel:@"Message Input Toolbar"];
     UIFont *font = toolBar.textInputView.font;
-    ATLMediaAttachment *imageAttachement = [ATLMediaAttachment mediaAttachmentWithImage:[UIImage new] thumbnailSize:100];
-    [toolBar insertMediaAttachment:imageAttachement];
-    [tester clearTextFromViewWithAccessibilityLabel:LSTextInputViewLabel];
+    
+    UIImage *image = [UIImage imageNamed:@"test-logo"];
+    ATLMediaAttachment *imageAttachment = [ATLMediaAttachment mediaAttachmentWithImage:image metadata:nil thumbnailSize:100];
+    [toolBar insertMediaAttachment:imageAttachment];
+
+    [tester clearTextFromViewWithAccessibilityLabel:ATLMessageInputToolbarTextInputView];
     expect(font).to.equal(toolBar.textInputView.font);
 }
 
 - (void)setRootViewController:(UIViewController *)controller
 {
-    [self.testInterface setRootViewController:controller];
+    [self.testInterface presentViewController:controller];
     [tester waitForTimeInterval:1];
 }
 

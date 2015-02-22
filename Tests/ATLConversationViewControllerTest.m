@@ -27,21 +27,22 @@ extern NSString *const ATLAvatarImageViewAccessibilityLabel;
 
 @interface ATLConversationViewController ()
 
-@property (nonatomic) LYRQueryController *queryController;
+@property (nonatomic) ATLConversationDataSource *conversationDataSource;
 
 @end
 
-@interface ATLConversationViewTest : XCTestCase
+@interface ATLConversationViewControllerTest : XCTestCase
 
 @property (nonatomic) ATLTestInterface *testInterface;
-@property (nonatomic) ATLSampleConversationViewController *viewController;
+@property (nonatomic) ATLConversationViewController *viewController;
 @property (nonatomic) LYRConversationMock *conversation;
 
 @end
 
-@implementation ATLConversationViewTest
+@implementation ATLConversationViewControllerTest
 
-extern NSString *const ATLMessageInputToolbarAccessibilityLabel;
+extern NSString *const ATLMessageInputToolbarTextInputView;
+extern NSString *const ATLMessageInputToolbarSendButton;
 
 - (void)setUp
 {
@@ -57,6 +58,10 @@ extern NSString *const ATLMessageInputToolbarAccessibilityLabel;
 
 - (void)tearDown
 {
+    [self.testInterface dismissPresentedViewController];
+    self.viewController.conversationDataSource = nil;
+    self.viewController = nil;
+    
     [[LYRMockContentStore sharedStore] resetContentStore];
     self.testInterface = nil;
     
@@ -80,7 +85,6 @@ extern NSString *const ATLMessageInputToolbarAccessibilityLabel;
     LYRMessagePart *part = [LYRMessagePart messagePartWithText:@"Hey Dude"];
     LYRMessageMock *message = [LYRMessageMock newMessageWithParts:@[part] senderID:[LYRUserMock userWithMockUserName:LYRClientMockFactoryNameMarshawn].participantIdentifier];
     [self.conversation sendMessage:message error:nil];
-    
     [tester waitForViewWithAccessibilityLabel:@"Hey Dude"];
 }
 
@@ -89,7 +93,6 @@ extern NSString *const ATLMessageInputToolbarAccessibilityLabel;
 {
     [self setupConversationViewController];
     [self setRootViewController:self.viewController];
-    
     [self sendPhotoMessage];
 }
 
@@ -109,11 +112,12 @@ extern NSString *const ATLMessageInputToolbarAccessibilityLabel;
 
     [self setupConversationViewController];
     [self setRootViewController:self.viewController];
-    
     id cell = [self.viewController collectionViewCellForMessage:(LYRMessage *)message3];
     expect([cell class]).to.beSubclassOf([ATLMessageCollectionViewCell class]);
     expect([cell accessibilityLabel]).to.equal(@"Message: How are you3?");
 }
+
+#pragma mark - ATLConversationViewControllerDelegate
 
 //- (void)conversationViewController:(ATLConversationViewController *)viewController didSendMessage:(LYRMessage *)message;
 - (void)testToVerifyDelegateIsNotifiedOfMessageSend
@@ -123,12 +127,19 @@ extern NSString *const ATLMessageInputToolbarAccessibilityLabel;
     
     id delegateMock = OCMProtocolMock(@protocol(ATLConversationViewControllerDelegate));
     self.viewController.delegate = delegateMock;
-    
+        
     [[[delegateMock expect] andDo:^(NSInvocation *invocation) {
-
+        ATLConversationViewController *controller;
+        [invocation getArgument:&controller atIndex:2];
+        expect(controller).to.equal(self.viewController);
+        
+        LYRMessage *message;
+        [invocation getArgument:&message atIndex:3];
+        expect(message).to.beKindOf([LYRMessageMock class]);
     }] conversationViewController:[OCMArg any] didSendMessage:[OCMArg any]];
     
-    [self sendMessageWithText:@"This is a test"];
+    [tester enterText:@"test" intoViewWithAccessibilityLabel:ATLMessageInputToolbarTextInputView];
+    [tester tapViewWithAccessibilityLabel:ATLMessageInputToolbarSendButton];
     [delegateMock verify];
 }
 
@@ -142,12 +153,77 @@ extern NSString *const ATLMessageInputToolbarAccessibilityLabel;
     self.viewController.delegate = delegateMock;
     
     [[[delegateMock expect] andDo:^(NSInvocation *invocation) {
-       
+        ATLConversationViewController *controller;
+        [invocation getArgument:&controller atIndex:2];
+        expect(controller).to.equal(self.viewController);
+        
+        LYRMessage *message;
+        [invocation getArgument:&message atIndex:3];
+        expect(message).to.beKindOf([LYRMessageMock class]);
     }] conversationViewController:[OCMArg any] didSelectMessage:[OCMArg any]];
     
     [self sendMessageWithText:@"This is a test"];
     [tester tapViewWithAccessibilityLabel:@"Message: This is a test"];
     [delegateMock verify];
+}
+
+//- (CGFloat)conversationViewController:(ATLConversationViewController *)viewController heightForMessage:(LYRMessage *)message withCellWidth:(CGFloat)cellWidth;
+- (void)testToVerifyCustomCellHeightForMessage
+{
+    [self setupConversationViewController];
+    [self setRootViewController:self.viewController];
+    
+    id delegateMock = OCMProtocolMock(@protocol(ATLConversationViewControllerDelegate));
+    self.viewController.delegate = delegateMock;
+    
+    [[[delegateMock expect] andDo:^(NSInvocation *invocation) {
+        ATLConversationViewController *controller;
+        [invocation getArgument:&controller atIndex:2];
+        expect(controller).to.equal(self.viewController);
+        
+        LYRMessage *message;
+        [invocation getArgument:&message atIndex:3];
+        expect(message).to.beKindOf([LYRMessageMock class]);
+        
+        CGFloat height = 100;
+        [invocation setReturnValue:&height];
+    }] conversationViewController:[OCMArg any] heightForMessage:[OCMArg any] withCellWidth:self.viewController.view.bounds.size.width];
+    
+    [self sendMessageWithText:@"This is a test"];
+    [tester tapViewWithAccessibilityLabel:@"Message: This is a test"];
+    [delegateMock verify];
+}
+
+//- (NSOrderedSet *)conversationViewController:(ATLConversationViewController *)viewController messagesForMediaAttachments:(NSArray *)mediaAttachments;
+- (void)testToVerifyCustomMessageObjects
+{
+    [self setupConversationViewController];
+    [self setRootViewController:self.viewController];
+    
+    id delegateMock = OCMProtocolMock(@protocol(ATLConversationViewControllerDelegate));
+    self.viewController.delegate = delegateMock;
+    
+    NSString *testMessageText = @"This is a test message";
+    LYRMessagePart *part = [LYRMessagePart messagePartWithText:testMessageText];
+    LYRMessageMock *newMessage = [self.testInterface.layerClient newMessageWithParts:@[part] options:nil error:nil];
+    __block NSOrderedSet *messages = [[NSOrderedSet alloc] initWithObject:newMessage];
+    [[[delegateMock expect] andDo:^(NSInvocation *invocation) {
+        ATLConversationViewController *controller;
+        [invocation getArgument:&controller atIndex:2];
+        expect(controller).to.equal(self.viewController);
+        
+        NSArray *array;
+        [invocation getArgument:&array atIndex:3];
+        expect(array.count).to.equal(1);
+        
+        [invocation setReturnValue:&messages];
+    }] conversationViewController:[OCMArg any] messagesForMediaAttachments:[OCMArg any]];
+    
+    [tester enterText:testMessageText intoViewWithAccessibilityLabel:ATLMessageInputToolbarTextInputView];
+    [tester tapViewWithAccessibilityLabel:ATLMessageInputToolbarSendButton];
+    [delegateMock verify];
+    
+    [tester waitForViewWithAccessibilityLabel:testMessageText];
 }
 
 - (void)testToVerityControllerDisplaysCorrectDataFromTheDataSource
@@ -158,19 +234,23 @@ extern NSString *const ATLMessageInputToolbarAccessibilityLabel;
     id delegateMock = OCMProtocolMock(@protocol(ATLConversationViewControllerDataSource));
     self.viewController.dataSource = delegateMock;
     
-    [[[delegateMock expect] andDo:^(NSInvocation *invocation) {
-        NSAttributedString *string = [[NSAttributedString alloc] initWithString:@"Gift"];
-        [invocation setReturnValue:&string];
+    __block NSAttributedString *dateString = [[NSAttributedString alloc] initWithString:@"Test Date" attributes:@{NSFontAttributeName : [UIFont systemFontOfSize:17]}];
+    __block NSAttributedString *recipientString = [[NSAttributedString alloc] initWithString:@"Recipient Status" attributes:@{NSFontAttributeName : [UIFont systemFontOfSize:17]}];
+    
+    [[[delegateMock stub] andDo:^(NSInvocation *invocation) {
+        [invocation setReturnValue:&dateString];
     }] conversationViewController:[OCMArg any] attributedStringForDisplayOfDate:[OCMArg any]];
     
     [[[delegateMock expect] andDo:^(NSInvocation *invocation) {
-        NSAttributedString *string = [[NSAttributedString alloc] initWithString:@"Recipient Status"];
-        [invocation setReturnValue:&string];
+        [invocation setReturnValue:&recipientString];
     }] conversationViewController:[OCMArg any] attributedStringForDisplayOfRecipientStatus:[OCMArg any]];
     
     [[[delegateMock expect] andDo:^(NSInvocation *invocation) {
-        NSAttributedString *string = [[NSAttributedString alloc] initWithString:@"Recipient Status"];
-        [invocation setReturnValue:&string];
+        [invocation setReturnValue:&recipientString];
+    }] conversationViewController:[OCMArg any] attributedStringForDisplayOfRecipientStatus:[OCMArg any]];
+    
+    [[[delegateMock expect] andDo:^(NSInvocation *invocation) {
+        [invocation setReturnValue:&recipientString];
     }] conversationViewController:[OCMArg any] attributedStringForDisplayOfRecipientStatus:[OCMArg any]];
     
     [[[delegateMock expect] andDo:^(NSInvocation *invocation) {
@@ -197,7 +277,6 @@ extern NSString *const ATLMessageInputToolbarAccessibilityLabel;
     
     [tester waitForAbsenceOfViewWithAccessibilityLabel:ATLAvatarImageViewAccessibilityLabel];
 }
-
 
 - (void)testToVerifyAvatarImageIsDisplayedInGroupConversation
 {
@@ -242,25 +321,31 @@ extern NSString *const ATLMessageInputToolbarAccessibilityLabel;
 
 - (void)sendMessageWithText:(NSString *)messageText
 {
-    [tester enterText:messageText intoViewWithAccessibilityLabel:ATLMessageInputToolbarAccessibilityLabel];
-    [tester tapViewWithAccessibilityLabel:@"Send Button"];
+    LYRMessagePartMock *part = [LYRMessagePartMock messagePartWithText:messageText];
+    NSError *error;
+    LYRMessageMock *message = [self.testInterface.layerClient newMessageWithParts:@[part] options:nil error:&error];
+    expect(error).to.beNil;
+    [self.conversation sendMessage:message error:&error];
+    expect(error).to.beNil;
     [tester waitForViewWithAccessibilityLabel:[NSString stringWithFormat:@"%@", messageText]];
 }
 
 - (void)sendPhotoMessage
 {
-    [tester tapViewWithAccessibilityLabel:@"Camera Button"];
-    [tester tapViewWithAccessibilityLabel:@"Photo Library"];
-    [tester tapViewWithAccessibilityLabel:@"Camera Roll"];
-    [tester tapViewWithAccessibilityLabel:@"Photo, Landscape, July 13, 2014, 9:28 PM"];
-    [tester tapViewWithAccessibilityLabel:@"Send Button"];
+    UIImage *image = [UIImage imageNamed:@"test-logo"];
+    ATLMediaAttachment *attachement = [ATLMediaAttachment mediaAttachmentWithImage:image metadata:nil thumbnailSize:100];
+    NSError *error;
+    LYRMessageMock *message = [self.testInterface.layerClient newMessageWithParts:ATLMessagePartsWithMediaAttachment(attachement) options:nil error:&error];
+    expect(error).to.beNil;
+    [self.conversation sendMessage:message error:&error];
+    expect(error).to.beNil;
     [tester waitForViewWithAccessibilityLabel:[NSString stringWithFormat:@"Message: Photo"]];
 }
 
 - (void)setRootViewController:(UIViewController *)controller
 {
-    [self.testInterface setRootViewController:controller];
-    [tester waitForTimeInterval:1];
+    [self.testInterface presentViewController:controller];
+    [tester waitForTimeInterval:1.0]; // Allow controller to be presented.
 }
 
 @end

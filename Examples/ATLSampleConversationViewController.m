@@ -34,10 +34,9 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    // Setup the datasource as self, since we're going to
-    // handle it in this implementation file.
     self.dataSource = self;
     self.addressBarController.delegate = self;
+  
     // Setup the dateformatter used by the dataSource.
     self.dateFormatter = [[NSDateFormatter alloc] init];
     self.dateFormatter.dateStyle = NSDateFormatterShortStyle;
@@ -65,19 +64,11 @@
     NSMutableAttributedString *mergedStatuses = [[NSMutableAttributedString alloc] init];
 
     [[recipientStatus allKeys] enumerateObjectsUsingBlock:^(NSString *participant, NSUInteger idx, BOOL *stop) {
-        LYRRecipientStatus status = [recipientStatus[participant] unsignedIntegerValue];
         if ([participant isEqualToString:self.layerClient.authenticatedUserID]) {
             return;
         }
         NSString *participantNameWithCheckmark = [NSString stringWithFormat:@"%@✔︎ ", [LYRUserMock mockUserForIdentifier:participant].firstName];
         UIColor *textColor = [UIColor lightGrayColor];
-        if (status == LYRRecipientStatusSent) {
-            textColor = [UIColor lightGrayColor];
-        } else if (status == LYRRecipientStatusDelivered) {
-            textColor = [UIColor orangeColor];
-        } else if (status == LYRRecipientStatusRead) {
-            textColor = [UIColor greenColor];
-        }
         NSAttributedString *statusString = [[NSAttributedString alloc] initWithString:participantNameWithCheckmark attributes:@{NSForegroundColorAttributeName: textColor}];
         [mergedStatuses appendAttributedString:statusString];
     }];

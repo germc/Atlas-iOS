@@ -33,7 +33,7 @@
 @interface ATLParticipantTableViewControllerTest : XCTestCase
 
 @property (nonatomic) ATLTestInterface *testInterface;
-@property (nonatomic) ATLSampleParticipantTableViewController *controller;
+@property (nonatomic) ATLSampleParticipantTableViewController *viewController;
 
 @end
 
@@ -50,8 +50,8 @@ NSString *const ATLParticipantTableViewAccessibilityIdentifier;
     self.testInterface = [ATLTestInterface testIntefaceWithLayerClient:layerClient];
     
     NSSet *participants = [LYRUserMock allMockParticipants];
-    self.controller = [ATLSampleParticipantTableViewController participantTableViewControllerWithParticipants:participants sortType:ATLParticipantPickerSortTypeFirstName];
-    [self.controller setCellClass:[ATLParticipantTableViewCell class]];
+    self.viewController = [ATLSampleParticipantTableViewController participantTableViewControllerWithParticipants:participants sortType:ATLParticipantPickerSortTypeFirstName];
+    [self.viewController setCellClass:[ATLParticipantTableViewCell class]];
     
     [[ATLParticipantTableViewCell appearance] setTitleFont:[UIFont systemFontOfSize:14]];
     [[ATLParticipantTableViewCell appearance] setTitleColor:[UIColor blackColor]];
@@ -59,9 +59,9 @@ NSString *const ATLParticipantTableViewAccessibilityIdentifier;
 
 - (void)tearDown
 {
-    [[LYRMockContentStore sharedStore] resetContentStore];
     self.testInterface = nil;
-    self.controller = nil;
+    self.viewController = nil;
+    [[LYRMockContentStore sharedStore] resetContentStore];
     [super tearDown];
 }
 
@@ -112,7 +112,7 @@ NSString *const ATLParticipantTableViewAccessibilityIdentifier;
 //Verify that the cell can be overridden and a new UI presented.
 - (void)testToVerifyCustomCellClassFunctionality
 {
-    self.controller.cellClass = [ATLTestParticipantCell class];
+    self.viewController.cellClass = [ATLTestParticipantCell class];
     [self setRootViewController];
     
     LYRUserMock *mock = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameBobby];
@@ -124,7 +124,7 @@ NSString *const ATLParticipantTableViewAccessibilityIdentifier;
 - (void)testToVerifyCustomRowHeightFunctionality
 {
     LYRUserMock *mock = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameBobby];
-    self.controller.rowHeight = 80;
+    self.viewController.rowHeight = 80;
     [self setRootViewController];
     expect([tester waitForViewWithAccessibilityLabel:mock.fullName].frame.size.height).to.equal(80);
 }
@@ -140,7 +140,7 @@ NSString *const ATLParticipantTableViewAccessibilityIdentifier;
     expect(cell.nameLabel.text).to.equal(firstUser.fullName);
     
     NSArray *sortedParticipantsLast = [[participants allObjects] sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"lastName" ascending:YES]]];
-    self.controller = [ATLSampleParticipantTableViewController participantTableViewControllerWithParticipants:participants sortType:ATLParticipantPickerSortTypeLastName];
+    self.viewController = [ATLSampleParticipantTableViewController participantTableViewControllerWithParticipants:participants sortType:ATLParticipantPickerSortTypeLastName];
     [self setRootViewController];
     firstUser = (LYRUserMock *)[sortedParticipantsLast firstObject];
     cell = (ATLParticipantTableViewCell *)[tester waitForViewWithAccessibilityLabel:firstUser.fullName];
@@ -151,28 +151,30 @@ NSString *const ATLParticipantTableViewAccessibilityIdentifier;
 - (void)testToVerifyChangingCellClassAfterViewLoadRaiseException
 {
     [self setRootViewController];
-    expect(^{ [self.controller setCellClass:[UITableView class]]; }).to.raise(NSInternalInconsistencyException);
+    expect(^{ [self.viewController setCellClass:[UITableView class]]; }).to.raise(NSInternalInconsistencyException);
 }
 
 //Test that attempting to change the row height after the view is loaded results in a runtime error.
 - (void)testToVerifyChangingRowHeightAfterViewLoadRaiseException
 {
     [self setRootViewController];
-    expect(^{ [self.controller setRowHeight:80]; }).to.raise(NSInternalInconsistencyException);
+    expect(^{ [self.viewController setRowHeight:80]; }).to.raise(NSInternalInconsistencyException);
 }
 
 - (void)testToVerifyParticipantPickerDelegateFunctionalityForCancelButton
 {
-    [self setRootViewController];
     id delegateMock = OCMProtocolMock(@protocol(ATLParticipantTableViewControllerDelegate));
-    self.controller.delegate = delegateMock;
+    self.viewController.delegate = delegateMock;
     [self setRootViewController];
+    
+    NSString *searchText = @"S";
     [[[delegateMock expect] andDo:^(NSInvocation *invocation) {
-    //
-    }] participantTableViewController:[OCMArg any] didSearchWithString:[OCMArg any] completion:nil];
+        NSString *searchResult;
+        [invocation getArgument:&searchResult atIndex:3];
+        expect(searchText).to.equal(searchText);
+    }] participantTableViewController:[OCMArg any] didSearchWithString:[OCMArg any] completion:[OCMArg any]];
 
-    [tester tapViewWithAccessibilityLabel:@"Search Bar"];
-    [tester enterText:@"S" intoViewWithAccessibilityLabel:@"Search Bar"];
+    [tester enterText:searchText intoViewWithAccessibilityLabel:@"Search Bar"];
     [delegateMock verify];
 }
 
@@ -180,7 +182,7 @@ NSString *const ATLParticipantTableViewAccessibilityIdentifier;
 {
     [self setRootViewController];
     id delegateMock = OCMProtocolMock(@protocol(ATLParticipantTableViewControllerDelegate));
-    self.controller.delegate = delegateMock;
+    self.viewController.delegate = delegateMock;
     [[[delegateMock expect] andDo:^(NSInvocation *invocation) {
 
         
@@ -193,8 +195,7 @@ NSString *const ATLParticipantTableViewAccessibilityIdentifier;
 
 - (void)setRootViewController
 {
-    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:self.controller];
-    [self.testInterface pushViewController:navigationController];
+    [self.testInterface presentViewController:self.viewController];
     [tester waitForViewWithAccessibilityLabel:@"Participants"];
 }
 

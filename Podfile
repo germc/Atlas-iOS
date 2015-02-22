@@ -1,15 +1,20 @@
 platform :ios, '7.0'
+
+# Import CocoaPods sources
+source 'git@github.com:layerhq/cocoapods-specs.git'
 source 'https://github.com/CocoaPods/Specs.git'
 
 target 'Programmatic' do
   pod 'Atlas', path: '.'
+  pod 'LayerKit'
 end
 
 target 'Storyboard' do
   pod 'Atlas', path: '.'
+  pod 'LayerKit'
 end
 
-def import_ui_testing_pods
+target 'ProgrammaticTests' do
   pod 'KIFViewControllerActions', git: 'git@github.com:blakewatters/KIFViewControllerActions.git'
   pod 'LYRCountDownLatch', git: 'git@github.com:layerhq/LYRCountDownLatch.git'
   pod 'KIF'
@@ -17,15 +22,17 @@ def import_ui_testing_pods
   pod 'OCMock'
 end
 
-target 'ProgrammaticTests' do
-  import_ui_testing_pods
-end
-
 target 'StoryboardTests' do
-  import_ui_testing_pods
+  pod 'KIFViewControllerActions', git: 'git@github.com:blakewatters/KIFViewControllerActions.git'
+  pod 'LYRCountDownLatch', git: 'git@github.com:layerhq/LYRCountDownLatch.git'
+  pod 'KIF'
+  pod 'Expecta'
+  pod 'OCMock'
 end
 
 target 'UnitTests' do
   pod 'Expecta'
   pod 'OCMock'
 end
+
+#pod 'LayerKit', git: 'git@github.com:layerhq/LayerKit.git'

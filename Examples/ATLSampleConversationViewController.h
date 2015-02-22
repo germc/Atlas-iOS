@@ -23,6 +23,4 @@
 
 @interface ATLSampleConversationViewController : ATLConversationViewController
 
-- (void)setQueryController;
-
 @end

@@ -119,23 +119,17 @@ LYRMessagePartMock *ATLMessagePartWithLocation(CLLocation *location)
     return conversationLabel;
 }
 
-- (void)setRootViewController:(UIViewController *)controller
+- (void)presentViewController:(UIViewController *)controller
 {
     ProgrammaticAppDelegate *delegate = [[UIApplication sharedApplication] delegate];
-    delegate.window.rootViewController = nil;
-    
     UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
-    [delegate.window setRootViewController:navigationController];
-    [delegate.window makeKeyAndVisible];
+    delegate.window.rootViewController = navigationController;
 }
 
-- (void)pushViewController:(UIViewController *)controller
+- (void)dismissPresentedViewController
 {
     ProgrammaticAppDelegate *delegate = [[UIApplication sharedApplication] delegate];
     delegate.window.rootViewController = nil;
-    
-    [delegate.window setRootViewController:controller];
-    [delegate.window makeKeyAndVisible];
 }
 
 @end

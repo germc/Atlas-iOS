@@ -129,20 +129,20 @@ CGFloat const ATLConversationViewHeaderEmptyHeight = 1;
 {
     if (!dateString && !participantName) return ATLConversationViewHeaderEmptyHeight;
     
-    // Temporarily adding the view to the hierarchy so that UIAppearance property values will be set based on containment.
-    ATLConversationCollectionViewHeader *header = [self sharedHeader];
-    [view addSubview:header];
-    [header removeFromSuperview];
-    
     CGFloat height = 0;
     height += ATLConversationViewHeaderTopPadding;
     
+    ATLConversationCollectionViewHeader *header = [self sharedHeader];
     NSString *string = dateString.string;
     if (string.length) {
         [header updateWithAttributedStringForDate:dateString];
         CGSize dateSize = [header.dateLabel sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
         height += dateSize.height + ATLConversationViewHeaderDateBottomPadding;
     }
+    
+    // Temporarily adding the view to the hierarchy so that UIAppearance property values will be set based on containment.
+    [view addSubview:header];
+    [header removeFromSuperview];
     
     if (participantName.length) {
         [header updateWithParticipantName:participantName];

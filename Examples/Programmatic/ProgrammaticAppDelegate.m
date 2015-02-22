@@ -18,15 +18,19 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    LYRUserMock *mockUser = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameRussell];
-    LYRClientMock *layerClient = [LYRClientMock layerClientMockWithAuthenticatedUserID:mockUser.participantIdentifier];
-    //[[LYRMockContentStore sharedStore] hydrateConversationsForAuthenticatedUserID:layerClient.authenticatedUserID count:10];
-
-    ATLSampleConversationListViewController *controller = [ATLSampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)layerClient];
-    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
-   
+//    LYRUserMock *mockUser = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameRussell];
+//    LYRClientMock *layerClient = [LYRClientMock layerClientMockWithAuthenticatedUserID:mockUser.participantIdentifier];
+//    //[[LYRMockContentStore sharedStore] hydrateConversationsForAuthenticatedUserID:layerClient.authenticatedUserID count:10];
+//
+//    ATLSampleConversationListViewController *controller = [ATLSampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)layerClient];
+//    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
+//
+    UIViewController *controller = [[UIViewController alloc] init];
+    controller.view.backgroundColor = [UIColor whiteColor];
+    UINavigationController *rootViewController = [[UINavigationController alloc] initWithRootViewController:controller];
+    
     self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-    self.window.rootViewController = navigationController;
+    self.window.rootViewController = rootViewController;
     [self.window makeKeyAndVisible];
     
     return YES;

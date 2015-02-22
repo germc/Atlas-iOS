@@ -550,7 +550,7 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
         return;
     }
     if (messageInputToolbar.mediaAttachments.count) {
-        NSOrderedSet *messages = [self defaultMessagesForMediaAttachments:messageInputToolbar.mediaAttachments];
+        NSOrderedSet *messages = [self messagesForMediaAttachments:messageInputToolbar.mediaAttachments];
         for (LYRMessage *message in messages) {
             [self sendMessage:message];
         }
