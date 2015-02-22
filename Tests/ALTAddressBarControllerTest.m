@@ -37,7 +37,6 @@ extern NSString *const ATLAddContactsButtonAccessibilityLabel;
     self.viewController = [ATLSampleConversationViewController conversationViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];
     self.viewController.displaysAddressBar = YES;
     [self setRootViewController:self.viewController];
-
 }
 
 - (void)tearDown
