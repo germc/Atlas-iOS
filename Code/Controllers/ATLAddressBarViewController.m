@@ -68,9 +68,6 @@ static NSString *const ATLAddressBarParticipantAttributeName = @"ATLAddressBarPa
     
     [self configureLayoutConstraintsForAddressBarView];
     [self configureLayoutConstraintsForTableView];
-    
-    UITapGestureRecognizer *gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(addressBarViewTapped:)];
-    [self.addressBarView.addressBarTextView addGestureRecognizer:gestureRecognizer];
 }
 
 #pragma mark - Public Method Implementation
@@ -86,7 +83,7 @@ static NSString *const ATLAddressBarParticipantAttributeName = @"ATLAddressBarPa
     self.addressBarView.addressBarTextView.userInteractionEnabled = NO;
     self.addressBarView.addContactsButton.hidden = YES;
     
-    UITapGestureRecognizer *gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(addressBarViewTapped:)];
+    UITapGestureRecognizer *gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(addressBarTappedWhileDisabled:)];
     [self.view addGestureRecognizer:gestureRecognizer];
     
     [self sizeAddressBarView];
@@ -290,7 +287,7 @@ static NSString *const ATLAddressBarParticipantAttributeName = @"ATLAddressBarPa
     }
 }
 
-- (void)addressBarViewTapped:(UITapGestureRecognizer *)recognizer
+- (void)addressBarTappedWhileDisabled:(id)sender
 {
     [self notifyDelegateOfDisableTap];
 }
