@@ -149,7 +149,7 @@
  a Layer conversation and the ability to send messages. The controller's design and functionality closely correlates with
  the conversation view controller in Messages.
 */
-@interface ATLConversationViewController : UIViewController <ATLAddressBarControllerDelegate>
+@interface ATLConversationViewController : UIViewController <ATLAddressBarViewControllerDelegate>
 
 ///---------------------------------------
 /// @name Initializing a Controller

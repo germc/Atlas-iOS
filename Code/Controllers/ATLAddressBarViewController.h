@@ -28,7 +28,7 @@
 /// @name Delegate
 ///---------------------------------------
 
-@protocol ATLAddressBarControllerDelegate <NSObject>
+@protocol ATLAddressBarViewControllerDelegate <NSObject>
 
 @optional
 /**
@@ -73,16 +73,6 @@
  */
 - (void)addressBarViewControllerDidSelectWhileDisabled:(ATLAddressBarViewController *)addressBarViewController;
 
-@end
-
-///---------------------------------------
-/// @name Data Source
-///---------------------------------------
-
-@protocol ATLAddressBarControllerDataSource <NSObject>
-
-@optional
-
 /**
  @abstract Asks the data source for an NSSet of participants given a search string.
  @param addressBarViewController The `ATLAddressBarViewController` in which the tap occurred.
@@ -107,12 +97,7 @@
 /**
  @abstract The object to be informed of specific events that occur within the controller.
  */
-@property (nonatomic, weak) id<ATLAddressBarControllerDelegate> delegate;
-
-/**
- @abstract The object that provides data to be displayed in the controller.
- */
-@property (nonatomic, weak) id<ATLAddressBarControllerDataSource> dataSource;
+@property (nonatomic, weak) id<ATLAddressBarViewControllerDelegate> delegate;
 
 /**
  @abstract The `ATLAddressBarView` displays the `ATLAddressBarTextView` in which the actual text input occurs. It also displays

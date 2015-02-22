@@ -171,7 +171,7 @@
     [conversation2 sendMessage:message2 error:nil];
     
     LYRQuery *query1 = [LYRQuery queryWithClass:[LYRConversation class]];
-    query1.predicate = [LYRPredicate predicateWithProperty:@"participants" operator:LYRPredicateOperatorIsEqualTo value:participants1];
+    query1.predicate = [LYRPredicate predicateWithProperty:@"participants" operator:LYRPredicateOperatorIsIn value:participants1];
     NSOrderedSet *fetchedConversations1 = [client executeQuery:query1 error:nil];
     expect(fetchedConversations1.count).to.equal(1);
     

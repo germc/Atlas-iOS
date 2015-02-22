@@ -16,6 +16,7 @@ DEPENDENCIES:
   - Expecta
   - KIF
   - KIFViewControllerActions (from `git@github.com:blakewatters/KIFViewControllerActions.git`)
+  - LayerKit
   - LYRCountDownLatch (from `git@github.com:layerhq/LYRCountDownLatch.git`)
   - OCMock
 

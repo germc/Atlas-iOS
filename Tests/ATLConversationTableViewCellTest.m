@@ -46,7 +46,7 @@ extern NSString *const ATLLocationMIMETypePlaceholderText;
     self.testInterface = [ATLTestInterface testIntefaceWithLayerClient:layerClient];
     
     ATLSampleConversationListViewController *controller = [ATLSampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)layerClient];
-    [self.testInterface setRootViewController:controller];
+    [self.testInterface presentViewController:controller];
 }
 
 - (void)tearDown

@@ -30,18 +30,19 @@
 
 @end
 
-@interface ATLConversationListTest : XCTestCase
+@interface ATLConversationListViewControllerTest : XCTestCase
 
 @property (nonatomic) ATLTestInterface *testInterface;
 @property (nonatomic) ATLConversationListViewController *viewController;
 
 @end
 
-@implementation ATLConversationListTest
+@implementation ATLConversationListViewControllerTest
 
 - (void)setUp
 {
     [super setUp];
+    
     LYRUserMock *mockUser = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameRussell];
     LYRClientMock *layerClient = [LYRClientMock layerClientMockWithAuthenticatedUserID:mockUser.participantIdentifier];
     self.testInterface = [ATLTestInterface testIntefaceWithLayerClient:layerClient];
@@ -49,9 +50,12 @@
 
 - (void)tearDown
 {
-    [self resetAppearance];
-    [[LYRMockContentStore sharedStore] resetContentStore];
+    [self.testInterface dismissPresentedViewController];
     self.viewController.queryController = nil;
+    self.viewController = nil;
+    
+    [[LYRMockContentStore sharedStore] resetContentStore];
+    [self resetAppearance];
     self.testInterface = nil;
     
     [super tearDown];
@@ -67,27 +71,30 @@
     [tester waitForViewWithAccessibilityLabel:@"Edit Button"];
 }
 
+//Synchronize a new conversation and verify that it live updates into the conversation list.
+- (void)testToVerifyCreatingANewConversationLiveUpdatesConversationList
+{
+    self.viewController = [ATLSampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];
+    [self setRootViewController:self.viewController];
+    [tester waitForTimeInterval:1.0]; // Allow controller to be presented.
+    LYRUserMock *mockUser1 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameMarshawn];
+    [self newConversationWithMockUser:mockUser1 lastMessageText:@"Test Message"];
+}
+
 //Load the list and verify that all conversations returned by conversationForIdentifiers: is presented in the list.
 - (void)testToVerifyConversationListDisplaysAllConversationsInLayer
 {
     self.viewController = [ATLSampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];
     [self setRootViewController:self.viewController];
     
-    NSString *message1 = @"Message1";
     LYRUserMock *mockUser1 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameMarshawn];
-    LYRConversationMock *conversation1 = [self.testInterface conversationWithParticipants:[NSSet setWithObject:mockUser1.participantIdentifier] lastMessageText:message1];
+    [self newConversationWithMockUser:mockUser1 lastMessageText:@"Test Message"];
     
-    NSString *message2 = @"Message2";
-    LYRUserMock *userMock2 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameBobby];
-    LYRConversationMock *conversation2 = [self.testInterface conversationWithParticipants:[NSSet setWithObject:userMock2.participantIdentifier] lastMessageText:message2];
+    LYRUserMock *mockUser2 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameBobby];
+    [self newConversationWithMockUser:mockUser2 lastMessageText:@"Test Message"];
     
-    NSString *message3 = @"Message3";
-    LYRUserMock *userMock3 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameEarl];
-    LYRConversationMock *conversation3 =  [self.testInterface conversationWithParticipants:[NSSet setWithObject:userMock3.participantIdentifier] lastMessageText:message3];
-    
-    [tester waitForViewWithAccessibilityLabel:[self.testInterface conversationLabelForConversation:conversation1]];
-    [tester waitForViewWithAccessibilityLabel:[self.testInterface conversationLabelForConversation:conversation2]];
-    [tester waitForViewWithAccessibilityLabel:[self.testInterface conversationLabelForConversation:conversation3]];
+    LYRUserMock *mockUser3 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameEarl];
+    [self newConversationWithMockUser:mockUser3 lastMessageText:@"Test Message"];
 }
 
 //Test swipe to delete for deleting a conversation. Verify the conversation is deleted from the table and from the Layer client.
@@ -99,8 +106,6 @@
     NSString *message1 = @"Message1";
     LYRUserMock *mockUser1 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameMarshawn];
     LYRConversationMock *conversation1 = [self.testInterface conversationWithParticipants:[NSSet setWithObject:mockUser1.participantIdentifier] lastMessageText:message1];
-    
-    [tester waitForViewWithAccessibilityLabel:[self.testInterface conversationLabelForConversation:conversation1]];
     [tester swipeViewWithAccessibilityLabel:[self.testInterface conversationLabelForConversation:conversation1] inDirection:KIFSwipeDirectionLeft];
     [self deleteConversation:conversation1 deletionMode:LYRDeletionModeAllParticipants];
 }
@@ -111,36 +116,26 @@
     self.viewController = [ATLSampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];
     [self setRootViewController:self.viewController];
     
-    NSString *message1 = @"Message1";
     LYRUserMock *mockUser1 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameMarshawn];
-    LYRConversationMock *conversation1 = [self.testInterface conversationWithParticipants:[NSSet setWithObject:mockUser1.participantIdentifier] lastMessageText:message1];
-    
-    [tester waitForViewWithAccessibilityLabel:[self.testInterface conversationLabelForConversation:conversation1]];
+    LYRConversationMock *conversation1 = [self newConversationWithMockUser:mockUser1 lastMessageText:@"Test Message"];
     [tester swipeViewWithAccessibilityLabel:[self.testInterface conversationLabelForConversation:conversation1] inDirection:KIFSwipeDirectionLeft];
     [self deleteConversation:conversation1 deletionMode:LYRDeletionModeLocal];
 }
 
-//Test engaging editing mode and deleting several conversations at once. Verify that all conversations selected are deleted from the table and from the Layer client.
+//Test editing mode and deleting several conversations at once. Verify that all conversations selected are deleted from the table and from the Layer client.
 - (void)testToVerifyEditingModeAndMultipleConversationDeletionFunctionality
 {
     self.viewController = [ATLSampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];
     [self setRootViewController:self.viewController];
     
-    NSString *message1 = @"Message1";
     LYRUserMock *mockUser1 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameMarshawn];
-    LYRConversationMock *conversation1 = [self.testInterface conversationWithParticipants:[NSSet setWithObject:mockUser1.participantIdentifier] lastMessageText:message1];
+    LYRConversationMock *conversation1 = [self newConversationWithMockUser:mockUser1 lastMessageText:@"Test Message"];
     
-    NSString *message2 = @"Message2";
-    LYRUserMock *mockUser2 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameCam];
-    LYRConversationMock *conversation2 = [self.testInterface conversationWithParticipants:[NSSet setWithObject:mockUser2.participantIdentifier] lastMessageText:message2];
+    LYRUserMock *mockUser2 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameBobby];
+    LYRConversationMock *conversation2 = [self newConversationWithMockUser:mockUser2 lastMessageText:@"Test Message"];
     
-    NSString *message3 = @"Message3";
-    LYRUserMock *mockUser3 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameBobby];
-    LYRConversationMock *conversation3 =  [self.testInterface conversationWithParticipants:[NSSet setWithObject:mockUser3.participantIdentifier] lastMessageText:message3];
-    
-    [tester waitForViewWithAccessibilityLabel:[self.testInterface conversationLabelForConversation:conversation1]];
-    [tester waitForViewWithAccessibilityLabel:[self.testInterface conversationLabelForConversation:conversation2]];
-    [tester waitForViewWithAccessibilityLabel:[self.testInterface conversationLabelForConversation:conversation3]];
+    LYRUserMock *mockUser3 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameEarl];
+    LYRConversationMock *conversation3 = [self newConversationWithMockUser:mockUser3 lastMessageText:@"Test Message"];
     
     [tester tapViewWithAccessibilityLabel:@"Edit"];
     
@@ -152,6 +147,12 @@
     
     [tester tapViewWithAccessibilityLabel:[NSString stringWithFormat:@"Delete %@", mockUser3.fullName]];
     [self deleteConversation:conversation3 deletionMode:LYRDeletionModeLocal];
+    
+    LYRQuery *query = [LYRQuery queryWithClass:[LYRConversation class]];
+    NSError *error;
+    NSOrderedSet *conversations = [self.testInterface.layerClient executeQuery:query error:&error];
+    expect(error).to.beNil;
+    expect(conversations).to.beNil;
 }
 
 //Disable editing and verify that the controller does not permit the user to attempt to edit or engage swipe to delete.
@@ -161,10 +162,8 @@
     [self.viewController setAllowsEditing:NO];
     [self setRootViewController:self.viewController];
     
-    NSString *message1 = @"Message1";
     LYRUserMock *mockUser1 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameMarshawn];
-    LYRConversationMock *conversation1 = [self.testInterface conversationWithParticipants:[NSSet setWithObject:mockUser1.participantIdentifier] lastMessageText:message1];
-    [tester waitForViewWithAccessibilityLabel:[self.testInterface conversationLabelForConversation:conversation1]];
+    LYRConversationMock *conversation1 = [self newConversationWithMockUser:mockUser1 lastMessageText:@"Test Message"];
     
     [tester swipeViewWithAccessibilityLabel:[self.testInterface conversationLabelForConversation:conversation1] inDirection:KIFSwipeDirectionLeft];
     [tester waitForAbsenceOfViewWithAccessibilityLabel:[NSString stringWithFormat:@"Global"]];
@@ -183,14 +182,10 @@
     [[ATLConversationTableViewCell appearance] setConversationTitleLabelFont:testFont];
     [[ATLConversationTableViewCell appearance] setConversationTitleLabelColor:testColor];
     
-    NSString *message1 = @"Message1";
     LYRUserMock *mockUser1 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameMarshawn];
-    LYRConversationMock *conversation1 =  [self.testInterface conversationWithParticipants:[NSSet setWithObject:mockUser1.participantIdentifier] lastMessageText:message1];
-    
-    [tester waitForViewWithAccessibilityLabel:[self.testInterface conversationLabelForConversation:conversation1]];
+    LYRConversationMock *conversation1 = [self newConversationWithMockUser:mockUser1 lastMessageText:@"Test Message"];
     
     NSString *conversationLabel = [self.testInterface conversationLabelForConversation:conversation1];
-    
     ATLConversationTableViewCell *cell = (ATLConversationTableViewCell *)[tester waitForViewWithAccessibilityLabel:conversationLabel];
     expect(cell.conversationTitleLabelFont).to.equal(testFont);
     expect(cell.conversationTitleLabelColor).to.equal(testColor);
@@ -203,15 +198,11 @@
     [self.viewController setRowHeight:100];
     [self setRootViewController:self.viewController];
     
-    NSString *message1 = @"Message1";
     LYRUserMock *mockUser1 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameMarshawn];
-    LYRConversationMock *conversation1 =  [self.testInterface conversationWithParticipants:[NSSet setWithObject:mockUser1.participantIdentifier] lastMessageText:message1];
-    
-    [tester waitForViewWithAccessibilityLabel:[self.testInterface conversationLabelForConversation:conversation1]];
+    LYRConversationMock *conversation1 = [self newConversationWithMockUser:mockUser1 lastMessageText:@"Test Message"];
     
     NSString *conversationLabel = [self.testInterface conversationLabelForConversation:conversation1];
     ATLConversationTableViewCell *cell = (ATLConversationTableViewCell *)[tester waitForViewWithAccessibilityLabel:conversationLabel];
-    
     expect(cell.frame.size.height).to.equal(100);
 }
 
@@ -222,14 +213,11 @@
     [self.viewController setCellClass:[ATLTestConversationCell class]];
     [self setRootViewController:self.viewController];
     
-    NSString *message1 = @"Message1";
     LYRUserMock *mockUser1 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameMarshawn];
-    LYRConversationMock *conversation1 =  [self.testInterface conversationWithParticipants:[NSSet setWithObject:mockUser1.participantIdentifier] lastMessageText:message1];
+    LYRConversationMock *conversation1 = [self newConversationWithMockUser:mockUser1 lastMessageText:@"Test Message"];
     
-    [tester waitForViewWithAccessibilityLabel:[self.testInterface conversationLabelForConversation:conversation1]];
-    
-    ATLConversationTableViewCell *cell = (ATLConversationTableViewCell *)[tester waitForViewWithAccessibilityLabel:[self.testInterface conversationLabelForConversation:conversation1]];
-    
+    NSString *conversationLabel = [self.testInterface conversationLabelForConversation:conversation1];
+    ATLConversationTableViewCell *cell = (ATLConversationTableViewCell *)[tester waitForViewWithAccessibilityLabel:conversationLabel];
     expect([cell class]).to.equal([ATLTestConversationCell class]);
     expect([cell class]).toNot.equal([ATLConversationTableViewCell class]);
 }
@@ -247,6 +235,7 @@
 {
     self.viewController = [ATLSampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];
     [self setRootViewController:self.viewController];
+    [tester waitForTimeInterval:1.0]; // Allow controller to be presented.
     expect(^{ [self.viewController setCellClass:[ATLTestConversationCell class]]; }).to.raise(NSInternalInconsistencyException);
 }
 
@@ -255,6 +244,7 @@
 {
     self.viewController = [ATLSampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];
     [self setRootViewController:self.viewController];
+    [tester waitForTimeInterval:1.0]; // Allow controller to be presented.
     expect(^{ [self.viewController setRowHeight:40]; }).to.raise(NSInternalInconsistencyException);
 }
 
@@ -263,20 +253,151 @@
 {
     self.viewController = [ATLSampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];
     [self setRootViewController:self.viewController];
+    [tester waitForTimeInterval:1.0]; // Allow controller to be presented.
     expect(^{ [self.viewController setAllowsEditing:YES]; }).to.raise(NSInternalInconsistencyException);
 }
 
-//Synchronize a new conversation and verify that it live updates into the conversation list.
-- (void)testToVerifyCreatingANewConversationLiveUpdatesConversationList
+#pragma mark - ATLConversationListViewControllerDataSource
+
+- (void)testToVerifyConversationListViewControllerDataSource
+{
+    self.viewController = [ATLSampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];
+    self.viewController.displaysAvatarItem = YES;
+    [self setRootViewController:self.viewController];
+    [tester waitForTimeInterval:0.5];
+    
+    id delegateMock = OCMProtocolMock(@protocol(ATLConversationListViewControllerDataSource));
+    self.viewController.dataSource = delegateMock;
+    
+    LYRUserMock *mockUser1 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameMarshawn];
+    
+    LYRConversation *conversation;
+    [[[delegateMock expect] andDo:^(NSInvocation *invocation) {
+        ATLConversationListViewController *controller;
+        [invocation getArgument:&controller atIndex:2];
+        expect(controller).to.equal(self.viewController);
+        
+        LYRConversation *conversation;
+        [invocation getArgument:&conversation atIndex:3];
+        expect(conversation).to.equal(conversation);
+        
+        NSString *conversationTitle = mockUser1.fullName;
+        [invocation setReturnValue:&conversationTitle];
+    }] conversationListViewController:[OCMArg any] titleForConversation:[OCMArg any]];
+    
+    [[[delegateMock expect] andDo:^(NSInvocation *invocation) {
+        ATLConversationListViewController *controller;
+        [invocation getArgument:&controller atIndex:2];
+        expect(controller).to.equal(self.viewController);
+        
+        LYRConversation *conversation;
+        [invocation getArgument:&conversation atIndex:3];
+        expect(conversation).to.equal(conversation);
+    }] conversationListViewController:[OCMArg any] avatarItemForConversation:[OCMArg any]];
+    
+    conversation = (LYRConversation *)[self newConversationWithMockUser:mockUser1 lastMessageText:@"Test Message"];
+}
+
+#pragma mark - ATLConversationListViewControllerDelegate
+
+- (void)testToVerifyDelegateIsNotifiedOfConversationSelection
 {
     self.viewController = [ATLSampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];
     [self setRootViewController:self.viewController];
+    [tester waitForTimeInterval:0.5];
     
-    NSString *message1 = @"Message1";
+    id delegateMock = OCMProtocolMock(@protocol(ATLConversationListViewControllerDelegate));
+    self.viewController.delegate = delegateMock;
+    
     LYRUserMock *mockUser1 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameMarshawn];
-    LYRConversationMock *conversation1 =  [self.testInterface conversationWithParticipants:[NSSet setWithObject:mockUser1.participantIdentifier] lastMessageText:message1];
+    LYRConversationMock *conversation1 = [self newConversationWithMockUser:mockUser1 lastMessageText:@"Test Message"];
     
-    [tester waitForViewWithAccessibilityLabel:[self.testInterface conversationLabelForConversation:conversation1]];
+    [[[delegateMock expect] andDo:^(NSInvocation *invocation) {
+        ATLConversationListViewController *controller;
+        [invocation getArgument:&controller atIndex:2];
+        expect(controller).to.equal(self.viewController);
+        
+        LYRConversation *conversation;
+        [invocation getArgument:&conversation atIndex:3];
+        expect(conversation).to.equal(conversation1);
+    }] conversationListViewController:[OCMArg any] didSelectConversation:[OCMArg any]];
+    
+    [tester tapViewWithAccessibilityLabel:[self.testInterface conversationLabelForConversation:conversation1]];
+    [delegateMock verify];
+}
+
+
+- (void)testToVerifyDelegateIsNotifiedOfGlobalConversationDeletion
+{
+    self.viewController = [ATLSampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];
+    self.viewController.allowsEditing = YES;
+    [self setRootViewController:self.viewController];
+    [tester waitForTimeInterval:0.5];
+    
+    id delegateMock = OCMProtocolMock(@protocol(ATLConversationListViewControllerDelegate));
+    self.viewController.delegate = delegateMock;
+    
+    LYRUserMock *mockUser1 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameMarshawn];
+    LYRConversationMock *conversation1 = [self newConversationWithMockUser:mockUser1 lastMessageText:@"Test Message"];
+    
+    LYRDeletionMode deletionMode = LYRDeletionModeAllParticipants;
+    [[[delegateMock expect] andDo:^(NSInvocation *invocation) {
+        ATLConversationListViewController *controller;
+        [invocation getArgument:&controller atIndex:2];
+        expect(controller).to.equal(self.viewController);
+        
+        LYRConversation *conversation;
+        [invocation getArgument:&conversation atIndex:3];
+        expect(conversation).to.equal(conversation1);
+        
+        LYRDeletionMode mode;
+        [invocation getArgument:&mode atIndex:4];
+        expect(mode).to.equal(deletionMode);
+    }] conversationListViewController:[OCMArg any] didDeleteConversation:[OCMArg any] deletionMode:deletionMode];
+    
+    [tester swipeViewWithAccessibilityLabel:[self.testInterface conversationLabelForConversation:conversation1] inDirection:KIFSwipeDirectionLeft];
+    [self deleteConversation:conversation1 deletionMode:deletionMode];
+    [delegateMock verify];
+}
+
+- (void)testToVerifyDelegateIsNotifiedOfLocalConversationDeletion
+{
+    self.viewController = [ATLSampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];
+    self.viewController.allowsEditing = YES;
+    [self setRootViewController:self.viewController];
+    [tester waitForTimeInterval:0.5];
+    
+    id delegateMock = OCMProtocolMock(@protocol(ATLConversationListViewControllerDelegate));
+    self.viewController.delegate = delegateMock;
+    
+    LYRUserMock *mockUser1 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameMarshawn];
+    LYRConversationMock *conversation1 = [self newConversationWithMockUser:mockUser1 lastMessageText:@"Test Message"];
+    
+    LYRDeletionMode deletionMode = LYRDeletionModeLocal;
+    [[[delegateMock expect] andDo:^(NSInvocation *invocation) {
+        ATLConversationListViewController *controller;
+        [invocation getArgument:&controller atIndex:2];
+        expect(controller).to.equal(self.viewController);
+        
+        LYRConversation *conversation;
+        [invocation getArgument:&conversation atIndex:3];
+        expect(conversation).to.equal(conversation1);
+        
+        LYRDeletionMode mode;
+        [invocation getArgument:&mode atIndex:4];
+        expect(mode).to.equal(deletionMode);
+    }] conversationListViewController:[OCMArg any] didDeleteConversation:[OCMArg any] deletionMode:deletionMode];
+    
+    [tester swipeViewWithAccessibilityLabel:[self.testInterface conversationLabelForConversation:conversation1] inDirection:KIFSwipeDirectionLeft];
+    [self deleteConversation:conversation1 deletionMode:deletionMode];
+    [delegateMock verify];
+}
+
+- (LYRConversationMock *)newConversationWithMockUser:(LYRUserMock *)mockUser lastMessageText:(NSString *)lastMessageText
+{
+    LYRConversationMock *conversation = [self.testInterface conversationWithParticipants:[NSSet setWithObject:mockUser.participantIdentifier] lastMessageText:lastMessageText];
+    [tester waitForViewWithAccessibilityLabel:[self.testInterface conversationLabelForConversation:conversation]];
+    return conversation;
 }
 
 - (void)deleteConversation:(LYRConversationMock *)conversation deletionMode:(LYRDeletionMode)deletionMode
@@ -299,9 +420,7 @@
 
 - (void)setRootViewController:(UITableViewController *)controller
 {
-    [self.testInterface setRootViewController:controller];
-    expect([controller.tableView numberOfRowsInSection:0]).to.equal(0);
-    [tester waitForTimeInterval:1];
+    [self.testInterface presentViewController:controller];
 }
 
 - (void)resetAppearance

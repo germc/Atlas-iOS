@@ -32,6 +32,7 @@
 
 @implementation ATLAddressBarViewController
 
+NSString *const ATLAddressBarViewAccessibilityLabel = @"Address Bar View";
 NSString *const ATLAddressBarAccessibilityLabel = @"Address Bar";
 static NSString *const ATLMParticpantCellIdentifier = @"participantCellIdentifier";
 static NSString *const ATLAddressBarParticipantAttributeName = @"ATLAddressBarParticipant";
@@ -49,6 +50,7 @@ static NSString *const ATLAddressBarParticipantAttributeName = @"ATLAddressBarPa
     
     self.addressBarView = [[ATLAddressBarView alloc] init];
     self.addressBarView.translatesAutoresizingMaskIntoConstraints = NO;
+    self.addressBarView.accessibilityLabel = ATLAddressBarViewAccessibilityLabel;
     self.addressBarView.backgroundColor = ATLAddressBarGray();
     self.addressBarView.addressBarTextView.delegate = self;
     [self.addressBarView.addContactsButton addTarget:self action:@selector(contactButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
@@ -76,8 +78,6 @@ static NSString *const ATLAddressBarParticipantAttributeName = @"ATLAddressBarPa
 - (void)disable
 {
     if (self.isDisabled) return;
-    if (self.addressBarView.addressBarTextView.isFirstResponder) return;
-    
     self.disabled = YES;
 
     self.addressBarView.addressBarTextView.text = [self disabledStringForParticipants:self.selectedParticipants];
@@ -244,8 +244,8 @@ static NSString *const ATLAddressBarParticipantAttributeName = @"ATLAddressBarPa
                 [self.delegate addressBarViewControllerDidBeginSearching:self];
             }
         }
-        if ([self.dataSource respondsToSelector:@selector(addressBarViewController:searchForParticipantsMatchingText:completion:)]) {
-            [self.dataSource addressBarViewController:self searchForParticipantsMatchingText:searchText completion:^(NSArray *participants) {
+        if ([self.delegate respondsToSelector:@selector(addressBarViewController:searchForParticipantsMatchingText:completion:)]) {
+            [self.delegate addressBarViewController:self searchForParticipantsMatchingText:searchText completion:^(NSArray *participants) {
                 if (![enteredText isEqualToString:textView.text]) return;
                 self.tableView.hidden = NO;
                 self.participants = [self filteredParticipants:participants];

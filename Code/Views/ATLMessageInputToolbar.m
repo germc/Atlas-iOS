@@ -37,6 +37,10 @@ NSString *const ATLMessageInputToolbarDidChangeHeightNotification = @"ATLMessage
 @implementation ATLMessageInputToolbar
 
 NSString *const ATLMessageInputToolbarAccessibilityLabel = @"Message Input Toolbar";
+NSString *const ATLMessageInputToolbarTextInputView = @"Message Input Toolbar Text Input View";
+NSString *const ATLMessageInputToolbarCameraButton  = @"Message Input Toolbar Camera Button";
+NSString *const ATLMessageInputToolbarLocationButton  = @"Message Input Toolbar Location Button";
+NSString *const ATLMessageInputToolbarSendButton  = @"Message Input Toolbar Send Button";
 
 // Compose View Margin Constants
 static CGFloat const ATLLeftButtonHorizontalMargin = 6.0f;
@@ -57,25 +61,24 @@ static CGFloat const ATLButtonHeight = 28.0f;
         self.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 
         self.leftAccessoryButton = [[UIButton alloc] init];
-        self.leftAccessoryButton.accessibilityLabel = @"Camera Button";
+        self.leftAccessoryButton.accessibilityLabel = ATLMessageInputToolbarCameraButton;
         self.leftAccessoryButton.contentMode = UIViewContentModeScaleAspectFit;
         [self.leftAccessoryButton setImage:[UIImage imageNamed:@"AtlasResource.bundle/camera_dark"] forState:UIControlStateNormal];
         [self.leftAccessoryButton addTarget:self action:@selector(leftAccessoryButtonTapped) forControlEvents:UIControlEventTouchUpInside];
         [self addSubview:self.leftAccessoryButton];
         
         self.textInputView = [[ATLMessageComposeTextView alloc] init];
+        self.textInputView.accessibilityLabel = ATLMessageInputToolbarTextInputView;
         self.textInputView.delegate = self;
         self.textInputView.layer.borderColor = ATLGrayColor().CGColor;
         self.textInputView.layer.borderWidth = 0.5;
         self.textInputView.layer.cornerRadius = 5.0f;
-        self.textInputView.accessibilityLabel = @"Text Input View";
         [self addSubview:self.textInputView];
         
         self.rightAccessoryButton = [[UIButton alloc] init];
         [self.rightAccessoryButton addTarget:self action:@selector(rightAccessoryButtonTapped) forControlEvents:UIControlEventTouchUpInside];
         [self addSubview:self.rightAccessoryButton];
         [self configureRightAccessoryButtonState];
-        [self configureButtonEnablement];
 
         // Calling sizeThatFits: or contentSize on the displayed UITextView causes the cursor's position to momentarily appear out of place and prevent scrolling to the selected range. So we use another text view for height calculations.
         self.dummyTextView = [[ATLMessageComposeTextView alloc] init];
@@ -227,7 +230,6 @@ static CGFloat const ATLButtonHeight = 28.0f;
     }
 
     [self setNeedsLayout];
-    [self configureButtonEnablement];
     
     // Workaround for iOS 7.1 not scrolling bottom line into view when entering text. Note that in textViewDidChangeSelection: if the selection to the bottom line is due to entering text then the calculation of the bottom content offset won't be accurate since the content size hasn't yet been updated. Content size has been updated by the time this method is called so our calculation will work.
     NSRange end = NSMakeRange(textView.text.length, 0);
@@ -296,7 +298,7 @@ static CGFloat const ATLButtonHeight = 28.0f;
 - (void)configureRightAccessoryButtonState
 {
     if (self.textInputView.text.length) {
-        self.rightAccessoryButton.accessibilityLabel = @"Send Button";
+        self.rightAccessoryButton.accessibilityLabel = ATLMessageInputToolbarSendButton;
         [self.rightAccessoryButton setImage:nil forState:UIControlStateNormal];
         self.rightAccessoryButton.contentEdgeInsets = UIEdgeInsetsMake(2, 0, 0, 0);
         self.rightAccessoryButton.titleLabel.font = [UIFont boldSystemFontOfSize:17];
@@ -304,17 +306,11 @@ static CGFloat const ATLButtonHeight = 28.0f;
         [self.rightAccessoryButton setTitleColor:[UIColor grayColor] forState:UIControlStateDisabled];
         [self.rightAccessoryButton setTitleColor:ATLBlueColor() forState:UIControlStateNormal];
     } else {
-        self.rightAccessoryButton.accessibilityLabel = @"Location Button";
+        self.rightAccessoryButton.accessibilityLabel = ATLMessageInputToolbarLocationButton;
         [self.rightAccessoryButton setTitle:nil forState:UIControlStateNormal];
         self.rightAccessoryButton.contentEdgeInsets = UIEdgeInsetsZero;
         [self.rightAccessoryButton setImage:[UIImage imageNamed:@"AtlasResource.bundle/location_dark"] forState:UIControlStateNormal];
     }
-}
-
-- (void)configureButtonEnablement
-{
-    self.leftAccessoryButton.enabled = YES;
-    self.rightAccessoryButton.enabled = YES;
 }
 
 @end
