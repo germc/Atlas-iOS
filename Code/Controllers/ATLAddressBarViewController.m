@@ -450,6 +450,8 @@ static NSString *const ATLAddressBarParticipantAttributeName = @"ATLAddressBarPa
 
 - (NSString *)disabledStringForParticipants:(NSOrderedSet *)participants
 {
+    [self.addressBarView.addressBarTextView layoutIfNeeded]; // Layout text view so we can have an accurate width.
+    
     __block NSString *disabledString = [participants.firstObject firstName];
     NSMutableOrderedSet *mutableParticipants = [participants mutableCopy];
     [mutableParticipants removeObject:participants.firstObject];

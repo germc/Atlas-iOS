@@ -251,18 +251,6 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
     [self.collectionView setContentOffset:[self bottomOffsetForContentSize:contentSize] animated:NO];
 }
 
-- (void)configureAddressBarForConversation
-{
-    if (!self.dataSource) return;
-    if (!self.addressBarController) return;
-
-    NSMutableOrderedSet *participantIdentifiers = [NSMutableOrderedSet orderedSetWithSet:self.conversation.participants];
-    if ([participantIdentifiers containsObject:self.layerClient.authenticatedUserID]) {
-        [participantIdentifiers removeObject:self.layerClient.authenticatedUserID];
-    }
-    [self.addressBarController setSelectedParticipants:[self participantsForIdentifiers:participantIdentifiers]];
-}
-
 - (void)fetchLayerMessages
 {
     if (!self.conversation) return;
@@ -276,7 +264,9 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
 {
     [self configureAvatarImageDisplay];
     [self configureSendButtonEnablement];
-    [self.conversation markAllMessagesAsRead:nil];
+    if (self.conversation.lastMessage) {
+        [self.conversation markAllMessagesAsRead:nil];
+    }
 }
 
 - (void)configureControllerForChangedParticipants
@@ -292,6 +282,18 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
     [self configureAddressBarForChangedParticipants];
     [self configureControllerForConversation];
     [self.collectionView reloadData];
+}
+
+- (void)configureAddressBarForConversation
+{
+    if (!self.dataSource) return;
+    if (!self.addressBarController) return;
+    
+    NSMutableOrderedSet *participantIdentifiers = [NSMutableOrderedSet orderedSetWithSet:self.conversation.participants];
+    if ([participantIdentifiers containsObject:self.layerClient.authenticatedUserID]) {
+        [participantIdentifiers removeObject:self.layerClient.authenticatedUserID];
+    }
+    [self.addressBarController setSelectedParticipants:[self participantsForIdentifiers:participantIdentifiers]];
 }
 
 - (void)configureAvatarImageDisplay
