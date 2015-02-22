@@ -115,6 +115,8 @@ static NSString *const ATLAddressBarParticipantAttributeName = @"ATLAddressBarPa
     NSOrderedSet *existingParticipants = _selectedParticipants;
     _selectedParticipants = selectedParticipants;
     
+    if (self.isDisabled) return;
+    
     NSMutableOrderedSet *removedParticipants = [NSMutableOrderedSet orderedSetWithOrderedSet:existingParticipants];
     if (selectedParticipants) [removedParticipants minusOrderedSet:selectedParticipants];
     [self notifyDelegateOfRemovedParticipants:removedParticipants];
@@ -343,7 +345,7 @@ static NSString *const ATLAddressBarParticipantAttributeName = @"ATLAddressBarPa
 - (void)sizeAddressBarView
 {
     // We layout addressBarTextView as it drives the address bar size.
-    [self.addressBarView.addressBarTextView updateConstraintsIfNeeded];
+    [self.addressBarView.addressBarTextView setNeedsLayout];
 }
 
 - (NSString *)textForSearchFromTextView:(UITextView *)textView
@@ -448,6 +450,8 @@ static NSString *const ATLAddressBarParticipantAttributeName = @"ATLAddressBarPa
 
 - (NSString *)disabledStringForParticipants:(NSOrderedSet *)participants
 {
+    [self.addressBarView.addressBarTextView layoutIfNeeded]; // Layout text view so we can have an accurate width.
+    
     __block NSString *disabledString = [participants.firstObject firstName];
     NSMutableOrderedSet *mutableParticipants = [participants mutableCopy];
     [mutableParticipants removeObject:participants.firstObject];
