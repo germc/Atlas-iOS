@@ -19,8 +19,9 @@
 //
 #import "StoryboardAppDelegate.h"
 #import "LayerKitMock.h"
+#import "ATLTestConversationListViewController.h"
 #import "ATLSampleConversationListViewController.h"
-#import <LayerUIKit/LayerUIKit.h>
+#import <Atlas/Atlas.h>
 
 @interface StoryboardAppDelegate ()
 
