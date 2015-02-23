@@ -12,8 +12,8 @@
 #import "ATLTypingIndicatorViewController.h"
 
 /**
- @abstract The `ATLBaseConversationViewController` manages the basic user interface components associated with a messaging user interface.
- @discussion The controller hanldes presenting the `ATLMessageInputToolbar` and optionally, the `ATLAddressBarViewController`. It also manages configuring the layout and content insets of its collection view property in response to height changes in state of its `addressBarController`, `messageInputToolbar`, and typingIndicatoryViewController` properties.
+ @abstract The `ATLBaseConversationViewController` manages a suite of user interface components associated with a messaging.
+ @discussion The controller handles presenting the `ATLMessageInputToolbar`, the `ATLTypingIndicatorViewController`, and optionally, the `ATLAddressBarViewController`. It also manages configuring the layout and content insets of its collection view property in response to changes in the state of its `addressBarController`, `messageInputToolbar`, and `typingIndicatoryViewController` properties.
  */
 @interface ATLBaseConversationViewController : UIViewController
 
@@ -28,7 +28,7 @@
 @property (nonatomic) ATLMessageInputToolbar *messageInputToolbar;
 
 /** 
- @abstract An `ATLTypingIndicatorViewController` displayed to indicate other participants in a conversation are typing.
+ @abstract An `ATLTypingIndicatorViewController` displayed to represent participants typing in a conversation.
  */
 @property (nonatomic) ATLTypingIndicatorViewController *typingIndicatorViewController;
 
@@ -45,13 +45,13 @@
 
 //TODO - Update docs.
 /**
- @abstract Informs the receiver if it should display an `ATLAddressBarController`. If yes, applications should implement `ATLAddressBarControllerDelegate` and `ATLAddressBarControllerDataSource`. Default is no.
+ @abstract IA boolean value to determine whether or not the receiver should display an `ATLAddressBarController`. If yes, applications should implement `ATLAddressBarControllerDelegate` and `ATLAddressBarControllerDataSource`. Default is no.
  */
 @property (nonatomic) BOOL displaysAddressBar;
 
 /**
- @abstract A boolean value that determines whether or not the controller should scroll the collection view content to the bottom.
- @discussion Returns NO if the content is further than 50px from the bottom of the collection view or the scroll view is currently scrolling.
+ @abstract Returns a boolean value to determines whether or not the controller should scroll the collection view content to the bottom.
+ @discussion Returns NO if the content is further than 50px from the bottom of the collection view or the collection view is currently scrolling.
  */
 - (BOOL)shouldScrollToBottom;
 
@@ -62,7 +62,7 @@
 - (void)scrollToBottomAnimated:(BOOL)animated;
 
 /**
- @abstract Calculates the bottom offset of the collection view taking into account any current insets caused by address bar or message input toolbar
+ @abstract Calculates the bottom offset of the collection view taking into account any current insets caused by `addressBarController`, `typingIndicatorViewController` or `messageInputToolbar`.
  */
 - (CGPoint)bottomOffsetForContentSize:(CGSize)contentSize;
 
