@@ -223,7 +223,9 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
 
 # pragma mark - UICollectionViewDataSource
 
-// LAYER - The `ATLConversationViewController` component uses one `LYRMessage` to represent each row.
+/**
+ Atlas - The `ATLConversationViewController` component uses one `LYRMessage` to represent each row.
+ */
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
     if (section == ATLMoreMessagesSection) return 0;
@@ -232,14 +234,17 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
     return 1;
 }
  
-// LAYER - The `ATLConversationViewController` component uses `LYRMessage` objects to represent sections.
+/**
+ Atlas - The `ATLConversationViewController` component uses `LYRMessage` objects to represent sections.
+ */
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
 {
     return [self.conversationDataSource.queryController numberOfObjectsInSection:0] + ATLNumberOfSectionsBeforeFirstMessageSection;
 }
 
-// LAYER - Configuring a subclass of `ATLMessageCollectionViewCell` to be displayed on screen. `LayerUIKit` supports both
-// `ATLIncomingMessageCollectionViewCell` and `ATLOutgoingMessageCollectionViewCell`.
+/**
+ Atlas - Configuring a subclass of `ATLMessageCollectionViewCell` to be displayed on screen. `LayerUIKit` supports both `ATLIncomingMessageCollectionViewCell` and `ATLOutgoingMessageCollectionViewCell`.
+ */
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     LYRMessage *message = [self.conversationDataSource messageAtCollectionViewIndexPath:indexPath];
@@ -338,7 +343,9 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
 
 #pragma mark - Reusable View Configuration
 
-// LAYER - Extracting the proper message part and analyzing its properties to determine the cell configuration.
+/**
+ Atlas - Extracting the proper message part and analyzing its properties to determine the cell configuration.
+ */
 - (void)configureCell:(UICollectionViewCell<ATLMessagePresenting> *)cell forMessage:(LYRMessage *)message indexPath:(NSIndexPath *)indexPath
 {
     [cell presentMessage:message];

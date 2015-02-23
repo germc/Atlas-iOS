@@ -1,9 +1,21 @@
 //
 //  ATLBaseConversationViewController.h
-//  Pods
+//  Atlas
 //
-//  Created by Kevin Coleman on 2/22/15.
+//  Created by Kevin Coleman on 10/27/14.
+//  Copyright (c) 2015 Layer. All rights reserved.
 //
+//  Licensed under the Apache License, Version 2.0 (the "License");
+//  you may not use this file except in compliance with the License.
+//  You may obtain a copy of the License at
+//
+//  http://www.apache.org/licenses/LICENSE-2.0
+//
+//  Unless required by applicable law or agreed to in writing, software
+//  distributed under the License is distributed on an "AS IS" BASIS,
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//  See the License for the specific language governing permissions and
+//  limitations under the License.
 //
 
 #import <UIKit/UIKit.h>
@@ -16,6 +28,10 @@
  @discussion The controller handles presenting the `ATLMessageInputToolbar`, the `ATLTypingIndicatorViewController`, and optionally, the `ATLAddressBarViewController`. It also manages configuring the layout and content insets of its collection view property in response to changes in the state or size of its `addressBarController`, `messageInputToolbar`, and `typingIndicatorController` properties.
  */
 @interface ATLBaseConversationViewController : UIViewController
+
+///---------------------------------------------------------------
+/// @name Accessing User Interface Components
+///---------------------------------------------------------------
 
 /**
  @abstract The `ATLAddressBarViewController` displayed for addressing new conversations or displaying names of current conversation participants.
@@ -38,6 +54,10 @@
  */
 @property (nonatomic) UICollectionView *collectionView;
 
+///----------------------------------------------
+/// @name Configuring View Options
+///----------------------------------------------
+
 /**
  @abstract A constant representing the current height of the typing indicator.
  */
@@ -47,6 +67,10 @@
  @abstract IA boolean value to determine whether or not the receiver should display an `ATLAddressBarController`. If yes, applications should implement `ATLAddressBarControllerDelegate` and `ATLAddressBarControllerDataSource`. Default is no.
  */
 @property (nonatomic) BOOL displaysAddressBar;
+
+///-------------------------------------
+/// @name Managing Scrolling
+///-------------------------------------
 
 /**
  @abstract Returns a boolean value to determines whether or not the controller should scroll the collection view content to the bottom.
