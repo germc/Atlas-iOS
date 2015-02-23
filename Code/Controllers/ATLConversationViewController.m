@@ -25,9 +25,7 @@
 #import "ATLConstants.h"
 #import "ATLDataSourceChange.h"
 #import "ATLMessagingUtilities.h"
-#import "ATLTypingIndicatorViewController.h"
 #import "LYRQueryController.h"
-#import "ATLDataSourceChange.h"
 #import "ATLConversationView.h"
 #import "ATLConversationDataSource.h"
 #import "ATLMediaAttachment.h"
@@ -35,29 +33,23 @@
 
 @interface ATLConversationViewController () <UICollectionViewDataSource, UICollectionViewDelegate, ATLMessageInputToolbarDelegate, UIActionSheetDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, LYRQueryControllerDelegate, CLLocationManagerDelegate>
 
-@property (nonatomic) ATLConversationCollectionView *collectionView;
 @property (nonatomic) ATLConversationDataSource *conversationDataSource;
-@property (nonatomic) ATLConversationView *view;
-@property (nonatomic) ATLTypingIndicatorViewController *typingIndicatorViewController;
-@property (nonatomic) CGFloat keyboardHeight;
 @property (nonatomic) BOOL shouldDisplayAvatarItem;
-@property (nonatomic) NSLayoutConstraint *typingIndicatorViewBottomConstraint;
 @property (nonatomic) NSMutableArray *typingParticipantIDs;
 @property (nonatomic) NSMutableArray *objectChanges;
 @property (nonatomic) NSHashTable *sectionHeaders;
 @property (nonatomic) NSHashTable *sectionFooters;
-@property (nonatomic, getter=isFirstAppearance) BOOL firstAppearance;
+
 @property (nonatomic) BOOL showingMoreMessagesIndicator;
 @property (nonatomic) BOOL hasAppeared;
+
 @property (nonatomic) ATLLocationManager *locationManager;
 @property (nonatomic) BOOL shouldShareLocation;
-@property (nonatomic) NSUInteger typingIndicatorInset;
 
 @end
 
 @implementation ATLConversationViewController
 
-static CGFloat const ATLTypingIndicatorHeight = 20;
 static NSInteger const ATLMoreMessagesSection = 0;
 static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
 
@@ -86,27 +78,30 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
     return self;
 }
 
+- (id)init
+{
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Failed to call designated initializer." userInfo:nil];
+    return nil;
+}
+
 - (void)lyr_commonInit
 {
     _dateDisplayTimeInterval = 60*60;
     _marksMessagesAsRead = YES;
-    _displaysAddressBar = NO;
     _typingParticipantIDs = [NSMutableArray new];
     _sectionHeaders = [NSHashTable weakObjectsHashTable];
     _sectionFooters = [NSHashTable weakObjectsHashTable];
-    _firstAppearance = YES;
     _objectChanges = [NSMutableArray new];
 }
 
 - (void)loadView
 {
-    self.view = [ATLConversationView new];
-}
-
-- (id)init
-{
-    @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Failed to call designated initializer." userInfo:nil];
-    return nil;
+    [super loadView];
+    // Collection View Setup
+    self.collectionView = [[ATLConversationCollectionView alloc] initWithFrame:CGRectZero
+                                                          collectionViewLayout:[[UICollectionViewFlowLayout alloc] init]];
+    self.collectionView.delegate = self;
+    self.collectionView.dataSource = self;
 }
 
 - (void)setLayerClient:(LYRClient *)layerClient
@@ -117,65 +112,28 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
     _layerClient = layerClient;
 }
 
-
 #pragma mark - Lifecycle
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
-    // Collection View Setup
-    self.collectionView = [[ATLConversationCollectionView alloc] initWithFrame:CGRectZero
-                                                            collectionViewLayout:[[UICollectionViewFlowLayout alloc] init]];
-    self.collectionView.delegate = self;
-    self.collectionView.dataSource = self;
-    self.collectionView.translatesAutoresizingMaskIntoConstraints = NO;
-    [self.view addSubview:self.collectionView];
-    [self configureCollectionViewLayoutConstraints];
-    
-    // Add message input tool bar
-    self.messageInputToolbar = [ATLMessageInputToolbar new];
-    self.messageInputToolbar.inputToolBarDelegate = self;
-    // An apparent system bug causes a view controller to not be deallocated
-    // if the view controller's own inputAccessoryView property is used.
-    self.view.inputAccessoryView = self.messageInputToolbar;
-    
-    // Add typing indicator
-    self.typingIndicatorViewController = [[ATLTypingIndicatorViewController alloc] init];
-    [self addChildViewController:self.typingIndicatorViewController];
-    [self.view addSubview:self.typingIndicatorViewController.view];
-    [self.typingIndicatorViewController didMoveToParentViewController:self];
-    [self configureTypingIndicatorLayoutConstraints];
-    
-    // Add address bar if needed
-    if (self.displaysAddressBar) {
-        self.addressBarController = [[ATLAddressBarViewController alloc] init];
-        self.addressBarController.delegate = self;
-        [self addChildViewController:self.addressBarController];
-        [self.view addSubview:self.addressBarController.view];
-        [self.addressBarController didMoveToParentViewController:self];
-        [self configureAddressBarLayoutConstraints];
+    if (!self.conversationDataSource) {
+        [self fetchLayerMessages];
     }
+    [self configureControllerForConversation];
+    
+    self.messageInputToolbar.inputToolBarDelegate = self;
+    self.addressBarController.delegate = self;
     [self atl_registerForNotifications];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    if (!self.conversationDataSource) {
-        [self fetchLayerMessages];
-    }
+    
     if (self.addressBarController && self.conversation) {
         [self.addressBarController disable];
         [self configureAddressBarForConversation];
-    }
-    [self updateCollectionViewInsets];
-    [self configureControllerForConversation];
-   
-    
-    // Workaround for a modal dismissal causing the message toolbar to remain offscreen on iOS 8.
-    if (self.presentedViewController) {
-        [self.view becomeFirstResponder];
     }
 }
 
@@ -183,39 +141,9 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
 {
     [super viewDidAppear:animated];
     self.hasAppeared = YES;
+    
     if (self.addressBarController && !self.addressBarController.isDisabled) {
         [self.addressBarController.addressBarView.addressBarTextView becomeFirstResponder];
-    }
-}
-
-- (void)viewWillDisappear:(BOOL)animated
-{
-    [super viewWillDisappear:animated];
-
-    // Workaround for view's content flashing onscreen after pop animation concludes on iOS 8.
-    BOOL isPopping = ![self.navigationController.viewControllers containsObject:self];
-    if (isPopping) {
-        [self.messageInputToolbar.textInputView resignFirstResponder];
-    }
-}
-
-- (void)viewDidLayoutSubviews
-{
-    [super viewDidLayoutSubviews];
-
-    if (self.addressBarController) {
-        [self configureScrollIndicatorInset];
-    }
-    // To get the toolbar to slide onscreen with the view controller's content, we have to make the view the
-    // first responder here. Even so, it will not animate on iOS 8 the first time.
-    if (!self.presentedViewController && self.navigationController && !self.view.inputAccessoryView.superview) {
-        [self.view becomeFirstResponder];
-    }
-    if (self.isFirstAppearance) {
-        self.firstAppearance = NO;
-        // We use the content size of the actual collection view when calculating the ammount to scroll. Hence, we layout the collection view before scrolling to the bottom.
-        [self.view layoutIfNeeded];
-        [self scrollToBottomOfCollectionViewAnimated:NO];
     }
 }
 
@@ -225,7 +153,7 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-#pragma mark - Conversation Setup
+#pragma mark - Conversation Data Source Setup
 
 - (void)setConversation:(LYRConversation *)conversation
 {
@@ -247,8 +175,7 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
         self.conversationDataSource = nil;
         [self.collectionView reloadData];
     }
-    CGSize contentSize = self.collectionView.collectionViewLayout.collectionViewContentSize;
-    [self.collectionView setContentOffset:[self bottomOffsetForContentSize:contentSize] animated:NO];
+    [self scrollToBottomAnimated:NO];
 }
 
 - (void)fetchLayerMessages
@@ -260,28 +187,24 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
     [self.collectionView reloadData];
 }
 
+#pragma mark - Conntroller Setup
+
 - (void)configureControllerForConversation
 {
-    [self configureAvatarImageDisplay];
-    [self configureSendButtonEnablement];
+    // Configure avatar image display
+    NSMutableSet *otherParticipantIDs = [self.conversation.participants mutableCopy];
+    if (self.layerClient.authenticatedUserID) [otherParticipantIDs removeObject:self.layerClient.authenticatedUserID];
+    self.shouldDisplayAvatarItem = otherParticipantIDs.count > 1;
+    
+    // Configure message bar button enablement
+    BOOL shouldEnableButton = self.conversation ? YES : NO;
+    self.messageInputToolbar.rightAccessoryButton.enabled = shouldEnableButton;
+    self.messageInputToolbar.leftAccessoryButton.enabled = shouldEnableButton;
+    
+    // Mark all messages as read if needed
     if (self.conversation.lastMessage) {
         [self.conversation markAllMessagesAsRead:nil];
     }
-}
-
-- (void)configureControllerForChangedParticipants
-{
-    if (self.addressBarController && ![self.addressBarController isDisabled]) {
-        [self configureConversationForAddressBar];
-        return;
-    }
-    NSMutableSet *removedParticipantIdentifiers = [NSMutableSet setWithArray:self.typingParticipantIDs];
-    [removedParticipantIdentifiers minusSet:self.conversation.participants];
-    [self.typingParticipantIDs removeObjectsInArray:removedParticipantIdentifiers.allObjects];
-    [self updateTypingIndicatorOverlay:NO];
-    [self configureAddressBarForChangedParticipants];
-    [self configureControllerForConversation];
-    [self.collectionView reloadData];
 }
 
 - (void)configureAddressBarForConversation
@@ -296,13 +219,6 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
     [self.addressBarController setSelectedParticipants:[self participantsForIdentifiers:participantIdentifiers]];
 }
 
-- (void)configureAvatarImageDisplay
-{
-    NSMutableSet *otherParticipantIDs = [self.conversation.participants mutableCopy];
-    if (self.layerClient.authenticatedUserID) [otherParticipantIDs removeObject:self.layerClient.authenticatedUserID];
-    self.shouldDisplayAvatarItem = otherParticipantIDs.count > 1;
-}
-
 # pragma mark - UICollectionViewDataSource
 
 // LAYER - The `ATLConversationViewController` component uses one `LYRMessage` to represent each row.
@@ -314,7 +230,7 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
     return 1;
 }
  
-// LAYER - The `ATLConversationViewController` component uses `LYRMessages` to represent sections.
+// LAYER - The `ATLConversationViewController` component uses `LYRMessage` objects to represent sections.
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
 {
     return [self.conversationDataSource.queryController numberOfObjectsInSection:0] + ATLNumberOfSectionsBeforeFirstMessageSection;
@@ -569,10 +485,11 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
             [self sendMessage:message];
         }
     } else {
-        [self shareLocation];
+        [self sendLocationMessage];
     }
     if (self.addressBarController) [self.addressBarController disable];
 }
+
 - (void)messageInputToolbarDidType:(ATLMessageInputToolbar *)messageInputToolbar
 {
     if (!self.conversation) return;
@@ -622,7 +539,9 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
     }
 }
 
-- (void)shareLocation
+#pragma mark - Location Message 
+
+- (void)sendLocationMessage
 {
     self.shouldShareLocation = YES;
     if (!self.locationManager) {
@@ -737,106 +656,7 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
     [self.collectionView setNeedsLayout];
 }
 
-#pragma mark - Collection View Content Inset
-
-- (void)configureWithKeyboardNotification:(NSNotification *)notification
-{
-    CGRect keyboardBeginFrame = [notification.userInfo[UIKeyboardFrameBeginUserInfoKey] CGRectValue];
-    CGRect keyboardBeginFrameInView = [self.view convertRect:keyboardBeginFrame fromView:nil];
-    CGRect keyboardEndFrame = [notification.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
-    CGRect keyboardEndFrameInView = [self.view convertRect:keyboardEndFrame fromView:nil];
-    CGRect keyboardEndFrameIntersectingView = CGRectIntersection(self.view.bounds, keyboardEndFrameInView);
-    CGFloat keyboardHeight = CGRectGetHeight(keyboardEndFrameIntersectingView);
-
-    // Workaround for keyboard height inaccuracy on iOS 8.
-    if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_7_1) {
-        keyboardHeight -= CGRectGetMinY(self.messageInputToolbar.frame);
-    }
-
-    self.keyboardHeight = keyboardHeight;
-
-    // Workaround for collection view cell sizes changing/animating when view is first pushed onscreen on iOS 8.
-    if (CGRectEqualToRect(keyboardBeginFrameInView, keyboardEndFrameInView)) {
-        [UIView performWithoutAnimation:^{
-            [self updateCollectionViewInsets];
-            self.typingIndicatorViewBottomConstraint.constant = -self.collectionView.scrollIndicatorInsets.bottom;
-        }];
-        return;
-    }
-
-    [self.view layoutIfNeeded];
-    [UIView beginAnimations:nil context:NULL];
-    [UIView setAnimationDuration:[notification.userInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue]];
-    [UIView setAnimationCurve:[notification.userInfo[UIKeyboardAnimationCurveUserInfoKey] integerValue]];
-    [UIView setAnimationBeginsFromCurrentState:YES];
-    [self updateCollectionViewInsets];
-    self.typingIndicatorViewBottomConstraint.constant = -self.collectionView.scrollIndicatorInsets.bottom;
-    [self.view layoutIfNeeded];
-    [UIView commitAnimations];
-}
-
-- (void)updateCollectionViewInsets
-{
-    [self.messageInputToolbar layoutIfNeeded];
-    UIEdgeInsets insets = self.collectionView.contentInset;
-    CGFloat keyboardHeight = MAX(self.keyboardHeight, CGRectGetHeight(self.messageInputToolbar.frame));
-    insets.bottom = keyboardHeight + self.typingIndicatorInset;
-    self.collectionView.scrollIndicatorInsets = insets;
-    self.collectionView.contentInset = insets;
-    if ([self shouldScrollToBottomOfCollectionView]) {
-        [self scrollToBottomOfCollectionViewAnimated:YES];
-    }
-}
-
-- (CGPoint)bottomOffsetForContentSize:(CGSize)contentSize
-{
-    CGFloat contentSizeHeight = contentSize.height;
-    CGFloat collectionViewFrameHeight = self.collectionView.frame.size.height;
-    CGFloat collectionViewBottomInset = self.collectionView.contentInset.bottom;
-    CGFloat collectionViewTopInset = self.collectionView.contentInset.top;
-    CGPoint offset = CGPointMake(0, MAX(-collectionViewTopInset, contentSizeHeight - (collectionViewFrameHeight - collectionViewBottomInset)));
-    return offset;
-}
-
 #pragma mark - Notification Handlers
-
-- (void)messageInputToolbarDidChangeHeight:(NSNotification *)notification
-{
-    if (!self.messageInputToolbar.superview) return;
-    
-    CGPoint existingOffset = self.collectionView.contentOffset;
-    CGPoint bottomOffset = [self bottomOffsetForContentSize:self.collectionView.contentSize];
-    CGFloat distanceToBottom = bottomOffset.y - existingOffset.y;
-    BOOL shouldScrollToBottom = distanceToBottom <= 50;
-    
-    CGRect toolbarFrame = [self.view convertRect:self.messageInputToolbar.frame fromView:self.messageInputToolbar.superview];
-    CGFloat keyboardOnscreenHeight = CGRectGetHeight(self.view.frame) - CGRectGetMinY(toolbarFrame);
-    if (keyboardOnscreenHeight == self.keyboardHeight) return;
-    self.keyboardHeight = keyboardOnscreenHeight;
-    [self updateCollectionViewInsets];
-    self.typingIndicatorViewBottomConstraint.constant = -self.collectionView.scrollIndicatorInsets.bottom;
-    
-    if (shouldScrollToBottom) {
-        self.collectionView.contentOffset = existingOffset;
-        [self scrollToBottomOfCollectionViewAnimated:YES];
-    }
-}
-
-- (void)keyboardWillShow:(NSNotification *)notification
-{
-    [self configureWithKeyboardNotification:notification];
-}
-
-- (void)keyboardWillHide:(NSNotification *)notification
-{
-    if (![self.navigationController.viewControllers containsObject:self]) return;
-    [self configureWithKeyboardNotification:notification];
-}
-
-- (void)textViewTextDidBeginEditing:(NSNotification *)notification
-{
-    [self scrollToBottomOfCollectionViewAnimated:YES];
-}
 
 - (void)didReceiveTypingIndicator:(NSNotification *)notification
 {
@@ -904,9 +724,24 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
     } else {
         self.typingIndicatorInset = 0.0f;
     }
-    [self updateCollectionViewInsets];
 }
 
+#pragma mark - Controller Configuration For Changed Participants
+
+- (void)configureControllerForChangedParticipants
+{
+    if (self.addressBarController && ![self.addressBarController isDisabled]) {
+        [self configureConversationForAddressBar];
+        return;
+    }
+    NSMutableSet *removedParticipantIdentifiers = [NSMutableSet setWithArray:self.typingParticipantIDs];
+    [removedParticipantIdentifiers minusSet:self.conversation.participants];
+    [self.typingParticipantIDs removeObjectsInArray:removedParticipantIdentifiers.allObjects];
+    [self updateTypingIndicatorOverlay:NO];
+    [self configureAddressBarForChangedParticipants];
+    [self configureControllerForConversation];
+    [self.collectionView reloadData];
+}
 
 #pragma mark - Device Rotation
 
@@ -914,107 +749,6 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
 {
     [super willAnimateRotationToInterfaceOrientation:toInterfaceOrientation duration:duration];
     [self.collectionView.collectionViewLayout invalidateLayout];
-}
-
-#pragma mark - LYRQueryControllerDelegate
-
-- (void)queryController:(LYRQueryController *)controller
-        didChangeObject:(id)object
-            atIndexPath:(NSIndexPath *)indexPath
-          forChangeType:(LYRQueryControllerChangeType)type
-           newIndexPath:(NSIndexPath *)newIndexPath
-{
-    if (self.conversationDataSource.isExpandingPaginationWindow) return;
-    NSInteger currentIndex = indexPath ? [self.conversationDataSource collectionViewSectionForQueryControllerRow:indexPath.row] : NSNotFound;
-    NSInteger newIndex = newIndexPath ? [self.conversationDataSource collectionViewSectionForQueryControllerRow:newIndexPath.row] : NSNotFound;
-    [self.objectChanges addObject:[ATLDataSourceChange changeObjectWithType:type newIndex:newIndex currentIndex:currentIndex]];
-}
-
-- (void)queryControllerDidChangeContent:(LYRQueryController *)queryController
-{
-    if (self.conversationDataSource.isExpandingPaginationWindow) {
-        self.showingMoreMessagesIndicator = [self.conversationDataSource moreMessagesAvailable];
-        [self reloadCollectionViewAdjustingForContentHeightChange];
-        return;
-    }
-
-    if (self.objectChanges.count == 0) {
-        [self configurePaginationWindow];
-        [self configureMoreMessagesIndicatorVisibility];
-        return;
-    }
-    
-    // Prevent scrolling if user has scrolled up into the conversation history.
-    BOOL shouldScrollToBottom = [self shouldScrollToBottomOfCollectionView];
-    [self.collectionView performBatchUpdates:^{
-        for (ATLDataSourceChange *change in self.objectChanges) {
-            switch (change.type) {
-                case LYRQueryControllerChangeTypeInsert:
-                    [self.collectionView insertSections:[NSIndexSet indexSetWithIndex:change.newIndex]];
-                    break;
-                    
-                case LYRQueryControllerChangeTypeMove:
-                    [self.collectionView moveSection:change.currentIndex toSection:change.newIndex];
-                    break;
-                    
-                case LYRQueryControllerChangeTypeDelete:
-                    [self.collectionView deleteSections:[NSIndexSet indexSetWithIndex:change.currentIndex]];
-                    break;
-                    
-                case LYRQueryControllerChangeTypeUpdate:
-                    // If we call reloadSections: for a section that is already being animated due to another move (e.g. moving section 17 to 16 causes section 16 to be moved/animated to 17 and then we also reload section 16), UICollectionView will throw an exception. But since all onscreen sections will be reconfigured (see below) we don't need to reload the sections here anyway.
-                    break;
-                    
-                default:
-                    break;
-            }
-        }
-        [self.objectChanges removeAllObjects];
-    } completion:nil];
-
-     [self configureCollectionViewElements];
-
-    if (shouldScrollToBottom)  {
-        // We can't get the content size from the collection view because it will be out-of-date due to the above updates, but we can get the update-to-date size from the layout.
-        CGSize contentSize = self.collectionView.collectionViewLayout.collectionViewContentSize;
-        [self.collectionView setContentOffset:[self bottomOffsetForContentSize:contentSize] animated:YES];
-    } else {
-        [self configurePaginationWindow];
-        [self configureMoreMessagesIndicatorVisibility];
-    }
-}
-
-- (void)configureCollectionViewElements
-{
-    // Since each section's content depends on other messages, we need to update each visible section even when a section's corresponding message has not changed. This also solves the issue with LYRQueryControllerChangeTypeUpdate (see above).
-    for (UICollectionViewCell<ATLMessagePresenting> *cell in [self.collectionView visibleCells]) {
-        NSIndexPath *indexPath = [self.collectionView indexPathForCell:cell];
-        LYRMessage *message = [self.conversationDataSource messageAtCollectionViewIndexPath:indexPath];
-        [self configureCell:cell forMessage:message indexPath:indexPath];
-    }
-    
-    for (ATLConversationCollectionViewHeader *header in self.sectionHeaders) {
-        NSIndexPath *queryControllerIndexPath = [self.conversationDataSource.queryController indexPathForObject:header.message];
-        if (!queryControllerIndexPath) continue;
-        NSIndexPath *collectionViewIndexPath = [self.conversationDataSource collectionViewIndexPathForQueryControllerIndexPath:queryControllerIndexPath];
-        [self configureHeader:header atIndexPath:collectionViewIndexPath];
-    }
-
-    for (ATLConversationCollectionViewFooter *footer in self.sectionFooters) {
-        NSIndexPath *queryControllerIndexPath = [self.conversationDataSource.queryController indexPathForObject:footer.message];
-        if (!queryControllerIndexPath) continue;
-        NSIndexPath *collectionViewIndexPath = [self.conversationDataSource collectionViewIndexPathForQueryControllerIndexPath:queryControllerIndexPath];
-        [self configureFooter:footer atIndexPath:collectionViewIndexPath];
-    }
-}
-
-- (BOOL)shouldScrollToBottomOfCollectionView
-{
-    // If we were to use the collection view layout's content size here, it appears that at times it can trigger the layout to contact the data source to update its sections, rows and cells which leads to an 'invalide update' crash because the layout has already been updated with the new data prior to the performBatchUpdates:completion: call.
-    CGPoint bottomOffset = [self bottomOffsetForContentSize:self.collectionView.contentSize];
-    CGFloat distanceToBottom = bottomOffset.y - self.collectionView.contentOffset.y;
-    BOOL shouldScrollToBottom = distanceToBottom <= 50 && !self.collectionView.isTracking && !self.collectionView.isDragging && !self.collectionView.isDecelerating;
-    return shouldScrollToBottom;
 }
 
 #pragma mark - ATLAddressBarViewControllerDelegate
@@ -1037,23 +771,6 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
 - (void)addressBarViewController:(ATLAddressBarViewController *)addressBarViewController didRemoveParticipant:(id<ATLParticipant>)participant
 {
     [self configureConversationForAddressBar];
-}
-
-#pragma mark - Send Button Enablement
-
-- (void)configureSendButtonEnablement
-{
-    BOOL shouldEnableButton = [self shouldAllowSendButtonEnablement];
-    self.messageInputToolbar.rightAccessoryButton.enabled = shouldEnableButton;
-    self.messageInputToolbar.leftAccessoryButton.enabled = shouldEnableButton;
-}
-
-- (BOOL)shouldAllowSendButtonEnablement
-{
-    if (!self.conversation) {
-        return NO;
-    }
-    return YES;
 }
 
 #pragma mark - Pagination
@@ -1281,6 +998,100 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
     return conversation;
 }
 
+#pragma mark - LYRQueryControllerDelegate
+
+- (void)queryController:(LYRQueryController *)controller
+        didChangeObject:(id)object
+            atIndexPath:(NSIndexPath *)indexPath
+          forChangeType:(LYRQueryControllerChangeType)type
+           newIndexPath:(NSIndexPath *)newIndexPath
+{
+    if (self.conversationDataSource.isExpandingPaginationWindow) return;
+    NSInteger currentIndex = indexPath ? [self.conversationDataSource collectionViewSectionForQueryControllerRow:indexPath.row] : NSNotFound;
+    NSInteger newIndex = newIndexPath ? [self.conversationDataSource collectionViewSectionForQueryControllerRow:newIndexPath.row] : NSNotFound;
+    [self.objectChanges addObject:[ATLDataSourceChange changeObjectWithType:type newIndex:newIndex currentIndex:currentIndex]];
+}
+
+- (void)queryControllerDidChangeContent:(LYRQueryController *)queryController
+{
+    if (self.conversationDataSource.isExpandingPaginationWindow) {
+        self.showingMoreMessagesIndicator = [self.conversationDataSource moreMessagesAvailable];
+        [self reloadCollectionViewAdjustingForContentHeightChange];
+        return;
+    }
+    
+    if (self.objectChanges.count == 0) {
+        [self configurePaginationWindow];
+        [self configureMoreMessagesIndicatorVisibility];
+        return;
+    }
+    
+    // Prevent scrolling if user has scrolled up into the conversation history.
+    BOOL shouldScrollToBottom = [self shouldScrollToBottom];
+    [self.collectionView performBatchUpdates:^{
+        for (ATLDataSourceChange *change in self.objectChanges) {
+            switch (change.type) {
+                case LYRQueryControllerChangeTypeInsert:
+                    [self.collectionView insertSections:[NSIndexSet indexSetWithIndex:change.newIndex]];
+                    break;
+                    
+                case LYRQueryControllerChangeTypeMove:
+                    [self.collectionView moveSection:change.currentIndex toSection:change.newIndex];
+                    break;
+                    
+                case LYRQueryControllerChangeTypeDelete:
+                    [self.collectionView deleteSections:[NSIndexSet indexSetWithIndex:change.currentIndex]];
+                    break;
+                    
+                case LYRQueryControllerChangeTypeUpdate:
+                    // If we call reloadSections: for a section that is already being animated due to another move (e.g. moving section 17 to 16 causes section 16 to be moved/animated to 17 and then we also reload section 16), UICollectionView will throw an exception. But since all onscreen sections will be reconfigured (see below) we don't need to reload the sections here anyway.
+                    break;
+                    
+                default:
+                    break;
+            }
+        }
+        [self.objectChanges removeAllObjects];
+    } completion:nil];
+    
+    [self configureCollectionViewElements];
+    
+    if (shouldScrollToBottom)  {
+        // We can't get the content size from the collection view because it will be out-of-date due to the above updates, but we can get the update-to-date size from the layout.
+        CGSize contentSize = self.collectionView.collectionViewLayout.collectionViewContentSize;
+        [self.collectionView setContentOffset:[self bottomOffsetForContentSize:contentSize] animated:YES];
+    } else {
+        [self configurePaginationWindow];
+        [self configureMoreMessagesIndicatorVisibility];
+    }
+}
+
+- (void)configureCollectionViewElements
+{
+    // Since each section's content depends on other messages, we need to update each visible section even when a section's corresponding message has not changed. This also solves the issue with LYRQueryControllerChangeTypeUpdate (see above).
+    for (UICollectionViewCell<ATLMessagePresenting> *cell in [self.collectionView visibleCells]) {
+        NSIndexPath *indexPath = [self.collectionView indexPathForCell:cell];
+        LYRMessage *message = [self.conversationDataSource messageAtCollectionViewIndexPath:indexPath];
+        [self configureCell:cell forMessage:message indexPath:indexPath];
+    }
+    
+    for (ATLConversationCollectionViewHeader *header in self.sectionHeaders) {
+        NSIndexPath *queryControllerIndexPath = [self.conversationDataSource.queryController indexPathForObject:header.message];
+        if (!queryControllerIndexPath) continue;
+        NSIndexPath *collectionViewIndexPath = [self.conversationDataSource collectionViewIndexPathForQueryControllerIndexPath:queryControllerIndexPath];
+        [self configureHeader:header atIndexPath:collectionViewIndexPath];
+    }
+    
+    for (ATLConversationCollectionViewFooter *footer in self.sectionFooters) {
+        NSIndexPath *queryControllerIndexPath = [self.conversationDataSource.queryController indexPathForObject:footer.message];
+        if (!queryControllerIndexPath) continue;
+        NSIndexPath *collectionViewIndexPath = [self.conversationDataSource collectionViewIndexPathForQueryControllerIndexPath:queryControllerIndexPath];
+        [self configureFooter:footer atIndexPath:collectionViewIndexPath];
+    }
+}
+
+#pragma mark - Helpers
+
 - (LYRConversation *)existingConversationWithParticipantIdentifiers:(NSSet *)participantIdentifiers
 {
     NSMutableSet *set = [participantIdentifiers mutableCopy];
@@ -1289,40 +1100,6 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
     query.predicate = [LYRPredicate predicateWithProperty:@"participants" operator:LYRPredicateOperatorIsEqualTo value:set];
     query.limit = 1;
     return [self.layerClient executeQuery:query error:nil].lastObject;
-}
-
-#pragma mark - Helpers
-
-- (void)configureScrollIndicatorInset
-{
-    UIEdgeInsets contentInset = self.collectionView.contentInset;
-    UIEdgeInsets scrollIndicatorInsets = self.collectionView.scrollIndicatorInsets;
-    CGRect frame = [self.view convertRect:self.addressBarController.addressBarView.frame fromView:self.addressBarController.addressBarView.superview];
-    contentInset.top = CGRectGetMaxY(frame);
-    scrollIndicatorInsets.top = contentInset.top;
-    self.collectionView.contentInset = contentInset;
-    self.collectionView.scrollIndicatorInsets = scrollIndicatorInsets;
-}
-
-- (void)updateViewConstraints
-{
-    CGFloat typingIndicatorBottomConstraintConstant = -self.collectionView.scrollIndicatorInsets.bottom;
-    if (self.messageInputToolbar.superview) {
-        CGRect toolbarFrame = [self.view convertRect:self.messageInputToolbar.frame fromView:self.messageInputToolbar.superview];
-        CGFloat keyboardOnscreenHeight = CGRectGetHeight(self.view.frame) - CGRectGetMinY(toolbarFrame);
-        if (-keyboardOnscreenHeight > typingIndicatorBottomConstraintConstant) {
-            typingIndicatorBottomConstraintConstant = -keyboardOnscreenHeight;
-        }
-    }
-    self.typingIndicatorViewBottomConstraint.constant = typingIndicatorBottomConstraintConstant;
-    
-    [super updateViewConstraints];
-}
-
-- (void)scrollToBottomOfCollectionViewAnimated:(BOOL)animated
-{
-    CGSize contentSize = self.collectionView.contentSize;
-    [self.collectionView setContentOffset:[self bottomOffsetForContentSize:contentSize] animated:animated];
 }
 
 - (NSOrderedSet *)participantsForIdentifiers:(NSOrderedSet *)identifiers
@@ -1343,45 +1120,10 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
     return participantName;
 }
 
-#pragma mark - Auto Layout Configuration
-
-- (void)configureCollectionViewLayoutConstraints
-{
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.collectionView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0]];
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.collectionView attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeRight multiplier:1.0 constant:0]];
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.collectionView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeTop multiplier:1.0 constant:0]];
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.collectionView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0]];
-}
-
-- (void)configureTypingIndicatorLayoutConstraints
-{
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.typingIndicatorViewController.view attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0]];
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.typingIndicatorViewController.view attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0]];
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.typingIndicatorViewController.view attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:ATLTypingIndicatorHeight]];
-    self.typingIndicatorViewBottomConstraint = [NSLayoutConstraint constraintWithItem:self.typingIndicatorViewController.view attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0];
-    [self.view addConstraint:self.typingIndicatorViewBottomConstraint];
-}
-
-- (void)configureAddressBarLayoutConstraints
-{
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.addressBarController.view attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0.0]];
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.addressBarController.view attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0.0]];
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.addressBarController.view attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.topLayoutGuide attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0]];
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.addressBarController.view attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0]];
-}
-
 #pragma mark - NSNotification Center Registration
 
 - (void)atl_registerForNotifications
-{
-    // Keyboard Notifications
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
-    
-    // ATLMessageInputToolbar Notifications
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textViewTextDidBeginEditing:) name:UITextViewTextDidBeginEditingNotification object:self.messageInputToolbar.textInputView];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(messageInputToolbarDidChangeHeight:) name:ATLMessageInputToolbarDidChangeHeightNotification object:self.messageInputToolbar];
-    
+{    
     // Layer Notifications
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveTypingIndicator:) name:LYRConversationDidReceiveTypingIndicatorNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(layerClientObjectsDidChange:) name:LYRClientObjectsDidChangeNotification object:nil];
@@ -1389,4 +1131,5 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
     // Application State Notifications
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleApplicationWillEnterForeground:) name:UIApplicationWillEnterForegroundNotification object:nil];
 }
+
 @end
