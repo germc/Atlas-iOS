@@ -12,15 +12,13 @@
 #import "ATLTypingIndicatorViewController.h"
 
 /**
- @abstract The `ATLBaseConversationViewController` manages the basic user interface components associated with a messaging stream. 
- @discussion The controller hanldes presenting both the `ATLMessageInputToolbar` and optionally, the `ATLAddressBarViewController`. 
- The controller also handles configuring the layout of a collection view. It manages resizing the content size of the collection view
- in response to messange input toll bar activity as we. 
+ @abstract The `ATLBaseConversationViewController` manages the basic user interface components associated with a messaging user interface.
+ @discussion The controller hanldes presenting the `ATLMessageInputToolbar` and optionally, the `ATLAddressBarViewController`. It also manages configuring the layout and content insets of its collection view property in response to height changes in state of its `addressBarController`, `messageInputToolbar`, and typingIndicatoryViewController` properties.
  */
 @interface ATLBaseConversationViewController : UIViewController
 
 /**
- @abstract The `ATLAddressBarViewController` displayed for addressing new conversations.
+ @abstract The `ATLAddressBarViewController` displayed for addressing new conversations or displaying names of current conversation participants.
  */
 @property (nonatomic) ATLAddressBarViewController *addressBarController;
 
@@ -30,31 +28,29 @@
 @property (nonatomic) ATLMessageInputToolbar *messageInputToolbar;
 
 /** 
- @abstract The `ATLTypingIndicatorViewController` displayed to indicate other participants in a conversation are typing. 
+ @abstract An `ATLTypingIndicatorViewController` displayed to indicate other participants in a conversation are typing.
  */
 @property (nonatomic) ATLTypingIndicatorViewController *typingIndicatorViewController;
 
 /**
  @abstract The `UICollectionView` responsible for displaying messaging content. 
- @discussion Subclasses should set the collection view property in their `loadView` method. The controller will then 
- handle configuring autolayout constraints.
+ @discussion Subclasses should set the collection view property in their `loadView` method. The controller will then handle configuring autolayout constraints for the collection view.
  */
 @property (nonatomic) UICollectionView *collectionView;
 
-// TODO - We can get rid of this.
 /**
- @abstract Updates the typing indicator inset.
+ @abstract A constant representing the current height of the typing indicator.
  */
 @property (nonatomic) CGFloat typingIndicatorInset;
 
+//TODO - Update docs.
 /**
- @abstract Informs the receiver if it should display a `ATLAddressBarController`. If yes, your application must implement
- `ATLAddressBarControllerDelegate` and `ATLAddressBarControllerDataSource`. Default is no.
+ @abstract Informs the receiver if it should display an `ATLAddressBarController`. If yes, applications should implement `ATLAddressBarControllerDelegate` and `ATLAddressBarControllerDataSource`. Default is no.
  */
 @property (nonatomic) BOOL displaysAddressBar;
 
 /**
- @abstract Returns a boolean value that determines whether or not the controller should scroll the collection view content to the bottom. 
+ @abstract A boolean value that determines whether or not the controller should scroll the collection view content to the bottom.
  @discussion Returns NO if the content is further than 50px from the bottom of the collection view or the scroll view is currently scrolling.
  */
 - (BOOL)shouldScrollToBottom;
@@ -65,7 +61,9 @@
  */
 - (void)scrollToBottomAnimated:(BOOL)animated;
 
-// Calculates the bottom offset of the collection view taking into account any current insets caused by address bar and message input toolbar
+/**
+ @abstract Calculates the bottom offset of the collection view taking into account any current insets caused by address bar or message input toolbar
+ */
 - (CGPoint)bottomOffsetForContentSize:(CGSize)contentSize;
 
 @end

@@ -162,6 +162,7 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
     
     _conversation = conversation;
     
+    self.showingMoreMessagesIndicator = NO;
     [self.typingParticipantIDs removeAllObjects];
     [self updateTypingIndicatorOverlay:NO];
     
@@ -175,7 +176,8 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
         self.conversationDataSource = nil;
         [self.collectionView reloadData];
     }
-    [self scrollToBottomAnimated:NO];
+    CGSize contentSize = self.collectionView.collectionViewLayout.collectionViewContentSize;
+    [self.collectionView setContentOffset:[self bottomOffsetForContentSize:contentSize] animated:NO];
 }
 
 - (void)fetchLayerMessages
