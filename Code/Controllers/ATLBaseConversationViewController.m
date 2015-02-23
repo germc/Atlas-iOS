@@ -63,10 +63,10 @@ static CGFloat const ATLTypingIndicatorHeight = 20;
     self.view.inputAccessoryView = self.messageInputToolbar;
     
     // Add typing indicator
-    self.typingIndicatorViewController = [[ATLTypingIndicatorViewController alloc] init];
-    [self addChildViewController:self.typingIndicatorViewController];
-    [self.view addSubview:self.typingIndicatorViewController.view];
-    [self.typingIndicatorViewController didMoveToParentViewController:self];
+    self.typingIndicatorController = [[ATLTypingIndicatorViewController alloc] init];
+    [self addChildViewController:self.typingIndicatorController];
+    [self.view addSubview:self.typingIndicatorController.view];
+    [self.typingIndicatorController didMoveToParentViewController:self];
     [self configureTypingIndicatorLayoutConstraints];
     
     // Add address bar if needed
@@ -301,10 +301,10 @@ static CGFloat const ATLTypingIndicatorHeight = 20;
 - (void)configureTypingIndicatorLayoutConstraints
 {
     // Typing Indicatr
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.typingIndicatorViewController.view attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0]];
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.typingIndicatorViewController.view attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0]];
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.typingIndicatorViewController.view attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:ATLTypingIndicatorHeight]];
-    self.typingIndicatorViewBottomConstraint = [NSLayoutConstraint constraintWithItem:self.typingIndicatorViewController.view attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0];
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.typingIndicatorController.view attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0]];
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.typingIndicatorController.view attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0]];
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.typingIndicatorController.view attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:ATLTypingIndicatorHeight]];
+    self.typingIndicatorViewBottomConstraint = [NSLayoutConstraint constraintWithItem:self.typingIndicatorController.view attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0];
     [self.view addConstraint:self.typingIndicatorViewBottomConstraint];
 }
 

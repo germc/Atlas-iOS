@@ -12,8 +12,8 @@
 #import "ATLTypingIndicatorViewController.h"
 
 /**
- @abstract The `ATLBaseConversationViewController` manages a suite of user interface components associated with a messaging.
- @discussion The controller handles presenting the `ATLMessageInputToolbar`, the `ATLTypingIndicatorViewController`, and optionally, the `ATLAddressBarViewController`. It also manages configuring the layout and content insets of its collection view property in response to changes in the state of its `addressBarController`, `messageInputToolbar`, and `typingIndicatoryViewController` properties.
+ @abstract The `ATLBaseConversationViewController` manages a suite of user interface components associated with a messaging view controller.
+ @discussion The controller handles presenting the `ATLMessageInputToolbar`, the `ATLTypingIndicatorViewController`, and optionally, the `ATLAddressBarViewController`. It also manages configuring the layout and content insets of its collection view property in response to changes in the state or size of its `addressBarController`, `messageInputToolbar`, and `typingIndicatorController` properties.
  */
 @interface ATLBaseConversationViewController : UIViewController
 
@@ -30,7 +30,7 @@
 /** 
  @abstract An `ATLTypingIndicatorViewController` displayed to represent participants typing in a conversation.
  */
-@property (nonatomic) ATLTypingIndicatorViewController *typingIndicatorViewController;
+@property (nonatomic) ATLTypingIndicatorViewController *typingIndicatorController;
 
 /**
  @abstract The `UICollectionView` responsible for displaying messaging content. 
@@ -43,7 +43,6 @@
  */
 @property (nonatomic) CGFloat typingIndicatorInset;
 
-//TODO - Update docs.
 /**
  @abstract IA boolean value to determine whether or not the receiver should display an `ATLAddressBarController`. If yes, applications should implement `ATLAddressBarControllerDelegate` and `ATLAddressBarControllerDataSource`. Default is no.
  */

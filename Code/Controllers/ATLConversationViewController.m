@@ -719,10 +719,10 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
         id<ATLParticipant> participant = [self participantForIdentifier:participantID];
         if (participant) [knownParticipantsTyping addObject:participant];
     }];
-    [self.typingIndicatorViewController updateWithParticipants:knownParticipantsTyping animated:animated];
+    [self.typingIndicatorController updateWithParticipants:knownParticipantsTyping animated:animated];
     
     if (knownParticipantsTyping.count) {
-        self.typingIndicatorInset = self.typingIndicatorViewController.view.frame.size.height;
+        self.typingIndicatorInset = self.typingIndicatorController.view.frame.size.height;
     } else {
         self.typingIndicatorInset = 0.0f;
     }
