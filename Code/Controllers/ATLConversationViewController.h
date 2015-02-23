@@ -22,8 +22,8 @@
 #import <LayerKit/LayerKit.h>
 #import <MapKit/MapKit.h>
 #import "ATLParticipant.h"
-#import "ATLMessageInputToolbar.h"
-#import "ATLAddressBarViewController.h"
+#import "ATLBaseConversationViewController.h"
+
 
 @class ATLConversationViewController;
 @protocol ATLMessagePresenting;
@@ -149,7 +149,7 @@
  a Layer conversation and the ability to send messages. The controller's design and functionality closely correlates with
  the conversation view controller in Messages.
 */
-@interface ATLConversationViewController : UIViewController <ATLAddressBarViewControllerDelegate>
+@interface ATLConversationViewController : ATLBaseConversationViewController <ATLAddressBarViewControllerDelegate>
 
 ///---------------------------------------
 /// @name Initializing a Controller
@@ -216,27 +216,5 @@
  @default `YES`.
  */
 @property (nonatomic) BOOL marksMessagesAsRead;
-
-/**
- @abstract Informs the receiver if it should display a `ATLAddressBarController`. If yes, your application must implement
- `ATLAddressBarControllerDelegate` and `ATLAddressBarControllerDataSource`. Default is no.
- */
-@property (nonatomic) BOOL displaysAddressBar;
-
-///---------------------------------------
-/// @name Public Accessors
-///---------------------------------------
-
-/**
- @abstract The `ATLAddressBarViewController` displayed for addressing new conversations.
- */
-@property (nonatomic) ATLAddressBarViewController *addressBarController;
-
-/**
- @abstract The `ATLMessageInputToolbar` displayed for user input.
- */
-@property (nonatomic) ATLMessageInputToolbar *messageInputToolbar;
-
-
 
 @end

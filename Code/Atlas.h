@@ -30,6 +30,7 @@
 #import "ATLMessageInputToolbar.h"
 #import "ATLParticipantTableViewController.h"
 #import "ATLTypingIndicatorViewController.h"
+#import "ATLBaseConversationViewController.h"
 
 ///-------------
 /// @name Models

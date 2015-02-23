@@ -10,6 +10,7 @@
 #import "ATLSampleConversationListViewController.h"
 #import "LayerKitMock.h"
 #import <Atlas/Atlas.h>
+
 @interface ProgrammaticAppDelegate ()
 
 @end
@@ -18,7 +19,11 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    UIViewController *controller = [[UIViewController alloc] init];
+    LYRUserMock *mockUser = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameRussell];
+    LYRClientMock *layerClient = [LYRClientMock layerClientMockWithAuthenticatedUserID:mockUser.participantIdentifier];
+    [[LYRMockContentStore sharedStore] hydrateConversationsForAuthenticatedUserID:layerClient.authenticatedUserID count:10];
+    
+    ATLSampleConversationListViewController *controller = [ATLSampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)layerClient];
     controller.view.backgroundColor = [UIColor whiteColor];
     UINavigationController *rootViewController = [[UINavigationController alloc] initWithRootViewController:controller];
     
