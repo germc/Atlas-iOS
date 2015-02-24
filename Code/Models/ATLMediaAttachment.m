@@ -147,8 +147,6 @@ static float const ATLMediaAttachmentDefaultThumbnailJPEGCompression = 0.5f;
         // --------------------------------------------------------------------
         if ([assetType isEqualToString:ALAssetTypePhoto]) {
             self.mediaType = ATLMediaAttachmentTypeImage;
-        } else if ([assetType isEqualToString:ALAssetTypeVideo]) {
-            self.mediaType = ATLMediaAttachmentTypeVideo;
         } else {
             return nil;
         }
