@@ -108,6 +108,7 @@ static CGFloat const ATLTypingIndicatorHeight = 20;
     [super viewDidLayoutSubviews];
     
     if (self.addressBarController) {
+        [self.addressBarController.view layoutIfNeeded];
         [self updateTopCollectionViewInset];
     }
     // To get the toolbar to slide onscreen with the view controller's content, we have to make the view the
@@ -196,6 +197,7 @@ static CGFloat const ATLTypingIndicatorHeight = 20;
     if ([self shouldScrollToBottom]) {
         [self scrollToBottomAnimated:YES];
     }
+    self.typingIndicatorViewBottomConstraint.constant = -keyboardHeight;
 }
 
 #pragma mark - Notification Handlers
@@ -263,7 +265,6 @@ static CGFloat const ATLTypingIndicatorHeight = 20;
     if (CGRectEqualToRect(keyboardBeginFrameInView, keyboardEndFrameInView)) {
         [UIView performWithoutAnimation:^{
             [self updateBottomCollectionViewInset];
-            self.typingIndicatorViewBottomConstraint.constant = -self.collectionView.scrollIndicatorInsets.bottom;
         }];
         return;
     }
@@ -274,7 +275,6 @@ static CGFloat const ATLTypingIndicatorHeight = 20;
     [UIView setAnimationCurve:[notification.userInfo[UIKeyboardAnimationCurveUserInfoKey] integerValue]];
     [UIView setAnimationBeginsFromCurrentState:YES];
     [self updateBottomCollectionViewInset];
-    self.typingIndicatorViewBottomConstraint.constant = -self.collectionView.scrollIndicatorInsets.bottom;
     [self.view layoutIfNeeded];
     [UIView commitAnimations];
 }

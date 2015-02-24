@@ -48,7 +48,7 @@
 
 - (id<ATLParticipant>)conversationViewController:(ATLConversationViewController *)conversationViewController participantForIdentifier:(NSString *)participantIdentifier
 {
-    return [LYRUserMock mockUserForIdentifier:participantIdentifier];
+    return [ATLUserMock mockUserForIdentifier:participantIdentifier];
 }
 
 - (NSAttributedString *)conversationViewController:(ATLConversationViewController *)conversationViewController attributedStringForDisplayOfDate:(NSDate *)date
@@ -67,7 +67,7 @@
         if ([participant isEqualToString:self.layerClient.authenticatedUserID]) {
             return;
         }
-        NSString *participantNameWithCheckmark = [NSString stringWithFormat:@"%@✔︎ ", [LYRUserMock mockUserForIdentifier:participant].firstName];
+        NSString *participantNameWithCheckmark = [NSString stringWithFormat:@"%@✔︎ ", [ATLUserMock mockUserForIdentifier:participant].firstName];
         UIColor *textColor = [UIColor lightGrayColor];
         NSAttributedString *statusString = [[NSAttributedString alloc] initWithString:participantNameWithCheckmark attributes:@{NSForegroundColorAttributeName: textColor}];
         [mergedStatuses appendAttributedString:statusString];
@@ -89,7 +89,7 @@
         self.title = @"Personal";
     } else if (otherParticipantIDs.count == 1) {
         NSString *otherParticipantID = [otherParticipantIDs anyObject];
-        id<ATLParticipant> participant = [LYRUserMock mockUserForIdentifier:otherParticipantID];
+        id<ATLParticipant> participant = [ATLUserMock mockUserForIdentifier:otherParticipantID];
         if (participant) {
             self.title = participant.firstName;
         } else {
@@ -102,7 +102,7 @@
 
 - (void)addressBarViewController:(ATLAddressBarViewController *)addressBarViewController didTapAddContactsButton:(UIButton *)addContactsButton
 {
-    NSSet *participants = [LYRUserMock allMockParticipants];
+    NSSet *participants = [ATLUserMock allMockParticipants];
     ATLSampleParticipantTableViewController *controller = [ATLSampleParticipantTableViewController participantTableViewControllerWithParticipants:participants sortType:ATLParticipantPickerSortTypeFirstName];
     UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
     [self.navigationController presentViewController:navigationController animated:YES completion:nil];
@@ -114,9 +114,9 @@
     [self.navigationController dismissViewControllerAnimated:YES completion:nil];
 }
 
-- (void)participantTableViewController:(ATLParticipantTableViewController *)participantTableViewController didSearchWithString:(NSString *)searchText completion:(void (^)(NSSet *))completion
+- (void)addressBarViewController:(ATLAddressBarViewController *)addressBarViewController searchForParticipantsMatchingText:(NSString *)searchText completion:(void (^)(NSArray *))completion
 {
-    
+    completion([[ATLUserMock participantsWithText:searchText] allObjects]);
 }
 
 @end

@@ -28,4 +28,4 @@
 #import "LYRQueryControllerMock.h"
 
 #import "LYRMockContentStore.h"
-#import "LYRUserMock.h"
+#import "ATLUserMock.h"

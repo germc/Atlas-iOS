@@ -17,19 +17,23 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 //
+
 #import <Foundation/Foundation.h>
 #import "LayerKitMock.h"
 
 /**
  @abstract The `LYRMockContentStore` provides a simple, in-memory cache for mock Layer messaging content. The class is meant to be used
- for simple user interface testing with Atlas components.
+ for user interface testing with Atlas components.
  */
 @interface LYRMockContentStore : NSObject
 
+/**
+ @abstract The user identifier of the currently authenticated user.
+ */
 @property (nonatomic) NSString *authenticatedUserID;
 
 /**
- @abstract Defaults to `YES`. If set to `NO`, the content store will not broadcast mock change notifications.
+ @abstract Defaults to `YES`. If set to `NO`, the content store will not broadcast mock `LYRObjectDidChangeNotification` change notifications.
  */
 @property (nonatomic) BOOL shouldBroadcastChanges;
 
@@ -39,7 +43,7 @@
 + (id)sharedStore;
 
 /**
- @abstrace Creates an arbitrary number of Layer conversations, each with 8 messages.
+ @abstrace Creates an arbitrary number of Layer conversations, each with 11 messages.
  @param authenticatedUserID The participant string representing the authenticated user.
  @param count The number of conversations to be created.
  */

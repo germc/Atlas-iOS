@@ -19,7 +19,6 @@
 //
 #import "StoryboardAppDelegate.h"
 #import "LayerKitMock.h"
-#import "ATLTestConversationListViewController.h"
 #import "ATLSampleConversationListViewController.h"
 #import <Atlas/Atlas.h>
 
@@ -32,12 +31,13 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    LYRUserMock *mockUser = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameRussell];
+    ATLUserMock *mockUser = [ATLUserMock userWithMockUserName:ATLMockUserNameBlake];
     LYRClientMock *layerClient = [LYRClientMock layerClientMockWithAuthenticatedUserID:mockUser.participantIdentifier];
-    [[LYRMockContentStore sharedStore] hydrateConversationsForAuthenticatedUserID:layerClient.authenticatedUserID count:10];
+    [[LYRMockContentStore sharedStore] hydrateConversationsForAuthenticatedUserID:layerClient.authenticatedUserID count:1];
     
-    ATLTestConversationListViewController *controller = (ATLTestConversationListViewController *)[[[application delegate] window] rootViewController];
-    [controller setLayerClient:layerClient];
+    UINavigationController *navigationController = (UINavigationController *)[[[application delegate] window] rootViewController];
+    ATLSampleConversationListViewController *controller = navigationController.viewControllers[0];
+    [controller setLayerClient:(LYRClient *)layerClient];
     
     return YES;
 }

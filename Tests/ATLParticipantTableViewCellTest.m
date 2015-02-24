@@ -24,7 +24,7 @@
 @interface LYRParticipantTableViewCellTest : XCTestCase
 
 @property (nonatomic) ATLTestInterface *testInterface;
-@property (nonatomic) LYRUserMock *userMock;
+@property (nonatomic) ATLUserMock *userMock;
 
 @end
 
@@ -36,10 +36,10 @@ extern NSString *const ATLParticipantSectionHeaderViewAccessibilityLabel;
 - (void)setUp
 {
     [super setUp];
-    LYRUserMock *mockUser = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameRussell];
+    ATLUserMock *mockUser = [ATLUserMock userWithMockUserName:ATLMockUserNameBlake];
     LYRClientMock *layerClient = [LYRClientMock layerClientMockWithAuthenticatedUserID:mockUser.participantIdentifier];
     self.testInterface = [ATLTestInterface testIntefaceWithLayerClient:layerClient];
-    self.userMock = [LYRUserMock new];
+    self.userMock = [ATLUserMock new];
 }
 
 - (void)tearDown
@@ -56,7 +56,7 @@ extern NSString *const ATLParticipantSectionHeaderViewAccessibilityLabel;
     [[ATLParticipantTableViewCell appearance] setTitleColor:testColor];
     [self presentParticipantPicker];
     
-    LYRUserMock *user = [[[LYRUserMock allMockParticipants] allObjects] firstObject];
+    ATLUserMock *user = [[[ATLUserMock allMockParticipants] allObjects] firstObject];
     ATLParticipantTableViewCell *cell = (ATLParticipantTableViewCell *)[tester waitForViewWithAccessibilityLabel:user.fullName];
     expect(cell.titleColor).to.equal(testColor);
 }
@@ -67,7 +67,7 @@ extern NSString *const ATLParticipantSectionHeaderViewAccessibilityLabel;
     [[ATLParticipantTableViewCell appearance] setTitleFont:testFont];
     [self presentParticipantPicker];
     
-    LYRUserMock *user = [[[LYRUserMock allMockParticipants] allObjects] firstObject];
+    ATLUserMock *user = [[[ATLUserMock allMockParticipants] allObjects] firstObject];
     ATLParticipantTableViewCell *cell = (ATLParticipantTableViewCell *)[tester waitForViewWithAccessibilityLabel:user.fullName];
     expect(cell.titleFont).to.equal(testFont);
 }
@@ -78,7 +78,7 @@ extern NSString *const ATLParticipantSectionHeaderViewAccessibilityLabel;
     [[ATLParticipantTableViewCell appearance] setBoldTitleFont:testFont];
     [self presentParticipantPicker];
     
-    LYRUserMock *user = [[[LYRUserMock allMockParticipants] allObjects] firstObject];
+    ATLUserMock *user = [[[ATLUserMock allMockParticipants] allObjects] firstObject];
     ATLParticipantTableViewCell *cell = (ATLParticipantTableViewCell *)[tester waitForViewWithAccessibilityLabel:user.fullName];;
     expect(cell.boldTitleFont).to.equal(testFont);
 }
@@ -89,7 +89,7 @@ extern NSString *const ATLParticipantSectionHeaderViewAccessibilityLabel;
     [[ATLParticipantSectionHeaderView appearance] setSectionHeaderFont:boldFont];
     [self presentParticipantPicker];
     
-    LYRUserMock *user = [[[LYRUserMock allMockParticipants] allObjects] firstObject];
+    ATLUserMock *user = [[[ATLUserMock allMockParticipants] allObjects] firstObject];
     NSString *name = user.fullName;
     NSString *firstInitial = [name substringToIndex:1];
     
@@ -103,7 +103,7 @@ extern NSString *const ATLParticipantSectionHeaderViewAccessibilityLabel;
     [[ATLParticipantSectionHeaderView appearance] setSectionHeaderTextColor:testColor];
     [self presentParticipantPicker];
     
-    LYRUserMock *user = [[[LYRUserMock allMockParticipants] allObjects] firstObject];
+    ATLUserMock *user = [[[ATLUserMock allMockParticipants] allObjects] firstObject];
     NSString *name = user.fullName;
     NSString *firstInitial = [name substringToIndex:1];
     
@@ -117,7 +117,7 @@ extern NSString *const ATLParticipantSectionHeaderViewAccessibilityLabel;
     [[ATLParticipantSectionHeaderView appearance] setSectionHeaderBackgroundColor:testColor];
     [self presentParticipantPicker];
     
-    LYRUserMock *user = [[[LYRUserMock allMockParticipants] allObjects] firstObject];
+    ATLUserMock *user = [[[ATLUserMock allMockParticipants] allObjects] firstObject];
     NSString *name = user.fullName;
     NSString *firstInitial = [name substringToIndex:1];
     
@@ -128,7 +128,7 @@ extern NSString *const ATLParticipantSectionHeaderViewAccessibilityLabel;
 
 - (void)presentParticipantPicker
 {
-    NSSet *participants = [LYRUserMock allMockParticipants];
+    NSSet *participants = [ATLUserMock allMockParticipants];
     ATLParticipantTableViewController *controller = [ATLParticipantTableViewController participantTableViewControllerWithParticipants:participants sortType:ATLParticipantPickerSortTypeFirstName];
     controller.allowsMultipleSelection = NO;
     UINavigationController *presentingController = [[UINavigationController alloc] initWithRootViewController:controller];

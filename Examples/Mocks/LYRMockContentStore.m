@@ -62,7 +62,7 @@
 - (void)hydrateConversationForAuthenticatedUserID:(NSString *)authenticatedUserID
 {
     self.authenticatedUserID = authenticatedUserID;
-    LYRUserMock *user = [LYRUserMock randomUser];
+    ATLUserMock *user = [ATLUserMock randomUser];
     LYRConversationMock *conversation = [LYRConversationMock newConversationWithParticipants:[NSSet setWithObjects:user.participantIdentifier, self.authenticatedUserID, nil] options:nil];
     [self hydrateMessagesForConversation:conversation];
 }
@@ -81,24 +81,43 @@
     [participantCopy minusSet:[NSSet setWithObject:self.authenticatedUserID]];
     NSString *participant = [[participantCopy allObjects] lastObject];
     
-    LYRMessagePartMock *messagePart1 = [LYRMessagePartMock messagePartWithText:@"Hi"];
-    LYRMessagePartMock *messagePart2 = [LYRMessagePartMock messagePartWithText:@"How are you?"];
-    LYRMessageMock *message1 = [LYRMessageMock newMessageWithParts:@[messagePart1, messagePart2] senderID:self.authenticatedUserID];
-    [conversation sendMessage:message1 error:nil];
+    LYRMessagePartMock *messagePart1 = [LYRMessagePartMock messagePartWithText:@"YO!"];
+    [self sendMessagePart:messagePart1 toConversation:conversation fromUserID:participant];
     
-    LYRMessagePartMock *messagePart3 = [LYRMessagePartMock messagePartWithText:@"Hey Man"];
-    LYRMessagePartMock *messagePart4 = [LYRMessagePartMock messagePartWithText:@"I am great, how about you?"];
-    LYRMessageMock *message2 = [LYRMessageMock newMessageWithParts:@[messagePart3, messagePart4] senderID:participant];
-    [conversation sendMessage:message2 error:nil];
+    LYRMessagePartMock *messagePart2 = [LYRMessagePartMock messagePartWithText:@"Welcome to the Atlas sample project!"];
+    [self sendMessagePart:messagePart2 toConversation:conversation fromUserID:participant];
     
-    LYRMessagePartMock *messagePart5 = [LYRMessagePartMock messagePartWithText:@"Doing well dude."];
-    LYRMessagePartMock *messagePart6 = [LYRMessagePartMock messagePartWithText:@"Ready to dominate the niners this weekend!"];
-    LYRMessageMock *message3 = [LYRMessageMock newMessageWithParts:@[messagePart5, messagePart6] senderID:self.authenticatedUserID];
-    [conversation sendMessage:message3 error:nil];
+    LYRMessagePartMock *messagePart3 = [LYRMessagePartMock messagePartWithText:@"Hey there!"];
+    [self sendMessagePart:messagePart3 toConversation:conversation fromUserID:self.authenticatedUserID];
     
-    LYRMessagePartMock *messagePart7 = [LYRMessagePartMock messagePartWithText:@"Me too man."];
-    LYRMessagePartMock *messagePart8 = [LYRMessagePartMock messagePartWithText:@"This is going to be fantastic!"];
-    LYRMessageMock *message4 = [LYRMessageMock newMessageWithParts:@[messagePart7, messagePart8] senderID:participant];
+    LYRMessagePartMock *messagePart4 = [LYRMessagePartMock messagePartWithText:@"Thank you very much. It looks nice in here!"];
+    [self sendMessagePart:messagePart4 toConversation:conversation fromUserID:self.authenticatedUserID];
+    
+    LYRMessagePartMock *messagePart5 = [LYRMessagePartMock messagePartWithText:@"We like to think so!"];
+    [self sendMessagePart:messagePart5 toConversation:conversation fromUserID:participant];
+   
+    LYRMessagePartMock *messagePart6 = [LYRMessagePartMock messagePartWithText:@"If you are interested in reading more about Atlas, be sure to check out the readme at https://github.com/layerhq/Atlas-iOS!"];
+    [self sendMessagePart:messagePart6 toConversation:conversation fromUserID:participant];
+    
+    LYRMessagePartMock *messagePart7 = [LYRMessagePartMock messagePartWithText:@"I most certainly will. Thank you for the heads up!"];
+    [self sendMessagePart:messagePart7 toConversation:conversation fromUserID:self.authenticatedUserID];
+    
+    LYRMessagePartMock *messagePart8 = [LYRMessagePartMock messagePartWithText:@"Also if you want to learn more about Layer, be sure to check them out."];
+    [self sendMessagePart:messagePart8 toConversation:conversation fromUserID:participant];
+    
+    LYRMessagePartMock *messagePart9 = [LYRMessagePartMock messagePartWithText:@"The website is http://www.layer.com"];
+    [self sendMessagePart:messagePart9 toConversation:conversation fromUserID:participant];
+    
+    LYRMessagePartMock *messagePart10 = [LYRMessagePartMock messagePartWithText:@"And if you have any support issues, feel free to shoot an email to support@layer.com. They will get back to you right away!"];
+    [self sendMessagePart:messagePart10 toConversation:conversation fromUserID:participant];
+    
+    LYRMessagePartMock *messagePart11 = [LYRMessagePartMock messagePartWithText:@"Ok! Thank you very much!"];
+    [self sendMessagePart:messagePart11 toConversation:conversation fromUserID:self.authenticatedUserID];
+}
+
+- (void)sendMessagePart:(LYRMessagePartMock *)messagePart toConversation:(LYRConversationMock *)conversation fromUserID:(NSString *)userID
+{
+    LYRMessageMock *message4 = [LYRMessageMock newMessageWithParts:@[messagePart] senderID:userID];
     [conversation sendMessage:message4 error:nil];
 }
 

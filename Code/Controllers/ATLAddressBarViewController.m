@@ -33,6 +33,7 @@
 
 @implementation ATLAddressBarViewController
 
+CGFloat const ATLDisabledStringPadding = 20;
 NSString *const ATLAddressBarViewAccessibilityLabel = @"Address Bar View";
 NSString *const ATLAddressBarAccessibilityLabel = @"Address Bar";
 static NSString *const ATLMParticpantCellIdentifier = @"participantCellIdentifier";
@@ -457,27 +458,38 @@ static NSString *const ATLAddressBarParticipantAttributeName = @"ATLAddressBarPa
     NSMutableOrderedSet *mutableParticipants = [participants mutableCopy];
     [mutableParticipants removeObject:participants.firstObject];
     
+    __block NSUInteger remainingParticipants = mutableParticipants.count;
     [mutableParticipants enumerateObjectsUsingBlock:^(id<ATLParticipant> participant, NSUInteger idx, BOOL *stop) {
-        NSString *expandedString = [NSString stringWithFormat:@"%@, %@", disabledString, participant.firstName];
-        if (![self textViewHasSpaceForParticipantString:expandedString]) {
-            *stop = YES;
-        }
-        NSUInteger remainingParticipants = mutableParticipants.count - idx;
-        NSString *truncatedString = [NSString stringWithFormat:@"%@, and %lu others", expandedString, (unsigned long)remainingParticipants];
-        if (![self textViewHasSpaceForParticipantString:truncatedString]) {
-            disabledString = [NSString stringWithFormat:@"%@, & %lu others", disabledString, (unsigned long)remainingParticipants + 1];
-            *stop = YES;
+        NSString *othersString = [self otherStringWithRemainingParticipants:remainingParticipants];
+        NSString *truncatedString = [NSString stringWithFormat:@"%@ %@", disabledString, othersString];
+        if ([self textViewHasSpaceForParticipantString:truncatedString]) {
+            remainingParticipants -= 1;
+            othersString = [self otherStringWithRemainingParticipants:remainingParticipants];
+            NSString *expandedString = [NSString stringWithFormat:@"%@, %@ %@", disabledString, participant.firstName, othersString];
+            if ([self textViewHasSpaceForParticipantString:expandedString]) {
+                disabledString = [NSString stringWithFormat:@"%@, %@", disabledString, participant.firstName];
+            } else {
+                disabledString = truncatedString;
+                *stop = YES;
+            }
         } else {
-            disabledString = expandedString;
+            disabledString = [NSString stringWithFormat:@"%lu participants", (unsigned long)remainingParticipants];
+            *stop = YES;
         }
     }];
     return disabledString;
 }
 
+- (NSString *)otherStringWithRemainingParticipants:(NSUInteger)remainingParticipants
+{
+    NSString *othersString = (remainingParticipants > 1) ? @"others" : @"other";
+    return [NSString stringWithFormat:@"and %lu %@", (unsigned long)remainingParticipants, othersString];
+}
+
 - (BOOL)textViewHasSpaceForParticipantString:(NSString *)participantString
 {
     CGSize fittedSize = [participantString sizeWithAttributes:@{NSFontAttributeName: self.addressBarView.addressBarTextView.font}];
-    return fittedSize.width <= (CGRectGetWidth(self.addressBarView.addressBarTextView.frame) - ATLAddressBarTextViewIndent - ATLAddressBarTextContainerInset);
+    return fittedSize.width < (CGRectGetWidth(self.addressBarView.addressBarTextView.frame) - ATLAddressBarTextViewIndent - ATLAddressBarTextContainerInset - ATLDisabledStringPadding); // Adding extra padding to account for text container inset.
 }
 
 #pragma mark - Auto Layout
