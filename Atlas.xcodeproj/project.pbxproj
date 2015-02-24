@@ -14,6 +14,17 @@
 		D0294DE81A93F39300702856 /* ATLMediaStreamTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D0294DE41A93F37000702856 /* ATLMediaStreamTests.m */; };
 		D2575596FE7E9432B48A0D74 /* libPods-ProgrammaticTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D82E912F9EB0D3AB8BD452A2 /* libPods-ProgrammaticTests.a */; };
 		D63C68E11A94250000D235D5 /* test-logo.png in Resources */ = {isa = PBXBuildFile; fileRef = D63C68DF1A94250000D235D5 /* test-logo.png */; };
+		D6A122B51A9D2CA2004F67BE /* ATLTestClasses.m in Sources */ = {isa = PBXBuildFile; fileRef = D6F4060A1A8FDEEB00AE9581 /* ATLTestClasses.m */; };
+		D6A122B61A9D2CA2004F67BE /* ATLTestInterface.m in Sources */ = {isa = PBXBuildFile; fileRef = D6F4060C1A8FDEEB00AE9581 /* ATLTestInterface.m */; };
+		D6A122B71A9D2CA2004F67BE /* LYRClientMockTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D6F4060D1A8FDEEB00AE9581 /* LYRClientMockTests.m */; };
+		D6A122B81A9D2CA2004F67BE /* ATLConversationTableViewCellTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D6F406021A8FDEEB00AE9581 /* ATLConversationTableViewCellTest.m */; };
+		D6A122B91A9D2CA2004F67BE /* ATLMessageCollectionViewCellTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D6F406041A8FDEEB00AE9581 /* ATLMessageCollectionViewCellTest.m */; };
+		D6A122BA1A9D2CA2004F67BE /* ATLParticipantTableViewCellTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D6F406081A8FDEEB00AE9581 /* ATLParticipantTableViewCellTest.m */; };
+		D6A122BB1A9D2CA2004F67BE /* ATLConversationListViewControllerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D6F406011A8FDEEB00AE9581 /* ATLConversationListViewControllerTest.m */; };
+		D6A122BC1A9D2CA2004F67BE /* ATLConversationViewControllerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D6F406031A8FDEEB00AE9581 /* ATLConversationViewControllerTest.m */; };
+		D6A122BD1A9D2CA2004F67BE /* ATLMessageInputBarTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D6F406051A8FDEEB00AE9581 /* ATLMessageInputBarTest.m */; };
+		D6A122BE1A9D2CA2004F67BE /* ATLParticipantTableViewControllerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D6F406071A8FDEEB00AE9581 /* ATLParticipantTableViewControllerTest.m */; };
+		D6A122BF1A9D2CA2004F67BE /* ALTAddressBarControllerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D6C0454E1A9953C70028E9D0 /* ALTAddressBarControllerTest.m */; };
 		D6C045451A9914090028E9D0 /* ProgrammaticAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = D6C045441A9914080028E9D0 /* ProgrammaticAppDelegate.m */; };
 		D6C0454B1A9941CD0028E9D0 /* test-logo.png in Resources */ = {isa = PBXBuildFile; fileRef = D63C68DF1A94250000D235D5 /* test-logo.png */; };
 		D6C0454F1A9953C70028E9D0 /* ALTAddressBarControllerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D6C0454E1A9953C70028E9D0 /* ALTAddressBarControllerTest.m */; };
@@ -890,6 +901,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D6A122B51A9D2CA2004F67BE /* ATLTestClasses.m in Sources */,
+				D6A122B61A9D2CA2004F67BE /* ATLTestInterface.m in Sources */,
+				D6A122B71A9D2CA2004F67BE /* LYRClientMockTests.m in Sources */,
+				D6A122B81A9D2CA2004F67BE /* ATLConversationTableViewCellTest.m in Sources */,
+				D6A122B91A9D2CA2004F67BE /* ATLMessageCollectionViewCellTest.m in Sources */,
+				D6A122BA1A9D2CA2004F67BE /* ATLParticipantTableViewCellTest.m in Sources */,
+				D6A122BB1A9D2CA2004F67BE /* ATLConversationListViewControllerTest.m in Sources */,
+				D6A122BC1A9D2CA2004F67BE /* ATLConversationViewControllerTest.m in Sources */,
+				D6A122BD1A9D2CA2004F67BE /* ATLMessageInputBarTest.m in Sources */,
+				D6A122BE1A9D2CA2004F67BE /* ATLParticipantTableViewControllerTest.m in Sources */,
+				D6A122BF1A9D2CA2004F67BE /* ALTAddressBarControllerTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1345,7 +1367,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_FILE = StoryboardTests/Info.plist;
+				INFOPLIST_FILE = "Tests/Resources/StoryboardTests-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = YES;
@@ -1388,7 +1410,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_FILE = StoryboardTests/Info.plist;
+				INFOPLIST_FILE = "Tests/Resources/StoryboardTests-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = NO;
