@@ -212,6 +212,16 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
         return;
     }
     
+    // iOS7 specific
+    if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_7_1) {
+        success = [self setupiOS7SpecificConsumerPrerequisite:&error];
+        if (!success) {
+            self.mediaStreamStatus = NSStreamStatusError;
+            self.mediaStreamError = error;
+            return;
+        }
+    }
+    
     // Setup data consumer.
     success = [self setupConsumerWithError:&error];
     if (!success) {
@@ -242,7 +252,7 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
         self.destination = NULL;
     }
     if (self.consumer) {
-        CFRelease(self.consumer);
+        CGDataConsumerRelease(self.consumer);
         self.consumer = NULL;
     }
     if (self.source) {
@@ -250,7 +260,7 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
         self.source = NULL;
     }
     if (self.provider) {
-        CFRelease(self.provider);
+        CGDataProviderRelease(self.provider);
         self.provider = NULL;
     }
     self.asset = nil;
@@ -337,6 +347,7 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
 
 /**
  @abstract Prepares the CGDataProvider which slurps data directly from the ALAsset based on the self.assetURL defined at init.
+ @param error A reference to an `NSError` object that will contain error information in case the action was not successful.
  @return Returns `YES` if setup was successful; On failures, method sets the `error` and returns `NO`.
  */
 - (BOOL)setupProviderForAssetStreamingWithError:(NSError **)error
@@ -368,7 +379,7 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
     self.source = CGImageSourceCreateWithDataProvider(self.provider, NULL);
     if (self.provider == NULL || self.source == NULL) {
         if (error) {
-            *error = [NSError errorWithDomain:ATLMediaInputStreamErrorDomain code:ATLMediaInputStreamErrorFailedInitializingAssetProvider userInfo:nil];
+            *error = [NSError errorWithDomain:ATLMediaInputStreamErrorDomain code:ATLMediaInputStreamErrorFailedInitializingAssetProvider userInfo:@{ NSLocalizedDescriptionKey: @"Failed initializing the Quartz image data provider/source pair." }];
         }
         return NO;
     }
@@ -377,7 +388,7 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
     size_t count = CGImageSourceGetCount(self.source);
     if (count <= 0) {
         if (error) {
-            *error = [NSError errorWithDomain:ATLMediaInputStreamErrorDomain code:ATLMediaInputStreamErrorAssetHasNoImages userInfo:nil];
+            *error = [NSError errorWithDomain:ATLMediaInputStreamErrorDomain code:ATLMediaInputStreamErrorAssetHasNoImages userInfo:@{ NSLocalizedDescriptionKey: @"Failed initializing the Quartz image data provider/source, because source asset doesn't include any images." }];
         }
         return NO;
     }
@@ -385,7 +396,57 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
 }
 
 /**
+ @abstract Takes the content of the self.sourceAssetURL (ALAssetRepresentation) or sourceImage (UIImage) and resamples the image back into self.sourceImage.
+ @param error A reference to an `NSError` object that will contain error information in case the action was not successful.
+ @return Returns `YES` if setup was successful; On failures, method sets the `error` and returns `NO`.
+ @note This method is only meant for devices running iOS7.1 or lower.
+ */
+- (BOOL)setupiOS7SpecificConsumerPrerequisite:(NSError **)error
+{
+    if (self.maximumSize > 0 && NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_7_1) {
+        CFDataRef cfDataPNGRepresentation;
+        if (!self.sourceAssetURL && self.sourceImage) {
+            // In case the we need to resample an UIImage (which might be
+            // coming from the camera picker or pasteboard).
+            NSData *dataWithPNGRepresentation = UIImagePNGRepresentation(self.sourceImage);
+            cfDataPNGRepresentation = CFBridgingRetain(dataWithPNGRepresentation);
+            self.provider = CGDataProviderCreateWithCFData(cfDataPNGRepresentation);
+            self.source = CGImageSourceCreateWithDataProvider(self.provider, NULL);
+            if (self.provider == NULL || self.source == NULL) {
+                if (error) {
+                    *error = [NSError errorWithDomain:ATLMediaInputStreamErrorDomain code:ATLMediaInputStreamErrorFailedInitializingAssetProvider userInfo:@{ NSLocalizedDescriptionKey: @"Failed initializing the Quartz image data provider/source pair from UIImage." }];
+                }
+                return NO;
+            }
+        }
+        // Resample the image data.
+        NSDictionary *thumbnailOptions = @{ (NSString *)kCGImageSourceCreateThumbnailFromImageIfAbsent : @YES, // Demand resampling, even if it doesn't exist in cache.
+                                            (NSString *)kCGImageSourceCreateThumbnailFromImageAlways : @YES, // Demand resampling, even if the image does exist in cache (which is probably not in size we want).
+                                            (NSString *)kCGImageSourceCreateThumbnailWithTransform : @YES, // Rotate the image in correct orientation in the resampled output.
+                                            (NSString *)kCGImageSourceThumbnailMaxPixelSize : @(self.maximumSize) };
+        CGImageRef thumbnailCGImage = CGImageSourceCreateThumbnailAtIndex(self.source, 0, (__bridge CFDictionaryRef)thumbnailOptions);
+        if (thumbnailCGImage == NULL) {
+            if (error) {
+                *error = [NSError errorWithDomain:ATLMediaInputStreamErrorDomain code:ATLMediaInputStreamErrorFailedInitializingAssetProvider userInfo:@{ NSLocalizedDescriptionKey: @"Failed creating resampled image using CGImageSourceCreateThumbnailAtIndex." }];
+            }
+            return NO;
+        }
+        self.sourceImage = [UIImage imageWithCGImage:thumbnailCGImage];
+        CGImageRelease(thumbnailCGImage);
+        if (cfDataPNGRepresentation != NULL) {
+            // If we were resampling self.sourceImage, release the CFDataRef.
+            CFRelease(cfDataPNGRepresentation);
+            cfDataPNGRepresentation = nil;
+        }
+        self.assetRepresentation = nil;
+        self.sourceAssetURL = nil;
+    }
+    return YES;
+}
+
+/**
  @abstract Prepares the CGDataConsumer which provides data to the stream.
+ @param error A reference to an `NSError` object that will contain error information in case the action was not successful.
  @return Returns `YES` if setup was successful; On failures, method sets the `error` and returns `NO`.
  */
 - (BOOL)setupConsumerWithError:(NSError **)error
@@ -413,8 +474,12 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
     
     NSMutableDictionary *destinationOptions = self.metadata ? [self.metadata mutableCopy] : [NSMutableDictionary dictionary];
     if (self.maximumSize > 0) {
-        // If image should be resampled.
-        [destinationOptions setObject:@(self.maximumSize) forKey:(NSString *)kCGImageDestinationImageMaxPixelSize];
+        // Resample image if requested.
+        if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_7_1) {
+            // Unfortunately, this feature is only available on iOS8+. If we're
+            // on <= iOS7.1, image had to be resampled beforehand (see setupiOS7SpecificConsumerPrerequisite:).
+            [destinationOptions setObject:@(self.maximumSize) forKey:(NSString *)kCGImageDestinationImageMaxPixelSize];
+        }
     }
     if (self.compressionQuality > 0) {
         // If image should only be compressed.
@@ -488,10 +553,10 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
     NSUInteger bytesConsumed = MIN(assetStream.numberOfBytesRequested, length);
     NSData *dataConsumed = [NSData dataWithBytes:buffer length:bytesConsumed];
     assetStream.dataConsumed = dataConsumed;
-    ATLMediaInputStreamLog(@"consumer: consumed %lu bytes (requested %lu bytes, provided %lu bytes)", dataConsumed.length, assetStream.numberOfBytesRequested, length);
+    ATLMediaInputStreamLog(@"consumer: consumed %lu bytes (requested %lu bytes, provided %lu bytes)", (unsigned long)dataConsumed.length, (unsigned long)assetStream.numberOfBytesRequested, length);
     
     // Signal the requester data is ready for consumption.
     dispatch_semaphore_signal(assetStream.streamFlowRequesterSemaphore);
-    ATLMediaInputStreamLog(@"return %lu", bytesConsumed);
+    ATLMediaInputStreamLog(@"return %lu", (unsigned long)bytesConsumed);
     return bytesConsumed;
 }
