@@ -22,7 +22,7 @@
 
 /**
  @abstract The `LYRMockContentStore` provides a simple, in-memory cache for mock Layer messaging content. The class is meant to be used
- for simple user interface testing with LayerUIKit components.
+ for simple user interface testing with Atlas components.
  */
 @interface LYRMockContentStore : NSObject
 

@@ -66,7 +66,7 @@ typedef NS_ENUM(NSUInteger, ATLMediaInputStreamError) {
 
 /**
  @abstract Creates an input stream capable of direct streaming of an ALAsset's content.
- @param assetURL `NSURL` path of the asset (URL starts with `asset://`) that will be seriazlied for streaming.
+ @param assetURL `NSURL` path of the asset (URL starts with `asset://`) that will be serialized for streaming.
  @return A `ATLMediaInputStream` instance ready to be open.
  */
 + (instancetype)mediaInputStreamWithAssetURL:(NSURL *)assetURL;
@@ -74,7 +74,7 @@ typedef NS_ENUM(NSUInteger, ATLMediaInputStreamError) {
 /**
  @abstract Creates an input stream capable of direct streaming of the UIImage's content.
  @param image `UIImage` instance that will be serialized for streaming.
- @param metadata A `NSDictionary` of metadata that will be attached in the seriazlied data. Passing `nil` won't attach any metadata to the serialized image.
+ @param metadata A `NSDictionary` of metadata that will be attached in the serialized data. Passing `nil` won't attach any metadata to the serialized image.
  @return A `ATLMediaInputStream` instance ready to be open.
  */
 + (instancetype)mediaInputStreamWithImage:(UIImage *)image metadata:(NSDictionary *)metadata;
@@ -102,7 +102,7 @@ typedef NS_ENUM(NSUInteger, ATLMediaInputStreamError) {
 
 /**
  @abstract The compression quality in percent. Default is set to 0.0f.
- @discussion 1.0f sets the quality to 100% which perserves details in images,
+ @discussion 1.0f sets the quality to 100% which preserves details in images,
  but also makes a larger output. 0.1f sets the quality to 10% which
  is the lowest quality, and makes the file size smaller.
              

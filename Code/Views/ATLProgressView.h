@@ -23,7 +23,7 @@
 /**
  @abstract A custom progress view that displays the progress in a circular
  shape. It includes two visual components: a subtle transparent background 
- ring as a placholder and a foreground ring represanting the current
+ ring as a placeholder and a foreground ring representing the current
  progress state.
  
  Progress changes can be animated using the `setProgress:animated:` method
@@ -33,7 +33,7 @@
 
 /**
  @abstract Progress in percentage, 0.0f being at 0% and 1.0f being at full 100%.
- @discussion Use `setPrgoress:animated:` to set the progress's value.
+ @discussion Use `setProgress:animated:` to set the progress's value.
  */
 @property (nonatomic, readonly) float progress;
 

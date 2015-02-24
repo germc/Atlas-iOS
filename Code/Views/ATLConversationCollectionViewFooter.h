@@ -44,7 +44,7 @@ extern NSString *const ATLConversationViewFooterIdentifier;
 /**
  @abstract Performs calculations to determine the footer height.
  @param recipientStatus An `NSAttributedString` containing attributes that will be used in the calculation.
- @param clustered A boolean value to determines whether the message cell cooresponding to the footer should be clustered with the previous cell. Messages sent within 60 secconds of each other are clustered.
+ @param clustered A boolean value to determines whether the message cell corresponding to the footer should be clustered with the previous cell. Messages sent within 60 seconds of each other are clustered.
  @return The height for the footer.
  */
 + (CGFloat)footerHeightWithRecipientStatus:(NSAttributedString *)recipientStatus  clustered:(BOOL)clustered;

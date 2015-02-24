@@ -109,7 +109,7 @@
 /**
  @abstract A boolean value that determines whether multiple participants can be selected at once.
  @default YES
- @discussion The defauly value of this property is `YES`.
+ @discussion The default value of this property is `YES`.
  @raises NSInternalInconsistencyException Raised if the value is mutated after the receiver has been presented.
  */
 @property (nonatomic, assign) BOOL allowsMultipleSelection;

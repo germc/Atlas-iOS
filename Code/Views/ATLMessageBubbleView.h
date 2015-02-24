@@ -62,7 +62,7 @@ extern NSString *const ATLUserDidTapLinkNotification;
 - (void)prepareForReuse;
 
 /**
- @abstract Tells the bubble view to update the circular progress that is overlayed on top of the content.
+ @abstract Tells the bubble view to update the circular progress that is overlaid on top of the content.
  @param progress The progress in percent, 0.0f being at 0% and 1.0f being at a full 100%.
  @param visible Passing `YES` will make the overlay visible, `NO`
  @param animated Passing `YES` will animate the update changes (progress and visibility), `NO` performs the updates immediately.
