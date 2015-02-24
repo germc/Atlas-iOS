@@ -1,5 +1,5 @@
 //
-//  ATLUIParticipantListViewController.m
+//  ATLParticipantTableViewController.m
 //  Atlas
 //
 //  Created by Kevin Coleman on 8/29/14.

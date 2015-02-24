@@ -30,7 +30,7 @@
 @protocol ATLParticipantTableViewControllerDelegate <NSObject>
 
 /**
- @abstract Tells the receiver that the user has selected a participant.
+ @abstract Informs the receiver that the user has selected a participant.
  @param participantTableViewController The participant table view controller in which the selection was made.
  @param participant The participant who was selected.
  */
@@ -47,7 +47,7 @@
 @optional
 
 /**
- @abstract Tells the receiver that the user has deselected a participant.
+ @abstract Informs the receiver that the user has deselected a participant.
  @param participantTableViewController The participant table view controller in which the deselection was made.
  @param participant The participant who was deselected.
  */

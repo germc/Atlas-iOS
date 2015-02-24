@@ -133,7 +133,9 @@ NSString *const ATLConversationTableViewAccessibilityIdentifier = @"Conversation
         [self.tableView registerClass:self.cellClass forCellReuseIdentifier:ATLConversationCellReuseIdentifier];
         if (self.allowsEditing) [self addEditButton];
     }
-    [self setupConversationDataSource];
+    if (!self.queryController) {
+        [self setupConversationDataSource];
+    }
    
     NSIndexPath *selectedIndexPath = [self.tableView indexPathForSelectedRow];
     if (selectedIndexPath && self.clearsSelectionOnViewWillAppear) {
