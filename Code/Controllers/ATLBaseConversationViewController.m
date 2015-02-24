@@ -100,6 +100,7 @@ static CGFloat const ATLTypingIndicatorHeight = 20;
     if (self.presentedViewController) {
         [self.view becomeFirstResponder];
     }
+    [self updateBottomCollectionViewInset];
 }
 
 - (void)viewDidLayoutSubviews

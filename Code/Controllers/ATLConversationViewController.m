@@ -131,7 +131,7 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
 {
     [super viewWillAppear:animated];
     
-    if (self.addressBarController && self.conversation) {
+    if (self.addressBarController && self.conversation.lastMessage) {
         [self.addressBarController disable];
         [self configureAddressBarForConversation];
     }

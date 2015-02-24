@@ -200,6 +200,12 @@
  */
 - (UICollectionViewCell<ATLMessagePresenting> *)collectionViewCellForMessage:(LYRMessage *)message;
 
+/**
+ @abstract Informs the reciever that it should send a message with the current location of the device.
+ @discussion The controller manages updating the current location of the device and sending a message with an `ATLMIMETypeLocation` MIMEType.
+ */
+- (void)sendLocationMessage;
+
 ///---------------------------------------
 /// @name Configuration
 ///---------------------------------------
