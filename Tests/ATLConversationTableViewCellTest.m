@@ -41,7 +41,8 @@ extern NSString *const ATLLocationMIMETypePlaceholderText;
 - (void)setUp
 {
     [super setUp];
-    LYRUserMock *mockUser = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameRussell];
+    
+    ATLUserMock *mockUser = [ATLUserMock userWithMockUserName:ATLMockUserNameBlake];
     LYRClientMock *layerClient = [LYRClientMock layerClientMockWithAuthenticatedUserID:mockUser.participantIdentifier];
     self.testInterface = [ATLTestInterface testIntefaceWithLayerClient:layerClient];
     
@@ -159,7 +160,7 @@ extern NSString *const ATLLocationMIMETypePlaceholderText;
 
 - (void)createNewConversation
 {
-    NSSet *participants = [NSSet setWithObject:[LYRUserMock userWithMockUserName:LYRClientMockFactoryNameBobby].participantIdentifier];
+    NSSet *participants = [NSSet setWithObject:[ATLUserMock userWithMockUserName:ATLMockUserNameKlemen].participantIdentifier];
     LYRMessagePartMock *part = [LYRMessagePartMock messagePartWithText:ATLLastMessageText];
     LYRMessageMock *message = [self.testInterface.layerClient newMessageWithParts:@[part] options:nil error:nil];
     self.conversation = [self.testInterface.layerClient newConversationWithParticipants:participants options:nil error:nil];

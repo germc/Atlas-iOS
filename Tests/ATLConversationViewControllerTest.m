@@ -21,7 +21,7 @@
 #import <XCTest/XCTest.h>
 #import "ATLTestInterface.h"
 #import "ATLSampleConversationViewController.h"
-#import "LYRUserMock.h"
+#import "ATLUserMock.h"
 
 extern NSString *const ATLAvatarImageViewAccessibilityLabel;
 
@@ -48,11 +48,11 @@ extern NSString *const ATLMessageInputToolbarSendButton;
 {
     [super setUp];
 
-    LYRUserMock *mockUser = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameRussell];
+    ATLUserMock *mockUser = [ATLUserMock userWithMockUserName:ATLMockUserNameBlake];
     LYRClientMock *layerClient = [LYRClientMock layerClientMockWithAuthenticatedUserID:mockUser.participantIdentifier];
     self.testInterface = [ATLTestInterface testIntefaceWithLayerClient:layerClient];
     
-    LYRUserMock *mockUser1 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameMarshawn];
+    ATLUserMock *mockUser1 = [ATLUserMock userWithMockUserName:ATLMockUserNameKlemen];
     self.conversation = [self.testInterface conversationWithParticipants:[NSSet setWithObject:mockUser1.participantIdentifier] lastMessageText:nil];
 }
 
@@ -83,7 +83,7 @@ extern NSString *const ATLMessageInputToolbarSendButton;
     [self setRootViewController:self.viewController];
     
     LYRMessagePart *part = [LYRMessagePart messagePartWithText:@"Hey Dude"];
-    LYRMessageMock *message = [LYRMessageMock newMessageWithParts:@[part] senderID:[LYRUserMock userWithMockUserName:LYRClientMockFactoryNameMarshawn].participantIdentifier];
+    LYRMessageMock *message = [LYRMessageMock newMessageWithParts:@[part] senderID:[ATLUserMock userWithMockUserName:ATLMockUserNameKlemen].participantIdentifier];
     [self.conversation sendMessage:message error:nil];
     [tester waitForViewWithAccessibilityLabel:@"Hey Dude"];
 }
@@ -264,7 +264,7 @@ extern NSString *const ATLMessageInputToolbarSendButton;
 
 - (void)testToVerifyAvatarImageIsNotDisplayedInOneOnOneConversation
 {
-    LYRUserMock *mockUser2 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameEarl];
+    ATLUserMock *mockUser2 = [ATLUserMock userWithMockUserName:ATLMockUserNameKevin];
     LYRClientMock *layerClient = [LYRClientMock layerClientMockWithAuthenticatedUserID:mockUser2.participantIdentifier];
     self.conversation = [self.testInterface conversationWithParticipants:[NSSet setWithObject:mockUser2.participantIdentifier] lastMessageText:nil];
     
@@ -280,7 +280,7 @@ extern NSString *const ATLMessageInputToolbarSendButton;
 
 - (void)testToVerifyAvatarImageIsDisplayedInGroupConversation
 {
-    LYRUserMock *mockUser2 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameEarl];
+    ATLUserMock *mockUser2 = [ATLUserMock userWithMockUserName:ATLMockUserNameKevin];
     LYRClientMock *layerClient = [LYRClientMock layerClientMockWithAuthenticatedUserID:mockUser2.participantIdentifier];
     [self.conversation addParticipants:[NSSet setWithObject:mockUser2.participantIdentifier] error:nil];
     
@@ -298,7 +298,7 @@ extern NSString *const ATLMessageInputToolbarSendButton;
 {
     [[ATLAvatarImageView appearance] setAvatarImageViewDiameter:40];
     
-    LYRUserMock *mockUser2 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameEarl];
+    ATLUserMock *mockUser2 = [ATLUserMock userWithMockUserName:ATLMockUserNameKevin];
     LYRClientMock *layerClient = [LYRClientMock layerClientMockWithAuthenticatedUserID:mockUser2.participantIdentifier];
     [self.conversation addParticipants:[NSSet setWithObject:mockUser2.participantIdentifier] error:nil];
     

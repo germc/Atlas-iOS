@@ -43,7 +43,7 @@
 {
     [super setUp];
     
-    LYRUserMock *mockUser = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameRussell];
+    ATLUserMock *mockUser = [ATLUserMock userWithMockUserName:ATLMockUserNameBlake];
     LYRClientMock *layerClient = [LYRClientMock layerClientMockWithAuthenticatedUserID:mockUser.participantIdentifier];
     self.testInterface = [ATLTestInterface testIntefaceWithLayerClient:layerClient];
 }
@@ -77,7 +77,7 @@
     self.viewController = [ATLSampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];
     [self setRootViewController:self.viewController];
     [tester waitForTimeInterval:1.0]; // Allow controller to be presented.
-    LYRUserMock *mockUser1 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameMarshawn];
+    ATLUserMock *mockUser1 = [ATLUserMock userWithMockUserName:ATLMockUserNameKlemen];
     [self newConversationWithMockUser:mockUser1 lastMessageText:@"Test Message"];
 }
 
@@ -87,13 +87,13 @@
     self.viewController = [ATLSampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];
     [self setRootViewController:self.viewController];
     
-    LYRUserMock *mockUser1 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameMarshawn];
+    ATLUserMock *mockUser1 = [ATLUserMock userWithMockUserName:ATLMockUserNameKlemen];
     [self newConversationWithMockUser:mockUser1 lastMessageText:@"Test Message"];
     
-    LYRUserMock *mockUser2 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameBobby];
+    ATLUserMock *mockUser2 = [ATLUserMock userWithMockUserName:ATLMockUserNameKevin];
     [self newConversationWithMockUser:mockUser2 lastMessageText:@"Test Message"];
     
-    LYRUserMock *mockUser3 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameEarl];
+    ATLUserMock *mockUser3 = [ATLUserMock userWithMockUserName:ATLMockUserNameSteven];
     [self newConversationWithMockUser:mockUser3 lastMessageText:@"Test Message"];
 }
 
@@ -104,7 +104,7 @@
     [self setRootViewController:self.viewController];
     
     NSString *message1 = @"Message1";
-    LYRUserMock *mockUser1 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameMarshawn];
+    ATLUserMock *mockUser1 = [ATLUserMock userWithMockUserName:ATLMockUserNameKlemen];
     LYRConversationMock *conversation1 = [self.testInterface conversationWithParticipants:[NSSet setWithObject:mockUser1.participantIdentifier] lastMessageText:message1];
     [tester swipeViewWithAccessibilityLabel:[self.testInterface conversationLabelForConversation:conversation1] inDirection:KIFSwipeDirectionLeft];
     [self deleteConversation:conversation1 deletionMode:LYRDeletionModeAllParticipants];
@@ -116,7 +116,7 @@
     self.viewController = [ATLSampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];
     [self setRootViewController:self.viewController];
     
-    LYRUserMock *mockUser1 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameMarshawn];
+    ATLUserMock *mockUser1 = [ATLUserMock userWithMockUserName:ATLMockUserNameKlemen];
     LYRConversationMock *conversation1 = [self newConversationWithMockUser:mockUser1 lastMessageText:@"Test Message"];
     [tester swipeViewWithAccessibilityLabel:[self.testInterface conversationLabelForConversation:conversation1] inDirection:KIFSwipeDirectionLeft];
     [self deleteConversation:conversation1 deletionMode:LYRDeletionModeLocal];
@@ -128,13 +128,13 @@
     self.viewController = [ATLSampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];
     [self setRootViewController:self.viewController];
     
-    LYRUserMock *mockUser1 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameMarshawn];
+    ATLUserMock *mockUser1 = [ATLUserMock userWithMockUserName:ATLMockUserNameKlemen];
     LYRConversationMock *conversation1 = [self newConversationWithMockUser:mockUser1 lastMessageText:@"Test Message"];
     
-    LYRUserMock *mockUser2 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameBobby];
+    ATLUserMock *mockUser2 = [ATLUserMock userWithMockUserName:ATLMockUserNameKevin];
     LYRConversationMock *conversation2 = [self newConversationWithMockUser:mockUser2 lastMessageText:@"Test Message"];
     
-    LYRUserMock *mockUser3 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameEarl];
+    ATLUserMock *mockUser3 = [ATLUserMock userWithMockUserName:ATLMockUserNameSteven];
     LYRConversationMock *conversation3 = [self newConversationWithMockUser:mockUser3 lastMessageText:@"Test Message"];
     
     [tester tapViewWithAccessibilityLabel:@"Edit"];
@@ -162,7 +162,7 @@
     [self.viewController setAllowsEditing:NO];
     [self setRootViewController:self.viewController];
     
-    LYRUserMock *mockUser1 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameMarshawn];
+    ATLUserMock *mockUser1 = [ATLUserMock userWithMockUserName:ATLMockUserNameKlemen];
     LYRConversationMock *conversation1 = [self newConversationWithMockUser:mockUser1 lastMessageText:@"Test Message"];
     
     [tester swipeViewWithAccessibilityLabel:[self.testInterface conversationLabelForConversation:conversation1] inDirection:KIFSwipeDirectionLeft];
@@ -182,7 +182,7 @@
     [[ATLConversationTableViewCell appearance] setConversationTitleLabelFont:testFont];
     [[ATLConversationTableViewCell appearance] setConversationTitleLabelColor:testColor];
     
-    LYRUserMock *mockUser1 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameMarshawn];
+    ATLUserMock *mockUser1 = [ATLUserMock userWithMockUserName:ATLMockUserNameKlemen];
     LYRConversationMock *conversation1 = [self newConversationWithMockUser:mockUser1 lastMessageText:@"Test Message"];
     
     NSString *conversationLabel = [self.testInterface conversationLabelForConversation:conversation1];
@@ -198,7 +198,7 @@
     [self.viewController setRowHeight:100];
     [self setRootViewController:self.viewController];
     
-    LYRUserMock *mockUser1 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameMarshawn];
+    ATLUserMock *mockUser1 = [ATLUserMock userWithMockUserName:ATLMockUserNameKlemen];
     LYRConversationMock *conversation1 = [self newConversationWithMockUser:mockUser1 lastMessageText:@"Test Message"];
     
     NSString *conversationLabel = [self.testInterface conversationLabelForConversation:conversation1];
@@ -213,7 +213,7 @@
     [self.viewController setCellClass:[ATLTestConversationCell class]];
     [self setRootViewController:self.viewController];
     
-    LYRUserMock *mockUser1 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameMarshawn];
+    ATLUserMock *mockUser1 = [ATLUserMock userWithMockUserName:ATLMockUserNameKlemen];
     LYRConversationMock *conversation1 = [self newConversationWithMockUser:mockUser1 lastMessageText:@"Test Message"];
     
     NSString *conversationLabel = [self.testInterface conversationLabelForConversation:conversation1];
@@ -269,7 +269,7 @@
     id delegateMock = OCMProtocolMock(@protocol(ATLConversationListViewControllerDataSource));
     self.viewController.dataSource = delegateMock;
     
-    LYRUserMock *mockUser1 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameMarshawn];
+    ATLUserMock *mockUser1 = [ATLUserMock userWithMockUserName:ATLMockUserNameKlemen];
     
     LYRConversation *conversation;
     [[[delegateMock expect] andDo:^(NSInvocation *invocation) {
@@ -309,7 +309,7 @@
     id delegateMock = OCMProtocolMock(@protocol(ATLConversationListViewControllerDelegate));
     self.viewController.delegate = delegateMock;
     
-    LYRUserMock *mockUser1 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameMarshawn];
+    ATLUserMock *mockUser1 = [ATLUserMock userWithMockUserName:ATLMockUserNameKlemen];
     LYRConversationMock *conversation1 = [self newConversationWithMockUser:mockUser1 lastMessageText:@"Test Message"];
     
     [[[delegateMock expect] andDo:^(NSInvocation *invocation) {
@@ -337,7 +337,7 @@
     id delegateMock = OCMProtocolMock(@protocol(ATLConversationListViewControllerDelegate));
     self.viewController.delegate = delegateMock;
     
-    LYRUserMock *mockUser1 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameMarshawn];
+    ATLUserMock *mockUser1 = [ATLUserMock userWithMockUserName:ATLMockUserNameKlemen];
     LYRConversationMock *conversation1 = [self newConversationWithMockUser:mockUser1 lastMessageText:@"Test Message"];
     
     LYRDeletionMode deletionMode = LYRDeletionModeAllParticipants;
@@ -370,7 +370,7 @@
     id delegateMock = OCMProtocolMock(@protocol(ATLConversationListViewControllerDelegate));
     self.viewController.delegate = delegateMock;
     
-    LYRUserMock *mockUser1 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameMarshawn];
+    ATLUserMock *mockUser1 = [ATLUserMock userWithMockUserName:ATLMockUserNameKlemen];
     LYRConversationMock *conversation1 = [self newConversationWithMockUser:mockUser1 lastMessageText:@"Test Message"];
     
     LYRDeletionMode deletionMode = LYRDeletionModeLocal;
@@ -393,7 +393,7 @@
     [delegateMock verify];
 }
 
-- (LYRConversationMock *)newConversationWithMockUser:(LYRUserMock *)mockUser lastMessageText:(NSString *)lastMessageText
+- (LYRConversationMock *)newConversationWithMockUser:(ATLUserMock *)mockUser lastMessageText:(NSString *)lastMessageText
 {
     LYRConversationMock *conversation = [self.testInterface conversationWithParticipants:[NSSet setWithObject:mockUser.participantIdentifier] lastMessageText:lastMessageText];
     [tester waitForViewWithAccessibilityLabel:[self.testInterface conversationLabelForConversation:conversation]];

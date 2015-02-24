@@ -93,15 +93,15 @@ LYRMessagePartMock *ATLMessagePartWithLocation(CLLocation *location)
     
     if (participantIdentifiers.count == 0) return @"Personal Conversation";
     
-    NSMutableSet *participants = [[LYRUserMock participantsForIdentifiers:participantIdentifiers] mutableCopy];
+    NSMutableSet *participants = [[ATLUserMock participantsForIdentifiers:participantIdentifiers] mutableCopy];
     if (participants.count == 0) return @"No Matching Participants";
     
     // Put the latest message sender's name first
-    LYRUserMock *firstUser;
+    ATLUserMock *firstUser;
     if (![conversation.lastMessage.sentByUserID isEqualToString:self.layerClient.authenticatedUserID]) {
         if (conversation.lastMessage) {
             NSPredicate *searchPredicate = [NSPredicate predicateWithFormat:@"SELF.participantIdentifier IN %@", conversation.lastMessage.sentByUserID];
-            LYRUserMock *lastMessageSender = [[[participants filteredSetUsingPredicate:searchPredicate] allObjects] lastObject];
+            ATLUserMock *lastMessageSender = [[[participants filteredSetUsingPredicate:searchPredicate] allObjects] lastObject];
             if (lastMessageSender) {
                 firstUser = lastMessageSender;
                 [participants removeObject:lastMessageSender];
@@ -113,7 +113,7 @@ LYRMessagePartMock *ATLMessagePartWithLocation(CLLocation *location)
     
     NSString *conversationLabel = firstUser.fullName;
     for (int i = 1; i < [[participants allObjects] count]; i++) {
-        LYRUserMock *user = [[participants allObjects] objectAtIndex:i];
+        ATLUserMock *user = [[participants allObjects] objectAtIndex:i];
         conversationLabel = [NSString stringWithFormat:@"%@, %@", conversationLabel, user.fullName];
     }
     return conversationLabel;

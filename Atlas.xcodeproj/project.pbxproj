@@ -17,6 +17,19 @@
 		D6C045451A9914090028E9D0 /* ProgrammaticAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = D6C045441A9914080028E9D0 /* ProgrammaticAppDelegate.m */; };
 		D6C0454B1A9941CD0028E9D0 /* test-logo.png in Resources */ = {isa = PBXBuildFile; fileRef = D63C68DF1A94250000D235D5 /* test-logo.png */; };
 		D6C0454F1A9953C70028E9D0 /* ALTAddressBarControllerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D6C0454E1A9953C70028E9D0 /* ALTAddressBarControllerTest.m */; };
+		D6D48F851A9D140F00C8872E /* LYRClientMock.m in Sources */ = {isa = PBXBuildFile; fileRef = D6F405B71A8FDDE300AE9581 /* LYRClientMock.m */; };
+		D6D48F861A9D140F00C8872E /* LYRConversationMock.m in Sources */ = {isa = PBXBuildFile; fileRef = D6F405B91A8FDDE300AE9581 /* LYRConversationMock.m */; };
+		D6D48F871A9D140F00C8872E /* LYRMessageMock.m in Sources */ = {isa = PBXBuildFile; fileRef = D6F405BB1A8FDDE300AE9581 /* LYRMessageMock.m */; };
+		D6D48F881A9D140F00C8872E /* LYRMessagePartMock.m in Sources */ = {isa = PBXBuildFile; fileRef = D6F405BD1A8FDDE300AE9581 /* LYRMessagePartMock.m */; };
+		D6D48F891A9D140F00C8872E /* LYRMockContentStore.m in Sources */ = {isa = PBXBuildFile; fileRef = D6F405BF1A8FDDE300AE9581 /* LYRMockContentStore.m */; };
+		D6D48F8A1A9D140F00C8872E /* LYRQueryControllerMock.m in Sources */ = {isa = PBXBuildFile; fileRef = D6F405C11A8FDDE300AE9581 /* LYRQueryControllerMock.m */; };
+		D6D48F8B1A9D140F00C8872E /* ATLUserMock.m in Sources */ = {isa = PBXBuildFile; fileRef = D6F405C31A8FDDE300AE9581 /* ATLUserMock.m */; };
+		D6D48F8C1A9D140F00C8872E /* ATLSampleConversationAvatarItem.m in Sources */ = {isa = PBXBuildFile; fileRef = D6F405A81A8FDDAA00AE9581 /* ATLSampleConversationAvatarItem.m */; };
+		D6D48F8D1A9D140F00C8872E /* ATLSampleConversationListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D6F405AA1A8FDDAA00AE9581 /* ATLSampleConversationListViewController.m */; };
+		D6D48F8E1A9D140F00C8872E /* ATLSampleConversationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D6F405AC1A8FDDAA00AE9581 /* ATLSampleConversationViewController.m */; };
+		D6D48F8F1A9D140F00C8872E /* ATLSampleParticipantTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D6F405AE1A8FDDAA00AE9581 /* ATLSampleParticipantTableViewController.m */; };
+		D6D48F901A9D159000C8872E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = D6F405D41A8FDE1B00AE9581 /* main.m */; };
+		D6D48F921A9D165600C8872E /* Atlas.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D6F405CC1A8FDE1B00AE9581 /* Atlas.storyboard */; };
 		D6F405AF1A8FDDAA00AE9581 /* ATLSampleConversationAvatarItem.m in Sources */ = {isa = PBXBuildFile; fileRef = D6F405A81A8FDDAA00AE9581 /* ATLSampleConversationAvatarItem.m */; };
 		D6F405B01A8FDDAA00AE9581 /* ATLSampleConversationListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D6F405AA1A8FDDAA00AE9581 /* ATLSampleConversationListViewController.m */; };
 		D6F405B11A8FDDAA00AE9581 /* ATLSampleConversationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D6F405AC1A8FDDAA00AE9581 /* ATLSampleConversationViewController.m */; };
@@ -27,8 +40,7 @@
 		D6F405C81A8FDDE300AE9581 /* LYRMessagePartMock.m in Sources */ = {isa = PBXBuildFile; fileRef = D6F405BD1A8FDDE300AE9581 /* LYRMessagePartMock.m */; };
 		D6F405C91A8FDDE300AE9581 /* LYRMockContentStore.m in Sources */ = {isa = PBXBuildFile; fileRef = D6F405BF1A8FDDE300AE9581 /* LYRMockContentStore.m */; };
 		D6F405CA1A8FDDE300AE9581 /* LYRQueryControllerMock.m in Sources */ = {isa = PBXBuildFile; fileRef = D6F405C11A8FDDE300AE9581 /* LYRQueryControllerMock.m */; };
-		D6F405CB1A8FDDE300AE9581 /* LYRUserMock.m in Sources */ = {isa = PBXBuildFile; fileRef = D6F405C31A8FDDE300AE9581 /* LYRUserMock.m */; };
-		D6F405D81A8FDE1B00AE9581 /* ATLTestConversationListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D6F405CE1A8FDE1B00AE9581 /* ATLTestConversationListViewController.m */; };
+		D6F405CB1A8FDDE300AE9581 /* ATLUserMock.m in Sources */ = {isa = PBXBuildFile; fileRef = D6F405C31A8FDDE300AE9581 /* ATLUserMock.m */; };
 		D6F405E71A8FDE3900AE9581 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D6F405E21A8FDE3900AE9581 /* Images.xcassets */; };
 		D6F405E91A8FDE3900AE9581 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = D6F405E41A8FDE3900AE9581 /* main.m */; };
 		D6F405F01A8FDEAB00AE9581 /* Conversation_Details.jpg in Resources */ = {isa = PBXBuildFile; fileRef = D6F405EB1A8FDEAB00AE9581 /* Conversation_Details.jpg */; };
@@ -122,11 +134,9 @@
 		D6F405BF1A8FDDE300AE9581 /* LYRMockContentStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LYRMockContentStore.m; path = Examples/Mocks/LYRMockContentStore.m; sourceTree = SOURCE_ROOT; };
 		D6F405C01A8FDDE300AE9581 /* LYRQueryControllerMock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LYRQueryControllerMock.h; path = Examples/Mocks/LYRQueryControllerMock.h; sourceTree = SOURCE_ROOT; };
 		D6F405C11A8FDDE300AE9581 /* LYRQueryControllerMock.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LYRQueryControllerMock.m; path = Examples/Mocks/LYRQueryControllerMock.m; sourceTree = SOURCE_ROOT; };
-		D6F405C21A8FDDE300AE9581 /* LYRUserMock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LYRUserMock.h; path = Examples/Mocks/LYRUserMock.h; sourceTree = SOURCE_ROOT; };
-		D6F405C31A8FDDE300AE9581 /* LYRUserMock.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LYRUserMock.m; path = Examples/Mocks/LYRUserMock.m; sourceTree = SOURCE_ROOT; };
+		D6F405C21A8FDDE300AE9581 /* ATLUserMock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ATLUserMock.h; path = Examples/Mocks/ATLUserMock.h; sourceTree = SOURCE_ROOT; };
+		D6F405C31A8FDDE300AE9581 /* ATLUserMock.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ATLUserMock.m; path = Examples/Mocks/ATLUserMock.m; sourceTree = SOURCE_ROOT; };
 		D6F405CC1A8FDE1B00AE9581 /* Atlas.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = Atlas.storyboard; path = Examples/Storyboard/Atlas.storyboard; sourceTree = SOURCE_ROOT; };
-		D6F405CD1A8FDE1B00AE9581 /* ATLTestConversationListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ATLTestConversationListViewController.h; path = Examples/Storyboard/ATLTestConversationListViewController.h; sourceTree = SOURCE_ROOT; };
-		D6F405CE1A8FDE1B00AE9581 /* ATLTestConversationListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ATLTestConversationListViewController.m; path = Examples/Storyboard/ATLTestConversationListViewController.m; sourceTree = SOURCE_ROOT; };
 		D6F405D11A8FDE1B00AE9581 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = LaunchScreen.xib; sourceTree = "<group>"; };
 		D6F405D21A8FDE1B00AE9581 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Examples/Storyboard/Images.xcassets; sourceTree = SOURCE_ROOT; };
 		D6F405D31A8FDE1B00AE9581 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Examples/Storyboard/Info.plist; sourceTree = SOURCE_ROOT; };
@@ -299,8 +309,8 @@
 				D6F405BF1A8FDDE300AE9581 /* LYRMockContentStore.m */,
 				D6F405C01A8FDDE300AE9581 /* LYRQueryControllerMock.h */,
 				D6F405C11A8FDDE300AE9581 /* LYRQueryControllerMock.m */,
-				D6F405C21A8FDDE300AE9581 /* LYRUserMock.h */,
-				D6F405C31A8FDDE300AE9581 /* LYRUserMock.m */,
+				D6F405C21A8FDDE300AE9581 /* ATLUserMock.h */,
+				D6F405C31A8FDDE300AE9581 /* ATLUserMock.m */,
 			);
 			name = Mocks;
 			path = "Sample Code/Shared";
@@ -446,8 +456,6 @@
 			isa = PBXGroup;
 			children = (
 				D6F405CC1A8FDE1B00AE9581 /* Atlas.storyboard */,
-				D6F405CD1A8FDE1B00AE9581 /* ATLTestConversationListViewController.h */,
-				D6F405CE1A8FDE1B00AE9581 /* ATLTestConversationListViewController.m */,
 				D6F405CF1A8FDE1B00AE9581 /* Base.lproj */,
 				D6F405D21A8FDE1B00AE9581 /* Images.xcassets */,
 				D6F405D31A8FDE1B00AE9581 /* Info.plist */,
@@ -643,6 +651,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D6D48F921A9D165600C8872E /* Atlas.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -824,9 +833,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				D6F405AF1A8FDDAA00AE9581 /* ATLSampleConversationAvatarItem.m in Sources */,
-				D6F405CB1A8FDDE300AE9581 /* LYRUserMock.m in Sources */,
+				D6F405CB1A8FDDE300AE9581 /* ATLUserMock.m in Sources */,
 				D6C045451A9914090028E9D0 /* ProgrammaticAppDelegate.m in Sources */,
-				D6F405D81A8FDE1B00AE9581 /* ATLTestConversationListViewController.m in Sources */,
 				D6F405CA1A8FDDE300AE9581 /* LYRQueryControllerMock.m in Sources */,
 				D6F405E91A8FDE3900AE9581 /* main.m in Sources */,
 				D6F405C51A8FDDE300AE9581 /* LYRClientMock.m in Sources */,
@@ -862,6 +870,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D6D48F901A9D159000C8872E /* main.m in Sources */,
+				D6D48F851A9D140F00C8872E /* LYRClientMock.m in Sources */,
+				D6D48F861A9D140F00C8872E /* LYRConversationMock.m in Sources */,
+				D6D48F871A9D140F00C8872E /* LYRMessageMock.m in Sources */,
+				D6D48F881A9D140F00C8872E /* LYRMessagePartMock.m in Sources */,
+				D6D48F891A9D140F00C8872E /* LYRMockContentStore.m in Sources */,
+				D6D48F8A1A9D140F00C8872E /* LYRQueryControllerMock.m in Sources */,
+				D6D48F8B1A9D140F00C8872E /* ATLUserMock.m in Sources */,
+				D6D48F8C1A9D140F00C8872E /* ATLSampleConversationAvatarItem.m in Sources */,
+				D6D48F8D1A9D140F00C8872E /* ATLSampleConversationListViewController.m in Sources */,
+				D6D48F8E1A9D140F00C8872E /* ATLSampleConversationViewController.m in Sources */,
+				D6D48F8F1A9D140F00C8872E /* ATLSampleParticipantTableViewController.m in Sources */,
 				D6F406261A8FDF5900AE9581 /* StoryboardAppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -932,6 +952,7 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -953,7 +974,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = Tests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -981,6 +1002,7 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -996,7 +1018,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = Tests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1038,6 +1060,7 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -1056,7 +1079,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = Examples/Programmatic/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1083,6 +1106,7 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -1094,7 +1118,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = Examples/Programmatic/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1215,6 +1239,7 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -1232,8 +1257,8 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_FILE = "Examples/Storyboard/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				INFOPLIST_FILE = Examples/Storyboard/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1260,6 +1285,7 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -1270,8 +1296,8 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_FILE = "Examples/Storyboard/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				INFOPLIST_FILE = Examples/Storyboard/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";

@@ -40,7 +40,7 @@ extern NSString *const ATLConversationCollectionViewAccessibilityIdentifier;
 - (void)setUp
 {
     [super setUp];
-    LYRUserMock *mockUser = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameRussell];
+    ATLUserMock *mockUser = [ATLUserMock userWithMockUserName:ATLMockUserNameBlake];
     LYRClientMock *layerClient = [LYRClientMock layerClientMockWithAuthenticatedUserID:mockUser.participantIdentifier];
     self.testInterface = [ATLTestInterface testIntefaceWithLayerClient:layerClient];
     [self setRootViewController];
@@ -104,65 +104,124 @@ extern NSString *const ATLConversationCollectionViewAccessibilityIdentifier;
     expect(cell.bubbleView.bubbleViewLabel.text).to.beNil;
 }
 
-- (void)testToVerifyCustomMessageTextFont
+#pragma mark - Outgoing Customization
+
+- (void)testToVerifyOutgoingCustomMessageTextFont
 {
     UIFont *font = [UIFont systemFontOfSize:20];
-    [[ATLMessageCollectionViewCell appearance] setMessageTextFont:font];
+    [[ATLOutgoingMessageCollectionViewCell appearance] setMessageTextFont:font];
     [self sendMessageWithText:ATLTestMessageText];
 
-    ATLMessageCollectionViewCell *cell = (ATLMessageCollectionViewCell *)[tester waitForCellAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:1]
+    ATLOutgoingMessageCollectionViewCell *cell = (ATLOutgoingMessageCollectionViewCell *)[tester waitForCellAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:1]
                                                                 inCollectionViewWithAccessibilityIdentifier:ATLConversationCollectionViewAccessibilityIdentifier];
     expect(cell.messageTextFont).to.equal(font);
 }
 
-- (void)testToVerifyCustomMessageTextColor
+- (void)testToVerifyOutgoingCustomMessageTextColor
 {
     UIColor *color = [UIColor redColor];
-    [[ATLMessageCollectionViewCell appearance] setMessageTextColor:color];
+    [[ATLOutgoingMessageCollectionViewCell appearance] setMessageTextColor:color];
     [self sendMessageWithText:ATLTestMessageText];
 
-    ATLMessageCollectionViewCell *cell = (ATLMessageCollectionViewCell *)[tester waitForCellAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:1]
+    ATLOutgoingMessageCollectionViewCell *cell = (ATLOutgoingMessageCollectionViewCell *)[tester waitForCellAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:1]
                                                                 inCollectionViewWithAccessibilityIdentifier:ATLConversationCollectionViewAccessibilityIdentifier];
     expect(cell.messageTextColor).to.equal(color);
 }
 
-- (void)testToVerifyCustomMessageLinkTextColor
+- (void)testToVerifyOutgoingCustomMessageLinkTextColor
 {
     NSString *testText = @"www.layer.com";
     UIColor *color = [UIColor redColor];
-    [[ATLMessageCollectionViewCell appearance] setMessageLinkTextColor:color];
+    [[ATLOutgoingMessageCollectionViewCell appearance] setMessageLinkTextColor:color];
     [self sendMessageWithText:testText];
 
-    ATLMessageCollectionViewCell *cell = (ATLMessageCollectionViewCell *)[tester waitForViewWithAccessibilityLabel:[NSString stringWithFormat:@"Message: %@", testText]];
+    ATLOutgoingMessageCollectionViewCell *cell = (ATLOutgoingMessageCollectionViewCell *)[tester waitForViewWithAccessibilityLabel:[NSString stringWithFormat:@"Message: %@", testText]];
     expect(cell.messageLinkTextColor).to.equal(color);
 }
 
-- (void)testToVerifyCustomBubbleViewColor
+- (void)testToVerifyOutgoingCustomBubbleViewColor
 {
      UIColor *color = [UIColor redColor];
-    [[ATLMessageCollectionViewCell appearance] setBubbleViewColor:color];
+    [[ATLOutgoingMessageCollectionViewCell appearance] setBubbleViewColor:color];
     [self sendMessageWithText:ATLTestMessageText];
 
-    ATLMessageCollectionViewCell *cell = (ATLMessageCollectionViewCell *)[tester waitForCellAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:1]
+    ATLOutgoingMessageCollectionViewCell *cell = (ATLOutgoingMessageCollectionViewCell *)[tester waitForCellAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:1]
                                                                 inCollectionViewWithAccessibilityIdentifier:ATLConversationCollectionViewAccessibilityIdentifier];
     expect(cell.bubbleViewColor).to.equal(color);
 }
 
-- (void)testToVerifyCustomBubbleViewCornerRadius
+- (void)testToVerifyOutgoingCustomBubbleViewCornerRadius
 {
     NSUInteger radius = 4;
-    [[ATLMessageCollectionViewCell appearance] setBubbleViewCornerRadius:4];
+    [[ATLOutgoingMessageCollectionViewCell appearance] setBubbleViewCornerRadius:4];
     [self sendMessageWithText:ATLTestMessageText];
 
-    ATLMessageCollectionViewCell *cell = (ATLMessageCollectionViewCell *)[tester waitForCellAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:1]
+    ATLOutgoingMessageCollectionViewCell *cell = (ATLOutgoingMessageCollectionViewCell *)[tester waitForCellAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:1]
                                                                 inCollectionViewWithAccessibilityIdentifier:ATLConversationCollectionViewAccessibilityIdentifier];
+    expect(cell.bubbleViewCornerRadius).to.equal(radius);
+}
+
+#pragma mark - Incoming Customization
+
+- (void)testToVerifyIncomingCustomMessageTextFont
+{
+    UIFont *font = [UIFont systemFontOfSize:20];
+    [[ATLIncomingMessageCollectionViewCell appearance] setMessageTextFont:font];
+    [self createIncomingMesssageWithText:ATLTestMessageText];
+    
+    ATLIncomingMessageCollectionViewCell *cell = (ATLIncomingMessageCollectionViewCell *)[tester waitForCellAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:1]
+                                                                            inCollectionViewWithAccessibilityIdentifier:ATLConversationCollectionViewAccessibilityIdentifier];
+    expect(cell.messageTextFont).to.equal(font);
+}
+
+- (void)testToVerifyIncomingCustomMessageTextColor
+{
+    UIColor *color = [UIColor redColor];
+    [[ATLIncomingMessageCollectionViewCell appearance] setMessageTextColor:color];
+    [self createIncomingMesssageWithText:ATLTestMessageText];
+    
+    ATLIncomingMessageCollectionViewCell *cell = (ATLIncomingMessageCollectionViewCell *)[tester waitForCellAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:1]
+                                                                            inCollectionViewWithAccessibilityIdentifier:ATLConversationCollectionViewAccessibilityIdentifier];
+    expect(cell.messageTextColor).to.equal(color);
+}
+
+- (void)testToVerifyIncomingCustomMessageLinkTextColor
+{
+    NSString *testText = @"www.layer.com";
+    UIColor *color = [UIColor redColor];
+    [[ATLIncomingMessageCollectionViewCell appearance] setMessageLinkTextColor:color];
+    [self createIncomingMesssageWithText:testText];
+    
+    ATLIncomingMessageCollectionViewCell *cell = (ATLIncomingMessageCollectionViewCell *)[tester waitForViewWithAccessibilityLabel:[NSString stringWithFormat:@"Message: %@", testText]];
+    expect(cell.messageLinkTextColor).to.equal(color);
+}
+
+- (void)testToVerifyIncomingCustomBubbleViewColor
+{
+    UIColor *color = [UIColor redColor];
+    [[ATLIncomingMessageCollectionViewCell appearance] setBubbleViewColor:color];
+    [self createIncomingMesssageWithText:ATLTestMessageText];
+    
+    ATLIncomingMessageCollectionViewCell *cell = (ATLIncomingMessageCollectionViewCell *)[tester waitForCellAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:1]
+                                                            inCollectionViewWithAccessibilityIdentifier:ATLConversationCollectionViewAccessibilityIdentifier];
+    expect(cell.bubbleViewColor).to.equal(color);
+}
+
+- (void)testToVerifyIncomingCustomBubbleViewCornerRadius
+{
+    NSUInteger radius = 4;
+    [[ATLIncomingMessageCollectionViewCell appearance] setBubbleViewCornerRadius:4];
+    [self createIncomingMesssageWithText:ATLTestMessageText];
+    
+    ATLIncomingMessageCollectionViewCell *cell = (ATLIncomingMessageCollectionViewCell *)[tester waitForCellAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:1]
+                                                                            inCollectionViewWithAccessibilityIdentifier:ATLConversationCollectionViewAccessibilityIdentifier];
     expect(cell.bubbleViewCornerRadius).to.equal(radius);
 }
 
 - (void)testToVerifyAvatarImageDiameter
 {
     [[ATLAvatarImageView appearance] setAvatarImageViewDiameter:40];
-    LYRUserMock *mockUser = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameEarl];
+    ATLUserMock *mockUser = [ATLUserMock userWithMockUserName:ATLMockUserNameKlemen];
     LYRClientMock *layerClient = [LYRClientMock layerClientMockWithAuthenticatedUserID:mockUser.participantIdentifier];
     
     LYRMessagePartMock *part = [LYRMessagePartMock messagePartWithText:@"test"];
@@ -179,7 +238,7 @@ extern NSString *const ATLConversationCollectionViewAccessibilityIdentifier;
 {
     [tester waitForTimeInterval:1];
     [[ATLAvatarImageView appearance] setImageViewBackgroundColor:[UIColor redColor]];
-    LYRUserMock *mockUser = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameEarl];
+    ATLUserMock *mockUser = [ATLUserMock userWithMockUserName:ATLMockUserNameKlemen];
     LYRClientMock *layerClient = [LYRClientMock layerClientMockWithAuthenticatedUserID:mockUser.participantIdentifier];
     
     LYRMessagePartMock *part = [LYRMessagePartMock messagePartWithText:@"test"];
@@ -200,10 +259,21 @@ extern NSString *const ATLConversationCollectionViewAccessibilityIdentifier;
     [self.conversation sendMessage:message error:nil];
 }
 
+- (void)createIncomingMesssageWithText:(NSString *)text
+{
+    [tester waitForTimeInterval:0.5];
+    ATLUserMock *mockUser = [ATLUserMock userWithMockUserName:ATLMockUserNameKevin];
+    LYRClientMock *layerClient = [LYRClientMock layerClientMockWithAuthenticatedUserID:mockUser.participantIdentifier];
+    
+    LYRMessagePartMock *part = [LYRMessagePartMock messagePartWithText:text];
+    LYRMessageMock *message = [layerClient newMessageWithParts:@[part] options:nil error:nil];
+    [self.conversation sendMessage:message error:nil];
+}
+
 - (void)setRootViewController
 {
-    LYRUserMock *mockUser1 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameMarshawn];
-    LYRUserMock *mockUser2 = [LYRUserMock userWithMockUserName:LYRClientMockFactoryNameEarl];
+    ATLUserMock *mockUser1 = [ATLUserMock userWithMockUserName:ATLMockUserNameKlemen];
+    ATLUserMock *mockUser2 = [ATLUserMock userWithMockUserName:ATLMockUserNameKevin];
     self.conversation = [self.testInterface conversationWithParticipants:[NSSet setWithObjects:mockUser1.participantIdentifier, mockUser2.participantIdentifier, nil] lastMessageText:nil];
     
     NSLog(@"Conversation %@", self.conversation);
@@ -214,11 +284,19 @@ extern NSString *const ATLConversationCollectionViewAccessibilityIdentifier;
 
 - (void)resetAppearance
 {
-    [[ATLMessageCollectionViewCell appearance] setMessageTextFont:[UIFont systemFontOfSize:14]];
-    [[ATLMessageCollectionViewCell appearance] setMessageTextColor:[UIColor blueColor]];
-    [[ATLMessageCollectionViewCell appearance] setMessageLinkTextColor:[UIColor blueColor]];
-    [[ATLMessageCollectionViewCell appearance] setBubbleViewColor:[UIColor lightGrayColor]];
-    [[ATLMessageCollectionViewCell appearance] setBubbleViewCornerRadius:12];
+    [[ATLIncomingMessageCollectionViewCell appearance] setMessageTextFont:[UIFont systemFontOfSize:14]];
+    [[ATLIncomingMessageCollectionViewCell appearance] setMessageTextColor:[UIColor blackColor]];
+    [[ATLIncomingMessageCollectionViewCell appearance] setMessageLinkTextColor:[UIColor blueColor]];
+    [[ATLIncomingMessageCollectionViewCell appearance] setBubbleViewColor:ATLLightGrayColor()];
+    [[ATLIncomingMessageCollectionViewCell appearance] setBubbleViewCornerRadius:12];
+    
+    [[ATLOutgoingMessageCollectionViewCell appearance] setMessageTextFont:[UIFont systemFontOfSize:14]];
+    [[ATLOutgoingMessageCollectionViewCell appearance] setMessageTextColor:[UIColor whiteColor]];
+    [[ATLOutgoingMessageCollectionViewCell appearance] setMessageLinkTextColor:[UIColor whiteColor]];
+    [[ATLOutgoingMessageCollectionViewCell appearance] setBubbleViewColor:ATLBlueColor()];
+    [[ATLOutgoingMessageCollectionViewCell appearance] setBubbleViewCornerRadius:12];
+    
+    [[ATLAvatarImageView appearance] setBackgroundColor:ATLLightGrayColor()];
 }
 
 @end

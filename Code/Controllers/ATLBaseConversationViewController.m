@@ -108,6 +108,7 @@ static CGFloat const ATLTypingIndicatorHeight = 20;
     [super viewDidLayoutSubviews];
     
     if (self.addressBarController) {
+        [self.addressBarController.view layoutIfNeeded];
         [self updateTopCollectionViewInset];
     }
     // To get the toolbar to slide onscreen with the view controller's content, we have to make the view the
