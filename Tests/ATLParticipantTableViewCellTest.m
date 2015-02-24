@@ -1,6 +1,6 @@
 //
 //  LYRParticipantTableViewCellTest.m
-//  LayerUIKit
+//  Atlas
 //
 //  Created by Kevin Coleman on 2/10/15.
 //

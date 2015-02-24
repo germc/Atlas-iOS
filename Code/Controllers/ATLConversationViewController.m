@@ -243,7 +243,7 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
 }
 
 /**
- Atlas - Configuring a subclass of `ATLMessageCollectionViewCell` to be displayed on screen. `LayerUIKit` supports both `ATLIncomingMessageCollectionViewCell` and `ATLOutgoingMessageCollectionViewCell`.
+ Atlas - Configuring a subclass of `ATLMessageCollectionViewCell` to be displayed on screen. `Atlas` supports both `ATLIncomingMessageCollectionViewCell` and `ATLOutgoingMessageCollectionViewCell`.
  */
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {

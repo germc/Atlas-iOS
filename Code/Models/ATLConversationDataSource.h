@@ -25,7 +25,7 @@ extern NSInteger const ATLNumberOfSectionsBeforeFirstMessageSection;
 
 /**
  @abstract The `ATLConversationDataSource` manages an `LYRQueryController` object whose data is displayed in an
- `ATLConversationViewController`. The `ATLConversationDataSource` also provides convenience methods for the transalation 
+ `ATLConversationViewController`. The `ATLConversationDataSource` also provides convenience methods for the translation 
  of index objects between an `LYRQueryController` and an `ATLConversationViewController`.
  @discussion The `ATLConversationViewController` reserves the section at index 0 for a "Loading Messages" indicator if
  one is needed during pagination. The index translation methods provided by the `ATLConversationDataSource` account for

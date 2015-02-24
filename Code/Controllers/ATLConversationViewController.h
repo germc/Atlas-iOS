@@ -36,7 +36,7 @@
 
 @optional
 /**
- @abstract Informs the delegate that a user succesfully sent an `LYRMessage` object.
+ @abstract Informs the delegate that a user successfully sent an `LYRMessage` object.
  @param conversationViewController The `ATLConversationViewController` in which the message was sent.
  @param message The `LYRMessage` object that was sent via Layer.
  */
@@ -76,7 +76,7 @@
  `NSOrderedSet` is returned, the controller will not send any messages.
  @discussion Called when a user taps the `SEND` button on an `ATLMessageInputToolbar`. The media attachments array supplied can contain
  any media type, such as text, images, GPS location information. Applications who wish to send `LYRMessage` objects with custom `LYRMessagePart`
- MIME types not supported by default by LayerUIKit can do so by implementing this method. All `LYRMessage` objects returned will be immediately 
+ MIME types not supported by default by Atlas can do so by implementing this method. All `LYRMessage` objects returned will be immediately 
  sent into the current conversation for the controller. If implemented, applications should also register custom `UICollectionViewCell` classes 
  with the controller via a call to `registerClass:forMessageCellWithReuseIdentifier:`. They should also implement the optional data source method,
  `conversationViewController:reuseIdentifierForMessage:`.
@@ -94,8 +94,8 @@
 /**
  @abstract Asks the data source for an object conforming to the `ATLParticipant` protocol for a given identifier.
  @param conversationViewController The `ATLConversationViewController` requesting the object.
- @param participantIdentifer The participant identifier.
- @return An object conforming to the `ATLParticpant` protocol.
+ @param participantForIdentifier The participant identifier.
+ @return An object conforming to the `ATLParticipant` protocol.
  */
 - (id<ATLParticipant>)conversationViewController:(ATLConversationViewController *)conversationViewController participantForIdentifier:(NSString *)participantIdentifier;
 
@@ -105,14 +105,14 @@
  @param date The `NSDate` object to be displayed as a string.
  @return an `NSAttributedString` representing the given date.
  @discussion The date string will be displayed above message cells in section headers. The date represents the `sentAt` date of a message object.
- The string can be customized to appear in whichever fromat your application requires.
+ The string can be customized to appear in whichever format your application requires.
  */
 - (NSAttributedString *)conversationViewController:(ATLConversationViewController *)conversationViewController attributedStringForDisplayOfDate:(NSDate *)date;
 
 /**
  @abstract Asks the data source for an `NSAttributedString` representation of a given `LYRRecipientStatus`.
  @param conversationViewController The `ATLConversationViewController` requesting the string.
- @param recipientStatus The `LYRRecipientStatus` object to be displayed as aquestion
+ @param recipientStatus The `LYRRecipientStatus` object to be displayed as a question
  string.
  @return An `NSAttributedString` representing the give recipient status.
  @discussion The recipient status string will be displayed below message the most recent message sent by the authenticated user.
@@ -175,7 +175,7 @@
 @property (nonatomic) LYRConversation *conversation;
 
 /**
- @abstract The `ATLConversationViewControllerDelegate` class informs the reciever to specific events that occured within the controller.
+ @abstract The `ATLConversationViewControllerDelegate` class informs the receiver to specific events that occurred within the controller.
  */
 @property (nonatomic, weak) id<ATLConversationViewControllerDelegate> delegate;
 
