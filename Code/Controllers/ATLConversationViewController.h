@@ -200,6 +200,11 @@
  */
 - (UICollectionViewCell<ATLMessagePresenting> *)collectionViewCellForMessage:(LYRMessage *)message;
 
+/**
+ @abstract Informs the recieve that it should send a message with the current location of the device. 
+ */
+- (void)sendLocationMessage;
+
 ///---------------------------------------
 /// @name Configuration
 ///---------------------------------------

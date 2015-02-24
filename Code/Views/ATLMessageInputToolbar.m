@@ -137,6 +137,11 @@ static CGFloat const ATLButtonHeight = 28.0f;
     }
 }
 
+- (CGSize)intrinsicContentSize
+{
+    return self.frame.size;
+}
+
 - (void)paste:(id)sender
 {
     NSArray *images = [UIPasteboard generalPasteboard].images;
