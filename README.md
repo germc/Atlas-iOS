@@ -7,9 +7,7 @@
 
 Atlas is a lightweight, flexible set of user interface components designed to enable developers to quickly and easily integrate native communications experiences into their applications. It was designed and built from the ground up to integrate with [LayerKit](https://github.com/layerhq/releases-ios#layerkit), the native iOS SDK for accessing the [Layer](https://layer.com) communications platform. LayerKit provides developers with a simple, object oriented interface to the rich messaging capabilities provided by the Layer platform. Atlas, in turn, provides ready-made UI components that expose these capabilities directly to users.
 
-![Conversation List](Examples/Screenshots/Conversation_List.png)
-![Conversation View](Examples/Screenshots/Conversation_View.jpg)
-![Conversation Details](Examples/Screenshots/Conversation_Details.jpg)
+![Walkthrough](Examples/Screenshots/walkthrough.gif)
 
 ## Overview
 
@@ -23,7 +21,7 @@ Atlas is deeply and directly integrated with LayerKit. This enables maximum inte
 
 ### Example App
 
-To make it easier to get started with Atlas, we've provided the [Atlas Messenger](https://github.com/layerhq/Atlas-Messenger-iOS) example application. Build instructions accompany the source code on the repository. Alternately, you can check out Atlas within a Layer sandbox of your very own by visiting the [Experience Atlas](https://developer.layer.com/signup/atlas) page.
+To make it easier to get started with Atlas, we've provided the [Atlas Messenger](https://github.com/layerhq/Atlas-Messenger-iOS) example application. Build instructions accompany the source code on the repository. Alternately, you can check out Atlas within a Layer sandbox of your very own by visiting the [Experience Atlas](https://developer.layer.com/dashboard/signup/atlas) page.
 
 ## API Quick Start
 
