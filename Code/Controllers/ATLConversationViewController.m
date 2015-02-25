@@ -124,17 +124,13 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
     
     self.messageInputToolbar.inputToolBarDelegate = self;
     self.addressBarController.delegate = self;
-    [self atl_registerForNotifications];
-}
-
-- (void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
     
     if (self.addressBarController && self.conversation.lastMessage) {
         [self.addressBarController disable];
         [self configureAddressBarForConversation];
     }
+    
+    [self atl_registerForNotifications];
 }
 
 - (void)viewDidAppear:(BOOL)animated
