@@ -259,6 +259,7 @@ extern NSString *const ATLMessageInputToolbarSendButton;
     toolBar.maxNumberOfLines = 3;
     
     [tester tapViewWithAccessibilityLabel:ATLMessageInputToolbarTextInputView];
+    [tester enterText:@"" intoViewWithAccessibilityLabel:ATLMessageInputToolbarAccessibilityLabel];
     [tester tapViewWithAccessibilityLabel:@"RETURN"];
     toolbarNewHeight = toolBar.frame.size.height;
     expect(toolbarNewHeight).to.beGreaterThan(toolbarHeight);

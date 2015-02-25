@@ -1,8 +1,4 @@
 language: objective-c
 
-install: 
-  - bundle install
-  - pod update
-
 script: 
   - rake test

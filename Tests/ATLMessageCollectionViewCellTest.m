@@ -28,6 +28,7 @@
 @property (nonatomic) ATLTestInterface *testInterface;
 @property (nonatomic) LYRConversationMock *conversation;
 @property (nonatomic) LYRMessageMock *message;
+@property (nonatomic) ATLSampleConversationViewController *controller;
 
 @end
 
@@ -40,6 +41,7 @@ extern NSString *const ATLConversationCollectionViewAccessibilityIdentifier;
 - (void)setUp
 {
     [super setUp];
+
     ATLUserMock *mockUser = [ATLUserMock userWithMockUserName:ATLMockUserNameBlake];
     LYRClientMock *layerClient = [LYRClientMock layerClientMockWithAuthenticatedUserID:mockUser.participantIdentifier];
     self.testInterface = [ATLTestInterface testIntefaceWithLayerClient:layerClient];
@@ -49,8 +51,11 @@ extern NSString *const ATLConversationCollectionViewAccessibilityIdentifier;
 
 - (void)tearDown
 {
-    [self resetAppearance];
+    [tester waitForAnimationsToFinish];
+    self.conversation = nil;
+    self.controller = nil;
     [[LYRMockContentStore sharedStore] resetContentStore];
+    [self resetAppearance];
     [super tearDown];
 }
 
@@ -253,7 +258,6 @@ extern NSString *const ATLConversationCollectionViewAccessibilityIdentifier;
 
 - (void)sendMessageWithText:(NSString *)text
 {
-    [tester waitForTimeInterval:0.5];
     LYRMessagePartMock *part = [LYRMessagePartMock messagePartWithText:text];
     LYRMessageMock *message = [self.testInterface.layerClient newMessageWithParts:@[part] options:nil error:nil];
     [self.conversation sendMessage:message error:nil];
@@ -261,7 +265,6 @@ extern NSString *const ATLConversationCollectionViewAccessibilityIdentifier;
 
 - (void)createIncomingMesssageWithText:(NSString *)text
 {
-    [tester waitForTimeInterval:0.5];
     ATLUserMock *mockUser = [ATLUserMock userWithMockUserName:ATLMockUserNameKevin];
     LYRClientMock *layerClient = [LYRClientMock layerClientMockWithAuthenticatedUserID:mockUser.participantIdentifier];
     
@@ -276,10 +279,10 @@ extern NSString *const ATLConversationCollectionViewAccessibilityIdentifier;
     ATLUserMock *mockUser2 = [ATLUserMock userWithMockUserName:ATLMockUserNameKevin];
     self.conversation = [self.testInterface conversationWithParticipants:[NSSet setWithObjects:mockUser1.participantIdentifier, mockUser2.participantIdentifier, nil] lastMessageText:nil];
     
-    NSLog(@"Conversation %@", self.conversation);
-    ATLSampleConversationViewController *controller = [ATLSampleConversationViewController conversationViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];;
-    controller.conversation = (LYRConversation *)self.conversation;
-    [self.testInterface presentViewController:controller];
+    self.controller = [ATLSampleConversationViewController conversationViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];;
+    self.controller.conversation = (LYRConversation *)self.conversation;
+    [self.testInterface presentViewController:self.controller];
+    [tester waitForAnimationsToFinish];
 }
 
 - (void)resetAppearance

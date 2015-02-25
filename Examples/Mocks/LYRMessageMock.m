@@ -55,8 +55,6 @@
 - (BOOL)markAsRead:(NSError **)error
 {
     self.isUnread = NO;
-    [[LYRMockContentStore sharedStore] updateMessage:self];
-    [[LYRMockContentStore sharedStore] broadcastChanges];
     return YES;
 }
 

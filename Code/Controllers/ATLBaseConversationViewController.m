@@ -34,6 +34,7 @@
 @implementation ATLBaseConversationViewController
 
 static CGFloat const ATLTypingIndicatorHeight = 20;
+static CGFloat const ATLMaxScrollDistanceFromBottom = 150;
 
 - (id)init
 {
@@ -168,7 +169,7 @@ static CGFloat const ATLTypingIndicatorHeight = 20;
 {
     CGPoint bottomOffset = [self bottomOffsetForContentSize:self.collectionView.contentSize];
     CGFloat distanceToBottom = bottomOffset.y - self.collectionView.contentOffset.y;
-    BOOL shouldScrollToBottom = distanceToBottom <= 150 && !self.collectionView.isTracking && !self.collectionView.isDragging && !self.collectionView.isDecelerating;
+    BOOL shouldScrollToBottom = distanceToBottom <= ATLMaxScrollDistanceFromBottom && !self.collectionView.isTracking && !self.collectionView.isDragging && !self.collectionView.isDecelerating;
     return shouldScrollToBottom;
 }
 
@@ -229,7 +230,7 @@ static CGFloat const ATLTypingIndicatorHeight = 20;
     CGPoint existingOffset = self.collectionView.contentOffset;
     CGPoint bottomOffset = [self bottomOffsetForContentSize:self.collectionView.contentSize];
     CGFloat distanceToBottom = bottomOffset.y - existingOffset.y;
-    BOOL shouldScrollToBottom = distanceToBottom <= 50;
+    BOOL shouldScrollToBottom = distanceToBottom <= ATLMaxScrollDistanceFromBottom;
     
     CGRect toolbarFrame = [self.view convertRect:self.messageInputToolbar.frame fromView:self.messageInputToolbar.superview];
     CGFloat keyboardOnscreenHeight = CGRectGetHeight(self.view.frame) - CGRectGetMinY(toolbarFrame);
