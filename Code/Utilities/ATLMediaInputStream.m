@@ -259,7 +259,7 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
         CFRelease(_source);
         _source = NULL;
     }
-    if (_provider) {
+    if (_provider != NULL) {
         CGDataProviderRelease(_provider);
         _provider = NULL;
     }
