@@ -25,7 +25,6 @@
 #import "ATLConstants.h"
 #import "ATLDataSourceChange.h"
 #import "ATLMessagingUtilities.h"
-#import "LYRQueryController.h"
 #import "ATLConversationView.h"
 #import "ATLConversationDataSource.h"
 #import "ATLMediaAttachment.h"
