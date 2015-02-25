@@ -45,6 +45,7 @@
 
 @property (nonatomic) ATLLocationManager *locationManager;
 @property (nonatomic) BOOL shouldShareLocation;
+@property (nonatomic) BOOL canDisableAddressBar;
 
 @end
 
@@ -124,13 +125,18 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
     
     self.messageInputToolbar.inputToolBarDelegate = self;
     self.addressBarController.delegate = self;
-    
-    if (self.addressBarController && self.conversation.lastMessage) {
+    self.canDisableAddressBar = YES;
+    [self atl_registerForNotifications];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    if (self.addressBarController && self.conversation.lastMessage && self.canDisableAddressBar) {
         [self.addressBarController disable];
         [self configureAddressBarForConversation];
     }
-    
-    [self atl_registerForNotifications];
+    self.canDisableAddressBar = YES;
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -770,6 +776,7 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
 
 - (void)addressBarViewController:(ATLAddressBarViewController *)addressBarViewController didSelectParticipant:(id<ATLParticipant>)participant
 {
+    self.canDisableAddressBar = NO;
     [self configureConversationForAddressBar];
 }
 
