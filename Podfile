@@ -1,7 +1,7 @@
 platform :ios, '7.0'
 
 # Import CocoaPods sources
-source 'git@github.com:layerhq/cocoapods-specs.git'
+source 'https://github.com/layerhq/cocoapods-specs.git'
 source 'https://github.com/CocoaPods/Specs.git'
 
 target 'Programmatic' do
