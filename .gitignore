@@ -6,3 +6,5 @@ Pods
 Atlas.xcworkspace/xcshareddata/xcschemes/*Tests.xcscheme
 *.xccheckout
 Releases
+xcodebuild.log
+
