@@ -34,7 +34,7 @@
 
 @property (nonatomic) ATLConversationDataSource *conversationDataSource;
 @property (nonatomic) BOOL shouldDisplayAvatarItem;
-@property (nonatomic) NSMutableArray *typingParticipantIDs;
+@property (nonatomic) NSMutableOrderedSet *typingParticipantIDs;
 @property (nonatomic) NSMutableArray *objectChanges;
 @property (nonatomic) NSHashTable *sectionHeaders;
 @property (nonatomic) NSHashTable *sectionFooters;
