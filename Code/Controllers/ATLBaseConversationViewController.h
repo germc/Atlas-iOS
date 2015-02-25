@@ -74,7 +74,7 @@
 
 /**
  @abstract Returns a boolean value to determines whether or not the controller should scroll the collection view content to the bottom.
- @discussion Returns NO if the content is further than 50px from the bottom of the collection view or the collection view is currently scrolling.
+ @discussion Returns NO if the content is further than 150px from the bottom of the collection view or the collection view is currently scrolling.
  */
 - (BOOL)shouldScrollToBottom;
 
