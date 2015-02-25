@@ -1,7 +1,7 @@
 source "http://rubygems.org"
 ruby '2.1.2'
 
-gem "rake", "~> 10.3.2"
+gem "rake", "~> 10.4.2"
 gem 'cocoapods', '~> 0.36.0.beta.1'
 gem 'xcpretty', '~> 0.1.7'
 gem 'xctasks', '~> 0.2.2'
