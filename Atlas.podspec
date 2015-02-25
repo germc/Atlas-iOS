@@ -11,7 +11,7 @@ Pod::Spec.new do |s|
                                     'Klemen Verdnik'  => 'klemen@layer.com',
                                     'Ben Blakely'     => 'ben@layer.com' }
   s.source                      = { git: "https://github.com/layerhq/Atlas-iOS.git", tag: "v#{s.version}" }
-  s.platform                    = :ios, '7.0'
+  s.platform                    = :ios, '8.0'
   s.requires_arc                = true
   s.source_files                = 'Code/**/*.{h,m}'
   s.ios.resource_bundle         = { 'AtlasResource' => 'Resources/*' }
