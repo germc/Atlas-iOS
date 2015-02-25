@@ -21,7 +21,7 @@ Atlas is deeply and directly integrated with LayerKit. This enables maximum inte
 
 ### Example App
 
-To make it easier to get started with Atlas, we've provided the [Atlas Messenger](https://github.com/layerhq/Atlas-Messenger-iOS) example application. Build instructions accompany the source code on the repository. Alternately, you can check out Atlas within a Layer sandbox of your very own by visiting the [Experience Atlas](https://developer.layer.com/signup/atlas) page.
+To make it easier to get started with Atlas, we've provided the [Atlas Messenger](https://github.com/layerhq/Atlas-Messenger-iOS) example application. Build instructions accompany the source code on the repository. Alternately, you can check out Atlas within a Layer sandbox of your very own by visiting the [Experience Atlas](https://developer.layer.com/dashboard/signup/atlas) page.
 
 ## API Quick Start
 
