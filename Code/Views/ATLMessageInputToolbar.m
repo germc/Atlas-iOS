@@ -149,7 +149,6 @@ static CGFloat const ATLButtonHeight = 28.0f;
         }
         return;
     }
-    [super paste:sender];
 }
 
 #pragma mark - Public Methods

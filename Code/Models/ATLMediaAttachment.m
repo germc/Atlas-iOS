@@ -339,15 +339,13 @@ NSData *ATLMediaAttachmentDataFromInputStream(NSInputStream *inputStream)
     
     // Start streaming
     uint8_t *buffer = malloc(ATLMediaAttachmentDataFromStreamBufferSize);
-    BOOL endOfStream = NO;
-    while (endOfStream != YES) {
-        NSUInteger bytesRead = [inputStream read:buffer maxLength:(unsigned long)ATLMediaAttachmentDataFromStreamBufferSize];
-        if (bytesRead == 0) {
-            endOfStream = YES;
-            break;
+    NSUInteger bytesRead;
+    do {
+        bytesRead = [inputStream read:buffer maxLength:(unsigned long)ATLMediaAttachmentDataFromStreamBufferSize];
+        if (bytesRead != 0) {
+            [dataFromStream appendBytes:buffer length:bytesRead];
         }
-        [dataFromStream appendBytes:buffer length:bytesRead];
-    }
+    } while (bytesRead != 0);
     free(buffer);
     
     // Close stream

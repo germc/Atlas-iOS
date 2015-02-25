@@ -64,10 +64,10 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
 @property (nonatomic) ALAssetsLibrary *assetLibrary; // needs to be alive during transfer
 @property (nonatomic) ALAsset *asset;
 @property (nonatomic) ALAssetRepresentation *assetRepresentation;
-@property (nonatomic) CGDataProviderRef provider;
-@property (nonatomic) CGImageSourceRef source;
-@property (nonatomic) CGDataConsumerRef consumer;
-@property (nonatomic) CGImageDestinationRef destination;
+@property (nonatomic, assign) CGDataProviderRef provider;
+@property (nonatomic, assign) CGImageSourceRef source;
+@property (nonatomic, assign) CGDataConsumerRef consumer;
+@property (nonatomic, assign) CGImageDestinationRef destination;
 
 @end
 
@@ -247,21 +247,21 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
         ATLMediaInputStreamLog(@"closing stream...");
     }
     // Release Image I/O references
-    if (self.destination) {
-        CFRelease(self.destination);
-        self.destination = NULL;
+    if (_destination != NULL) {
+        CFRelease(_destination);
+        _destination = NULL;
     }
-    if (self.consumer) {
-        CGDataConsumerRelease(self.consumer);
-        self.consumer = NULL;
+    if (_consumer != NULL) {
+        CGDataConsumerRelease(_consumer);
+        _consumer = NULL;
     }
-    if (self.source) {
-        CFRelease(self.source);
-        self.source = NULL;
+    if (_source != NULL) {
+        CFRelease(_source);
+        _source = NULL;
     }
-    if (self.provider) {
-        CGDataProviderRelease(self.provider);
-        self.provider = NULL;
+    if (_provider != NULL) {
+        CGDataProviderRelease(_provider);
+        _provider = NULL;
     }
     self.asset = nil;
     self.assetLibrary = nil;
@@ -375,8 +375,8 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
         .getBytesAtPosition = ATLMediaInputStreamGetBytesFromAssetCallback,
         .releaseInfo = NULL
     };
-    self.provider = CGDataProviderCreateDirect((void *)CFBridgingRetain(self), [self.assetRepresentation size], &dataProviderCallbacks);
-    self.source = CGImageSourceCreateWithDataProvider(self.provider, NULL);
+    _provider = CGDataProviderCreateDirect((void *)CFBridgingRetain(self), [self.assetRepresentation size], &dataProviderCallbacks);
+    _source = CGImageSourceCreateWithDataProvider(_provider, NULL);
     if (self.provider == NULL || self.source == NULL) {
         if (error) {
             *error = [NSError errorWithDomain:ATLMediaInputStreamErrorDomain code:ATLMediaInputStreamErrorFailedInitializingAssetProvider userInfo:@{ NSLocalizedDescriptionKey: @"Failed initializing the Quartz image data provider/source pair." }];
@@ -385,7 +385,7 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
     }
     
     // There should be at least one image found in the source.
-    size_t count = CGImageSourceGetCount(self.source);
+    size_t count = CGImageSourceGetCount(_source);
     if (count <= 0) {
         if (error) {
             *error = [NSError errorWithDomain:ATLMediaInputStreamErrorDomain code:ATLMediaInputStreamErrorAssetHasNoImages userInfo:@{ NSLocalizedDescriptionKey: @"Failed initializing the Quartz image data provider/source, because source asset doesn't include any images." }];
@@ -409,15 +409,9 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
             // In case the we need to resample an UIImage (which might be
             // coming from the camera picker or pasteboard).
             NSData *dataWithPNGRepresentation = UIImagePNGRepresentation(self.sourceImage);
-            cfDataPNGRepresentation = CFBridgingRetain(dataWithPNGRepresentation);
-            self.provider = CGDataProviderCreateWithCFData(cfDataPNGRepresentation);
-            self.source = CGImageSourceCreateWithDataProvider(self.provider, NULL);
-            if (self.provider == NULL || self.source == NULL) {
-                if (error) {
-                    *error = [NSError errorWithDomain:ATLMediaInputStreamErrorDomain code:ATLMediaInputStreamErrorFailedInitializingAssetProvider userInfo:@{ NSLocalizedDescriptionKey: @"Failed initializing the Quartz image data provider/source pair from UIImage." }];
-                }
-                return NO;
-            }
+            cfDataPNGRepresentation = (__bridge CFDataRef)dataWithPNGRepresentation;
+            _provider = CGDataProviderCreateWithCFData(cfDataPNGRepresentation);
+            _source = CGImageSourceCreateWithDataProvider(_provider, NULL);
         }
         // Resample the image data.
         NSDictionary *thumbnailOptions = @{ (NSString *)kCGImageSourceCreateThumbnailFromImageIfAbsent : @YES, // Demand resampling, even if it doesn't exist in cache.
@@ -433,13 +427,6 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
         }
         self.sourceImage = [UIImage imageWithCGImage:thumbnailCGImage];
         CGImageRelease(thumbnailCGImage);
-        if (cfDataPNGRepresentation != NULL) {
-            // If we were resampling self.sourceImage, release the CFDataRef.
-            CFRelease(cfDataPNGRepresentation);
-            cfDataPNGRepresentation = nil;
-        }
-        self.assetRepresentation = nil;
-        self.sourceAssetURL = nil;
     }
     return YES;
 }
@@ -456,16 +443,16 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
         .putBytes = ATLMediaInputStreamPutBytesIntoStreamCallback,
         .releaseConsumer = NULL
     };
-    self.consumer = CGDataConsumerCreate((void *)CFBridgingRetain(self), &dataConsumerCallbacks);
+    _consumer = CGDataConsumerCreate((void *)CFBridgingRetain(self), &dataConsumerCallbacks);
     if (self.assetRepresentation) {
         // In case source is the ALAsset.
-        self.destination = CGImageDestinationCreateWithDataConsumer(self.consumer, (CFStringRef)self.assetRepresentation.UTI, 1, NULL);
+        _destination = CGImageDestinationCreateWithDataConsumer(_consumer, (CFStringRef)self.assetRepresentation.UTI, 1, NULL);
     } else {
         // In case source is the UIImage.
-        self.destination = CGImageDestinationCreateWithDataConsumer(self.consumer, kUTTypeJPEG, 1, NULL);
+        _destination = CGImageDestinationCreateWithDataConsumer(_consumer, kUTTypeJPEG, 1, NULL);
     }
 
-    if (self.consumer == NULL || self.destination == NULL) {
+    if (_consumer == NULL || _destination == NULL) {
         if (error) {
             *error = [NSError errorWithDomain:ATLMediaInputStreamErrorDomain code:ATLMediaInputStreamErrorFailedInitializingImageIOConsumer userInfo:nil];
         }
@@ -491,9 +478,9 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
         [destinationOptions setObject:mutableTiffDict forKey:ATLMediaInputStreamAppleCameraTIFFOptionsKey];
     }
     if (self.assetRepresentation) {
-        CGImageDestinationAddImageFromSource(self.destination, self.source, 0, (__bridge CFDictionaryRef)destinationOptions);
+        CGImageDestinationAddImageFromSource(_destination, self.source, 0, (__bridge CFDictionaryRef)destinationOptions);
     } else {
-        CGImageDestinationAddImage(self.destination, self.sourceImage.CGImage, (__bridge CFDictionaryRef)destinationOptions);
+        CGImageDestinationAddImage(_destination, self.sourceImage.CGImage, (__bridge CFDictionaryRef)destinationOptions);
     }
     return YES;
 }
