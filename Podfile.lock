@@ -15,26 +15,26 @@ DEPENDENCIES:
   - Atlas (from `.`)
   - Expecta
   - KIF
-  - KIFViewControllerActions (from `git@github.com:blakewatters/KIFViewControllerActions.git`)
+  - KIFViewControllerActions (from `https://github.com/blakewatters/KIFViewControllerActions.git`)
   - LayerKit
-  - LYRCountDownLatch (from `git@github.com:layerhq/LYRCountDownLatch.git`)
+  - LYRCountDownLatch (from `https://github.com/layerhq/LYRCountDownLatch.git`)
   - OCMock
 
 EXTERNAL SOURCES:
   Atlas:
     :path: .
   KIFViewControllerActions:
-    :git: git@github.com:blakewatters/KIFViewControllerActions.git
+    :git: https://github.com/blakewatters/KIFViewControllerActions.git
   LYRCountDownLatch:
-    :git: git@github.com:layerhq/LYRCountDownLatch.git
+    :git: https://github.com/layerhq/LYRCountDownLatch.git
 
 CHECKOUT OPTIONS:
   KIFViewControllerActions:
     :commit: 41edeeade3ea0618c2ddac6c90a648f322f1b5a2
-    :git: git@github.com:blakewatters/KIFViewControllerActions.git
+    :git: https://github.com/blakewatters/KIFViewControllerActions.git
   LYRCountDownLatch:
     :commit: 02119f855ad14e7fc0dae32bbbf17c735a281cfe
-    :git: git@github.com:layerhq/LYRCountDownLatch.git
+    :git: https://github.com/layerhq/LYRCountDownLatch.git
 
 SPEC CHECKSUMS:
   Atlas: acc11f35e860eabda2f0fc0f5ca5e6629f40870b
