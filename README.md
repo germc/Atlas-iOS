@@ -1,4 +1,4 @@
-# Atlas
+![Atlas Header](Assets/atlas-github-header.png)
 
 [![Build Status](http://img.shields.io/travis/layerhq/Atlas-iOS/development.svg?style=flat)](https://travis-ci.org/layerhq/Atlas-iOS)
 [![Pod Version](http://img.shields.io/cocoapods/v/Atlas.svg?style=flat)](http://cocoadocs.org/docsets/Atlas/)
