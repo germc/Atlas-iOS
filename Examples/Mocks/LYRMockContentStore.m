@@ -210,7 +210,7 @@
 - (NSOrderedSet *)fetchObjectsWithClass:(Class)objectClass predicate:(LYRPredicate *)predicate sortDescriptior:(NSArray *)sortDescriptor
 {
     if ([objectClass isSubclassOfClass:[LYRConversation class]]) {
-        NSOrderedSet *filteredSet = [NSOrderedSet new];
+        NSOrderedSet *filteredSet;
         if (predicate) {
             NSPredicate *conversationPredicate = [self constructPredicateForMockPredicate:predicate];
             filteredSet = [[NSOrderedSet alloc] initWithSet:[self.conversations filteredSetUsingPredicate:conversationPredicate]];
@@ -220,7 +220,7 @@
         NSArray *sortedArray = [filteredSet.array sortedArrayUsingDescriptors:sortDescriptor];
         return [[NSOrderedSet alloc] initWithArray:sortedArray];;
     } else if ([objectClass isSubclassOfClass:[LYRMessage class]]) {
-        NSOrderedSet *filteredSet = [NSOrderedSet new];
+        NSOrderedSet *filteredSet;
         if (predicate) {
             NSPredicate *messagePredicate = [self constructPredicateForMockPredicate:predicate];
             filteredSet = [[NSOrderedSet alloc] initWithSet:[self.messages filteredSetUsingPredicate:messagePredicate]];

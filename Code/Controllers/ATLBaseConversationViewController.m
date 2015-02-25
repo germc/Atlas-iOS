@@ -68,6 +68,8 @@ static CGFloat const ATLTypingIndicatorHeight = 20;
 
 - (void)viewDidLoad
 {
+    [super viewDidLoad];
+    
     // Add message input tool bar
     self.messageInputToolbar = [ATLMessageInputToolbar new];
     // An apparent system bug causes a view controller to not be deallocated

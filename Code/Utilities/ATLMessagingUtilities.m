@@ -127,16 +127,6 @@ CGRect ATLImageRectConstrainedToSize(CGSize imageSize, CGSize maxSize)
 
 #pragma mark - Private Message Part Helpers
 
-NSData *ATLJPEGDataForImageWithConstraint(UIImage *image, CGFloat constraint, CGFloat quality)
-{
-    NSData *pngData = UIImagePNGRepresentation(image);
-    CGImageSourceRef source = CGImageSourceCreateWithData((CFDataRef)pngData, NULL);
-    CGImageRef resizedImage = CGImageSourceCreateThumbnailAtIndex(source, 0, (CFDictionaryRef)@{ (NSString *)kCGImageSourceThumbnailMaxPixelSize: @(constraint),
-                                                                                                 (NSString *)kCGImageSourceCreateThumbnailFromImageIfAbsent: @(YES) });
-    UIImage *resizedUIImage = [UIImage imageWithCGImage:resizedImage];
-    return UIImageJPEGRepresentation(resizedUIImage, quality);
-}
-
 CGSize  ATLSizeFromOriginalSizeWithConstraint(CGSize originalSize, CGFloat constraint)
 {
     if (originalSize.height > constraint && (originalSize.height > originalSize.width)) {
