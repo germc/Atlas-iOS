@@ -358,6 +358,9 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
     } else {
         [cell updateWithSender:nil];
     }
+    if (message.isUnread) {
+        [message markAsRead:nil];
+    }
 }
 
 - (void)configureFooter:(ATLConversationCollectionViewFooter *)footer atIndexPath:(NSIndexPath *)indexPath

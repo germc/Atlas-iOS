@@ -100,22 +100,23 @@ static CGFloat const ATLTypingIndicatorHeight = 20;
     if (self.presentedViewController) {
         [self.view becomeFirstResponder];
     }
+    if (self.addressBarController) {
+        [self.addressBarController.view layoutIfNeeded];
+        [self updateTopCollectionViewInset];
+    }
     [self updateBottomCollectionViewInset];
 }
 
 - (void)viewDidLayoutSubviews
 {
     [super viewDidLayoutSubviews];
-    
-    if (self.addressBarController) {
-        [self.addressBarController.view layoutIfNeeded];
-        [self updateTopCollectionViewInset];
-    }
+
     // To get the toolbar to slide onscreen with the view controller's content, we have to make the view the
     // first responder here. Even so, it will not animate on iOS 8 the first time.
     if (!self.presentedViewController && self.navigationController && !self.view.inputAccessoryView.superview) {
         [self.view becomeFirstResponder];
     }
+    
     if (self.isFirstAppearance) {
         self.firstAppearance = NO;
         // We use the content size of the actual collection view when calculating the ammount to scroll. Hence, we layout the collection view before scrolling to the bottom.
@@ -154,7 +155,9 @@ static CGFloat const ATLTypingIndicatorHeight = 20;
 - (void)setTypingIndicatorInset:(CGFloat)typingIndicatorInset
 {
     _typingIndicatorInset = typingIndicatorInset;
-    [self updateBottomCollectionViewInset];
+    [UIView animateWithDuration:0.1 animations:^{
+        [self updateBottomCollectionViewInset];
+    }];
 }
 
 #pragma mark - Public Methods
@@ -163,7 +166,7 @@ static CGFloat const ATLTypingIndicatorHeight = 20;
 {
     CGPoint bottomOffset = [self bottomOffsetForContentSize:self.collectionView.contentSize];
     CGFloat distanceToBottom = bottomOffset.y - self.collectionView.contentOffset.y;
-    BOOL shouldScrollToBottom = distanceToBottom <= 50 && !self.collectionView.isTracking && !self.collectionView.isDragging && !self.collectionView.isDecelerating;
+    BOOL shouldScrollToBottom = distanceToBottom <= 150 && !self.collectionView.isTracking && !self.collectionView.isDragging && !self.collectionView.isDecelerating;
     return shouldScrollToBottom;
 }
 
