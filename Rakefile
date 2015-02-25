@@ -131,7 +131,6 @@ namespace :version do
     system("bundle exec pod update") if agree("Run `pod update`? (y/n) ")
     system("git commit -m 'Updating version to #{version}' Atlas.podspec Code/Atlas.m Podfile.lock") if agree("Commit package artifacts? (y/n) ")
     system("git push origin HEAD") if agree("Push version update to origin? (y/n)")
-    
   end
 end
 
@@ -170,8 +169,6 @@ task :release => [:fetch_origin] do
     version = File.read(path).match(/\.version\s+=\s+['"](.+)['"]$/)[1]
     existing_tag = `git tag -l v#{version}`.chomp
     fail "Unable to find tag v#{version}" unless existing_tag
-    
-    Rake::Task["release:build"].invoke
     
     with_clean_env do
       podspec = File.join(root_dir, "Atlas.podspec")

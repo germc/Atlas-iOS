@@ -100,7 +100,7 @@ static CGFloat const ATLTypingIndicatorHeight = 20;
     if (self.presentedViewController) {
         [self.view becomeFirstResponder];
     }
-    if (self.addressBarController) {
+    if (self.addressBarController && self.firstAppearance) {
         [self.addressBarController.view layoutIfNeeded];
         [self updateTopCollectionViewInset];
     }
