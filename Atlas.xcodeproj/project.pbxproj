@@ -54,11 +54,6 @@
 		D6F405CB1A8FDDE300AE9581 /* ATLUserMock.m in Sources */ = {isa = PBXBuildFile; fileRef = D6F405C31A8FDDE300AE9581 /* ATLUserMock.m */; };
 		D6F405E71A8FDE3900AE9581 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D6F405E21A8FDE3900AE9581 /* Images.xcassets */; };
 		D6F405E91A8FDE3900AE9581 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = D6F405E41A8FDE3900AE9581 /* main.m */; };
-		D6F405F01A8FDEAB00AE9581 /* Conversation_Details.jpg in Resources */ = {isa = PBXBuildFile; fileRef = D6F405EB1A8FDEAB00AE9581 /* Conversation_Details.jpg */; };
-		D6F405F11A8FDEAB00AE9581 /* Conversation_List.png in Resources */ = {isa = PBXBuildFile; fileRef = D6F405EC1A8FDEAB00AE9581 /* Conversation_List.png */; };
-		D6F405F21A8FDEAB00AE9581 /* Conversation_View.jpg in Resources */ = {isa = PBXBuildFile; fileRef = D6F405ED1A8FDEAB00AE9581 /* Conversation_View.jpg */; };
-		D6F405F31A8FDEAB00AE9581 /* New_Message.jpg in Resources */ = {isa = PBXBuildFile; fileRef = D6F405EE1A8FDEAB00AE9581 /* New_Message.jpg */; };
-		D6F405F41A8FDEAB00AE9581 /* Participant_Selection.jpg in Resources */ = {isa = PBXBuildFile; fileRef = D6F405EF1A8FDEAB00AE9581 /* Participant_Selection.jpg */; };
 		D6F406261A8FDF5900AE9581 /* StoryboardAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = D6F405D61A8FDE1B00AE9581 /* StoryboardAppDelegate.m */; };
 		D6F4062B1A8FE20D00AE9581 /* StoryboardTests-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = D6F406101A8FDEEB00AE9581 /* StoryboardTests-Info.plist */; };
 		D6F4062C1A8FE28000AE9581 /* ATLConversationListViewControllerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D6F406011A8FDEEB00AE9581 /* ATLConversationListViewControllerTest.m */; };
@@ -159,11 +154,6 @@
 		D6F405E21A8FDE3900AE9581 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Examples/Programmatic/Images.xcassets; sourceTree = SOURCE_ROOT; };
 		D6F405E31A8FDE3900AE9581 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Examples/Programmatic/Info.plist; sourceTree = SOURCE_ROOT; };
 		D6F405E41A8FDE3900AE9581 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = Examples/Programmatic/main.m; sourceTree = SOURCE_ROOT; };
-		D6F405EB1A8FDEAB00AE9581 /* Conversation_Details.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = Conversation_Details.jpg; sourceTree = "<group>"; };
-		D6F405EC1A8FDEAB00AE9581 /* Conversation_List.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Conversation_List.png; sourceTree = "<group>"; };
-		D6F405ED1A8FDEAB00AE9581 /* Conversation_View.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = Conversation_View.jpg; sourceTree = "<group>"; };
-		D6F405EE1A8FDEAB00AE9581 /* New_Message.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = New_Message.jpg; sourceTree = "<group>"; };
-		D6F405EF1A8FDEAB00AE9581 /* Participant_Selection.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = Participant_Selection.jpg; sourceTree = "<group>"; };
 		D6F406011A8FDEEB00AE9581 /* ATLConversationListViewControllerTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ATLConversationListViewControllerTest.m; sourceTree = "<group>"; };
 		D6F406021A8FDEEB00AE9581 /* ATLConversationTableViewCellTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ATLConversationTableViewCellTest.m; sourceTree = "<group>"; };
 		D6F406031A8FDEEB00AE9581 /* ATLConversationViewControllerTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ATLConversationViewControllerTest.m; sourceTree = "<group>"; };
@@ -330,7 +320,6 @@
 		D676CF171A8C4344002D9D27 /* Examples */ = {
 			isa = PBXGroup;
 			children = (
-				D6F405EA1A8FDEAB00AE9581 /* Screenshots */,
 				D0E729491A02F1C700B76672 /* Mocks */,
 				D6F405A71A8FDDAA00AE9581 /* ATLSampleConversationAvatarItem.h */,
 				D6F405A81A8FDDAA00AE9581 /* ATLSampleConversationAvatarItem.m */,
@@ -404,19 +393,6 @@
 			name = Base.lproj;
 			path = Examples/Programmatic/Base.lproj;
 			sourceTree = SOURCE_ROOT;
-		};
-		D6F405EA1A8FDEAB00AE9581 /* Screenshots */ = {
-			isa = PBXGroup;
-			children = (
-				D6F405EB1A8FDEAB00AE9581 /* Conversation_Details.jpg */,
-				D6F405EC1A8FDEAB00AE9581 /* Conversation_List.png */,
-				D6F405ED1A8FDEAB00AE9581 /* Conversation_View.jpg */,
-				D6F405EE1A8FDEAB00AE9581 /* New_Message.jpg */,
-				D6F405EF1A8FDEAB00AE9581 /* Participant_Selection.jpg */,
-			);
-			name = Screenshots;
-			path = Examples/Screenshots;
-			sourceTree = "<group>";
 		};
 		D6F406001A8FDEEB00AE9581 /* Tests */ = {
 			isa = PBXGroup;
@@ -642,12 +618,7 @@
 			files = (
 				D6C0454B1A9941CD0028E9D0 /* test-logo.png in Resources */,
 				D0294DE71A93F37A00702856 /* Info.plist in Resources */,
-				D6F405F01A8FDEAB00AE9581 /* Conversation_Details.jpg in Resources */,
-				D6F405F31A8FDEAB00AE9581 /* New_Message.jpg in Resources */,
 				D6F405E71A8FDE3900AE9581 /* Images.xcassets in Resources */,
-				D6F405F21A8FDEAB00AE9581 /* Conversation_View.jpg in Resources */,
-				D6F405F41A8FDEAB00AE9581 /* Participant_Selection.jpg in Resources */,
-				D6F405F11A8FDEAB00AE9581 /* Conversation_List.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
