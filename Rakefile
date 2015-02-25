@@ -153,8 +153,8 @@ task :release => [:fetch_origin] do
       fail "Unable to locate CHANGELOG section for version #{version}"
     end
     
-    puts “Fetching remote tags from origin…”
-    run "git fetch origin —tags"
+    puts "Fetching remote tags from origin..."
+    run "git fetch origin --tags"
     existing_tag = `git tag -l v#{version}`.chomp
     if existing_tag != ''
       fail "A tag already exists for version v#{version}: Maybe you need to run `rake version:set`?"
