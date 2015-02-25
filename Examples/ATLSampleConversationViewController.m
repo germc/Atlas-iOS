@@ -42,6 +42,8 @@
     self.dateFormatter.dateStyle = NSDateFormatterShortStyle;
     self.dateFormatter.timeStyle = NSDateFormatterShortStyle;
     [self configureTitle];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userDidTapLink:) name:ATLUserDidTapLinkNotification object:nil];
 }
 
 #pragma mark - ATLConversationViewControllerDataSource methods
@@ -117,6 +119,11 @@
 - (void)addressBarViewController:(ATLAddressBarViewController *)addressBarViewController searchForParticipantsMatchingText:(NSString *)searchText completion:(void (^)(NSArray *))completion
 {
     completion([[ATLUserMock participantsWithText:searchText] allObjects]);
+}
+
+- (void)userDidTapLink:(NSNotification *)notification
+{
+    [[UIApplication sharedApplication] openURL:notification.object];
 }
 
 @end
