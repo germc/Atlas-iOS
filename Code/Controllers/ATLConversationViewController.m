@@ -88,7 +88,7 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
 {
     _dateDisplayTimeInterval = 60*60;
     _marksMessagesAsRead = YES;
-    _typingParticipantIDs = [NSMutableArray new];
+    _typingParticipantIDs = [NSMutableOrderedSet new];
     _sectionHeaders = [NSHashTable weakObjectsHashTable];
     _sectionFooters = [NSHashTable weakObjectsHashTable];
     _objectChanges = [NSMutableArray new];
@@ -725,7 +725,7 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
 
 - (void)updateTypingIndicatorOverlay:(BOOL)animated
 {
-    NSMutableArray *knownParticipantsTyping = [NSMutableArray array];
+    NSMutableOrderedSet *knownParticipantsTyping = [NSMutableOrderedSet new];
     [self.typingParticipantIDs enumerateObjectsUsingBlock:^(NSString *participantID, NSUInteger idx, BOOL *stop) {
         id<ATLParticipant> participant = [self participantForIdentifier:participantID];
         if (participant) [knownParticipantsTyping addObject:participant];
@@ -747,7 +747,7 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
         [self configureConversationForAddressBar];
         return;
     }
-    NSMutableSet *removedParticipantIdentifiers = [NSMutableSet setWithArray:self.typingParticipantIDs];
+    NSMutableSet *removedParticipantIdentifiers = [self.typingParticipantIDs copy];
     [removedParticipantIdentifiers minusSet:self.conversation.participants];
     [self.typingParticipantIDs removeObjectsInArray:removedParticipantIdentifiers.allObjects];
     [self updateTypingIndicatorOverlay:NO];
