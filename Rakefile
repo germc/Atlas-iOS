@@ -130,51 +130,41 @@ namespace :version do
     system("git diff --cached") if agree("Review package diff? (y/n) ")
     system("bundle exec pod update") if agree("Run `pod update`? (y/n) ")
     system("git commit -m 'Updating version to #{version}' Atlas.podspec Code/Atlas.m Podfile.lock") if agree("Commit package artifacts? (y/n) ")
+    system("git push origin HEAD") if agree("Push version update to origin? (y/n)")
+    
   end
 end
 
-namespace :release do
-  desc "Verifies the Atlas release tag and package"
-  task :build => [:fetch_origin] do    
-    with_clean_env do
-      path = File.join(File.dirname(__FILE__), 'Atlas.podspec')
-      version = File.read(path).match(/\.version\s+=\s+['"](.+)['"]$/)[1]  
-      
-      atlas_source = File.read(File.join(File.dirname(__FILE__), 'Code', 'Atlas.m'))
-      unless atlas_source =~ /ATLVersionString \= \@\"#{Regexp.escape version}\"/
-        puts red("Build failed: `ATLVersionString` != #{version}. Looks like you forgot to update Code/Atlas.m")
-        exit -1
-      end
-      
-      changelog = File.read(File.join(File.dirname(__FILE__), 'CHANGELOG.md'))
-      version_prefix = version.gsub(/-[\w\d]+/, '')
-      puts "Checking for #{version_prefix}"
-      unless changelog =~ /^## #{version_prefix}/
-        fail "Unable to locate CHANGELOG section for version #{version}"
-      end
-      
-      existing_tag = `git tag -l v#{version}`.chomp
-      if existing_tag != ''
-        fail "A tag already exists for version v#{version}: Maybe you need to run `rake version:set`?"
-      end
-      
-      puts green("Tagging Atlas v#{version}")
-      run("git tag v#{version}")
-      run("git push origin --tags")
+desc "Verifies the Atlas release tag and package"
+task :release => [:fetch_origin] do    
+  with_clean_env do
+    path = File.join(File.dirname(__FILE__), 'Atlas.podspec')
+    version = File.read(path).match(/\.version\s+=\s+['"](.+)['"]$/)[1]  
     
-      puts "Configuring podspec..."
-      path = File.join(File.dirname(__FILE__), "Atlas-#{version}", "Atlas.podspec")
-      content = File.read(path)
-      content.gsub!("s.homepage = 'https://github.com/layerhq/atlas'", "s.homepage = 'http://getatlas.layer.com'")
-      
-      require 'slack-notifier'
-      notifier = Slack::Notifier.new "layer", "IBYcWAHe4H4CEKLKUUJkzkAf"
-      notifier.ping "Good news everyone! Atlas v#{version} is now available on Cocoapods", channel: '#dev', username: 'LayerBot', icon_emoji: ":goodnewseveryone:"
+    atlas_source = File.read(File.join(File.dirname(__FILE__), 'Code', 'Atlas.m'))
+    unless atlas_source =~ /ATLVersionString \= \@\"#{Regexp.escape version}\"/
+      puts red("Build failed: `ATLVersionString` != #{version}. Looks like you forgot to update Code/Atlas.m")
+      exit -1
     end
-  end
-  
-  desc "Pushes a release package onto the release repositories"
-  task :push => [:ensure_dropbox_path, :fetch_origin] do
+    
+    changelog = File.read(File.join(File.dirname(__FILE__), 'CHANGELOG.md'))
+    version_prefix = version.gsub(/-[\w\d]+/, '')
+    puts "Checking for #{version_prefix}"
+    unless changelog =~ /^## #{version_prefix}/
+      fail "Unable to locate CHANGELOG section for version #{version}"
+    end
+    
+    puts “Fetching remote tags from origin…”
+    run "git fetch origin —tags"
+    existing_tag = `git tag -l v#{version}`.chomp
+    if existing_tag != ''
+      fail "A tag already exists for version v#{version}: Maybe you need to run `rake version:set`?"
+    end
+    
+    puts green("Tagging Atlas v#{version}")
+    run("git tag v#{version}")
+    run("git push origin --tags")
+    
     root_dir = File.expand_path(File.dirname(__FILE__))
     path = File.join(root_dir, 'Atlas.podspec')
     version = File.read(path).match(/\.version\s+=\s+['"](.+)['"]$/)[1]
@@ -188,12 +178,6 @@ namespace :release do
       puts green("Pushing podspec to CocoaPods trunk")
       run "pod trunk push #{podspec}"
     end
-    
-    require 'slack-notifier'
-    notifier = Slack::Notifier.new "layer", "IBYcWAHe4H4CEKLKUUJkzkAf"
-    notifier.ping "Good news everyone! LayerKit v#{version} has been released on [Github](https://github.com/layerhq/releases-ios) and [CocoaPods](https://github.com/CocoaPods/Specs/tree/master/Specs/LayerKit)", channel: '#dev', username: 'LayerBot', icon_emoji: ":goodnewseveryone:"
-    
-    Rake::Task["docs"].invoke
   end
 end
 
