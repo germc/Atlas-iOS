@@ -30,7 +30,7 @@ The table below details the most important classes in Atlas and is hyperlinked d
 <table>
     <tr><th colspan="2" style="text-align:center;">Controllers</th></tr>
     <tr>
-        <td><a href="Code/Controllers/ATLAddressBarViewController.h">ATLUIAddressBarController</a></td>
+        <td><a href="Code/Controllers/ATLAddressBarViewController.h">ATLAddressBarViewController</a></td>
         <td>A controller that provides a searchable address input experience for selecting users to message.</td>
     </tr>
     <tr>
