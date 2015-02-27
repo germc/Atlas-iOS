@@ -118,6 +118,8 @@ If you wish to install Atlas directly into your application from source, then cl
 2. Update your project settings to include the linker flags: `-ObjC -lz`
 3. Add the following Cocoa SDK frameworks to your project: `'CFNetwork', 'Security', 'MobileCoreServices', 'SystemConfiguration', 'CoreLocation'`
 
+**Please note that LayerKit is a dependecy of `Atlas`. When manually installing `Atlas`, the same must be done with `LayerKit`. Instructions on doing so can be found in the [LayerKit releases repository](https://github.com/layerhq/releases-ios#framework-installation).**
+
 Build and run your project to verify installation was successful.
 
 ## Getting Started
@@ -168,7 +170,7 @@ The `ATLConversationViewController` provides a customizable `UICollectionViewCon
 #### Initialization
 
 ```objc
-ATLConverationViewController *viewController = [ATLConversationViewController conversationViewControllerWithConversation:conversation layerClient:self.layerClient];
+ATLConverationViewController *viewController = [ATLConversationViewController conversationViewControllerWithLayerClient:self.layerClient];
 ```
 
 #### Customization

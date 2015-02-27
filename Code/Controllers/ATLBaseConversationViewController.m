@@ -104,7 +104,6 @@ static CGFloat const ATLMaxScrollDistanceFromBottom = 150;
         [self.view becomeFirstResponder];
     }
     if (self.addressBarController && self.firstAppearance) {
-        [self.addressBarController.view layoutIfNeeded];
         [self updateTopCollectionViewInset];
     }
     [self updateBottomCollectionViewInset];
@@ -179,11 +178,16 @@ static CGFloat const ATLMaxScrollDistanceFromBottom = 150;
     [self.collectionView setContentOffset:[self bottomOffsetForContentSize:contentSize] animated:animated];
 }
 
+#pragma mark - Content Inset Management  
+
 - (void)updateTopCollectionViewInset
 {
+    [self.addressBarController.view layoutIfNeeded];
+    
     UIEdgeInsets contentInset = self.collectionView.contentInset;
     UIEdgeInsets scrollIndicatorInsets = self.collectionView.scrollIndicatorInsets;
     CGRect frame = [self.view convertRect:self.addressBarController.addressBarView.frame fromView:self.addressBarController.addressBarView.superview];
+    
     contentInset.top = CGRectGetMaxY(frame);
     scrollIndicatorInsets.top = contentInset.top;
     self.collectionView.contentInset = contentInset;
@@ -200,9 +204,6 @@ static CGFloat const ATLMaxScrollDistanceFromBottom = 150;
     insets.bottom = keyboardHeight + self.typingIndicatorInset;
     self.collectionView.scrollIndicatorInsets = insets;
     self.collectionView.contentInset = insets;
-    if ([self shouldScrollToBottom]) {
-        [self scrollToBottomAnimated:YES];
-    }
     self.typingIndicatorViewBottomConstraint.constant = -keyboardHeight;
 }
 
@@ -227,20 +228,16 @@ static CGFloat const ATLMaxScrollDistanceFromBottom = 150;
        return;
     }
     
-    CGPoint existingOffset = self.collectionView.contentOffset;
-    CGPoint bottomOffset = [self bottomOffsetForContentSize:self.collectionView.contentSize];
-    CGFloat distanceToBottom = bottomOffset.y - existingOffset.y;
-    BOOL shouldScrollToBottom = distanceToBottom <= ATLMaxScrollDistanceFromBottom;
-    
     CGRect toolbarFrame = [self.view convertRect:self.messageInputToolbar.frame fromView:self.messageInputToolbar.superview];
     CGFloat keyboardOnscreenHeight = CGRectGetHeight(self.view.frame) - CGRectGetMinY(toolbarFrame);
     if (keyboardOnscreenHeight == self.keyboardHeight) return;
-    self.keyboardHeight = keyboardOnscreenHeight;
-    [self updateBottomCollectionViewInset];
-    self.typingIndicatorViewBottomConstraint.constant = -self.collectionView.scrollIndicatorInsets.bottom;
     
-    if (shouldScrollToBottom) {
-        self.collectionView.contentOffset = existingOffset;
+    BOOL messagebarDidGrow = keyboardOnscreenHeight > self.keyboardHeight;
+    self.keyboardHeight = keyboardOnscreenHeight;
+     self.typingIndicatorViewBottomConstraint.constant = -self.collectionView.scrollIndicatorInsets.bottom;
+    [self updateBottomCollectionViewInset];
+    
+    if ([self shouldScrollToBottom] && messagebarDidGrow) {
         [self scrollToBottomAnimated:YES];
     }
 }
