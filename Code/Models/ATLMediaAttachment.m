@@ -90,7 +90,7 @@ static float const ATLMediaAttachmentDefaultThumbnailJPEGCompression = 0.5f;
     self = [super init];
     if (self) {
         if (!assetURL) {
-            @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"Cannot initialize %@ with `nil` assetURL.", self.class] userInfo:nil];
+            @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"Cannot initialize %@ with `nil` assetURL.", self.superclass] userInfo:nil];
         }
         _inputAssetURL = assetURL;
         self.thumbnailSize = thumbnailSize;
@@ -126,7 +126,8 @@ static float const ATLMediaAttachmentDefaultThumbnailJPEGCompression = 0.5f;
         // about the asset.
         // --------------------------------------------------------------------
         NSDictionary *imageMetadata = @{ @"width": @(asset.defaultRepresentation.dimensions.width),
-                                         @"height": @(asset.defaultRepresentation.dimensions.height) };
+                                         @"height": @(asset.defaultRepresentation.dimensions.height),
+                                         @"orientation": @(asset.defaultRepresentation.orientation) };
         NSError *JSONSerializerError;
         NSData *JSONData = [NSJSONSerialization dataWithJSONObject:imageMetadata options:NSJSONWritingPrettyPrinted error:&JSONSerializerError];
         if (JSONData) {
@@ -165,7 +166,7 @@ static float const ATLMediaAttachmentDefaultThumbnailJPEGCompression = 0.5f;
     self = [super init];
     if (self) {
         if (!image) {
-            @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"Cannot initialize %@ with `nil` image.", self.class] userInfo:nil];
+            @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"Cannot initialize %@ with `nil` image.", self.superclass] userInfo:nil];
         }
         self.inputImage = image;
         
@@ -188,7 +189,8 @@ static float const ATLMediaAttachmentDefaultThumbnailJPEGCompression = 0.5f;
         // about the asset.
         // --------------------------------------------------------------------
         NSDictionary *imageMetadata = @{ @"width": @(image.size.width),
-                                         @"height": @(image.size.height) };
+                                         @"height": @(image.size.height),
+                                         @"orientation": @(image.imageOrientation) };
         NSError *JSONSerializerError;
         NSData *JSONData = [NSJSONSerialization dataWithJSONObject:imageMetadata options:NSJSONWritingPrettyPrinted error:&JSONSerializerError];
         if (JSONData) {
@@ -230,12 +232,12 @@ static float const ATLMediaAttachmentDefaultThumbnailJPEGCompression = 0.5f;
     self = [super init];
     if (self) {
         if (!location) {
-            @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"Cannot initialize %@ with `nil` location.", self.class] userInfo:nil];
+            @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"Cannot initialize %@ with `nil` location.", self.superclass] userInfo:nil];
         }
         self.mediaType = ATLMediaAttachmentTypeLocation;
         self.mediaMIMEType = ATLMIMETypeLocation;
         NSData *data = [NSJSONSerialization dataWithJSONObject:@{ ATLLocationLatitudeKey: @(location.coordinate.latitude),
-                                                                  ATLLocationLongitudeKey:  @(location.coordinate.longitude) } options:0 error:nil];
+                                                                  ATLLocationLongitudeKey: @(location.coordinate.longitude) } options:0 error:nil];
         self.mediaInputStream = [NSInputStream inputStreamWithData:data];
         self.textRepresentation = @"Attachment: Location";
     }
@@ -251,7 +253,7 @@ static float const ATLMediaAttachmentDefaultThumbnailJPEGCompression = 0.5f;
     self = [super init];
     if (self) {
         if (!text) {
-            @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"Cannot initialize %@ with `nil` text.", self.class] userInfo:nil];
+            @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"Cannot initialize %@ with `nil` text.", self.superclass] userInfo:nil];
         }
         self.mediaType = ATLMediaAttachmentTypeText;
         self.mediaMIMEType = ATLMIMETypeTextPlain;
@@ -285,6 +287,17 @@ static float const ATLMediaAttachmentDefaultThumbnailJPEGCompression = 0.5f;
 + (instancetype)mediaAttachmentWithLocation:(CLLocation *)location
 {
     return [[ATLLocationMediaAttachment alloc] initWithLocation:location];
+}
+
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        if ([[self class] isEqual:[ATLMediaAttachment class]]) {
+            @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"Failed to call designated initializer. Use one of the following initialiers: %@", [@[ NSStringFromSelector(@selector(mediaAttachmentWithAssetURL:thumbnailSize:)), NSStringFromSelector(@selector(mediaAttachmentWithImage:metadata:thumbnailSize:)), NSStringFromSelector(@selector(mediaAttachmentWithText:)), NSStringFromSelector(@selector(mediaAttachmentWithLocation:)) ] componentsJoinedByString:@", "]] userInfo:nil];
+        }
+    }
+    return self;
 }
 
 #pragma mark - NSTextAttachment Overrides
