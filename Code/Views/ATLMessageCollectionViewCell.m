@@ -166,6 +166,29 @@ CGFloat const ATLMessageCellHorizontalMargin = 16.0f;
         // Resort to image's size, if no dimensions metadata message parts found.
         size = ATLImageSizeForData(fullResImagePart.data);
     }
+    
+    // Fall-back to programatically requesting for a content download of
+    // single message part messages (Android compatibillity).
+    if ([[self.message valueForKeyPath:@"parts.MIMEType"] isEqual:@[ATLMIMETypeImageJPEG]]) {
+        if (fullResImagePart && (fullResImagePart.transferStatus == LYRContentTransferReadyForDownload)) {
+            NSError *error;
+            LYRProgress *progress = [fullResImagePart downloadContent:&error];
+            if (!progress) {
+                NSLog(@"failed to request for a content download from the UI with error=%@", error);
+            }
+            [self.bubbleView updateProgressIndicatorWithProgress:0.0 visible:NO animated:NO];
+        } else if (fullResImagePart && (fullResImagePart.transferStatus == LYRContentTransferDownloading)) {
+            // Set self for delegation, if single image message part message
+            // hasn't been downloaded yet, or is still downloading.
+            LYRProgress *progress = fullResImagePart.progress;
+            [progress setDelegate:self];
+            self.progress = progress;
+            [self.bubbleView updateProgressIndicatorWithProgress:progress.fractionCompleted visible:YES animated:NO];
+        } else {
+            [self.bubbleView updateProgressIndicatorWithProgress:1.0 visible:NO animated:YES];
+        }
+    }
+    
     [self.bubbleView updateWithImage:displayingImage width:size.width];
 }
 
@@ -318,7 +341,15 @@ CGFloat const ATLMessageCellHorizontalMargin = 16.0f;
             imagePart = ATLMessagePartForMIMEType(message, ATLMIMETypeImageJPEG);
         }
         // Resort to image's size, if no dimensions metadata message parts found.
-        size = ATLImageSizeForData(imagePart.data);
+        if ((imagePart.transferStatus == LYRContentTransferComplete) ||
+            (imagePart.transferStatus == LYRContentTransferAwaitingUpload) ||
+            (imagePart.transferStatus == LYRContentTransferUploading)) {
+            size = ATLImageSizeForData(imagePart.data);
+        } else {
+            // We don't have the image data yet, making cell think there's
+            // an image with 3:4 aspect ration (portrait photo).
+            size = ATLConstrainImageSizeToCellSize(CGSizeMake(3000, 4000));
+        }
     }
     return size.height;
 }

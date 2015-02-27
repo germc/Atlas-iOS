@@ -125,7 +125,7 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
     self = [super init];
     if (self) {
         if ([[self class] isEqual:[ATLMediaInputStream class]]) {
-            @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"Failed to call designated initializer. Use one of the following initialiers: %@", [@[ NSStringFromSelector(@selector(mediaInputStreamWithAssetURL:)), NSStringFromSelector(@selector(mediaInputStreamWithImage:metadata:)) ] componentsJoinedByString:@","]] userInfo:nil];
+            @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"Failed to call designated initializer. Use one of the following initialiers: %@", [@[ NSStringFromSelector(@selector(mediaInputStreamWithAssetURL:)), NSStringFromSelector(@selector(mediaInputStreamWithImage:metadata:)) ] componentsJoinedByString:@", "]] userInfo:nil];
         }
         _mediaStreamStatus = NSStreamStatusNotOpen;
         _mediaStreamError = nil;
@@ -472,7 +472,7 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
         // If image should only be compressed.
         [destinationOptions setObject:@(self.compressionQuality) forKey:(NSString *)kCGImageDestinationLossyCompressionQuality];
     }
-    if (self.metadata && self.metadata[ATLMediaInputStreamAppleCameraTIFFOptionsKey]) {
+    if (self.metadata && self.metadata[ATLMediaInputStreamAppleCameraTIFFOptionsKey] && self.metadata[(NSString *)kCGImagePropertyOrientation]) {
         NSMutableDictionary *mutableTiffDict = [self.metadata[ATLMediaInputStreamAppleCameraTIFFOptionsKey] mutableCopy];
         [mutableTiffDict setObject:self.metadata[(NSString *)kCGImagePropertyOrientation] forKey:(NSString *)kCGImagePropertyTIFFOrientation];
         [destinationOptions setObject:mutableTiffDict forKey:ATLMediaInputStreamAppleCameraTIFFOptionsKey];
