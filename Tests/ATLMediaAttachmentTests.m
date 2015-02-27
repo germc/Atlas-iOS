@@ -22,24 +22,11 @@
 #import <XCTest/XCTest.h>
 #import <AssetsLibrary/AssetsLibrary.h>
 #import "ATLMediaAttachment.h"
+#import "ATLTestUtilities.h"
 
 #define EXP_SHORTHAND
 #import <Expecta/Expecta.h>
 #import <OCMock/OCMock.h>
-
-/**
- @abstract Reads the stream content into a NSData object.
- @param inputStream Input stream to read the content from.
- @return Returns an `NSData` object containing the content of the stream; or `nil` in case of an error.
- */
-NSData *ATLTestAttachmentDataFromStream(NSInputStream *inputStream);
-
-/**
- @abstract Generates a test image with the given size.
- @param size The size of the output image.
- @return An `UIImage` instance.
- */
-UIImage *ATLTestAttachmentMakeImageWithSize(CGSize size);
 
 @interface ATLMediaAttachmentTests : XCTestCase
 
@@ -213,95 +200,3 @@ UIImage *ATLTestAttachmentMakeImageWithSize(CGSize size);
 }
 
 @end
-
-#pragma mark - Test utilities
-
-NSData *ATLTestAttachmentDataFromStream(NSInputStream *inputStream)
-{
-    if (!inputStream) {
-        @throw [NSException exceptionWithName:NSInvalidArgumentException reason:@"inputStream cannot be `nil`." userInfo:nil];
-    }
-    NSMutableData *dataFromStream = [NSMutableData data];
-    
-    // Open stream
-    [inputStream open];
-    if (inputStream.streamError) {
-        NSLog(@"Failed to stream image content with %@", inputStream.streamError);
-        return nil;
-    }
-    
-    // Start streaming
-    const NSUInteger bufferSize = 1024;
-    uint8_t *buffer = malloc(bufferSize);
-    NSUInteger bytesRead;
-    do {
-        bytesRead = [inputStream read:buffer maxLength:(unsigned long)bufferSize];
-        if (bytesRead != 0) {
-            [dataFromStream appendBytes:buffer length:bytesRead];
-        }
-    } while (bytesRead != 0);
-    free(buffer);
-    
-    // Close stream
-    [inputStream close];
-    
-    // Done
-    return dataFromStream;
-}
-
-UIImage *ATLTestAttachmentMakeImageWithSize(CGSize imageSize)
-{
-    CGFloat scaleFactor;
-    CGFloat xOffset = 0.0f;
-    CGFloat yOffset = 15.0f;
-    if (imageSize.width >= imageSize.height) {
-        scaleFactor = imageSize.height / 285;
-        xOffset = (imageSize.width / 2) - (580 / 2 * scaleFactor);
-    } else {
-        scaleFactor = imageSize.width / 580;
-        yOffset *= scaleFactor;
-        yOffset += (imageSize.height / 2) - (285 / 2 * scaleFactor);
-    }
-    
-    UIGraphicsBeginImageContext(imageSize);
-    CGContextRef context = UIGraphicsGetCurrentContext();
-    CGContextTranslateCTM(context, xOffset, yOffset);
-    CGContextScaleCTM(context, scaleFactor, scaleFactor);
-    
-    UIBezierPath* path = [UIBezierPath bezierPath];
-    [path setMiterLimit:4];
-    [[UIColor blackColor] setFill];
-    [path moveToPoint:CGPointMake(152.64, 175.83)];
-    [path addCurveToPoint:CGPointMake(143.64, 184.82) controlPoint1:CGPointMake(152.64, 180.7) controlPoint2:CGPointMake(148.52, 184.82)];
-    [path addLineToPoint:CGPointMake(120.88, 184.82)];
-    [path addCurveToPoint:CGPointMake(41.18, 105.13) controlPoint1:CGPointMake(72.94, 184.82) controlPoint2:CGPointMake(41.18, 153.06)];
-    [path addLineToPoint:CGPointMake(41.18, 82.36)];
-    [path addCurveToPoint:CGPointMake(50.17, 73.37) controlPoint1:CGPointMake(41.18, 77.48) controlPoint2:CGPointMake(45.3, 73.37)];
-    [path addLineToPoint:CGPointMake(143.64, 73.37)];
-    [path addCurveToPoint:CGPointMake(152.64, 82.36) controlPoint1:CGPointMake(148.52, 73.37) controlPoint2:CGPointMake(152.64, 77.48)];
-    [path addLineToPoint:CGPointMake(152.64, 175.83)];
-    [path closePath];
-    [path moveToPoint:CGPointMake(143.64, 57.19)];
-    [path addLineToPoint:CGPointMake(50.17, 57.19)];
-    [path addCurveToPoint:CGPointMake(25, 82.36) controlPoint1:CGPointMake(36.32, 57.19) controlPoint2:CGPointMake(25, 68.51)];
-    [path addLineToPoint:CGPointMake(25, 175.83)];
-    [path addCurveToPoint:CGPointMake(50.17, 201) controlPoint1:CGPointMake(25, 189.67) controlPoint2:CGPointMake(36.32, 201)];
-    [path addLineToPoint:CGPointMake(143.64, 201)];
-    [path addCurveToPoint:CGPointMake(168.81, 175.83) controlPoint1:CGPointMake(157.49, 201) controlPoint2:CGPointMake(168.81, 189.67)];
-    [path addLineToPoint:CGPointMake(168.81, 82.36)];
-    [path addCurveToPoint:CGPointMake(143.64, 57.19) controlPoint1:CGPointMake(168.81, 68.51) controlPoint2:CGPointMake(157.49, 57.19)];
-    [path closePath];
-    [path fill];
-    
-    CGRect frame = CGRectMake(178, 36.5, 504, 190);
-    NSString* text = [NSString stringWithFormat:@"%c%c%c%c%c", 76, 97, 121, 101, 114];
-    UIFont* font = [UIFont systemFontOfSize: 155];
-    [UIColor.blackColor setFill];
-    CGFloat height = frame.size.height;
-    [text drawInRect:CGRectMake(CGRectGetMinX(frame), CGRectGetMinY(frame) + (CGRectGetHeight(frame) - height) / 2, CGRectGetWidth(frame), height) withAttributes:@{ NSFontAttributeName: font }];
-
-    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    
-    return image;
-}

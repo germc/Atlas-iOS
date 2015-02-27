@@ -12,6 +12,9 @@
 		CE7BDC080170509511B89900 /* libPods-UnitTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F7012754989ED85BE6A8D69E /* libPods-UnitTests.a */; };
 		D0294DE71A93F37A00702856 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = D0294DE61A93F37A00702856 /* Info.plist */; };
 		D0294DE81A93F39300702856 /* ATLMediaStreamTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D0294DE41A93F37000702856 /* ATLMediaStreamTests.m */; };
+		D02CDCDB1A9FFC930013CBE8 /* ATLTestUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = D02CDCDA1A9FFC930013CBE8 /* ATLTestUtilities.m */; };
+		D02CDCDC1A9FFC930013CBE8 /* ATLTestUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = D02CDCDA1A9FFC930013CBE8 /* ATLTestUtilities.m */; };
+		D02CDCDD1A9FFC930013CBE8 /* ATLTestUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = D02CDCDA1A9FFC930013CBE8 /* ATLTestUtilities.m */; };
 		D04517141A9F9A0C00E137D9 /* ATLMediaAttachmentTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D04517131A9F9A0C00E137D9 /* ATLMediaAttachmentTests.m */; };
 		D2575596FE7E9432B48A0D74 /* libPods-ProgrammaticTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D82E912F9EB0D3AB8BD452A2 /* libPods-ProgrammaticTests.a */; };
 		D63C68E11A94250000D235D5 /* test-logo.png in Resources */ = {isa = PBXBuildFile; fileRef = D63C68DF1A94250000D235D5 /* test-logo.png */; };
@@ -116,6 +119,8 @@
 		D0294DD81A93F33900702856 /* UnitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UnitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D0294DE41A93F37000702856 /* ATLMediaStreamTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ATLMediaStreamTests.m; path = Tests/ATLMediaStreamTests.m; sourceTree = "<group>"; };
 		D0294DE61A93F37A00702856 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Tests/Info.plist; sourceTree = "<group>"; };
+		D02CDCD91A9FFC930013CBE8 /* ATLTestUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ATLTestUtilities.h; sourceTree = "<group>"; };
+		D02CDCDA1A9FFC930013CBE8 /* ATLTestUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ATLTestUtilities.m; sourceTree = "<group>"; };
 		D04517131A9F9A0C00E137D9 /* ATLMediaAttachmentTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ATLMediaAttachmentTests.m; path = Tests/ATLMediaAttachmentTests.m; sourceTree = "<group>"; };
 		D63C68DF1A94250000D235D5 /* test-logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "test-logo.png"; sourceTree = "<group>"; };
 		D6C045431A9914080028E9D0 /* ProgrammaticAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ProgrammaticAppDelegate.h; path = Examples/Programmatic/ProgrammaticAppDelegate.h; sourceTree = SOURCE_ROOT; };
@@ -375,6 +380,8 @@
 				D6F4060A1A8FDEEB00AE9581 /* ATLTestClasses.m */,
 				D6F4060B1A8FDEEB00AE9581 /* ATLTestInterface.h */,
 				D6F4060C1A8FDEEB00AE9581 /* ATLTestInterface.m */,
+				D02CDCD91A9FFC930013CBE8 /* ATLTestUtilities.h */,
+				D02CDCDA1A9FFC930013CBE8 /* ATLTestUtilities.m */,
 			);
 			name = Utilities;
 			sourceTree = "<group>";
@@ -809,6 +816,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D02CDCDD1A9FFC930013CBE8 /* ATLTestUtilities.m in Sources */,
 				D0294DE81A93F39300702856 /* ATLMediaStreamTests.m in Sources */,
 				D04517141A9F9A0C00E137D9 /* ATLMediaAttachmentTests.m in Sources */,
 			);
@@ -824,6 +832,7 @@
 				D6F405CA1A8FDDE300AE9581 /* LYRQueryControllerMock.m in Sources */,
 				D6F405E91A8FDE3900AE9581 /* main.m in Sources */,
 				D6F405C51A8FDDE300AE9581 /* LYRClientMock.m in Sources */,
+				D02CDCDB1A9FFC930013CBE8 /* ATLTestUtilities.m in Sources */,
 				D6F405B01A8FDDAA00AE9581 /* ATLSampleConversationListViewController.m in Sources */,
 				D6F405C81A8FDDE300AE9581 /* LYRMessagePartMock.m in Sources */,
 				D6F405B21A8FDDAA00AE9581 /* ATLSampleParticipantTableViewController.m in Sources */,
@@ -862,6 +871,7 @@
 				D6D48F871A9D140F00C8872E /* LYRMessageMock.m in Sources */,
 				D6D48F881A9D140F00C8872E /* LYRMessagePartMock.m in Sources */,
 				D6D48F891A9D140F00C8872E /* LYRMockContentStore.m in Sources */,
+				D02CDCDC1A9FFC930013CBE8 /* ATLTestUtilities.m in Sources */,
 				D6D48F8A1A9D140F00C8872E /* LYRQueryControllerMock.m in Sources */,
 				D6D48F8B1A9D140F00C8872E /* ATLUserMock.m in Sources */,
 				D6D48F8C1A9D140F00C8872E /* ATLSampleConversationAvatarItem.m in Sources */,

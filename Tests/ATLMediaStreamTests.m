@@ -22,17 +22,11 @@
 #import <XCTest/XCTest.h>
 #import <AssetsLibrary/AssetsLibrary.h>
 #import "ATLMediaInputStream.h"
+#import "ATLTestUtilities.h"
 
 #define EXP_SHORTHAND
 #import <Expecta/Expecta.h>
 #import <OCMock/OCMock.h>
-
-/**
- @abstract Synhchronously grabs the last photo from the Photos Library.
- @param library The library to grab the last photo from.
- @return Returns ALAsset instance of the last image located in the Photos Library, or `nil` in case of a failure.
- */
-ALAsset *ATLAssetTestObtainLastImageFromAssetLibrary(ALAssetsLibrary *library);
 
 @interface ATLMediaStreamTest : XCTestCase
 
@@ -176,38 +170,3 @@ ALAsset *ATLAssetTestObtainLastImageFromAssetLibrary(ALAssetsLibrary *library);
 }
 
 @end
-
-ALAsset *ATLAssetTestObtainLastImageFromAssetLibrary(ALAssetsLibrary *library)
-{
-    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-    dispatch_queue_t asyncQueue = dispatch_queue_create("com.layer.ATLMediaStreamTest.ObtainLastImage.async", DISPATCH_QUEUE_CONCURRENT);
-    
-    __block ALAsset *sourceAsset;
-    dispatch_async(asyncQueue, ^{
-        [library enumerateGroupsWithTypes:ALAssetsGroupSavedPhotos usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
-            if (!group) {
-                *stop = YES;
-                dispatch_semaphore_signal(semaphore);
-                return;
-            }
-            [group setAssetsFilter:[ALAssetsFilter allPhotos]];
-            if ([group numberOfAssets] == 0) {
-                *stop = YES;
-                dispatch_semaphore_signal(semaphore);
-                return;
-            }
-            [group enumerateAssetsWithOptions:NSEnumerationReverse usingBlock:^(ALAsset *result, NSUInteger index, BOOL *innerStop) {
-                *innerStop = YES;
-                *stop = YES;
-                if (!result) {
-                    return;
-                }
-                sourceAsset = result;
-            }];
-        } failureBlock:^(NSError *error) {
-            dispatch_semaphore_signal(semaphore);
-        }];
-    });
-    dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
-    return sourceAsset;
-}
