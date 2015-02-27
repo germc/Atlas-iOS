@@ -81,6 +81,8 @@ The table below details the most important classes in Atlas and is hyperlinked d
     </tr>
 </table>
 
+The complete API documentation can be found on [CocoaDocs](http://cocoadocs.org/docsets/Atlas/1.0.0/).
+
 ## Installation
 
 Atlas can be installed directly into your application via CocoaPods or by directly importing the source code files. Please note that Atlas has a direct dependency on LayerKit that must be satisfied in order to build the components.
