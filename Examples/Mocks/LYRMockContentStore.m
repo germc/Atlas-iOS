@@ -269,7 +269,7 @@
 
 - (void)broadcastChanges
 {
-    if (self.shouldBroadcastChanges) {
+    if (self.shouldBroadcastChanges && self.mockObjectChanges.count) {
         [[NSNotificationCenter defaultCenter] postNotificationName:LYRMockObjectsDidChangeNotification object:self.mockObjectChanges];
     }
     [self.mockObjectChanges removeAllObjects];
