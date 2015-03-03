@@ -17,7 +17,7 @@
 
 @implementation ATLUserMockTest
 
--(void)testToVerifyCaseInsensitiveSearch
+- (void)testToVerifyCaseInsensitiveSearch
 {
     NSSet *set1 = [ATLUserMock participantsWithText:@"Kleme"];
     NSString *fullName1 = ((ATLUserMock*)set1.allObjects.firstObject).fullName;
