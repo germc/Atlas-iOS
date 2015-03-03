@@ -17,17 +17,8 @@
 
 @implementation ATLUserMockTest
 
-- (void)setUp {
-    [super setUp];
-
-}
-
-- (void)tearDown {
-    // Put teardown code here. This method is called after the invocation of each test method in the class.
-    [super tearDown];
-}
-
--(void)testToVerifyCaseInsensitiveSearch{
+-(void)testToVerifyCaseInsensitiveSearch
+{
     NSSet *set1 = [ATLUserMock participantsWithText:@"Kleme"];
     NSString *fullName1 = ((ATLUserMock*)set1.allObjects.firstObject).fullName;
     expect(fullName1).to.equal([ATLUserMock userWithMockUserName:ATLMockUserNameKlemen].fullName);
@@ -40,6 +31,5 @@
     NSString *fullName3 = ((ATLUserMock*)set3.allObjects.firstObject).fullName;
     expect(fullName3).toNot.equal([ATLUserMock userWithMockUserName:ATLMockUserNameKlemen].fullName);
 }
-
 
 @end
