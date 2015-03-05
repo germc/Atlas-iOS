@@ -82,13 +82,13 @@
         return nil;
     }
     
-    NSMutableArray *fullNameComponents = [[participants valueForKey:@"fullName"] mutableCopy];
+    NSMutableArray *fullNameComponents = [[[participants valueForKey:@"fullName"] allObjects] mutableCopy];
     NSString *fullNamesText = [self typingIndicatorTextWithParticipantStrings:fullNameComponents participantsCount:participantsCount];
     if ([self typingIndicatorLabelHasSpaceForText:fullNamesText]) {
         return fullNamesText;
     }
     
-    NSArray *firstNames = [participants valueForKey:@"firstName"];
+    NSArray *firstNames = [[participants valueForKey:@"firstName"] allObjects];
     NSMutableArray *firstNameComponents = [firstNames mutableCopy];
     NSString *firstNamesText = [self typingIndicatorTextWithParticipantStrings:firstNameComponents participantsCount:participantsCount];
     if ([self typingIndicatorLabelHasSpaceForText:firstNamesText]) {
@@ -102,7 +102,7 @@
         [strings addObjectsFromArray:displayedFirstNames];
         
         NSUInteger undisplayedCount = participantsCount - displayedRange.length;
-        NSMutableString *textForUndisplayedParticipants = [NSMutableString new];;
+        NSMutableString *textForUndisplayedParticipants = [NSMutableString new];
         [textForUndisplayedParticipants appendFormat:@"%ld", (unsigned long)undisplayedCount];
         if (displayedFirstNamesCount > 0 && undisplayedCount == 1) {
             [textForUndisplayedParticipants appendString:@" other"];
