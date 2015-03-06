@@ -1,6 +1,6 @@
 ![Atlas Header](Assets/atlas-github-header.png)
 
-[![Build Status](http://img.shields.io/travis/layerhq/Atlas-iOS/development.svg?style=flat)](https://travis-ci.org/layerhq/Atlas-iOS)
+[![Build Status](http://img.shields.io/travis/layerhq/Atlas-iOS.svg?style=flat)](https://travis-ci.org/layerhq/Atlas-iOS)
 [![Pod Version](http://img.shields.io/cocoapods/v/Atlas.svg?style=flat)](http://cocoadocs.org/docsets/Atlas/)
 [![Pod Platform](http://img.shields.io/cocoapods/p/Atlas.svg?style=flat)](http://cocoadocs.org/docsets/Atlas/)
 [![Pod License](http://img.shields.io/cocoapods/l/Atlas.svg?style=flat)](https://www.apache.org/licenses/LICENSE-2.0.html)
