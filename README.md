@@ -116,7 +116,7 @@ If you wish to install Atlas directly into your application from source, then cl
 
 1. Drag and drop the files from the `Code` and `Resources` directories onto your project, instructing Xcode to copy items into your destination group's folder.
 2. Update your project settings to include the linker flags: `-ObjC -lz`
-3. Add the following Cocoa SDK frameworks to your project: `'CFNetwork', 'Security', 'MobileCoreServices', 'SystemConfiguration', 'CoreLocation'`
+3. Add the following Cocoa SDK frameworks to your project: `'CFNetwork', 'Security', 'MobileCoreServices', 'SystemConfiguration', 'CoreLocation', 'AssetsLibrary', 'ImageIO'`
 
 **Please note that LayerKit is a dependecy of `Atlas`. When manually installing `Atlas`, the same must be done with `LayerKit`. Instructions on doing so can be found in the [LayerKit releases repository](https://github.com/layerhq/releases-ios#framework-installation).**
 
