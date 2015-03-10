@@ -142,11 +142,11 @@ NSString *ATLMIMETypeLocation;  // location
 
 ### [ATLConversationListViewController](Code/Controllers/ATLConversationListViewController.h)
 
-The `ATLConversationListViewController` provides a customizable UITableViewController subclass for displaying a list of Layer conversations. Conversations are represented by a Conversation label, the latest message content, and the latest message date. The controller handles fetching and ordering conversation based on the latest message date.
+The [ATLConversationListViewController](Code/Controllers/ATLConversationListViewController.h) provides a customizable `UITableViewController` subclass for displaying a list of Layer conversations. Conversations are represented by a Conversation label, the latest message content, and the latest message date. The controller handles fetching and ordering conversation based on the latest message date.
 
 #### Initialization
 
-The `ATLConversationListViewController` is initialized with a LYRClient object.
+The [ATLConversationListViewController](Code/Controllers/ATLConversationListViewController.h) is initialized with a LYRClient object.
 
 ```objc
 ATLConversationListViewController *viewController = [ATLConversationListViewController conversationListViewControllerWithLayerClient:layerClient];
@@ -154,7 +154,7 @@ ATLConversationListViewController *viewController = [ATLConversationListViewCont
 
 #### Customization
 
-The `ATLConverationListViewController` displays `ATLConversationTableViewCells`. The cells themselves provide for customization via UIAppearance selectors.
+The [ATLConversationListViewController](Code/Controllers/ATLConversationListViewController.h) displays [ATLConversationTableViewCell](Code/Views/ATLConversationTableViewCell.h). The cells themselves provide for customization via `UIAppearance` selectors.
 
 ```objc
 [[ATLConversationTableViewCell appearance] setConversationLabelFont:[UIFont boldSystemFontOfSize:14]];
@@ -163,7 +163,7 @@ The `ATLConverationListViewController` displays `ATLConversationTableViewCells`.
 
 ### [ATLConversationViewController](Code/Controllers/ATLConversationViewController.h)
 
-The `ATLConversationViewController` provides a customizable `UICollectionViewController` subclass for displaying individual Layer conversations. The controller is initialized with and `LYRClient` object and an `LYRConversation` object. It handles fetching, displaying and sending messages via LayerKit. The controller leverages the `ATLMessageInputToolbar` object to allow for text and content input.
+The [ATLConversationViewController](Code/Controllers/ATLConversationViewController.h) provides a customizable `UICollectionViewController` subclass for displaying individual Layer conversations. The controller is initialized with and `LYRClient` object and an `LYRConversation` object. It handles fetching, displaying and sending messages via LayerKit. The controller leverages the [ATLMessageInputToolbar](Code/Views/ATLMessageInputToolbar.h) object to allow for text and content input.
 
 #### Initialization
 
@@ -181,7 +181,7 @@ The [ATLConverationViewController](Code/Controllers/ATLConversationViewControlle
 [[ATLOutgoingMessageCollectionViewCell appearance] setBubbleViewColor:[UIColor blueColor]];
 ```
 
-### ATLParticipantTableViewController
+### [ATLParticipantTableViewController](Code/Controllers/ATLParticipantTableViewController.h)
 
 The [ATLParticipantTableViewController](Code/Controllers/ATLParticipantTableViewController.h) provides a `UINavigationController` subclass that displays a list of users conforming to the [ATLParticipant](Code/Protocols/ATLParticipant.h) protocol. The controller provides support for sorting and ordering participants based on either first or last name. The controller also provides multi-selection support and an optional selection indicator.
 
@@ -196,14 +196,14 @@ ATLParticipantTableViewController *controller = [ATLParticipantTableViewControll
 
 #### Customization
 
-The `ATLParticipantTableViewController` displays [ATLParticipantTableViewCell](Code/Views/ATLParticipantTableViewCell.h). The cells themselves provide for customization via `UIAppearance` selectors.
+The [ATLParticipantTableViewController](Code/Controllers/ATLParticipantTableViewController.h) displays [ATLParticipantTableViewCell](Code/Views/ATLParticipantTableViewCell.h). The cells themselves provide for customization via `UIAppearance` selectors.
 
 ```objc
 [[ATLParticipantTableViewCell appearance] setTitleColor:[UIColor blackColor]];
 [[ATLParticipantTableViewCell appearance] setTitleFont:[UIFont systemFontOfSize:14]];
 ```
 
-### ATLMessageInputToolbar
+### [ATLMessageInputToolbar](Code/Views/ATLMessageInputToolbar.h)
 
 The [ATLMessageInputToolbar](Code/Views/ATLMessageInputToolbar.h) provides a `UIToolbar` subclass that supports text and image input. The toolbar handles auto-resizing itself relative to its content.
 
