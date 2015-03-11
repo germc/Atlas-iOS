@@ -173,7 +173,7 @@ task :release => [:fetch_origin] do
     with_clean_env do
       podspec = File.join(root_dir, "Atlas.podspec")
       puts green("Pushing podspec to CocoaPods trunk")
-      run "pod trunk push #{podspec}"
+      run "pod trunk push --use-libraries #{podspec}"
     end
   end
 end
