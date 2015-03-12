@@ -1,5 +1,10 @@
 # Atlas Changelog
 
+## 1.0.1
+
+* Updated LayerKit dependency to v0.10.3
+* New compatible with CocoaPods >= 0.36.0
+
 ## 1.0.0
 
 * Initial public release of Atlas.
