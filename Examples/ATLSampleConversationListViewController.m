@@ -30,8 +30,6 @@
 
 @implementation ATLSampleConversationListViewController
 
-#pragma mark - Conversation List View Controller Delegate Methods
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -55,6 +53,8 @@
     controller.displaysAddressBar = YES;
     [self.navigationController pushViewController:controller animated:YES];
 }
+
+#pragma mark - Conversation List View Controller Delegate Methods
 
 - (void)conversationListViewController:(ATLConversationListViewController *)conversationListViewController didSelectConversation:(LYRConversation *)conversation
 {
