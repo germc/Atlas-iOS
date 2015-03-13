@@ -393,6 +393,36 @@
     [delegateMock verify];
 }
 
+- (void)testToVerifyDelegateIsNotifiedOfSearch
+{
+    self.viewController = [ATLSampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];
+    self.viewController.allowsEditing = YES;
+    [self setRootViewController:self.viewController];
+    [tester waitForTimeInterval:0.5];
+    
+    id delegateMock = OCMProtocolMock(@protocol(ATLConversationListViewControllerDelegate));
+    self.viewController.delegate = delegateMock;
+    
+    ATLUserMock *mockUser1 = [ATLUserMock userWithMockUserName:ATLMockUserNameKlemen];
+    LYRConversationMock *conversation1 = [self newConversationWithMockUser:mockUser1 lastMessageText:@"Test Message"];
+    
+    __block NSString *searchText = @"T";
+    [[[delegateMock expect] andDo:^(NSInvocation *invocation) {
+        ATLConversationListViewController *controller;
+        [invocation getArgument:&controller atIndex:2];
+        expect(controller).to.equal(self.viewController);
+        
+        NSString *searchText;
+        [invocation getArgument:&searchText atIndex:3];
+        expect(searchText).to.equal(searchText);
+    }] conversationListViewController:[OCMArg any] didSearchForText:searchText completion:[OCMArg any]];
+    
+    [tester swipeViewWithAccessibilityLabel:[self.testInterface conversationLabelForConversation:conversation1]  inDirection:KIFSwipeDirectionDown];
+    [tester tapViewWithAccessibilityLabel:@"Search Bar"];
+    [tester enterText:searchText intoViewWithAccessibilityLabel:@"Search Bar"];
+    [delegateMock verify];
+}
+
 - (LYRConversationMock *)newConversationWithMockUser:(ATLUserMock *)mockUser lastMessageText:(NSString *)lastMessageText
 {
     LYRConversationMock *conversation = [self.testInterface conversationWithParticipants:[NSSet setWithObject:mockUser.participantIdentifier] lastMessageText:lastMessageText];
