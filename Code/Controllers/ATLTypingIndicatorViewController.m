@@ -164,7 +164,6 @@
     return fittedSize.width <= CGRectGetWidth(label.frame);
 }
 
-
 - (void)configureToLabelConstraints
 {
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:_label attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeLeft multiplier:1.0 constant:8]];

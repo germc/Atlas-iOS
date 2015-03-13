@@ -136,6 +136,9 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
         [self configureAddressBarForConversation];
     }
     self.canDisableAddressBar = YES;
+    if (!self.hasAppeared) {
+        [self.collectionView layoutIfNeeded];
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated
