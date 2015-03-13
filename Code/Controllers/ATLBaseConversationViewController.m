@@ -127,7 +127,6 @@ static CGFloat const ATLMaxScrollDistanceFromBottom = 150;
     }
 }
 
-
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
