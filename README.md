@@ -124,7 +124,7 @@ Build and run your project to verify installation was successful.
 
 ## Getting Started
 
-1. **Subclass** - Subclass the `ATLConversationViewController` or `ATLConversationListViewController`
+1. **Subclass** - Subclass the [ATLConversationViewController](Code/Controllers/ATLConversationViewController.h) or [ATLConversationListViewController](Code/Controllers/ATLConversationListViewController.h)
 2. **Implement** - Both controllers declare delegate and data source protocols. Your subclasses must implement these protocols.
 3. **Customize** - The Atlas leverages the `UIAppearance` protocol to allow for effortless customization of components.
 4. **Communicate** - Use the LayerKit SDK and the Atlas to build compelling messaging applications.
@@ -142,13 +142,13 @@ NSString *ATLMIMETypeLocation;  // location
 
 ## Component Details
 
-### ATLConversationListViewController
+### [ATLConversationListViewController](Code/Controllers/ATLConversationListViewController.h)
 
-The `ATLConversationListViewController` provides a customizable UITableViewController subclass for displaying a list of Layer conversations. Conversations are represented by a Conversation label, the latest message content, and the latest message date. The controller handles fetching and ordering conversation based on the latest message date.
+The [ATLConversationListViewController](Code/Controllers/ATLConversationListViewController.h) provides a customizable `UITableViewController` subclass for displaying a list of Layer conversations. Conversations are represented by a Conversation label, the latest message content, and the latest message date. The controller handles fetching and ordering conversation based on the latest message date.
 
 #### Initialization
 
-The `ATLConversationListViewController` is initialized with a LYRClient object.
+The [ATLConversationListViewController](Code/Controllers/ATLConversationListViewController.h) is initialized with a LYRClient object.
 
 ```objc
 ATLConversationListViewController *viewController = [ATLConversationListViewController conversationListViewControllerWithLayerClient:layerClient];
@@ -156,16 +156,16 @@ ATLConversationListViewController *viewController = [ATLConversationListViewCont
 
 #### Customization
 
-The `ATLConverationListViewController` displays `ATLConversationTableViewCells`. The cells themselves provide for customization via UIAppearance selectors.
+The [ATLConversationListViewController](Code/Controllers/ATLConversationListViewController.h) displays [ATLConversationTableViewCell](Code/Views/ATLConversationTableViewCell.h). The cells themselves provide for customization via `UIAppearance` selectors.
 
 ```objc
 [[ATLConversationTableViewCell appearance] setConversationLabelFont:[UIFont boldSystemFontOfSize:14]];
 [[ATLConversationTableViewCell appearance] setConversationLabelColor:[UIColor blackColor]];
  ```
 
-### ATLConversationViewController
+### [ATLConversationViewController](Code/Controllers/ATLConversationViewController.h)
 
-The `ATLConversationViewController` provides a customizable `UICollectionViewController` subclass for displaying individual Layer conversations. The controller is initialized with and `LYRClient` object and an `LYRConversation` object. It handles fetching, displaying and sending messages via LayerKit. The controller leverages the `ATLMessageInputToolbar` object to allow for text and content input.
+The [ATLConversationViewController](Code/Controllers/ATLConversationViewController.h) provides a customizable `UICollectionViewController` subclass for displaying individual Layer conversations. The controller is initialized with and `LYRClient` object and an `LYRConversation` object. It handles fetching, displaying and sending messages via LayerKit. The controller leverages the [ATLMessageInputToolbar](Code/Views/ATLMessageInputToolbar.h) object to allow for text and content input.
 
 #### Initialization
 
@@ -175,7 +175,7 @@ ATLConverationViewController *viewController = [ATLConversationViewController co
 
 #### Customization
 
-The `ATLConverationViewController` displays both incoming and outgoing flavors of `ATLMessageCollectionViewCell`. The cells themselves provide for customization via UIAppearance selectors.
+The [ATLConverationViewController](Code/Controllers/ATLConversationViewController.h) displays both incoming and outgoing flavors of [ATLMessageCollectionViewCell](Code/Views/ATLMessageCollectionViewCell.h). The cells themselves provide for customization via UIAppearance selectors.
 
 ```objc
 [[ATLOutgoingMessageCollectionViewCell appearance] setMessageTextColor:[UIColor whiteColor]];
@@ -183,36 +183,35 @@ The `ATLConverationViewController` displays both incoming and outgoing flavors o
 [[ATLOutgoingMessageCollectionViewCell appearance] setBubbleViewColor:[UIColor blueColor]];
 ```
 
-### ATLParticipantPicker
+### [ATLParticipantTableViewController](Code/Controllers/ATLParticipantTableViewController.h)
 
-The `ATLParticipantPickerController` provides a `UINavigationController` subclass that displays a list of users conforming to the `ATLParticipant` protocol. The controller provides support for sorting and ordering participants based on either first or last name. The controller also provides multi-selection support and an optional selection indicator.
+The [ATLParticipantTableViewController](Code/Controllers/ATLParticipantTableViewController.h) provides a `UINavigationController` subclass that displays a list of users conforming to the [ATLParticipant](Code/Protocols/ATLParticipant.h) protocol. The controller provides support for sorting and ordering participants based on either first or last name. The controller also provides multi-selection support and an optional selection indicator.
 
 #### Initialization
 
-The `ATLParticipantPickerController` is initialized with an object conforming to the `ATLParticipantPickerDataSource` and a sortType.
+The [ATLParticipantTableViewController](Code/Controllers/ATLParticipantTableViewController.h) is initialized with a participant list and a sortType.
 
 ```objc
-ATLParticipantPickerSortType sortType = ATLParticipantPickerControllerSortTypeFirst;
-ATLParticipantPickerController *controller = [ATLParticipantPickerController participantPickerWithDataSource:dataSource
-                                                                                                        sortType:sortType];
+ATLParticipantPickerSortType sortType = ATLParticipantPickerSortTypeFirstName;
+ATLParticipantTableViewController *controller = [ATLParticipantTableViewController participantTableViewControllerWithParticipants:participants sortType:sortType];
 ```
 
 #### Customization
 
-The `ATLParticipantPickerController` displays `ATLParticipantTableViewCells`. The cells themselves provide for customization via UIAppearance selectors.
+The [ATLParticipantTableViewController](Code/Controllers/ATLParticipantTableViewController.h) displays [ATLParticipantTableViewCell](Code/Views/ATLParticipantTableViewCell.h). The cells themselves provide for customization via `UIAppearance` selectors.
 
 ```objc
 [[ATLParticipantTableViewCell appearance] setTitleColor:[UIColor blackColor]];
 [[ATLParticipantTableViewCell appearance] setTitleFont:[UIFont systemFontOfSize:14]];
 ```
 
-### ATLMessageInputToolbar
+### [ATLMessageInputToolbar](Code/Views/ATLMessageInputToolbar.h)
 
-The `ATLMessageInputToolbar` provides a `UIToolbar` subclass that supports text and image input. The toolbar handles auto-resizing itself relative to its content.
+The [ATLMessageInputToolbar](Code/Views/ATLMessageInputToolbar.h) provides a `UIToolbar` subclass that supports text and image input. The toolbar handles auto-resizing itself relative to its content.
 
 #### Initialization
 
-The `ATLMessageInputToolbar` is initialized with a `UIViewController` object and sets itself as the inputAccessoryView of the ViewController. In order to do this, the `inputAcccessoryView` property of the view controller must first be re-declared in the implementation file of the view controller class.
+The [ATLMessageInputToolbar](Code/Views/ATLMessageInputToolbar.h) is initialized with a `UIViewController` object and sets itself as the inputAccessoryView of the ViewController. In order to do this, the `inputAcccessoryView` property of the view controller must first be re-declared in the implementation file of the view controller class.
 
 ```
 self.inputAccessoryView = [ATLMessageInputToolbar inputToolBarWithViewController:self];
@@ -223,7 +222,75 @@ Once initialized, the controller manages resizing itself relative to its content
 
 While the Atlas does provide highly customizable TableView and CollectionView cells, advanced customization of the UI components can be done by implementing custom cells and setting the component's `cellClass` property. The Atlas component CollectionView and TableView Cells share a common Presenter pattern where each cell displayed in a Component conforms to a specific presenter protocol. If you would like to swap out the default cells for cells that you build, this can easily accomplished via implementing cells that conform to the presenter patterns and setting the `cellClass` property of the controller.
 
-The presenters are `ATLParticipantPresenting`, `ATLConversationPresenting`, and `ATLMessagePresenting`.
+The presenters are [ATLParticipantPresenting](Code/Protocols/ATLParticipantPresenting.h), [ATLConversationPresenting](Code/Protocols/ATLConversationPresenting.h), and [ATLMessagePresenting](Code/Protocols/ATLMessagePresenting.h).
+
+## Configuring UI Appearance
+
+Atlas takes advantage of Apple's `UIAppearance` protocol which lets you change UI appearance very easily. The following is a list of all Atlas properties conforming to `UIAppearance`:
+
+### [ATLMessageCollectionViewCell](Code/Views/ATLMessageCollectionViewCell.h)
+##### ([ATLOutgoingMessageCollectionViewCell](Code/Views/ATLOutgoingMessageCollectionViewCell.h) and [ATLIncomingMessageCollectionViewCell](Code/Views/ATLIncomingMessageCollectionViewCell.h) extend this class)
+
+```objc
+@property (nonatomic) UIFont *messageTextFont
+@property (nonatomic) UIColor *messageTextColor
+@property (nonatomic) UIColor *messageLinkTextColor
+@property (nonatomic) UIColor *bubbleViewColor
+@property (nonatomic) CGFloat bubbleViewCornerRadius
+```
+
+### [ATLAddressBarTextView](Code/Views/ATLAddressBarTextView.h)
+
+```objc
+@property (nonatomic) UIFont *addressBarFont
+@property (nonatomic) UIColor *addressBarTextColor
+@property (nonatomic) UIColor *addressBarHighlightColor
+```
+
+### [ATLAvatarImageView](Code/Views/ATLAvatarImageView.h)
+
+```objc
+@property (nonatomic) CGFloat avatarImageViewDiameter
+@property (nonatomic) UIFont *initialsFont
+@property (nonatomic) UIColor *initialsColor
+@property (nonatomic) UIColor *imageViewBackgroundColor
+```
+
+### [ATLConversationCollectionViewHeader](Code/Views/ATLConversationCollectionViewHeader.h)
+
+```objc
+@property (nonatomic) UIFont *participantLabelFont
+@property (nonatomic) UIColor *participantLabelTextColor
+```
+
+### [ATLConversationTableViewCell](Code/Views/ATLConversationTableViewCell.h)
+
+```objc
+@property (nonatomic) UIFont *conversationTitleLabelFont
+@property (nonatomic) UIColor *conversationTitleLabelColor
+@property (nonatomic) UIFont *lastMessageLabelFont
+@property (nonatomic) UIColor *lastMessageLabelColor
+@property (nonatomic) UIFont *dateLabelFont
+@property (nonatomic) UIColor *dateLabelColor
+@property (nonatomic) UIColor *unreadMessageIndicatorBackgroundColor
+@property (nonatomic) UIColor *cellBackgroundColor
+```
+
+### [ATLParticipantSectionHeaderView](Code/Views/ATLParticipantSectionHeaderView.h)
+
+```objc
+@property (nonatomic) UIFont *sectionHeaderFont
+@property (nonatomic) UIColor *sectionHeaderTextColor
+@property (nonatomic) UIColor *sectionHeaderBackgroundColor
+```
+
+### [ATLParticipantTableViewCell](Code/Views/ATLParticipantTableViewCell.h)
+
+```objc
+@property (nonatomic) UIFont *titleFont
+@property (nonatomic) UIFont *boldTitleFont
+@property (nonatomic) UIColor *titleColor
+```
 
 ## Contributing
 
