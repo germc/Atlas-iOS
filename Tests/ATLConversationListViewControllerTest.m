@@ -488,7 +488,8 @@
     [tester swipeViewWithAccessibilityLabel:[self.testInterface conversationLabelForConversation:conversation1]  inDirection:KIFSwipeDirectionLeft];
     [delegateMock verify];
     
-    [tester waitForViewWithAccessibilityLabel:@"Test"];
+    UIView *deleteButton = [tester waitForViewWithAccessibilityLabel:@"Test"];
+    expect(deleteButton.backgroundColor).to.equal([UIColor greenColor]);
 }
 
 - (LYRConversationMock *)newConversationWithMockUser:(ATLUserMock *)mockUser lastMessageText:(NSString *)lastMessageText
