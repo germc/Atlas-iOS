@@ -269,7 +269,6 @@ NSString *const ATLConversationTableViewAccessibilityIdentifier = @"Conversation
 
 - (NSArray *)tableView:(UITableView *)tableView editActionsForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    LYRConversation *conversation = [self.queryController objectAtIndexPath:indexPath];
     NSMutableArray *actions = [NSMutableArray new];
     for (NSNumber *deletionMode in self.deletionModes) {
         NSString *actionString;

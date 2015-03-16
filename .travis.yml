@@ -1,4 +1,4 @@
 language: objective-c
 
 script: 
-  - rake test
+  - bundle exec rake test

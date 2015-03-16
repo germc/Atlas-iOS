@@ -423,6 +423,44 @@
     [delegateMock verify];
 }
 
+- (void)testToVerifyCustomDeletionColorAndText
+{
+    self.viewController = [ATLSampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];
+    self.viewController.allowsEditing = YES;
+    [self setRootViewController:self.viewController];
+    
+    ATLUserMock *mockUser1 = [ATLUserMock userWithMockUserName:ATLMockUserNameKlemen];
+    LYRConversationMock *conversation1 = [self newConversationWithMockUser:mockUser1 lastMessageText:@"Test Message"];
+    [tester waitForAnimationsToFinish];
+    
+    id delegateMock = OCMProtocolMock(@protocol(ATLConversationListViewControllerDataSource));
+    self.viewController.dataSource = delegateMock;
+    
+    [[[delegateMock expect] andDo:^(NSInvocation *invocation) {
+        ATLConversationListViewController *controller;
+        [invocation getArgument:&controller atIndex:2];
+        expect(controller).to.equal(self.viewController);
+        
+        NSString *deletionTitle = @"Test";
+        [invocation setReturnValue:&deletionTitle];
+    }] conversationListViewController:[OCMArg any] textForButtonWithDeletionMode:LYRDeletionModeAllParticipants];
+    
+    [[[delegateMock expect] andDo:^(NSInvocation *invocation) {
+        ATLConversationListViewController *controller;
+        [invocation getArgument:&controller atIndex:2];
+        expect(controller).to.equal(self.viewController);
+        
+        UIColor *green = [UIColor greenColor];
+        [invocation setReturnValue:&green];
+    }] conversationListViewController:[OCMArg any] colorForButtonWithDeletionMode:LYRDeletionModeAllParticipants];
+    
+    [tester swipeViewWithAccessibilityLabel:[self.testInterface conversationLabelForConversation:conversation1]  inDirection:KIFSwipeDirectionLeft];
+    [delegateMock verify];
+    
+    UIView *deleteButton = [tester waitForViewWithAccessibilityLabel:@"Test"];
+    expect(deleteButton.backgroundColor).to.equal([UIColor greenColor]);
+}
+
 - (LYRConversationMock *)newConversationWithMockUser:(ATLUserMock *)mockUser lastMessageText:(NSString *)lastMessageText
 {
     LYRConversationMock *conversation = [self.testInterface conversationWithParticipants:[NSSet setWithObject:mockUser.participantIdentifier] lastMessageText:lastMessageText];
