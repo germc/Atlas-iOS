@@ -1,5 +1,10 @@
 # Atlas Changelog
 
+## 1.0.2
+### Public API Changes
+* Added `conversationListViewController:textForButtonWithDeletionMode:` to `ATLConversationListViewController`
+* Added `conversationListViewController:colorForButtonWithDeletionMode:` to `ATLConversationListViewController`
+ 		
 ## 1.0.1
 
 * Updated LayerKit dependency to v0.10.3
