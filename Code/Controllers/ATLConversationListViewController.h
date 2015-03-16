@@ -95,20 +95,18 @@
 /**
  @abstract Asks the data source for a string to display on the delete button for a given conversation and deletion mode.
  @param conversationListViewController The `LYRConversationListViewController` in which the button title will appear.
- @param conversation The `LYRConversation` object.
  @param deletionMode The `LYRDeletionMode` for which a button has to be displayed.
  @return The string to be displayed on the delete button for a given conversation in the conversation list.
  */
-- (NSString *)conversationListViewController:(ATLConversationListViewController *)conversationListViewController deleteActionStringForConversation:(LYRConversation *)conversation deletionMode:(LYRDeletionMode)deletionMode;
+- (NSString *)conversationListViewController:(ATLConversationListViewController *)conversationListViewController textForButtonWithDeletionMode:(LYRDeletionMode)deletionMode;
 
 /**
  @abstract Asks the data source for a color to apply to the delete button for a given conversation and deletion mode.
  @param conversationListViewController The `LYRConversationListViewController` in which the button title will appear.
- @param conversation The `LYRConversation` object.
  @param deletionMode The `LYRDeletionMode` for which a button has to be displayed.
  @return The color to apply on the delete button for a given conversation in the conversation list.
  */
-- (UIColor *)conversationListViewController:(ATLConversationListViewController *)conversationListViewController deleteActionColorForConversation:(LYRConversation *)conversation deletionMode:(LYRDeletionMode)deletionMode;
+- (UIColor *)conversationListViewController:(ATLConversationListViewController *)conversationListViewController colorForButtonWithDeletionMode:(LYRDeletionMode)deletionMode;
 
 @end
 

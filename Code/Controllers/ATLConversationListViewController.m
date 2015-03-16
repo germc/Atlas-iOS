@@ -274,8 +274,8 @@ NSString *const ATLConversationTableViewAccessibilityIdentifier = @"Conversation
     for (NSNumber *deletionMode in self.deletionModes) {
         NSString *actionString;
         UIColor *actionColor;
-        if ([self.dataSource respondsToSelector:@selector(conversationListViewController:deleteActionStringForConversation:deletionMode:)]) {
-            actionString = [self.dataSource conversationListViewController:self deleteActionStringForConversation:conversation deletionMode:deletionMode.integerValue];
+        if ([self.dataSource respondsToSelector:@selector(conversationListViewController:textForButtonWithDeletionMode:)]) {
+            actionString = [self.dataSource conversationListViewController:self textForButtonWithDeletionMode:deletionMode.integerValue];
         } else {
             switch (deletionMode.integerValue) {
                 case LYRDeletionModeLocal:
@@ -288,8 +288,8 @@ NSString *const ATLConversationTableViewAccessibilityIdentifier = @"Conversation
                     break;
             }
         }
-        if ([self.dataSource respondsToSelector:@selector(conversationListViewController:deleteActionColorForConversation:deletionMode:)]) {
-            actionColor = [self.dataSource conversationListViewController:self deleteActionColorForConversation:conversation deletionMode:deletionMode.integerValue];
+        if ([self.dataSource respondsToSelector:@selector(conversationListViewController:colorForButtonWithDeletionMode:)]) {
+            actionColor = [self.dataSource conversationListViewController:self colorForButtonWithDeletionMode:deletionMode.integerValue];
         } else {
             switch (deletionMode.integerValue) {
                 case LYRDeletionModeLocal:
