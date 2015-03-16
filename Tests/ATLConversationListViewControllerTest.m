@@ -429,7 +429,6 @@
     self.viewController.allowsEditing = YES;
     [self setRootViewController:self.viewController];
     
-    
     ATLUserMock *mockUser1 = [ATLUserMock userWithMockUserName:ATLMockUserNameKlemen];
     LYRConversationMock *conversation1 = [self newConversationWithMockUser:mockUser1 lastMessageText:@"Test Message"];
     [tester waitForAnimationsToFinish];
