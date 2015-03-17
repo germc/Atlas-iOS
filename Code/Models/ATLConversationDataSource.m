@@ -42,7 +42,7 @@ NSInteger const ATLQueryControllerPaginationWindow = 30;
     if (self) {
         LYRQuery *query = [LYRQuery queryWithClass:[LYRMessage class]];
         query.predicate = [LYRPredicate predicateWithProperty:@"conversation" operator:LYRPredicateOperatorIsEqualTo value:conversation];
-        query.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"index" ascending:YES]];
+        query.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"position" ascending:YES]];
        
         NSUInteger numberOfMessagesAvailable = [layerClient countForQuery:query error:nil];
         NSUInteger numberOfMessagesToDisplay = MIN(numberOfMessagesAvailable, ATLQueryControllerPaginationWindow);
