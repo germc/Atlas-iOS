@@ -29,10 +29,13 @@ NSString *const ATLMIMETypeImageGIF = @"image/gif";
 NSString *const ATLMIMETypeImageSize = @"application/json+imageSize";
 NSString *const ATLMIMETypeImageJPEG = @"image/jpeg";
 NSString *const ATLMIMETypeImageJPEGPreview = @"image/jpeg+preview";
+NSString *const ATLMIMETypeImageGIF = @"image/gif";
+NSString *const ATLMIMETypeImageGIFPreview = @"image/gif+preview";
 NSString *const ATLMIMETypeLocation = @"location/coordinate";
 NSString *const ATLMIMETypeDate = @"text/date";
 
 NSUInteger const ATLDefaultThumbnailSize = 512;
+NSUInteger const ATLDefaultGIFThumbnailSize = 64;
 
 NSString *const ATLImagePreviewWidthKey = @"width";
 NSString *const ATLImagePreviewHeightKey = @"height";

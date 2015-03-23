@@ -29,11 +29,14 @@ extern NSString *const ATLMIMETypeImagePNG;           // image/png
 extern NSString *const ATLMIMETypeImageGIF;           // image/gif
 extern NSString *const ATLMIMETypeImageJPEG;          // image/jpeg
 extern NSString *const ATLMIMETypeImageJPEGPreview;   // image/jpeg+preview
+extern NSString *const ATLMIMETypeImageGIF;           // image/gif
+extern NSString *const ATLMIMETypeImageGIFPreview;    // image/gif+preview
 extern NSString *const ATLMIMETypeImageSize;          // application/json+imageSize
 extern NSString *const ATLMIMETypeLocation;           // location/coordinate
 extern NSString *const ATLMIMETypeDate;               // text/date
 
 extern NSUInteger const ATLDefaultThumbnailSize;      // 512px
+extern NSUInteger const ATLDefaultGIFThumbnailSize;   // 64px
 
 extern NSString *const ATLImagePreviewWidthKey;
 extern NSString *const ATLImagePreviewHeightKey;
