@@ -220,7 +220,7 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
             self.mediaStreamError = error;
             return;
         }
-    }
+    }   
     
     // Setup data consumer.
     success = [self setupConsumerWithError:&error];
