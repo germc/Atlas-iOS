@@ -117,9 +117,14 @@ static float const ATLMediaAttachmentDefaultThumbnailJPEGCompression = 0.5f;
         // Prepare the input stream and MIMEType for the thumbnail.
         // --------------------------------------------------------------------
         self.thumbnailInputStream = [ATLMediaInputStream mediaInputStreamWithAssetURL:asset.defaultRepresentation.url];
-        ((ATLMediaInputStream *)self.thumbnailInputStream).maximumSize = thumbnailSize;
-        ((ATLMediaInputStream *)self.thumbnailInputStream).compressionQuality = ATLMediaAttachmentDefaultThumbnailJPEGCompression;
-        self.thumbnailMIMEType = ATLMIMETypeImageJPEGPreview;
+        if ([self.mediaMIMEType isEqualToString:ATLMIMETypeImageGIF]) {
+            ((ATLMediaInputStream *)self.thumbnailInputStream).maximumSize = ATLDefaultGIFThumbnailSize;
+            self.thumbnailMIMEType = ATLMIMETypeImageGIFPreview;
+        } else {
+            ((ATLMediaInputStream *)self.thumbnailInputStream).maximumSize = thumbnailSize;
+            ((ATLMediaInputStream *)self.thumbnailInputStream).compressionQuality = ATLMediaAttachmentDefaultThumbnailJPEGCompression;
+            self.thumbnailMIMEType = ATLMIMETypeImageJPEGPreview;
+        }
         
         // --------------------------------------------------------------------
         // Prepare the input stream and MIMEType for the metadata
