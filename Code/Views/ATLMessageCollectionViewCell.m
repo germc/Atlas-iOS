@@ -215,8 +215,8 @@ CGFloat const ATLMessageCellHorizontalMargin = 16.0f;
 //        }
 //    }
     
-    if (fullResImagePart.fileURL) {
-        displayingImage = [ATLUIImageHelper animatedImageWithAnimatedGIFURL:fullResImagePart.fileURL];
+    if (fullResImagePart.data) {
+        displayingImage = [ATLUIImageHelper animatedImageWithAnimatedGIFData:fullResImagePart.data];
     }
     
     [self.bubbleView updateWithImage:displayingImage width:size.width];
