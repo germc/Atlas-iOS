@@ -104,9 +104,9 @@ NSData *MediaAttachmentDataFromInputStream(NSInputStream *inputStream)
     message.receivedAt = message.sentAt;
     
     if (!self.lastMessage) {
-        message.index = 0;
+        message.position = 0;
     } else {
-        message.index = ((int)self.lastMessage.index + 1);
+        message.position = ((int)self.lastMessage.position + 1);
     }
     if (![message.parts.firstObject data] && [message.parts.firstObject inputStream]) {
         NSMutableArray *parts = [NSMutableArray new];
