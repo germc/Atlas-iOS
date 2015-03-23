@@ -121,4 +121,8 @@ static UIImage *animatedImageWithAnimatedGIFReleasingImageSource(CGImageSourceRe
     return animatedImageWithAnimatedGIFReleasingImageSource(CGImageSourceCreateWithData(toCF data, NULL));
 }
 
++ (UIImage *)animatedImageWithAnimatedGIFURL:(NSURL *)url {
+    return animatedImageWithAnimatedGIFReleasingImageSource(CGImageSourceCreateWithURL(toCF url, NULL));
+}
+
 @end

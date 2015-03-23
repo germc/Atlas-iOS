@@ -26,6 +26,7 @@
 
 extern NSString *const ATLMIMETypeTextPlain;          // text/plain
 extern NSString *const ATLMIMETypeImagePNG;           // image/png
+extern NSString *const ATLMIMETypeImageGIF;           // image/gif
 extern NSString *const ATLMIMETypeImageJPEG;          // image/jpeg
 extern NSString *const ATLMIMETypeImageJPEGPreview;   // image/jpeg+preview
 extern NSString *const ATLMIMETypeImageSize;          // application/json+imageSize

@@ -13,4 +13,6 @@
 
 + (UIImage *)animatedImageWithAnimatedGIFData:(NSData *)data;
 
++ (UIImage *)animatedImageWithAnimatedGIFURL:(NSURL *)url;
+
 @end

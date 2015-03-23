@@ -20,6 +20,7 @@
 
 #import "ATLMessageCollectionViewCell.h"
 #import "ATLMessagingUtilities.h"
+#import "ATLUIImageHelper.h"
 #import "ATLIncomingMessageCollectionViewCell.h"
 #import "ATLOutgoingMessageCollectionViewCell.h"
 #import <LayerKit/LayerKit.h> 
@@ -110,6 +111,8 @@ CGFloat const ATLMessageCellHorizontalMargin = 16.0f;
         [self configureBubbleViewForImageContent];
     }else if ([messagePart.MIMEType isEqualToString:ATLMIMETypeImagePNG]) {
         [self configureBubbleViewForImageContent];
+    } else if ([messagePart.MIMEType isEqualToString:ATLMIMETypeImageGIF]){
+        [self configureBubbleViewForImageContent];
     } else if ([messagePart.MIMEType isEqualToString:ATLMIMETypeLocation]) {
         [self configureBubbleViewForLocationContent];
     }
@@ -131,6 +134,9 @@ CGFloat const ATLMessageCellHorizontalMargin = 16.0f;
     LYRMessagePart *fullResImagePart = ATLMessagePartForMIMEType(self.message, ATLMIMETypeImageJPEG);
     if (!fullResImagePart) {
         fullResImagePart = ATLMessagePartForMIMEType(self.message, ATLMIMETypeImagePNG);
+    }
+    if (!fullResImagePart) {
+        fullResImagePart = ATLMessagePartForMIMEType(self.message, ATLMIMETypeImageGIF);
     }
     if (fullResImagePart && ((fullResImagePart.transferStatus == LYRContentTransferAwaitingUpload) ||
                              (fullResImagePart.transferStatus == LYRContentTransferUploading))) {
@@ -187,6 +193,30 @@ CGFloat const ATLMessageCellHorizontalMargin = 16.0f;
         } else {
             [self.bubbleView updateProgressIndicatorWithProgress:1.0 visible:NO animated:YES];
         }
+    }
+    
+//    if ([fullResImagePart.MIMEType isEqualToString:ATLMIMETypeImageGIF]) {
+//        if (fullResImagePart && (fullResImagePart.transferStatus == LYRContentTransferReadyForDownload)) {
+//            NSError *error;
+//            LYRProgress *progress = [fullResImagePart downloadContent:&error];
+//            if (!progress) {
+//                NSLog(@"failed to request for a content download from the UI with error=%@", error);
+//            }
+//            [self.bubbleView updateProgressIndicatorWithProgress:0.0 visible:NO animated:NO];
+//        } else if (fullResImagePart && (fullResImagePart.transferStatus == LYRContentTransferDownloading)) {
+//            // Set self for delegation, if single image message part message
+//            // hasn't been downloaded yet, or is still downloading.
+//            LYRProgress *progress = fullResImagePart.progress;
+//            [progress setDelegate:self];
+//            self.progress = progress;
+//            [self.bubbleView updateProgressIndicatorWithProgress:progress.fractionCompleted visible:YES animated:NO];
+//        } else {
+//            [self.bubbleView updateProgressIndicatorWithProgress:1.0 visible:NO animated:YES];
+//        }
+//    }
+    
+    if (fullResImagePart.fileURL) {
+        displayingImage = [ATLUIImageHelper animatedImageWithAnimatedGIFURL:fullResImagePart.fileURL];
     }
     
     [self.bubbleView updateWithImage:displayingImage width:size.width];
@@ -302,7 +332,7 @@ CGFloat const ATLMessageCellHorizontalMargin = 16.0f;
     CGFloat height = 0;
     if ([part.MIMEType isEqualToString:ATLMIMETypeTextPlain]) {
         height = [self cellHeightForTextMessage:message inView:view];
-    } else if ([part.MIMEType isEqualToString:ATLMIMETypeImageJPEG] || [part.MIMEType isEqualToString:ATLMIMETypeImagePNG]) {
+    } else if ([part.MIMEType isEqualToString:ATLMIMETypeImageJPEG] || [part.MIMEType isEqualToString:ATLMIMETypeImagePNG] || [part.MIMEType isEqualToString:ATLMIMETypeImageGIF]) {
         height = [self cellHeightForImageMessage:message];
     } else if ([part.MIMEType isEqualToString:ATLMIMETypeLocation]) {
         height = ATLMessageBubbleMapHeight;
