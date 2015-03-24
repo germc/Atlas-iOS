@@ -35,6 +35,12 @@ LYRMessagePartMock *ATLMessagePartWithJPEGImage(UIImage *image)
                                               data:UIImageJPEGRepresentation(image, 0.1)];
 }
 
+LYRMessagePartMock *ATLMessagePartWithGIFImage(UIImage *image)
+{
+    return [LYRMessagePartMock messagePartWithMIMEType:ATLMIMETypeImageGIF
+                                                  data:UIImageJPEGRepresentation(image, 0.1)];
+}
+
 LYRMessagePartMock *ATLMessagePartForImageSize(UIImage *image)
 {
     CGSize size = ATLImageSize(image);

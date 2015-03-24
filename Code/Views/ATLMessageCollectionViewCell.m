@@ -241,8 +241,8 @@ CGFloat const ATLMessageCellHorizontalMargin = 16.0f;
         size = ATLImageSizeForData(fullResImagePart.data);
     }
     
-    //For GIFs we only download full resolution parts when rendered in the UI
-    //Low res GIFs are autodownloaded but blurry
+    // For GIFs we only download full resolution parts when rendered in the UI
+    // Low res GIFs are autodownloaded but blurry
     if ([fullResImagePart.MIMEType isEqualToString:ATLMIMETypeImageGIF]) {
         if (fullResImagePart && (fullResImagePart.transferStatus == LYRContentTransferReadyForDownload)) {
             NSError *error;

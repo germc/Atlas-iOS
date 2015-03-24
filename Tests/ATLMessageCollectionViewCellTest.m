@@ -96,6 +96,17 @@ extern NSString *const ATLConversationCollectionViewAccessibilityIdentifier;
     expect(cell.bubbleView.bubbleViewLabel.text).to.beNil;
 }
 
+- (void)testToVerifyMessageBubbleViewWithGIF
+{
+    LYRMessagePartMock *imagePart = ATLMessagePartWithGIFImage([UIImage new]);
+    LYRMessageMock *message = [self.testInterface.layerClient newMessageWithParts:@[imagePart] options:nil error:nil];
+    
+    ATLMessageCollectionViewCell *cell = [ATLMessageCollectionViewCell new];
+    [cell presentMessage:(LYRMessage *)message];
+    expect(cell.bubbleView.bubbleImageView.image).toNot.beNil;
+    expect(cell.bubbleView.bubbleViewLabel.text).to.beNil;
+}
+
 - (void)testToVerifyMessageBubbleViewWithLocation
 {
     CLLocation *location = [[CLLocation alloc] initWithLatitude:37.7833 longitude:122.4167];
