@@ -228,9 +228,9 @@ CGFloat const ATLMessageCellHorizontalMargin = 16.0f;
     }
     
     if (previewImagePart.fileURL) {
-        displayingImage = [ATLUIImageHelper animatedImageWithAnimatedGIFURL:previewImagePart.fileURL];
+        displayingImage = ATLAnimatedImageWithAnimatedGIFURL(previewImagePart.fileURL);
     } else {
-        displayingImage = [ATLUIImageHelper animatedImageWithAnimatedGIFData:previewImagePart.data];
+        displayingImage = ATLAnimatedImageWithAnimatedGIFData(previewImagePart.data);
     }
     
     CGSize size = CGSizeZero;
@@ -260,7 +260,7 @@ CGFloat const ATLMessageCellHorizontalMargin = 16.0f;
             self.progress = progress;
             [self.bubbleView updateProgressIndicatorWithProgress:progress.fractionCompleted visible:YES animated:NO];
         } else {
-            displayingImage = [ATLUIImageHelper animatedImageWithAnimatedGIFData:fullResImagePart.data];
+            displayingImage = ATLAnimatedImageWithAnimatedGIFData(fullResImagePart.data);
             [self.bubbleView updateProgressIndicatorWithProgress:1.0 visible:NO animated:YES];
         }
     }

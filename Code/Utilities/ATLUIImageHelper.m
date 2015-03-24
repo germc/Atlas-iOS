@@ -18,8 +18,6 @@
 #define fromCF (id)
 #endif
 
-@implementation ATLUIImageHelper
-
 #pragma mark - Private Methods
 
 static int ATLDelayCentisecondsForImageAtIndex(CGImageSourceRef const source, size_t const index)
@@ -132,14 +130,12 @@ static UIImage *ATLAnimatedImageWithAnimatedGIFReleasingImageSource(CGImageSourc
 
 #pragma mark - Public Helper Methods
 
-+ (UIImage *)animatedImageWithAnimatedGIFData:(NSData *)data
+UIImage *ATLAnimatedImageWithAnimatedGIFData(NSData *data)
 {
     return ATLAnimatedImageWithAnimatedGIFReleasingImageSource(CGImageSourceCreateWithData(toCF data, NULL));
 }
 
-+ (UIImage *)animatedImageWithAnimatedGIFURL:(NSURL *)url
+UIImage *ATLAnimatedImageWithAnimatedGIFURL(NSURL *url)
 {
     return ATLAnimatedImageWithAnimatedGIFReleasingImageSource(CGImageSourceCreateWithURL(toCF url, NULL));
 }
-
-@end

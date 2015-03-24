@@ -20,20 +20,16 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-@interface ATLUIImageHelper : NSObject
-
 /**
  @abstract Processes GIFs by finding frame count and duration and returns an auto-looping GIF
  @param data The NSData instance that should be returned as a looping GIF
  @return Returns a UIImage instance that has a looping GIF.  Can be used with any UIImageView
  */
-+ (UIImage *)animatedImageWithAnimatedGIFData:(NSData *)data;
+UIImage *ATLAnimatedImageWithAnimatedGIFData(NSData *data);
 
 /**
  @abstract Processes GIFs by finding frame count and duration and returns an auto-looping GIF
  @param url The NSURL instance that should be returned as a looping GIF
  @return Returns a UIImage instance that has a looping GIF.  Can be used with any UIImageView
  */
-+ (UIImage *)animatedImageWithAnimatedGIFURL:(NSURL *)url;
-
-@end
+ UIImage *ATLAnimatedImageWithAnimatedGIFURL(NSURL *url);
