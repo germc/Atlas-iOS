@@ -68,6 +68,7 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
 @property (nonatomic, assign) CGImageSourceRef source;
 @property (nonatomic, assign) CGDataConsumerRef consumer;
 @property (nonatomic, assign) CGImageDestinationRef destination;
+@property (nonatomic) NSDictionary *sourceImageProperties;
 
 @end
 
@@ -196,23 +197,24 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
     ATLMediaInputStreamLog(@"opening stream...");
     
     // Setup data provider.
-    BOOL success;
+    NSInteger numberOfSourceImages = 0;
     NSError *error;
     if (self.sourceAssetURL) {
-        success = [self setupProviderForAssetStreamingWithError:&error];
+        numberOfSourceImages = [self setupProviderForAssetStreamingWithError:&error];
     } else if (self.sourceImage) {
         // UIImages don't need a data provider, we're adding them to CGImageDestination directly.
-        success = YES;
+        numberOfSourceImages = 1;
     } else {
         @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Failed setting up data provider because source media not defined." userInfo:nil];
     }
-    if (!success) {
+    if (numberOfSourceImages == 0) {
         self.mediaStreamStatus = NSStreamStatusError;
         self.mediaStreamError = error;
         return;
     }
     
     // iOS7 specific
+    BOOL success;
     if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_7_1) {
         success = [self setupiOS7SpecificConsumerPrerequisite:&error];
         if (!success) {
@@ -223,7 +225,7 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
     }
     
     // Setup data consumer.
-    success = [self setupConsumerWithError:&error];
+    success = [self setupConsumerWithError:&error numberOfSourceImages:numberOfSourceImages];
     if (!success) {
         self.mediaStreamStatus = NSStreamStatusError;
         self.mediaStreamError = error;
@@ -348,9 +350,9 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
 /**
  @abstract Prepares the CGDataProvider which slurps data directly from the ALAsset based on the self.assetURL defined at init.
  @param error A reference to an `NSError` object that will contain error information in case the action was not successful.
- @return Returns `YES` if setup was successful; On failures, method sets the `error` and returns `NO`.
+ @return Returns the number of images that source will provide if the setup was successful; On failures, method sets the `error` and returns `0`.
  */
-- (BOOL)setupProviderForAssetStreamingWithError:(NSError **)error
+- (NSInteger)setupProviderForAssetStreamingWithError:(NSError **)error
 {
     // Creating the asset library that needs to be alive during transfer.
     self.assetLibrary = [[ALAssetsLibrary alloc] init];
@@ -381,7 +383,7 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
         if (error) {
             *error = [NSError errorWithDomain:ATLMediaInputStreamErrorDomain code:ATLMediaInputStreamErrorFailedInitializingAssetProvider userInfo:@{ NSLocalizedDescriptionKey: @"Failed initializing the Quartz image data provider/source pair." }];
         }
-        return NO;
+        return 0;
     }
     
     // There should be at least one image found in the source.
@@ -390,9 +392,12 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
         if (error) {
             *error = [NSError errorWithDomain:ATLMediaInputStreamErrorDomain code:ATLMediaInputStreamErrorAssetHasNoImages userInfo:@{ NSLocalizedDescriptionKey: @"Failed initializing the Quartz image data provider/source, because source asset doesn't include any images." }];
         }
-        return NO;
+        return 0;
     }
-    return YES;
+    
+    // Get source image's properties, because we'll copy it to the destination later.
+    self.sourceImageProperties = (__bridge NSDictionary *)(CGImageSourceCopyProperties(_source, NULL));
+    return count;
 }
 
 /**
@@ -436,7 +441,7 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
  @param error A reference to an `NSError` object that will contain error information in case the action was not successful.
  @return Returns `YES` if setup was successful; On failures, method sets the `error` and returns `NO`.
  */
-- (BOOL)setupConsumerWithError:(NSError **)error
+- (BOOL)setupConsumerWithError:(NSError **)error numberOfSourceImages:(NSInteger)numberOfSourceImages
 {
     // Setting up destination-writer (consumer).
     CGDataConsumerCallbacks dataConsumerCallbacks = {
@@ -446,7 +451,7 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
     _consumer = CGDataConsumerCreate((void *)CFBridgingRetain(self), &dataConsumerCallbacks);
     if (self.assetRepresentation) {
         // In case source is the ALAsset.
-        _destination = CGImageDestinationCreateWithDataConsumer(_consumer, (CFStringRef)self.assetRepresentation.UTI, 1, NULL);
+        _destination = CGImageDestinationCreateWithDataConsumer(_consumer, (CFStringRef)self.assetRepresentation.UTI, numberOfSourceImages, NULL);
     } else {
         // In case source is the UIImage.
         _destination = CGImageDestinationCreateWithDataConsumer(_consumer, kUTTypeJPEG, 1, NULL);
@@ -478,9 +483,15 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
         [destinationOptions setObject:mutableTiffDict forKey:ATLMediaInputStreamAppleCameraTIFFOptionsKey];
     }
     if (self.assetRepresentation) {
-        CGImageDestinationAddImageFromSource(_destination, self.source, 0, (__bridge CFDictionaryRef)destinationOptions);
+        for (NSInteger idx=0; idx<numberOfSourceImages; idx++) {
+            CGImageDestinationAddImageFromSource(_destination, self.source, idx, (__bridge CFDictionaryRef)destinationOptions);
+        }
     } else {
         CGImageDestinationAddImage(_destination, self.sourceImage.CGImage, (__bridge CFDictionaryRef)destinationOptions);
+    }
+    // Apply the image properties (we took from the source earlier) onto destination.
+    if (self.sourceImageProperties) {
+        CGImageDestinationSetProperties(_destination, (__bridge CFDictionaryRef)self.sourceImageProperties);
     }
     return YES;
 }
