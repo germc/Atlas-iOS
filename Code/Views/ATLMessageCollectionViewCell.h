@@ -25,6 +25,8 @@
 #import "ATLAvatarImageView.h"
 
 extern CGFloat const ATLMessageCellHorizontalMargin;
+extern NSString *const ATLGIFAccessibilityLabel;
+extern NSString *const ATLImageAccessibilityLabel;
 
 /**
  @abstract The `ATLMessageCollectionViewCell` class provides a lightweight, customizable collection

@@ -25,6 +25,9 @@
 #import "ATLOutgoingMessageCollectionViewCell.h"
 #import <LayerKit/LayerKit.h> 
 
+NSString *const ATLGIFAccessibilityLabel = @"Message: GIF";
+NSString *const ATLImageAccessibilityLabel = @"Message: Image";
+
 @interface ATLMessageCollectionViewCell () <LYRProgressDelegate>
 
 @property (nonatomic) BOOL messageSentState;
@@ -129,7 +132,7 @@ CGFloat const ATLMessageCellHorizontalMargin = 16.0f;
 
 - (void)configureBubbleViewForImageContent
 {
-    self.accessibilityLabel = [NSString stringWithFormat:@"Message: Photo"];
+    self.accessibilityLabel = ATLImageAccessibilityLabel;
     
     LYRMessagePart *fullResImagePart = ATLMessagePartForMIMEType(self.message, ATLMIMETypeImageJPEG);
     if (!fullResImagePart) {
@@ -200,7 +203,7 @@ CGFloat const ATLMessageCellHorizontalMargin = 16.0f;
 
 - (void)configureBubbleViewForGIFContent
 {
-    self.accessibilityLabel = [NSString stringWithFormat:@"Message: GIF"];
+    self.accessibilityLabel = ATLGIFAccessibilityLabel;
     
     LYRMessagePart *fullResImagePart = ATLMessagePartForMIMEType(self.message, ATLMIMETypeImageGIF);
 
