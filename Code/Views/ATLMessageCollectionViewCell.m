@@ -112,7 +112,7 @@ CGFloat const ATLMessageCellHorizontalMargin = 16.0f;
     }else if ([messagePart.MIMEType isEqualToString:ATLMIMETypeImagePNG]) {
         [self configureBubbleViewForImageContent];
     } else if ([messagePart.MIMEType isEqualToString:ATLMIMETypeImageGIF]){
-        [self configureBubbleViewForImageContent];
+        [self configureBubbleViewForGIFContent];
     } else if ([messagePart.MIMEType isEqualToString:ATLMIMETypeLocation]) {
         [self configureBubbleViewForLocationContent];
     }
@@ -135,9 +135,7 @@ CGFloat const ATLMessageCellHorizontalMargin = 16.0f;
     if (!fullResImagePart) {
         fullResImagePart = ATLMessagePartForMIMEType(self.message, ATLMIMETypeImagePNG);
     }
-    if (!fullResImagePart) {
-        fullResImagePart = ATLMessagePartForMIMEType(self.message, ATLMIMETypeImageGIF);
-    }
+
     if (fullResImagePart && ((fullResImagePart.transferStatus == LYRContentTransferAwaitingUpload) ||
                              (fullResImagePart.transferStatus == LYRContentTransferUploading))) {
         // Set self for delegation, if full resolution message part
@@ -154,26 +152,14 @@ CGFloat const ATLMessageCellHorizontalMargin = 16.0f;
     LYRMessagePart *previewImagePart = ATLMessagePartForMIMEType(self.message, ATLMIMETypeImageJPEGPreview);
     
     if (!previewImagePart) {
-        previewImagePart = ATLMessagePartForMIMEType(self.message, ATLMIMETypeImageGIFPreview);
-    }
-    
-    if (!previewImagePart) {
         // If no preview image part found, resort to the full-resolution image.
         previewImagePart = fullResImagePart;
     }
     
-    if ([previewImagePart.MIMEType isEqualToString:ATLMIMETypeImageGIFPreview]) {
-        if (previewImagePart.fileURL) {
-            displayingImage = [ATLUIImageHelper animatedImageWithAnimatedGIFURL:previewImagePart.fileURL];
-        } else {
-            displayingImage = [ATLUIImageHelper animatedImageWithAnimatedGIFData:previewImagePart.data];
-        }
+    if (previewImagePart.fileURL) {
+        displayingImage = [UIImage imageWithContentsOfFile:previewImagePart.fileURL.path];
     } else {
-        if (previewImagePart.fileURL) {
-            displayingImage = [UIImage imageWithContentsOfFile:previewImagePart.fileURL.path];
-        } else {
-            displayingImage = [UIImage imageWithData:previewImagePart.data];
-        }
+        displayingImage = [UIImage imageWithData:previewImagePart.data];
     }
     
     CGSize size = CGSizeZero;
@@ -209,7 +195,53 @@ CGFloat const ATLMessageCellHorizontalMargin = 16.0f;
         }
     }
     
-    //For GIFs we only download full resolution parts when rendered on the UI
+    [self.bubbleView updateWithImage:displayingImage width:size.width];
+}
+
+- (void)configureBubbleViewForGIFContent
+{
+    self.accessibilityLabel = [NSString stringWithFormat:@"Message: GIF"];
+    
+    LYRMessagePart *fullResImagePart = ATLMessagePartForMIMEType(self.message, ATLMIMETypeImageGIF);
+
+    if (fullResImagePart && ((fullResImagePart.transferStatus == LYRContentTransferAwaitingUpload) ||
+                             (fullResImagePart.transferStatus == LYRContentTransferUploading))) {
+        // Set self for delegation, if full resolution message part
+        // hasn't been uploaded yet, or is still uploading.
+        LYRProgress *progress = fullResImagePart.progress;
+        [progress setDelegate:self];
+        self.progress = progress;
+        [self.bubbleView updateProgressIndicatorWithProgress:progress.fractionCompleted visible:YES animated:NO];
+    } else {
+        [self.bubbleView updateProgressIndicatorWithProgress:1.0 visible:NO animated:YES];
+    }
+    
+    UIImage *displayingImage;
+    LYRMessagePart *previewImagePart = ATLMessagePartForMIMEType(self.message, ATLMIMETypeImageGIFPreview);
+    
+    if (!previewImagePart) {
+        // If no preview image part found, resort to the full-resolution image.
+        previewImagePart = fullResImagePart;
+    }
+    
+    if (previewImagePart.fileURL) {
+        displayingImage = [ATLUIImageHelper animatedImageWithAnimatedGIFURL:previewImagePart.fileURL];
+    } else {
+        displayingImage = [ATLUIImageHelper animatedImageWithAnimatedGIFData:previewImagePart.data];
+    }
+    
+    CGSize size = CGSizeZero;
+    LYRMessagePart *sizePart = ATLMessagePartForMIMEType(self.message, ATLMIMETypeImageSize);
+    if (sizePart) {
+        size = ATLImageSizeForJSONData(sizePart.data);
+        size = ATLConstrainImageSizeToCellSize(size);
+    }
+    if (CGSizeEqualToSize(size, CGSizeZero)) {
+        // Resort to image's size, if no dimensions metadata message parts found.
+        size = ATLImageSizeForData(fullResImagePart.data);
+    }
+    
+    //For GIFs we only download full resolution parts when rendered in the UI
     //Low res GIFs are autodownloaded but blurry
     if ([fullResImagePart.MIMEType isEqualToString:ATLMIMETypeImageGIF]) {
         if (fullResImagePart && (fullResImagePart.transferStatus == LYRContentTransferReadyForDownload)) {
