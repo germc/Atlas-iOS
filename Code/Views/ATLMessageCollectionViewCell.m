@@ -20,9 +20,13 @@
 
 #import "ATLMessageCollectionViewCell.h"
 #import "ATLMessagingUtilities.h"
+#import "ATLUIImageHelper.h"
 #import "ATLIncomingMessageCollectionViewCell.h"
 #import "ATLOutgoingMessageCollectionViewCell.h"
 #import <LayerKit/LayerKit.h> 
+
+NSString *const ATLGIFAccessibilityLabel = @"Message: GIF";
+NSString *const ATLImageAccessibilityLabel = @"Message: Image";
 
 @interface ATLMessageCollectionViewCell () <LYRProgressDelegate>
 
@@ -110,6 +114,8 @@ CGFloat const ATLMessageCellHorizontalMargin = 16.0f;
         [self configureBubbleViewForImageContent];
     }else if ([messagePart.MIMEType isEqualToString:ATLMIMETypeImagePNG]) {
         [self configureBubbleViewForImageContent];
+    } else if ([messagePart.MIMEType isEqualToString:ATLMIMETypeImageGIF]){
+        [self configureBubbleViewForGIFContent];
     } else if ([messagePart.MIMEType isEqualToString:ATLMIMETypeLocation]) {
         [self configureBubbleViewForLocationContent];
     }
@@ -126,12 +132,13 @@ CGFloat const ATLMessageCellHorizontalMargin = 16.0f;
 
 - (void)configureBubbleViewForImageContent
 {
-    self.accessibilityLabel = [NSString stringWithFormat:@"Message: Photo"];
+    self.accessibilityLabel = ATLImageAccessibilityLabel;
     
     LYRMessagePart *fullResImagePart = ATLMessagePartForMIMEType(self.message, ATLMIMETypeImageJPEG);
     if (!fullResImagePart) {
         fullResImagePart = ATLMessagePartForMIMEType(self.message, ATLMIMETypeImagePNG);
     }
+
     if (fullResImagePart && ((fullResImagePart.transferStatus == LYRContentTransferAwaitingUpload) ||
                              (fullResImagePart.transferStatus == LYRContentTransferUploading))) {
         // Set self for delegation, if full resolution message part
@@ -146,10 +153,12 @@ CGFloat const ATLMessageCellHorizontalMargin = 16.0f;
     
     UIImage *displayingImage;
     LYRMessagePart *previewImagePart = ATLMessagePartForMIMEType(self.message, ATLMIMETypeImageJPEGPreview);
+    
     if (!previewImagePart) {
         // If no preview image part found, resort to the full-resolution image.
         previewImagePart = fullResImagePart;
     }
+    
     if (previewImagePart.fileURL) {
         displayingImage = [UIImage imageWithContentsOfFile:previewImagePart.fileURL.path];
     } else {
@@ -185,6 +194,73 @@ CGFloat const ATLMessageCellHorizontalMargin = 16.0f;
             self.progress = progress;
             [self.bubbleView updateProgressIndicatorWithProgress:progress.fractionCompleted visible:YES animated:NO];
         } else {
+            [self.bubbleView updateProgressIndicatorWithProgress:1.0 visible:NO animated:YES];
+        }
+    }
+    
+    [self.bubbleView updateWithImage:displayingImage width:size.width];
+}
+
+- (void)configureBubbleViewForGIFContent
+{
+    self.accessibilityLabel = ATLGIFAccessibilityLabel;
+    
+    LYRMessagePart *fullResImagePart = ATLMessagePartForMIMEType(self.message, ATLMIMETypeImageGIF);
+
+    if (fullResImagePart && ((fullResImagePart.transferStatus == LYRContentTransferAwaitingUpload) ||
+                             (fullResImagePart.transferStatus == LYRContentTransferUploading))) {
+        // Set self for delegation, if full resolution message part
+        // hasn't been uploaded yet, or is still uploading.
+        LYRProgress *progress = fullResImagePart.progress;
+        [progress setDelegate:self];
+        self.progress = progress;
+        [self.bubbleView updateProgressIndicatorWithProgress:progress.fractionCompleted visible:YES animated:NO];
+    } else {
+        [self.bubbleView updateProgressIndicatorWithProgress:1.0 visible:NO animated:YES];
+    }
+    
+    UIImage *displayingImage;
+    LYRMessagePart *previewImagePart = ATLMessagePartForMIMEType(self.message, ATLMIMETypeImageGIFPreview);
+    
+    if (!previewImagePart) {
+        // If no preview image part found, resort to the full-resolution image.
+        previewImagePart = fullResImagePart;
+    }
+    
+    if (previewImagePart.fileURL) {
+        displayingImage = ATLAnimatedImageWithAnimatedGIFURL(previewImagePart.fileURL);
+    } else {
+        displayingImage = ATLAnimatedImageWithAnimatedGIFData(previewImagePart.data);
+    }
+    
+    CGSize size = CGSizeZero;
+    LYRMessagePart *sizePart = ATLMessagePartForMIMEType(self.message, ATLMIMETypeImageSize);
+    if (sizePart) {
+        size = ATLImageSizeForJSONData(sizePart.data);
+        size = ATLConstrainImageSizeToCellSize(size);
+    }
+    if (CGSizeEqualToSize(size, CGSizeZero)) {
+        // Resort to image's size, if no dimensions metadata message parts found.
+        size = ATLImageSizeForData(fullResImagePart.data);
+    }
+    
+    // For GIFs we only download full resolution parts when rendered in the UI
+    // Low res GIFs are autodownloaded but blurry
+    if ([fullResImagePart.MIMEType isEqualToString:ATLMIMETypeImageGIF]) {
+        if (fullResImagePart && (fullResImagePart.transferStatus == LYRContentTransferReadyForDownload)) {
+            NSError *error;
+            LYRProgress *progress = [fullResImagePart downloadContent:&error];
+            if (!progress) {
+                NSLog(@"failed to request for a content download from the UI with error=%@", error);
+            }
+            [self.bubbleView updateProgressIndicatorWithProgress:0.0 visible:NO animated:NO];
+        } else if (fullResImagePart && (fullResImagePart.transferStatus == LYRContentTransferDownloading)) {
+            LYRProgress *progress = fullResImagePart.progress;
+            [progress setDelegate:self];
+            self.progress = progress;
+            [self.bubbleView updateProgressIndicatorWithProgress:progress.fractionCompleted visible:YES animated:NO];
+        } else {
+            displayingImage = ATLAnimatedImageWithAnimatedGIFData(fullResImagePart.data);
             [self.bubbleView updateProgressIndicatorWithProgress:1.0 visible:NO animated:YES];
         }
     }
@@ -302,7 +378,7 @@ CGFloat const ATLMessageCellHorizontalMargin = 16.0f;
     CGFloat height = 0;
     if ([part.MIMEType isEqualToString:ATLMIMETypeTextPlain]) {
         height = [self cellHeightForTextMessage:message inView:view];
-    } else if ([part.MIMEType isEqualToString:ATLMIMETypeImageJPEG] || [part.MIMEType isEqualToString:ATLMIMETypeImagePNG]) {
+    } else if ([part.MIMEType isEqualToString:ATLMIMETypeImageJPEG] || [part.MIMEType isEqualToString:ATLMIMETypeImagePNG] || [part.MIMEType isEqualToString:ATLMIMETypeImageGIF]) {
         height = [self cellHeightForImageMessage:message];
     } else if ([part.MIMEType isEqualToString:ATLMIMETypeLocation]) {
         height = ATLMessageBubbleMapHeight;

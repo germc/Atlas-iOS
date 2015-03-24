@@ -80,6 +80,7 @@ static CGFloat const ATLChevronIconViewRightPadding = 14.0f;
 
 NSString *const ATLImageMIMETypePlaceholderText = @"Attachment: Image";
 NSString *const ATLLocationMIMETypePlaceholderText = @"Attachment: Location";
+NSString *const ATLGIFMIMETypePlaceholderText = @"Attachment: GIF";
 
 + (void)initialize
 {
@@ -268,6 +269,8 @@ NSString *const ATLLocationMIMETypePlaceholderText = @"Attachment: Location";
         self.lastMessageLabel.text = ATLImageMIMETypePlaceholderText;
     } else if ([messagePart.MIMEType isEqualToString:ATLMIMETypeImagePNG]) {
         self.lastMessageLabel.text = ATLImageMIMETypePlaceholderText;
+    } else if ([messagePart.MIMEType isEqualToString:ATLMIMETypeImageGIF]) {
+        self.lastMessageLabel.text = ATLGIFMIMETypePlaceholderText;
     } else if ([messagePart.MIMEType isEqualToString:ATLMIMETypeLocation]) {
         self.lastMessageLabel.text = ATLLocationMIMETypePlaceholderText;
     } else {
