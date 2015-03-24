@@ -24,12 +24,16 @@
 
 /**
  @abstract Processes GIFs by finding frame count and duration and returns an auto-looping GIF
- @param data and url, which are instances of NSData and NSURL respectively
- @return Returns a UIImage instance that has a playable GIF.  Can be used with any UIImageView
+ @param data The NSData instance that should be returned as a looping GIF
+ @return Returns a UIImage instance that has a looping GIF.  Can be used with any UIImageView
  */
-
 + (UIImage *)animatedImageWithAnimatedGIFData:(NSData *)data;
 
+/**
+ @abstract Processes GIFs by finding frame count and duration and returns an auto-looping GIF
+ @param url The NSURL instance that should be returned as a looping GIF
+ @return Returns a UIImage instance that has a looping GIF.  Can be used with any UIImageView
+ */
 + (UIImage *)animatedImageWithAnimatedGIFURL:(NSURL *)url;
 
 @end

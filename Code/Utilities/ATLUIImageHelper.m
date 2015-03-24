@@ -62,12 +62,14 @@ static int ATLSum(size_t const count, int const *const values)
 
 static int ATLPairGCD(int duration, int gcd)
 {
-    if (duration < gcd)
+    if (duration < gcd) {
         return ATLPairGCD(gcd, duration);
+    }
     while (true) {
         int const r = duration % gcd;
-        if (r == 0)
+        if (r == 0) {
             return gcd;
+        }
         duration = gcd;
         gcd = r;
     }
@@ -135,7 +137,8 @@ static UIImage *ATLAnimatedImageWithAnimatedGIFReleasingImageSource(CGImageSourc
     return ATLAnimatedImageWithAnimatedGIFReleasingImageSource(CGImageSourceCreateWithData(toCF data, NULL));
 }
 
-+ (UIImage *)animatedImageWithAnimatedGIFURL:(NSURL *)url {
++ (UIImage *)animatedImageWithAnimatedGIFURL:(NSURL *)url
+{
     return ATLAnimatedImageWithAnimatedGIFReleasingImageSource(CGImageSourceCreateWithURL(toCF url, NULL));
 }
 
