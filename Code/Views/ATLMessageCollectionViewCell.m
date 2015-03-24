@@ -152,14 +152,28 @@ CGFloat const ATLMessageCellHorizontalMargin = 16.0f;
     
     UIImage *displayingImage;
     LYRMessagePart *previewImagePart = ATLMessagePartForMIMEType(self.message, ATLMIMETypeImageJPEGPreview);
+    
+    if (!previewImagePart) {
+        previewImagePart = ATLMessagePartForMIMEType(self.message, ATLMIMETypeImageGIFPreview);
+    }
+    
     if (!previewImagePart) {
         // If no preview image part found, resort to the full-resolution image.
         previewImagePart = fullResImagePart;
     }
-    if (previewImagePart.fileURL) {
-        displayingImage = [UIImage imageWithContentsOfFile:previewImagePart.fileURL.path];
+    
+    if ([previewImagePart.MIMEType isEqualToString:ATLMIMETypeImageGIFPreview]) {
+        if (previewImagePart.fileURL) {
+            displayingImage = [ATLUIImageHelper animatedImageWithAnimatedGIFURL:previewImagePart.fileURL];
+        } else {
+            displayingImage = [ATLUIImageHelper animatedImageWithAnimatedGIFData:previewImagePart.data];
+        }
     } else {
-        displayingImage = [UIImage imageWithData:previewImagePart.data];
+        if (previewImagePart.fileURL) {
+            displayingImage = [UIImage imageWithContentsOfFile:previewImagePart.fileURL.path];
+        } else {
+            displayingImage = [UIImage imageWithData:previewImagePart.data];
+        }
     }
     
     CGSize size = CGSizeZero;
@@ -195,28 +209,25 @@ CGFloat const ATLMessageCellHorizontalMargin = 16.0f;
         }
     }
     
-//    if ([fullResImagePart.MIMEType isEqualToString:ATLMIMETypeImageGIF]) {
-//        if (fullResImagePart && (fullResImagePart.transferStatus == LYRContentTransferReadyForDownload)) {
-//            NSError *error;
-//            LYRProgress *progress = [fullResImagePart downloadContent:&error];
-//            if (!progress) {
-//                NSLog(@"failed to request for a content download from the UI with error=%@", error);
-//            }
-//            [self.bubbleView updateProgressIndicatorWithProgress:0.0 visible:NO animated:NO];
-//        } else if (fullResImagePart && (fullResImagePart.transferStatus == LYRContentTransferDownloading)) {
-//            // Set self for delegation, if single image message part message
-//            // hasn't been downloaded yet, or is still downloading.
-//            LYRProgress *progress = fullResImagePart.progress;
-//            [progress setDelegate:self];
-//            self.progress = progress;
-//            [self.bubbleView updateProgressIndicatorWithProgress:progress.fractionCompleted visible:YES animated:NO];
-//        } else {
-//            [self.bubbleView updateProgressIndicatorWithProgress:1.0 visible:NO animated:YES];
-//        }
-//    }
-    
-    if (fullResImagePart.data) {
-        displayingImage = [ATLUIImageHelper animatedImageWithAnimatedGIFData:fullResImagePart.data];
+    //For GIFs we only download full resolution parts when rendered on the UI
+    //Low res GIFs are autodownloaded but blurry
+    if ([fullResImagePart.MIMEType isEqualToString:ATLMIMETypeImageGIF]) {
+        if (fullResImagePart && (fullResImagePart.transferStatus == LYRContentTransferReadyForDownload)) {
+            NSError *error;
+            LYRProgress *progress = [fullResImagePart downloadContent:&error];
+            if (!progress) {
+                NSLog(@"failed to request for a content download from the UI with error=%@", error);
+            }
+            [self.bubbleView updateProgressIndicatorWithProgress:0.0 visible:NO animated:NO];
+        } else if (fullResImagePart && (fullResImagePart.transferStatus == LYRContentTransferDownloading)) {
+            LYRProgress *progress = fullResImagePart.progress;
+            [progress setDelegate:self];
+            self.progress = progress;
+            [self.bubbleView updateProgressIndicatorWithProgress:progress.fractionCompleted visible:YES animated:NO];
+        } else {
+            displayingImage = [ATLUIImageHelper animatedImageWithAnimatedGIFData:fullResImagePart.data];
+            [self.bubbleView updateProgressIndicatorWithProgress:1.0 visible:NO animated:YES];
+        }
     }
     
     [self.bubbleView updateWithImage:displayingImage width:size.width];
