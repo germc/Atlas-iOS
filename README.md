@@ -205,19 +205,6 @@ The [ATLParticipantTableViewController](Code/Controllers/ATLParticipantTableView
 [[ATLParticipantTableViewCell appearance] setTitleFont:[UIFont systemFontOfSize:14]];
 ```
 
-### [ATLMessageInputToolbar](Code/Views/ATLMessageInputToolbar.h)
-
-The [ATLMessageInputToolbar](Code/Views/ATLMessageInputToolbar.h) provides a `UIToolbar` subclass that supports text and image input. The toolbar handles auto-resizing itself relative to its content.
-
-#### Initialization
-
-The [ATLMessageInputToolbar](Code/Views/ATLMessageInputToolbar.h) is initialized with a `UIViewController` object and sets itself as the inputAccessoryView of the ViewController. In order to do this, the `inputAcccessoryView` property of the view controller must first be re-declared in the implementation file of the view controller class.
-
-```
-self.inputAccessoryView = [ATLMessageInputToolbar inputToolBarWithViewController:self];
-```
-Once initialized, the controller manages resizing itself relative to its content, and animation so that it sticks to the top of the keyboard.
-
 ### Presenters
 
 While the Atlas does provide highly customizable TableView and CollectionView cells, advanced customization of the UI components can be done by implementing custom cells and setting the component's `cellClass` property. The Atlas component CollectionView and TableView Cells share a common Presenter pattern where each cell displayed in a Component conforms to a specific presenter protocol. If you would like to swap out the default cells for cells that you build, this can easily accomplished via implementing cells that conform to the presenter patterns and setting the `cellClass` property of the controller.
