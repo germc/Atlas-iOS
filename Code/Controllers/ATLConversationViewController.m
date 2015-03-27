@@ -897,6 +897,17 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
     return nil;
 }
 
+- (void)reloadCellForMessage:(LYRMessage *)message
+{
+    NSIndexPath *indexPath = [self.conversationDataSource.queryController indexPathForObject:message];
+    if (indexPath) {
+        NSIndexPath *collectionViewIndexPath = [self.conversationDataSource collectionViewIndexPathForQueryControllerIndexPath:indexPath];
+        if (collectionViewIndexPath) {
+            [self.collectionView reloadItemsAtIndexPaths:@[ collectionViewIndexPath ]];
+        }
+    }
+}
+
 #pragma mark - Delegate
 
 - (void)notifyDelegateOfMessageSend:(LYRMessage *)message

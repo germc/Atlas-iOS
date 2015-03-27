@@ -116,9 +116,9 @@
  */
 @interface ATLConversationListViewController : UITableViewController
 
-///---------------------------------------
-/// @name Initializing a Controller
-///---------------------------------------
+///-------------------------------------------------------
+/// @name Initializing a Conversation List View Controller
+///-------------------------------------------------------
 
 /**
  @abstract Creates and returns a new conversation list initialized with a given `LYRClient` object.
@@ -126,6 +126,10 @@
  @return An `LYRConversationListViewController` object.
  */
 + (instancetype)conversationListViewControllerWithLayerClient:(LYRClient *)layerClient;
+
+///-------------------------------------------------------
+/// @name Configuring Layer Client, Delegate & Data Source
+///-------------------------------------------------------
 
 /**
  @abstract The `LYRClient` object used to initialize the controller. 
@@ -146,7 +150,7 @@
 @property (nonatomic, weak) id<ATLConversationListViewControllerDataSource> dataSource;
 
 ///----------------------------------------
-/// @name Configuration
+/// @name Configuring the Conversation List
 ///----------------------------------------
 
 /**
@@ -190,5 +194,15 @@
  @raises NSInternalInconsistencyException Raised if the value is mutated after the receiver has been presented.
  */
 @property (nonatomic, assign) CGFloat rowHeight;
+
+///------------------------------
+/// @name Reloading Conversations
+///------------------------------
+
+/**
+ @abstract Reloads the cell for the given Conversation.
+ @param conversation The Conversation object to reload the corresponding cell of. Cannot be `nil`.
+ */
+- (void)reloadCellForConversation:(LYRConversation *)conversation;
 
 @end

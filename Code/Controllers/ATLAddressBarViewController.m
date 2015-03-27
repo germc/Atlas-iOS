@@ -130,6 +130,11 @@ static NSString *const ATLAddressBarParticipantAttributeName = @"ATLAddressBarPa
     [self searchEnded];
 }
 
+- (void)reloadView
+{
+    [self.tableView reloadData];
+}
+
 #pragma mark - UITableViewDataSource
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -144,7 +149,7 @@ static NSString *const ATLAddressBarParticipantAttributeName = @"ATLAddressBarPa
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell *cell =[tableView dequeueReusableCellWithIdentifier:ATLMParticpantCellIdentifier];
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:ATLMParticpantCellIdentifier];
     id<ATLParticipant> participant = self.participants[indexPath.row];
     cell.textLabel.text = participant.fullName;
     cell.textLabel.font = ATLMediumFont(16);

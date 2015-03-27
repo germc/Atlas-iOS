@@ -201,14 +201,20 @@
 - (UICollectionViewCell<ATLMessagePresenting> *)collectionViewCellForMessage:(LYRMessage *)message;
 
 /**
+ @abstract Reloads the cell for the given Message.
+ @param message The Message object to reload the corresponding cell of. Cannot be `nil`.
+ */
+- (void)reloadCellForMessage:(LYRMessage *)message;
+
+/**
  @abstract Informs the reciever that it should send a message with the current location of the device.
  @discussion The controller manages updating the current location of the device and sending a message with an `ATLMIMETypeLocation` MIMEType.
  */
 - (void)sendLocationMessage;
 
-///---------------------------------------
-/// @name Configuration
-///---------------------------------------
+///---------------------------
+/// @name Configuring Behavior
+///---------------------------
 
 /**
  @abstract The time interval at which message dates should be displayed in seconds. Default is 60 minutes meaning that
