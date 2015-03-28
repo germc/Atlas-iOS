@@ -1,7 +1,20 @@
 # Atlas Changelog
 
-## 1.0.2
+## 1.0.3
+
+### Enhancements
+
+* Introduced new functionality to facilitate reloading content after asynchronous reloads of user information.
+
 ### Public API Changes
+
+* Added `reloadCellsForMessagesSentByParticipantWithIdentitifier:` to `ATLConversationViewController`.
+* Removed `collectionViewCellForMessage:` from `ATLConversationViewController`.
+
+## 1.0.2
+
+### Public API Changes
+
 * Added `conversationListViewController:textForButtonWithDeletionMode:` to `ATLConversationListViewController`
 * Added `conversationListViewController:colorForButtonWithDeletionMode:` to `ATLConversationListViewController`
  		
