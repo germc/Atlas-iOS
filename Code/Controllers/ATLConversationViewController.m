@@ -45,7 +45,6 @@
 @property (nonatomic) ATLLocationManager *locationManager;
 @property (nonatomic) BOOL shouldShareLocation;
 @property (nonatomic) BOOL canDisableAddressBar;
-@property (nonatomic) LYRMessage *sentMessage;
 
 @end
 
@@ -122,7 +121,6 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
         [self fetchLayerMessages];
     }
     [self configureControllerForConversation];
-    
     self.messageInputToolbar.inputToolBarDelegate = self;
     self.addressBarController.delegate = self;
     self.canDisableAddressBar = YES;
@@ -136,6 +134,7 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
         [self.addressBarController disable];
         [self configureAddressBarForConversation];
     }
+    
     self.canDisableAddressBar = YES;
     if (!self.hasAppeared) {
         [self.collectionView layoutIfNeeded];
@@ -526,19 +525,9 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
 {
     NSMutableOrderedSet *messages = [NSMutableOrderedSet new];
     for (ATLMediaAttachment *attachment in mediaAttachments){
-        if ([attachment.textRepresentation containsString:@"send:"]) {
-            NSString *string = [attachment.textRepresentation substringFromIndex:5];
-            NSUInteger count = [string integerValue];
-            for (int i = 0; i < count; i++) {
-                LYRMessagePart *part = [LYRMessagePart messagePartWithText:@"gift"];
-                LYRMessage *message = [self messageForMessageParts:@[part] pushText:attachment.textRepresentation];
-                if (message)[messages addObject:message];
-            }
-        } else {
-            NSArray *messageParts = ATLMessagePartsWithMediaAttachment(attachment);
-            LYRMessage *message = [self messageForMessageParts:messageParts pushText:attachment.textRepresentation];
-            if (message)[messages addObject:message];
-        }
+        NSArray *messageParts = ATLMessagePartsWithMediaAttachment(attachment);
+        LYRMessage *message = [self messageForMessageParts:messageParts pushText:attachment.textRepresentation];
+        if (message)[messages addObject:message];
     }
     return messages;
 }
@@ -558,8 +547,6 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
 
 - (void)sendMessage:(LYRMessage *)message
 {
-    self.sentMessage = message;
-    NSLog(@"Sending message %f", [NSDate timeIntervalSinceReferenceDate]);
     NSError *error;
     BOOL success = [self.conversation sendMessage:message error:&error];
     if (success) {
@@ -714,19 +701,11 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
     
     NSArray *changes = notification.userInfo[LYRClientObjectChangesUserInfoKey];
     for (NSDictionary *change in changes) {
-        id changedObject = change[LYRObjectChangeObjectKey];
         LYRObjectChangeType changeType = [change[LYRObjectChangeTypeKey] integerValue];
         NSString *changedProperty = change[LYRObjectChangePropertyKey];
-        if ([changedObject isEqual:self.conversation]) {
-            if (changeType == LYRObjectChangeTypeUpdate && [changedProperty isEqualToString:@"participants"]) {
-                [self configureControllerForChangedParticipants];
-                break;
-            }
-        } else {
-            LYRMessage *message = (LYRMessage *)changedObject;
-            if (changeType == LYRObjectChangeTypeUpdate && [changedProperty isEqualToString:@"isSent"] && self.sentMessage.identifier == message.identifier) {
-                NSLog(@"Is Sent Updated %f", [NSDate timeIntervalSinceReferenceDate]);
-            }
+        if (changeType == LYRObjectChangeTypeUpdate && [changedProperty isEqualToString:@"participants"]) {
+            [self configureControllerForChangedParticipants];
+            break;
         }
     }
 }

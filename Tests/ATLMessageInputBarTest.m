@@ -34,6 +34,7 @@
 
 @property (nonatomic) ATLTestInterface *testInterface;
 @property (nonatomic) ATLSampleConversationViewController *viewController;
+@property (nonatomic) LYRConversation *conversation;
 
 @end
 
@@ -55,11 +56,7 @@ extern NSString *const ATLMessageInputToolbarSendButton;
     self.testInterface = [ATLTestInterface testIntefaceWithLayerClient:layerClient];
     
     ATLUserMock *mockUser1 = [ATLUserMock userWithMockUserName:ATLMockUserNameKlemen];
-    LYRConversationMock *conversation1 = [self.testInterface conversationWithParticipants:[NSSet setWithObject:mockUser1.participantIdentifier] lastMessageText:nil];
-    
-    self.viewController = [ATLSampleConversationViewController conversationViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];
-    self.viewController.conversation = (LYRConversation *)conversation1;
-    [self setRootViewController:self.viewController];
+    self.conversation = (LYRConversation *)[self.testInterface conversationWithParticipants:[NSSet setWithObject:mockUser1.participantIdentifier] lastMessageText:nil];
 }
 
 - (void)tearDown
@@ -72,6 +69,7 @@ extern NSString *const ATLMessageInputToolbarSendButton;
 
 - (void)testToVerifyMessageInputToolbarUI
 {
+    [self setRootViewController];
     [tester waitForViewWithAccessibilityLabel:ATLMessageInputToolbarCameraButton];
     [tester waitForViewWithAccessibilityLabel:ATLMessageInputToolbarTextInputView];
     [tester waitForViewWithAccessibilityLabel:ATLMessageInputToolbarLocationButton];
@@ -80,6 +78,7 @@ extern NSString *const ATLMessageInputToolbarSendButton;
 
 - (void)testToVerifyToVerifyTextChangesLocationButtonToSendButton
 {
+    [self setRootViewController];
     [tester waitForViewWithAccessibilityLabel:ATLMessageInputToolbarAccessibilityLabel];
     [tester waitForViewWithAccessibilityLabel:ATLMessageInputToolbarLocationButton];
     [tester enterText:@"A" intoViewWithAccessibilityLabel:ATLMessageInputToolbarTextInputView];
@@ -94,6 +93,7 @@ extern NSString *const ATLMessageInputToolbarSendButton;
 
 - (void)testToVerifyRightAccessoryButtonDelegateFunctionality
 {
+    [self setRootViewController];
     ATLMessageInputToolbar *toolBar = (ATLMessageInputToolbar *)[tester waitForViewWithAccessibilityLabel:ATLMessageInputToolbarAccessibilityLabel];
     id delegateMock = OCMProtocolMock(@protocol(ATLMessageInputToolbarDelegate));
     toolBar.inputToolBarDelegate = delegateMock;
@@ -110,6 +110,7 @@ extern NSString *const ATLMessageInputToolbarSendButton;
 
 - (void)testToVerifyLeftAccessoryButtonDelegateFunctionality
 {
+    [self setRootViewController];
     ATLMessageInputToolbar *toolBar = (ATLMessageInputToolbar *)[tester waitForViewWithAccessibilityLabel:ATLMessageInputToolbarAccessibilityLabel];
     id delegateMock = OCMProtocolMock(@protocol(ATLMessageInputToolbarDelegate));
     toolBar.inputToolBarDelegate = delegateMock;
@@ -126,6 +127,7 @@ extern NSString *const ATLMessageInputToolbarSendButton;
 
 - (void)testToVerifyMessageEnteredIsConsitentWithMessageToBeSent
 {
+    [self setRootViewController];
     ATLMessageInputToolbar *toolBar = (ATLMessageInputToolbar *)[tester waitForViewWithAccessibilityLabel:ATLMessageInputToolbarAccessibilityLabel];
     id delegateMock = OCMProtocolMock(@protocol(ATLMessageInputToolbarDelegate));
     toolBar.inputToolBarDelegate = delegateMock;
@@ -148,6 +150,7 @@ extern NSString *const ATLMessageInputToolbarSendButton;
 
 - (void)testToVerifyButtonEnablement
 {
+    [self setRootViewController];
     ATLMessageInputToolbar *toolBar = (ATLMessageInputToolbar *)[tester waitForViewWithAccessibilityLabel:ATLMessageInputToolbarAccessibilityLabel];
     expect(toolBar.rightAccessoryButton.highlighted).to.beTruthy;
     expect(toolBar.rightAccessoryButton.enabled).to.beTruthy;
@@ -158,6 +161,7 @@ extern NSString *const ATLMessageInputToolbarSendButton;
 
 - (void)testToVerifyTextEnterendDoesNotEnableButtons
 {
+    [self setRootViewController];
     self.viewController.conversation = nil;
     
     ATLMessageInputToolbar *toolBar = (ATLMessageInputToolbar *)[tester waitForViewWithAccessibilityLabel:ATLMessageInputToolbarAccessibilityLabel];
@@ -174,6 +178,7 @@ extern NSString *const ATLMessageInputToolbarSendButton;
 
 - (void)testToVerifySendingMessageWithPhoto
 {
+    [self setRootViewController];
     ATLMessageInputToolbar *toolBar = self.viewController.messageInputToolbar;
     id delegateMock = OCMProtocolMock(@protocol(ATLMessageInputToolbarDelegate));
     toolBar.inputToolBarDelegate = delegateMock;
@@ -201,6 +206,7 @@ extern NSString *const ATLMessageInputToolbarSendButton;
 
 - (void)testToVerifySending1LineOfTextWith2Photos
 {
+    [self setRootViewController];
     ATLMessageInputToolbar *toolBar = (ATLMessageInputToolbar *)[tester waitForViewWithAccessibilityLabel:@"Message Input Toolbar"];
     id delegateMock = OCMProtocolMock(@protocol(ATLMessageInputToolbarDelegate));
     toolBar.inputToolBarDelegate = delegateMock;
@@ -225,6 +231,7 @@ extern NSString *const ATLMessageInputToolbarSendButton;
 
 - (void)testToVerifySending5Photos
 {
+    [self setRootViewController];
     ATLMessageInputToolbar *toolBar = (ATLMessageInputToolbar *)[tester waitForViewWithAccessibilityLabel:@"Message Input Toolbar"];
     id delegateMock = OCMProtocolMock(@protocol(ATLMessageInputToolbarDelegate));
     toolBar.inputToolBarDelegate = delegateMock;
@@ -253,6 +260,7 @@ extern NSString *const ATLMessageInputToolbarSendButton;
 
 - (void)testToVerifyHeightOfInputBarIsCapped
 {
+    [self setRootViewController];
     ATLMessageInputToolbar *toolBar = (ATLMessageInputToolbar *)[tester waitForViewWithAccessibilityLabel:@"Message Input Toolbar"];
     CGFloat toolbarHeight = toolBar.frame.size.height;
     CGFloat toolbarNewHeight;
@@ -282,6 +290,7 @@ extern NSString *const ATLMessageInputToolbarSendButton;
 
 - (void)testToVerifySelectingAndRemovingAnImageKeepsFontConsistent
 {
+    [self setRootViewController];
     ATLMessageInputToolbar *toolBar = (ATLMessageInputToolbar *)[tester waitForViewWithAccessibilityLabel:@"Message Input Toolbar"];
     UIFont *font = toolBar.textInputView.font;
     
@@ -293,9 +302,47 @@ extern NSString *const ATLMessageInputToolbarSendButton;
     expect(font).to.equal(toolBar.textInputView.font);
 }
 
-- (void)setRootViewController:(UIViewController *)controller
+- (void)testToVerifyRightAcccessoryButtonEnablementWithImage
 {
-    [self.testInterface presentViewController:controller];
+    [self setRootViewController];
+    ATLMessageInputToolbar *toolBar = (ATLMessageInputToolbar *)[tester waitForViewWithAccessibilityLabel:@"Message Input Toolbar"];
+    UIImage *image = [UIImage imageNamed:@"test-logo"];
+    toolBar.rightAccessoryImage = image;
+    expect(toolBar.rightAccessoryButton.imageView.image).to.equal(image);
+    expect(toolBar.rightAccessoryButton.enabled).to.beTruthy();
+}
+
+- (void)testToVerifyRightAcccessoryButtonEnablementWithoutImage
+{
+    [self setRootViewController];
+    ATLMessageInputToolbar *toolBar = (ATLMessageInputToolbar *)[tester waitForViewWithAccessibilityLabel:@"Message Input Toolbar"];
+    toolBar.displaysRightAccessoryImage = NO;
+    
+    [tester enterText:@"test" intoViewWithAccessibilityLabel:ATLMessageInputToolbarTextInputView];
+    expect(toolBar.rightAccessoryButton.enabled).to.beTruthy();
+    
+    [tester clearTextFromViewWithAccessibilityLabel:ATLMessageInputToolbarTextInputView];
+    expect(toolBar.rightAccessoryButton.enabled).to.beFalsy();
+}
+
+- (void)testToVerifyCustomAccessoryButtonImages
+{
+    [self setRootViewController];
+    ATLMessageInputToolbar *toolBar = (ATLMessageInputToolbar *)[tester waitForViewWithAccessibilityLabel:@"Message Input Toolbar"];
+    UIImage *image = [UIImage imageNamed:@"test-logo"];
+    toolBar.rightAccessoryImage = image;
+    toolBar.leftAccessoryImage = image;
+    
+    expect(toolBar.rightAccessoryButton.imageView.image).to.equal(image);
+    expect(toolBar.leftAccessoryButton.imageView.image).to.equal(image);
+}
+
+- (void)setRootViewController
+{
+    self.viewController = [ATLSampleConversationViewController conversationViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];
+    self.viewController.conversation = self.conversation;
+    
+    [self.testInterface presentViewController:self.viewController];
     [tester waitForTimeInterval:1];
 }
 

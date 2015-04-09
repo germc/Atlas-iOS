@@ -96,27 +96,6 @@ extern NSString *const ATLMessageInputToolbarSendButton;
     [self sendPhotoMessage];
 }
 
-- (void)testToVerifyCorrectCellIsReturnedForMessage
-{
-    LYRMessagePartMock *messagePart1 = [LYRMessagePartMock messagePartWithText:@"How are you1?"];
-    LYRMessageMock *message1 = [self.testInterface.layerClient newMessageWithParts:@[messagePart1] options:nil error:nil];
-    [self.conversation sendMessage:message1 error:nil];
-    
-    LYRMessagePartMock *messagePart2 = [LYRMessagePartMock messagePartWithText:@"How are you2?"];
-    LYRMessageMock *message2 = [self.testInterface.layerClient newMessageWithParts:@[messagePart2] options:nil error:nil];
-    [self.conversation sendMessage:message2 error:nil];
-
-    LYRMessagePartMock *messagePart3 = [LYRMessagePartMock messagePartWithText:@"How are you3?"];
-    LYRMessageMock *message3 = [self.testInterface.layerClient newMessageWithParts:@[messagePart3] options:nil error:nil];
-    [self.conversation sendMessage:message3 error:nil];
-
-    [self setupConversationViewController];
-    [self setRootViewController:self.viewController];
-    id cell = [self.viewController collectionViewCellForMessage:(LYRMessage *)message3];
-    expect([cell class]).to.beSubclassOf([ATLMessageCollectionViewCell class]);
-    expect([cell accessibilityLabel]).to.equal(@"Message: How are you3?");
-}
-
 #pragma mark - ATLConversationViewControllerDelegate
 
 //- (void)conversationViewController:(ATLConversationViewController *)viewController didSendMessage:(LYRMessage *)message;
@@ -339,7 +318,7 @@ extern NSString *const ATLMessageInputToolbarSendButton;
     expect(error).to.beNil;
     [self.conversation sendMessage:message error:&error];
     expect(error).to.beNil;
-    [tester waitForViewWithAccessibilityLabel:[NSString stringWithFormat:@"Message: Photo"]];
+    [tester waitForViewWithAccessibilityLabel:[NSString stringWithFormat:@"Message: Image"]];
 }
 
 - (void)setRootViewController:(UIViewController *)controller

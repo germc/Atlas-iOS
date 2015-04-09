@@ -63,7 +63,7 @@ static CGFloat const ATLButtonHeight = 28.0f;
         
         self.leftAccessoryImage = [UIImage imageNamed:@"AtlasResource.bundle/camera_dark"];
         self.rightAccessoryImage = [UIImage imageNamed:@"AtlasResource.bundle/location_dark"];
-        self.displaysRightAccessoryImage = NO;
+        self.displaysRightAccessoryImage = YES;
         self.firstAppearance = YES;
         
         self.leftAccessoryButton = [[UIButton alloc] init];
@@ -82,7 +82,6 @@ static CGFloat const ATLButtonHeight = 28.0f;
         [self addSubview:self.textInputView];
         
         self.rightAccessoryButton = [[UIButton alloc] init];
-        self.rightAccessoryButton.enabled = NO;
         [self.rightAccessoryButton addTarget:self action:@selector(rightAccessoryButtonTapped) forControlEvents:UIControlEventTouchUpInside];
         [self addSubview:self.rightAccessoryButton];
         [self configureRightAccessoryButtonState];
@@ -99,7 +98,7 @@ static CGFloat const ATLButtonHeight = 28.0f;
     [super layoutSubviews];
     
     if (self.firstAppearance) {
-        self.rightAccessoryButton.enabled = NO;
+        [self configureRightAccessoryButtonState];
         self.firstAppearance = NO;
     }
     
@@ -252,10 +251,8 @@ static CGFloat const ATLButtonHeight = 28.0f;
     }
     
     if (textView.text.length > 0 && [self.inputToolBarDelegate respondsToSelector:@selector(messageInputToolbarDidType:)]) {
-        self.rightAccessoryButton.enabled = YES;
         [self.inputToolBarDelegate messageInputToolbarDidType:self];
     } else if (textView.text.length == 0 && [self.inputToolBarDelegate respondsToSelector:@selector(messageInputToolbarDidEndTyping:)]) {
-        self.rightAccessoryButton.enabled = NO;
         [self.inputToolBarDelegate messageInputToolbarDidEndTyping:self];
     }
 
@@ -327,20 +324,38 @@ static CGFloat const ATLButtonHeight = 28.0f;
 
 - (void)configureRightAccessoryButtonState
 {
-    if (self.textInputView.text.length || !self.displaysRightAccessoryImage) {
-        self.rightAccessoryButton.accessibilityLabel = ATLMessageInputToolbarSendButton;
-        [self.rightAccessoryButton setImage:nil forState:UIControlStateNormal];
-        self.rightAccessoryButton.contentEdgeInsets = UIEdgeInsetsMake(2, 0, 0, 0);
-        self.rightAccessoryButton.titleLabel.font = [UIFont boldSystemFontOfSize:17];
-        [self.rightAccessoryButton setTitle:@"Send" forState:UIControlStateNormal];
-        [self.rightAccessoryButton setTitleColor:ATLBlueColor() forState:UIControlStateNormal];
-        [self.rightAccessoryButton setTitleColor:[UIColor grayColor] forState:UIControlStateDisabled];
+    if (self.textInputView.text.length) {
+        [self configureRightAccessoryButtonForText];
+        self.rightAccessoryButton.enabled = YES;
     } else {
-        self.rightAccessoryButton.accessibilityLabel = ATLMessageInputToolbarLocationButton;
-        [self.rightAccessoryButton setTitle:nil forState:UIControlStateNormal];
-        self.rightAccessoryButton.contentEdgeInsets = UIEdgeInsetsZero;
-        [self.rightAccessoryButton setImage:self.rightAccessoryImage forState:UIControlStateNormal];
+        if (self.displaysRightAccessoryImage) {
+            [self configureRightAccessoryButtonForImage];
+            self.rightAccessoryButton.enabled = YES;
+        } else {
+            [self configureRightAccessoryButtonForText];
+            self.rightAccessoryButton.enabled = NO;
+        }
     }
+}
+
+- (void)configureRightAccessoryButtonForText
+{
+    self.rightAccessoryButton.accessibilityLabel = ATLMessageInputToolbarSendButton;
+    [self.rightAccessoryButton setImage:nil forState:UIControlStateNormal];
+    self.rightAccessoryButton.contentEdgeInsets = UIEdgeInsetsMake(2, 0, 0, 0);
+    self.rightAccessoryButton.titleLabel.font = [UIFont boldSystemFontOfSize:17];
+    [self.rightAccessoryButton setTitle:@"Send" forState:UIControlStateNormal];
+    [self.rightAccessoryButton setTitleColor:ATLBlueColor() forState:UIControlStateNormal];
+    [self.rightAccessoryButton setTitleColor:[UIColor grayColor] forState:UIControlStateDisabled];
+}
+
+- (void)configureRightAccessoryButtonForImage
+{
+    self.rightAccessoryButton.enabled = YES;
+    self.rightAccessoryButton.accessibilityLabel = ATLMessageInputToolbarLocationButton;
+    self.rightAccessoryButton.contentEdgeInsets = UIEdgeInsetsZero;
+    [self.rightAccessoryButton setTitle:nil forState:UIControlStateNormal];
+    [self.rightAccessoryButton setImage:self.rightAccessoryImage forState:UIControlStateNormal];
 }
 
 

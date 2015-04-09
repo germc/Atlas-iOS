@@ -45,6 +45,7 @@
 {
     [super viewWillAppear:animated];
     [self.tableView reloadData];
+    self.searchBar = nil;
 }
 
 - (void)handleNewTap
