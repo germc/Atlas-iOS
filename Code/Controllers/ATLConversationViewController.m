@@ -701,6 +701,10 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
     
     NSArray *changes = notification.userInfo[LYRClientObjectChangesUserInfoKey];
     for (NSDictionary *change in changes) {
+        
+        id changedObject = change[LYRObjectChangeObjectKey];
+        if (![changedObject isEqual:self.conversation]) continue;
+        
         LYRObjectChangeType changeType = [change[LYRObjectChangeTypeKey] integerValue];
         NSString *changedProperty = change[LYRObjectChangePropertyKey];
         if (changeType == LYRObjectChangeTypeUpdate && [changedProperty isEqualToString:@"participants"]) {
