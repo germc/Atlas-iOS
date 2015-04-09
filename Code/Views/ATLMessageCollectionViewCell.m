@@ -229,7 +229,7 @@ CGFloat const ATLMessageCellHorizontalMargin = 16.0f;
     
     if (previewImagePart.fileURL) {
         displayingImage = ATLAnimatedImageWithAnimatedGIFURL(previewImagePart.fileURL);
-    } else {
+    } else if (previewImagePart.data) {
         displayingImage = ATLAnimatedImageWithAnimatedGIFData(previewImagePart.data);
     }
     

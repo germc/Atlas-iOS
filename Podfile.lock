@@ -2,9 +2,9 @@ PODS:
   - Atlas (1.0.3):
     - LayerKit (>= 0.11.2)
   - Expecta (0.3.2)
-  - KIF (3.2.0):
-    - KIF/XCTest (= 3.2.0)
-  - KIF/XCTest (3.2.0)
+  - KIF (3.2.1):
+    - KIF/XCTest (= 3.2.1)
+  - KIF/XCTest (3.2.1)
   - KIFViewControllerActions (1.0.0):
     - KIF (>= 2.0.0)
   - LayerKit (0.11.2)
@@ -38,11 +38,11 @@ CHECKOUT OPTIONS:
 
 SPEC CHECKSUMS:
   Atlas: 2604bed303e97b19384bef7b276d37910b294b69
-  Expecta: ee641011fe10aa1855d487b40e4976dac50ec342
-  KIF: 6f94a23566fd05b809f5d3bc5231a965b51121b9
+  Expecta: 8c507baf13211207b1e9d0a741480600e6b4ed15
+  KIF: ef1691e54e1d969c3b4fd0b5b56a3d7ddf37f216
   KIFViewControllerActions: 73085acd975ebbfc954f7895ca1aaa9faa36b3c6
   LayerKit: 3546568785140970c3405d686a61af50260d6d48
   LYRCountDownLatch: 72a444f729ca5a8c6157c0b58f335a44e6702b48
-  OCMock: ecdd510b73ef397f2f97274785c1e87fd147c49f
+  OCMock: a10ea9f0a6e921651f96f78b6faee95ebc813b92
 
 COCOAPODS: 0.36.0
