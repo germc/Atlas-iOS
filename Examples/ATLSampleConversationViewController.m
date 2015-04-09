@@ -36,7 +36,7 @@
     [super viewDidLoad];
     self.dataSource = self;
     self.addressBarController.delegate = self;
-  
+    
     // Setup the dateformatter used by the dataSource.
     self.dateFormatter = [[NSDateFormatter alloc] init];
     self.dateFormatter.dateStyle = NSDateFormatterShortStyle;

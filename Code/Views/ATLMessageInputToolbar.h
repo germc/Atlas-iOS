@@ -101,6 +101,25 @@ extern NSString *const ATLMessageInputToolbarAccessibilityLabel;
 @property (nonatomic) UIButton *rightAccessoryButton;
 
 /**
+ @abstract The image displayed on left accessory button.
+ @default A `camera` icon.
+ */
+@property (nonatomic) UIImage *leftAccessoryImage;
+
+/**
+ @abstract The image displayed on right accessory button.
+ @default A `location` icon.
+ */
+@property (nonatomic) UIImage *rightAccessoryImage;
+
+/**
+ @abstract Determines whether or not the right accessory button displays an icon. 
+ @disucssion If NO, the right accessory button will display the text `SEND` at all times.
+ @default YES
+ */
+@property(nonatomic) BOOL displaysRightAccessoryImage;
+
+/**
  @abstract An automatically resizing message composition field.
  */
 @property (nonatomic) ATLMessageComposeTextView *textInputView;
