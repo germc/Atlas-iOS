@@ -23,12 +23,14 @@
 
 static NSString *const ATLConversationCellReuseIdentifier = @"ATLConversationCellReuseIdentifier";
 
-@interface ATLConversationListViewController () <UIActionSheetDelegate, LYRQueryControllerDelegate>
+@interface ATLConversationListViewController () <UIActionSheetDelegate, LYRQueryControllerDelegate, UISearchBarDelegate, UISearchControllerDelegate, UISearchDisplayDelegate>
 
 @property (nonatomic) LYRQueryController *queryController;
 @property (nonatomic) LYRQueryController *searchQueryController;
 @property (nonatomic) LYRConversation *conversationToDelete;
 @property (nonatomic) LYRConversation *conversationSelectedBeforeContentChange;
+@property (nonatomic, readwrite) UISearchDisplayController *searchController;
+@property (nonatomic) UISearchBar *searchBar;
 @property (nonatomic) BOOL hasAppeared;
 
 @end
@@ -195,22 +197,6 @@ NSString *const ATLConversationTableViewAccessibilityIdentifier = @"Conversation
         @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Cannot change row height after the view has been presented" userInfo:nil];
     }
     _rowHeight = rowHeight;
-}
-
-- (void)setSearchBar:(UISearchBar *)searchBar
-{
-    if (self.hasAppeared) {
-        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Cannot change override search bar after the view has been presented" userInfo:nil];
-    }
-    _searchBar = searchBar;
-}
-
-- (void)setSearchController:(UISearchDisplayController *)searchController
-{
-    if (self.hasAppeared) {
-        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Cannot override search controller after the view has been presented" userInfo:nil];
-    }
-    _searchController = searchController;
 }
 
 #pragma mark - Set Up

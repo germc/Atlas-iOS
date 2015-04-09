@@ -114,7 +114,7 @@
  @abstract The `ATLConversationListViewController` class presents an interface which provides
  for the display and selection of Layer conversations.
  */
-@interface ATLConversationListViewController : UITableViewController <UISearchBarDelegate, UISearchControllerDelegate, UISearchDisplayDelegate>
+@interface ATLConversationListViewController : UITableViewController
 
 ///-------------------------------------------------------
 /// @name Initializing a Conversation List View Controller
@@ -195,6 +195,16 @@
  */
 @property (nonatomic, assign) CGFloat rowHeight;
 
+///-------------
+/// @name Search
+///-------------
+
+/**
+ @abstract The controller used to display search results.
+ */
+@property (nonatomic, readonly) UISearchDisplayController *searchContorller;
+
+
 ///------------------------------
 /// @name Reloading Conversations
 ///------------------------------
@@ -204,21 +214,5 @@
  @param conversation The Conversation object to reload the corresponding cell of. Cannot be `nil`.
  */
 - (void)reloadCellForConversation:(LYRConversation *)conversation;
-
-///--------------------------
-/// @name Conversation Search
-///--------------------------
-
-/**
- @abstract The search display controller used to display conversation search results.
- @raises NSInternalInconsistencyException Raised if the value is mutated after the receiver has been presented.
- */
-@property (nonatomic) UISearchDisplayController *searchController;
-
-/**
- @abstract The search bar displayed above the conversation list.
- @raises NSInternalInconsistencyException Raised if the value is mutated after the receiver has been presented.
- */
-@property (nonatomic) UISearchBar *searchBar;
 
 @end

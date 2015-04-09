@@ -257,22 +257,6 @@
     expect(^{ [self.viewController setAllowsEditing:YES]; }).to.raise(NSInternalInconsistencyException);
 }
 
-- (void)testToVerifySettingSearchControllerAfterViewLoadRaiseException
-{
-    self.viewController = [ATLSampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];
-    [self setRootViewController:self.viewController];
-    [tester waitForTimeInterval:1.0]; // Allow controller to be presented.
-    expect(^{ [self.viewController setSearchController:nil]; }).to.raise(NSInternalInconsistencyException);
-}
-
-- (void)testToVerifySettingSearchBarAfterViewLoadRaiseException
-{
-    self.viewController = [ATLSampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];
-    [self setRootViewController:self.viewController];
-    [tester waitForTimeInterval:1.0]; // Allow controller to be presented.
-    expect(^{ [self.viewController setSearchBar:nil]; }).to.raise(NSInternalInconsistencyException);
-}
-
 #pragma mark - ATLConversationListViewControllerDataSource
 
 - (void)testToVerifyConversationListViewControllerDataSource
