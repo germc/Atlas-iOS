@@ -195,6 +195,16 @@
  */
 @property (nonatomic, assign) CGFloat rowHeight;
 
+///-------------
+/// @name Search
+///-------------
+
+/**
+ @abstract The controller used to display search results.
+ */
+@property (nonatomic, readonly) UISearchDisplayController *searchContorller;
+
+
 ///------------------------------
 /// @name Reloading Conversations
 ///------------------------------

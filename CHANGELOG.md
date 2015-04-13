@@ -1,5 +1,13 @@
 # Atlas Changelog
 
+## 1.0.4
+
+### Public API Changes
+
+* Moved `searchController` property to public API on `ATLConversationListViewController`. 
+* Moved `UIImagePickerControllerDelegate` and `UINavigationControllerDelegate` declarations to header of `ATLConversationViewController`.
+* Added `leftAccessoryImage`, `rightAccessoryImage` and `displaysRightAccessoryImage` to `ATLMessageInputToolbar`. 
+
 ## 1.0.3
 
 ### Enhancements

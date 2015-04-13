@@ -29,7 +29,7 @@ static NSString *const ATLConversationCellReuseIdentifier = @"ATLConversationCel
 @property (nonatomic) LYRQueryController *searchQueryController;
 @property (nonatomic) LYRConversation *conversationToDelete;
 @property (nonatomic) LYRConversation *conversationSelectedBeforeContentChange;
-@property (nonatomic) UISearchDisplayController *searchController;
+@property (nonatomic, readwrite) UISearchDisplayController *searchController;
 @property (nonatomic) UISearchBar *searchBar;
 @property (nonatomic) BOOL hasAppeared;
 

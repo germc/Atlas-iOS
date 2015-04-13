@@ -255,7 +255,7 @@
             return [NSPredicate predicateWithFormat:@"SELF.%@ <= %@", predicate.property, predicate.value];
 
         case LYRPredicateOperatorIsIn: {
-            NSPredicate *predicatee = [NSPredicate predicateWithFormat:@"%@ IN SELF.%@", predicate.value, predicate.property];
+            NSPredicate *predicatee = [NSPredicate predicateWithFormat:@"SELF.%@ CONTAINS %@ ", predicate.property,  predicate.value];
             return predicatee;
         }
         case LYRPredicateOperatorIsNotIn:

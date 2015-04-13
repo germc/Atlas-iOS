@@ -31,6 +31,7 @@ NSString *const ATLMessageInputToolbarDidChangeHeightNotification = @"ATLMessage
 @property (nonatomic) UITextView *dummyTextView;
 @property (nonatomic) CGFloat textViewMaxHeight;
 @property (nonatomic) CGFloat buttonCenterY;
+@property (nonatomic) BOOL firstAppearance;
 
 @end
 
@@ -59,11 +60,16 @@ static CGFloat const ATLButtonHeight = 28.0f;
         self.accessibilityLabel = ATLMessageInputToolbarAccessibilityLabel;
         self.translatesAutoresizingMaskIntoConstraints = NO;
         self.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-
+        
+        self.leftAccessoryImage = [UIImage imageNamed:@"AtlasResource.bundle/camera_dark"];
+        self.rightAccessoryImage = [UIImage imageNamed:@"AtlasResource.bundle/location_dark"];
+        self.displaysRightAccessoryImage = YES;
+        self.firstAppearance = YES;
+        
         self.leftAccessoryButton = [[UIButton alloc] init];
         self.leftAccessoryButton.accessibilityLabel = ATLMessageInputToolbarCameraButton;
         self.leftAccessoryButton.contentMode = UIViewContentModeScaleAspectFit;
-        [self.leftAccessoryButton setImage:[UIImage imageNamed:@"AtlasResource.bundle/camera_dark"] forState:UIControlStateNormal];
+        [self.leftAccessoryButton setImage:self.leftAccessoryImage forState:UIControlStateNormal];
         [self.leftAccessoryButton addTarget:self action:@selector(leftAccessoryButtonTapped) forControlEvents:UIControlEventTouchUpInside];
         [self addSubview:self.leftAccessoryButton];
         
@@ -79,7 +85,7 @@ static CGFloat const ATLButtonHeight = 28.0f;
         [self.rightAccessoryButton addTarget:self action:@selector(rightAccessoryButtonTapped) forControlEvents:UIControlEventTouchUpInside];
         [self addSubview:self.rightAccessoryButton];
         [self configureRightAccessoryButtonState];
-
+        
         // Calling sizeThatFits: or contentSize on the displayed UITextView causes the cursor's position to momentarily appear out of place and prevent scrolling to the selected range. So we use another text view for height calculations.
         self.dummyTextView = [[ATLMessageComposeTextView alloc] init];
         self.maxNumberOfLines = 8;
@@ -90,14 +96,24 @@ static CGFloat const ATLButtonHeight = 28.0f;
 - (void)layoutSubviews
 {
     [super layoutSubviews];
-
+    
+    if (self.firstAppearance) {
+        [self configureRightAccessoryButtonState];
+        self.firstAppearance = NO;
+    }
+    
     // We layout the views manually since using Auto Layout seems to cause issues in this context (i.e. an auto height resizing text view in an input accessory view) especially with iOS 7.1.
     CGRect frame = self.frame;
     CGRect leftButtonFrame = self.leftAccessoryButton.frame;
     CGRect rightButtonFrame = self.rightAccessoryButton.frame;
     CGRect textViewFrame = self.textInputView.frame;
 
-    leftButtonFrame.size.width = ATLLeftAccessoryButtonWidth;
+    if (!self.leftAccessoryButton) {
+        leftButtonFrame.size.width = 0;
+    } else {
+        leftButtonFrame.size.width = ATLLeftAccessoryButtonWidth;
+    }
+    
     leftButtonFrame.size.height = ATLButtonHeight;
     leftButtonFrame.origin.x = ATLLeftButtonHorizontalMargin;
 
@@ -191,6 +207,18 @@ static CGFloat const ATLButtonHeight = 28.0f;
         _mediaAttachments = [self mediaAttachmentsFromAttributedString:attributedString];
     }
     return _mediaAttachments;
+}
+
+- (void)setLeftAccessoryImage:(UIImage *)leftAccessoryImage
+{
+    _leftAccessoryImage = leftAccessoryImage;
+    [self.leftAccessoryButton setImage:leftAccessoryImage  forState:UIControlStateNormal];
+}
+
+- (void)setRightAccessoryImage:(UIImage *)rightAccessoryImage
+{
+    _rightAccessoryImage = rightAccessoryImage;
+    [self.rightAccessoryButton setImage:rightAccessoryImage forState:UIControlStateNormal];
 }
 
 #pragma mark - Actions
@@ -297,19 +325,38 @@ static CGFloat const ATLButtonHeight = 28.0f;
 - (void)configureRightAccessoryButtonState
 {
     if (self.textInputView.text.length) {
-        self.rightAccessoryButton.accessibilityLabel = ATLMessageInputToolbarSendButton;
-        [self.rightAccessoryButton setImage:nil forState:UIControlStateNormal];
-        self.rightAccessoryButton.contentEdgeInsets = UIEdgeInsetsMake(2, 0, 0, 0);
-        self.rightAccessoryButton.titleLabel.font = [UIFont boldSystemFontOfSize:17];
-        [self.rightAccessoryButton setTitle:@"Send" forState:UIControlStateNormal];
-        [self.rightAccessoryButton setTitleColor:[UIColor grayColor] forState:UIControlStateDisabled];
-        [self.rightAccessoryButton setTitleColor:ATLBlueColor() forState:UIControlStateNormal];
+        [self configureRightAccessoryButtonForText];
+        self.rightAccessoryButton.enabled = YES;
     } else {
-        self.rightAccessoryButton.accessibilityLabel = ATLMessageInputToolbarLocationButton;
-        [self.rightAccessoryButton setTitle:nil forState:UIControlStateNormal];
-        self.rightAccessoryButton.contentEdgeInsets = UIEdgeInsetsZero;
-        [self.rightAccessoryButton setImage:[UIImage imageNamed:@"AtlasResource.bundle/location_dark"] forState:UIControlStateNormal];
+        if (self.displaysRightAccessoryImage) {
+            [self configureRightAccessoryButtonForImage];
+            self.rightAccessoryButton.enabled = YES;
+        } else {
+            [self configureRightAccessoryButtonForText];
+            self.rightAccessoryButton.enabled = NO;
+        }
     }
 }
+
+- (void)configureRightAccessoryButtonForText
+{
+    self.rightAccessoryButton.accessibilityLabel = ATLMessageInputToolbarSendButton;
+    [self.rightAccessoryButton setImage:nil forState:UIControlStateNormal];
+    self.rightAccessoryButton.contentEdgeInsets = UIEdgeInsetsMake(2, 0, 0, 0);
+    self.rightAccessoryButton.titleLabel.font = [UIFont boldSystemFontOfSize:17];
+    [self.rightAccessoryButton setTitle:@"Send" forState:UIControlStateNormal];
+    [self.rightAccessoryButton setTitleColor:ATLBlueColor() forState:UIControlStateNormal];
+    [self.rightAccessoryButton setTitleColor:[UIColor grayColor] forState:UIControlStateDisabled];
+}
+
+- (void)configureRightAccessoryButtonForImage
+{
+    self.rightAccessoryButton.enabled = YES;
+    self.rightAccessoryButton.accessibilityLabel = ATLMessageInputToolbarLocationButton;
+    self.rightAccessoryButton.contentEdgeInsets = UIEdgeInsetsZero;
+    [self.rightAccessoryButton setTitle:nil forState:UIControlStateNormal];
+    [self.rightAccessoryButton setImage:self.rightAccessoryImage forState:UIControlStateNormal];
+}
+
 
 @end

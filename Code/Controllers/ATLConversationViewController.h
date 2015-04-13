@@ -149,7 +149,7 @@
  a Layer conversation and the ability to send messages. The controller's design and functionality closely correlates with
  the conversation view controller in Messages.
 */
-@interface ATLConversationViewController : ATLBaseConversationViewController <ATLAddressBarViewControllerDelegate>
+@interface ATLConversationViewController : ATLBaseConversationViewController <ATLAddressBarViewControllerDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate>
 
 ///---------------------------------------
 /// @name Initializing a Controller
@@ -221,7 +221,7 @@
 @property (nonatomic) NSTimeInterval dateDisplayTimeInterval;
 
 /**
-@abstract A Boolean value that determines whether or not the controller marks all messages as read.
+ @abstract A Boolean value that determines whether or not the controller marks all messages as read.
  @discussion If `YES`, the controller will mark all messages in the conversation as read when it is presented.
  @default `YES`.
  */

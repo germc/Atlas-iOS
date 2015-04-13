@@ -30,7 +30,7 @@
 #import "ATLMediaAttachment.h"
 #import "ATLLocationManager.h"
 
-@interface ATLConversationViewController () <UICollectionViewDataSource, UICollectionViewDelegate, ATLMessageInputToolbarDelegate, UIActionSheetDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, LYRQueryControllerDelegate, CLLocationManagerDelegate>
+@interface ATLConversationViewController () <UICollectionViewDataSource, UICollectionViewDelegate, ATLMessageInputToolbarDelegate, UIActionSheetDelegate, LYRQueryControllerDelegate, CLLocationManagerDelegate>
 
 @property (nonatomic) ATLConversationDataSource *conversationDataSource;
 @property (nonatomic) BOOL shouldDisplayAvatarItem;
@@ -121,7 +121,6 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
         [self fetchLayerMessages];
     }
     [self configureControllerForConversation];
-    
     self.messageInputToolbar.inputToolBarDelegate = self;
     self.addressBarController.delegate = self;
     self.canDisableAddressBar = YES;
@@ -135,6 +134,7 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
         [self.addressBarController disable];
         [self configureAddressBarForConversation];
     }
+    
     self.canDisableAddressBar = YES;
     if (!self.hasAppeared) {
         [self.collectionView layoutIfNeeded];
@@ -701,12 +701,12 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
     
     NSArray *changes = notification.userInfo[LYRClientObjectChangesUserInfoKey];
     for (NSDictionary *change in changes) {
+        
         id changedObject = change[LYRObjectChangeObjectKey];
         if (![changedObject isEqual:self.conversation]) continue;
         
         LYRObjectChangeType changeType = [change[LYRObjectChangeTypeKey] integerValue];
         NSString *changedProperty = change[LYRObjectChangePropertyKey];
-        
         if (changeType == LYRObjectChangeTypeUpdate && [changedProperty isEqualToString:@"participants"]) {
             [self configureControllerForChangedParticipants];
             break;

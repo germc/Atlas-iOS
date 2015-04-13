@@ -154,6 +154,7 @@
 
 - (void)testMediaWithAsset
 {
+    [Expecta setAsynchronousTestTimeout:10];
     UIImage *image = ATLTestAttachmentMakeImageWithSize(CGSizeMake(1024, 512));
 
     // First, save the generated image to the album.
