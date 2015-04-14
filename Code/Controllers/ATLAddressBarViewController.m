@@ -24,7 +24,6 @@
 
 @interface ATLAddressBarViewController () <UITextViewDelegate, UITableViewDataSource, UITableViewDelegate>
 
-@property (nonatomic) ATLAddressBarContainerView *view;
 @property (nonatomic) UITableView *tableView;
 @property (nonatomic) NSArray *participants;
 @property (nonatomic, getter=isDisabled) BOOL disabled;

@@ -41,6 +41,7 @@ NSString *const ATLMockUserIDAmar = @"5";
         _lastName = lastName;
         _participantIdentifier = participantIdentifier;
         _fullName = [NSString stringWithFormat:@"%@ %@", firstName, lastName];
+        _avatarImageURL = [NSURL URLWithString:@"http://lorempixel.com/400/200/"];
     }
     return self;
 }

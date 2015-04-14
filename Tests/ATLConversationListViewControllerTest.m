@@ -24,6 +24,8 @@
 #import "LYRClientMock.h"
 #import "ATLSampleConversationListViewController.h"
 
+extern NSString *const ATLAvatarImageViewAccessibilityLabel;
+
 @interface ATLConversationListViewController ()
 
 @property (nonatomic) LYRQueryController *queryController;
@@ -459,6 +461,16 @@
     
     UIView *deleteButton = [tester waitForViewWithAccessibilityLabel:@"Test"];
     expect(deleteButton.backgroundColor).to.equal([UIColor greenColor]);
+}
+
+- (void)testToVerifyAvatarImageURLLoad
+{
+    self.viewController = [ATLSampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];
+    self.viewController.displaysAvatarItem = YES:
+    [self setRootViewController:self.viewController];
+    
+    ATLAvatarImageView *imageView = [tester waitForViewWithAccessibilityLabel:ATLAvatarImageViewAccessibilityLabel];
+    expect(imageView.image).will.beTruthy;
 }
 
 - (LYRConversationMock *)newConversationWithMockUser:(ATLUserMock *)mockUser lastMessageText:(NSString *)lastMessageText
