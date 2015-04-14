@@ -29,6 +29,11 @@
 @optional
 
 /**
+ @abstract Returns the image URL for an avatar image for the receiver.
+ */
+@property (nonatomic, readonly) NSURL *avatarImageURL;
+
+/**
  @abstract Returns the avatar image of the receiver.
  */
 @property (nonatomic, readonly) UIImage *avatarImage;
