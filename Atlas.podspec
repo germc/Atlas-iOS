@@ -19,4 +19,5 @@ Pod::Spec.new do |s|
   s.ios.frameworks              = %w{UIKit CoreLocation MobileCoreServices}
   s.ios.deployment_target       = '7.0'
   s.dependency                  'LayerKit', '>= 0.11.2'
+  s.dependency                  'SDWebImage', '~>3.7'
 end

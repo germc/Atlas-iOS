@@ -19,6 +19,7 @@
 //
 #import "ATLAvatarImageView.h"
 #import "ATLConstants.h"
+#import <SDWebImage/UIImageView+WebCache.h>
 
 @interface ATLAvatarImageView ()
 
@@ -29,6 +30,17 @@
 @implementation ATLAvatarImageView
 
 NSString *const ATLAvatarImageViewAccessibilityLabel = @"ATLAvatarImageViewAccessibilityLabel";
+
+
++ (NSCache *)sharedImageCache
+{
+    static NSCache *_sharedImageCache;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        _sharedImageCache = [NSCache new];
+    });
+    return _sharedImageCache;
+}
 
 + (void)initialize
 {
@@ -85,7 +97,7 @@ NSString *const ATLAvatarImageViewAccessibilityLabel = @"ATLAvatarImageViewAcces
 - (void)setAvatarItem:(id<ATLAvatarItem>)avatarItem
 {
     if ([avatarItem avatarImageURL]) {
-        [self loadAvatarImageURL:[avatarItem avatarImageURL]];
+        [self loadAvatarImageWithURL:[avatarItem avatarImageURL]];
     } else if (avatarItem.avatarImage) {
         self.image = avatarItem.avatarImage;
     } else if (avatarItem.avatarInitials) {
@@ -119,14 +131,25 @@ NSString *const ATLAvatarImageViewAccessibilityLabel = @"ATLAvatarImageViewAcces
     _imageViewBackgroundColor = imageViewBackgroundColor;
 }
          
-- (void)loadAvatarImageURL:(NSURL *)imageURL
+- (void)loadAvatarImageWithURL:(NSURL *)imageURL
 {
     if (![imageURL isKindOfClass:[NSURL class]]) {
         NSLog(@"Cannot fetch image without URL");
         return;
     }
+    
+    // Check if image is in cache
+    __block NSString *stringURL = imageURL.absoluteString;
+    UIImage *image = [[[self class] sharedImageCache] objectForKey:stringURL];
+    if (image) {
+        self.image = image;
+        return;
+    }
+    
+    // If not, fetch the image and add to the cache
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
         UIImage *image = [UIImage imageWithData:[NSData dataWithContentsOfURL:imageURL]];
+        [[[self class] sharedImageCache] setObject:image forKey:stringURL];
         dispatch_async(dispatch_get_main_queue(), ^{
             [UIView animateWithDuration:0.2 animations:^{
                 self.alpha = 0.0;
