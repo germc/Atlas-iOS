@@ -1,7 +1,6 @@
 PODS:
   - Atlas (1.0.3):
     - LayerKit (>= 0.11.2)
-    - SDWebImage (~> 3.7)
   - Expecta (0.4.0)
   - KIF (3.2.1):
     - KIF/XCTest (= 3.2.1)
@@ -11,9 +10,6 @@ PODS:
   - LayerKit (0.11.2)
   - LYRCountDownLatch (0.9.0)
   - OCMock (3.1.2)
-  - SDWebImage (3.7.2):
-    - SDWebImage/Core (= 3.7.2)
-  - SDWebImage/Core (3.7.2)
 
 DEPENDENCIES:
   - Atlas (from `.`)
@@ -41,13 +37,12 @@ CHECKOUT OPTIONS:
     :git: https://github.com/layerhq/LYRCountDownLatch.git
 
 SPEC CHECKSUMS:
-  Atlas: 0a79372c2a930d751ea93b31533b297834008828
+  Atlas: 2604bed303e97b19384bef7b276d37910b294b69
   Expecta: 392a6b5bfb9f4097e47dd8064d9b732079490332
   KIF: ef1691e54e1d969c3b4fd0b5b56a3d7ddf37f216
   KIFViewControllerActions: 73085acd975ebbfc954f7895ca1aaa9faa36b3c6
   LayerKit: 3546568785140970c3405d686a61af50260d6d48
   LYRCountDownLatch: 72a444f729ca5a8c6157c0b58f335a44e6702b48
   OCMock: a10ea9f0a6e921651f96f78b6faee95ebc813b92
-  SDWebImage: 71b7cdc1d1721d6a82ed62889030225f2c249e29
 
 COCOAPODS: 0.36.0
