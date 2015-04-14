@@ -149,11 +149,11 @@ NSString *const ATLAvatarImageViewAccessibilityLabel = @"ATLAvatarImageViewAcces
     // If not, fetch the image and add to the cache
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
         UIImage *image = [UIImage imageWithData:[NSData dataWithContentsOfURL:imageURL]];
-        [[[self class] sharedImageCache] setObject:image forKey:stringURL];
+        [[[self class] sharedImageCache] setObject:image forKey:stringURL cost:0];
         dispatch_async(dispatch_get_main_queue(), ^{
             [UIView animateWithDuration:0.2 animations:^{
                 self.alpha = 0.0;
-            }completion:^(BOOL finished) {
+            } completion:^(BOOL finished) {
                 [UIView animateWithDuration:0.5 animations:^{
                     self.image = image;
                     self.alpha = 1.0;
