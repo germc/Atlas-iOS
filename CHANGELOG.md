@@ -1,5 +1,15 @@
 # Atlas Changelog
 
+## 1.0.5
+
+### Public API Changes
+
+* Added `avatarImageURL` property to `ATLAvatarItem`. 
+
+### Enhancements
+* Added logic to fetch image from a URL to `ATLAvatarImageView`. 
+* Added image cache to `ATLAvatarImageView`. 
+
 ## 1.0.4
 
 ### Public API Changes
