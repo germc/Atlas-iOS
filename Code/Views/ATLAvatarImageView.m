@@ -19,7 +19,6 @@
 //
 #import "ATLAvatarImageView.h"
 #import "ATLConstants.h"
-#import <SDWebImage/UIImageView+WebCache.h>
 
 @interface ATLAvatarImageView ()
 
