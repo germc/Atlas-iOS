@@ -46,7 +46,7 @@ extern NSString *const ATLConversationCollectionViewAccessibilityIdentifier;
     LYRClientMock *layerClient = [LYRClientMock layerClientMockWithAuthenticatedUserID:mockUser.participantIdentifier];
     self.testInterface = [ATLTestInterface testIntefaceWithLayerClient:layerClient];
     [self setRootViewController];
-   
+    [self resetAppearance];
 }
 
 - (void)tearDown
@@ -55,7 +55,6 @@ extern NSString *const ATLConversationCollectionViewAccessibilityIdentifier;
     self.conversation = nil;
     self.controller = nil;
     [[LYRMockContentStore sharedStore] resetContentStore];
-    [self resetAppearance];
     [super tearDown];
 }
 
@@ -282,6 +281,7 @@ extern NSString *const ATLConversationCollectionViewAccessibilityIdentifier;
     LYRMessagePartMock *part = [LYRMessagePartMock messagePartWithText:text];
     LYRMessageMock *message = [layerClient newMessageWithParts:@[part] options:nil error:nil];
     [self.conversation sendMessage:message error:nil];
+    [tester waitForAnimationsToFinish];
 }
 
 - (void)setRootViewController

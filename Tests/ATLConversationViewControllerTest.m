@@ -58,6 +58,7 @@ extern NSString *const ATLMessageInputToolbarSendButton;
 
 - (void)tearDown
 {
+    [tester waitForAnimationsToFinish];
     [self.testInterface dismissPresentedViewController];
     self.viewController.conversationDataSource = nil;
     self.viewController = nil;
@@ -270,6 +271,7 @@ extern NSString *const ATLMessageInputToolbarSendButton;
     [self setupConversationViewController];
     [self setRootViewController:self.viewController];
     
+    [tester waitForTimeInterval:10];
     [tester waitForViewWithAccessibilityLabel:ATLAvatarImageViewAccessibilityLabel];
 }
 
@@ -383,7 +385,7 @@ extern NSString *const ATLMessageInputToolbarSendButton;
 - (void)setRootViewController:(UIViewController *)controller
 {
     [self.testInterface presentViewController:controller];
-    [tester waitForTimeInterval:1.0]; // Allow controller to be presented.
+    [tester waitForAnimationsToFinish];
 }
 
 @end

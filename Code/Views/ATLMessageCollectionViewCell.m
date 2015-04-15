@@ -47,7 +47,7 @@ CGFloat const ATLMessageCellHorizontalMargin = 16.0f;
     static ATLMessageCollectionViewCell *_sharedCell;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        _sharedCell = [ATLMessageCollectionViewCell new];
+        _sharedCell = [[self class] new];
     });
     return _sharedCell;
 }
@@ -392,12 +392,13 @@ CGFloat const ATLMessageCellHorizontalMargin = 16.0f;
 {
     // Temporarily adding  the view to the hierarchy so that UIAppearance property values will be set based on containment.
     ATLMessageCollectionViewCell *cell = [self sharedCell];
+    [cell layoutSubviews];
     [view addSubview:cell];
     [cell removeFromSuperview];
     
     LYRMessagePart *part = message.parts.firstObject;
     NSString *text = [[NSString alloc] initWithData:part.data encoding:NSUTF8StringEncoding];
-    UIFont *font = cell.messageTextFont;
+    UIFont *font = [[[self class] appearance] messageTextFont];
     CGSize size = ATLTextPlainSize(text, font);
     return size.height + ATLMessageBubbleLabelVerticalPadding * 2;
 }

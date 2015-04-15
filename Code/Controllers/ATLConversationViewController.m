@@ -396,7 +396,11 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
 - (CGFloat)defaultCellHeightForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     LYRMessage *message = [self.conversationDataSource messageAtCollectionViewIndexPath:indexPath];
-    return [ATLMessageCollectionViewCell cellHeightForMessage:message inView:self.view];
+    if ([message.sentByUserID isEqualToString:self.layerClient.authenticatedUserID]) {
+        return [ATLOutgoingMessageCollectionViewCell cellHeightForMessage:message inView:self.view];
+    } else {
+        return [ATLIncomingMessageCollectionViewCell cellHeightForMessage:message inView:self.view];
+    }
 }
 
 - (BOOL)shouldDisplayDateLabelForSection:(NSUInteger)section
@@ -942,7 +946,6 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
     if ([self.delegate respondsToSelector:@selector(conversationViewController:didSendMessage:)]) {
         [self.delegate conversationViewController:self didSendMessage:message];
     }
-    [self reloadCellForMessage:message];
 }
 
 - (void)notifyDelegateOfMessageSendFailure:(LYRMessage *)message error:(NSError *)error

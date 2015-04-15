@@ -25,11 +25,14 @@
     
     ATLSampleConversationListViewController *controller = [ATLSampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)layerClient];
     controller.view.backgroundColor = [UIColor whiteColor];
-    UINavigationController *rootViewController = [[UINavigationController alloc] initWithRootViewController:controller];
+    UINavigationController *rootViewController = [[UINavigationController alloc] initWithRootViewController:[UIViewController new]];
     
     self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
     self.window.rootViewController = rootViewController;
     [self.window makeKeyAndVisible];
+    
+    [[ATLOutgoingMessageCollectionViewCell appearance] setMessageTextFont:[UIFont systemFontOfSize:22]];
+    [[ATLIncomingMessageCollectionViewCell appearance] setMessageTextFont:[UIFont systemFontOfSize:22]];
     
     return YES;
 }
