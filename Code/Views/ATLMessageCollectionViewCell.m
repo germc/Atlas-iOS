@@ -399,6 +399,9 @@ CGFloat const ATLMessageCellHorizontalMargin = 16.0f;
     LYRMessagePart *part = message.parts.firstObject;
     NSString *text = [[NSString alloc] initWithData:part.data encoding:NSUTF8StringEncoding];
     UIFont *font = [[[self class] appearance] messageTextFont];
+    if (!font) {
+        font = cell.messageTextFont;
+    }
     CGSize size = ATLTextPlainSize(text, font);
     return size.height + ATLMessageBubbleLabelVerticalPadding * 2;
 }
