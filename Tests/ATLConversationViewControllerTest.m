@@ -292,6 +292,65 @@ extern NSString *const ATLMessageInputToolbarSendButton;
     expect(imageView.avatarImageViewDiameter).to.equal(40);
 }
 
+- (void)testtoVerifyReloadingCellsDuringQueryControllerAnimationDoesNotRaise
+{
+    [self setupConversationViewController];
+    [self setRootViewController:self.viewController];
+    
+    id delegateMock = OCMProtocolMock(@protocol(ATLConversationViewControllerDelegate));
+    self.viewController.delegate = delegateMock;
+    
+    [[[delegateMock expect] andDo:^(NSInvocation *invocation) {
+        ATLConversationViewController *controller;
+        [invocation getArgument:&controller atIndex:2];
+        expect(controller).to.equal(self.viewController);
+        
+        LYRMessage *message;
+        [invocation getArgument:&message atIndex:3];
+        expect(message).to.beKindOf([LYRMessageMock class]);
+        
+        expect(^{[self.viewController reloadCellForMessage:message];}).toNot.raise(NSInternalInconsistencyException);
+    }] conversationViewController:[OCMArg any] didSendMessage:[OCMArg any]];
+    
+    [tester enterText:@"test" intoViewWithAccessibilityLabel:ATLMessageInputToolbarTextInputView];
+    [tester tapViewWithAccessibilityLabel:ATLMessageInputToolbarSendButton];
+    [delegateMock verify];
+}
+
+- (void)testToVerifyReloadingCellsForMutlitpleMessagesDoesNotRaise
+{
+    [self setupConversationViewController];
+    [self setRootViewController:self.viewController];
+    
+    [tester enterText:@"test" intoViewWithAccessibilityLabel:ATLMessageInputToolbarTextInputView];
+    [tester tapViewWithAccessibilityLabel:ATLMessageInputToolbarSendButton];
+    
+    [tester enterText:@"test" intoViewWithAccessibilityLabel:ATLMessageInputToolbarTextInputView];
+    [tester tapViewWithAccessibilityLabel:ATLMessageInputToolbarSendButton];
+    
+    [tester enterText:@"test" intoViewWithAccessibilityLabel:ATLMessageInputToolbarTextInputView];
+    [tester tapViewWithAccessibilityLabel:ATLMessageInputToolbarSendButton];
+    
+    id delegateMock = OCMProtocolMock(@protocol(ATLConversationViewControllerDelegate));
+    self.viewController.delegate = delegateMock;
+    
+    [[[delegateMock expect] andDo:^(NSInvocation *invocation) {
+        ATLConversationViewController *controller;
+        [invocation getArgument:&controller atIndex:2];
+        expect(controller).to.equal(self.viewController);
+        
+        LYRMessage *message;
+        [invocation getArgument:&message atIndex:3];
+        expect(message).to.beKindOf([LYRMessageMock class]);
+        
+        expect(^{[self.viewController reloadCellsForMessagesSentByParticipantWithIdentitifier:self.viewController.layerClient.authenticatedUserID];}).toNot.raise(NSInternalInconsistencyException);
+    }] conversationViewController:[OCMArg any] didSendMessage:[OCMArg any]];
+    
+    [tester enterText:@"test" intoViewWithAccessibilityLabel:ATLMessageInputToolbarTextInputView];
+    [tester tapViewWithAccessibilityLabel:ATLMessageInputToolbarSendButton];
+    [delegateMock verify];
+}
+
 - (void)setupConversationViewController
 {
     self.viewController = [ATLSampleConversationViewController conversationViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];

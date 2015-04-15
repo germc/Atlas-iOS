@@ -212,8 +212,12 @@
     if ([objectClass isSubclassOfClass:[LYRConversation class]]) {
         NSOrderedSet *filteredSet;
         if (predicate) {
-            NSPredicate *conversationPredicate = [self constructPredicateForMockPredicate:predicate];
-            filteredSet = [[NSOrderedSet alloc] initWithSet:[self.conversations filteredSetUsingPredicate:conversationPredicate]];
+            if ([predicate isKindOfClass:[LYRCompoundPredicate class]]) {
+                filteredSet = [[NSOrderedSet alloc] initWithSet:self.conversations];
+            } else {
+                NSPredicate *conversationPredicate = [self constructPredicateForMockPredicate:predicate];
+                filteredSet = [[NSOrderedSet alloc] initWithSet:[self.conversations filteredSetUsingPredicate:conversationPredicate]];
+            }
         } else {
             filteredSet = [[NSOrderedSet alloc] initWithSet:self.conversations];
         }
@@ -222,8 +226,12 @@
     } else if ([objectClass isSubclassOfClass:[LYRMessage class]]) {
         NSOrderedSet *filteredSet;
         if (predicate) {
-            NSPredicate *messagePredicate = [self constructPredicateForMockPredicate:predicate];
-            filteredSet = [[NSOrderedSet alloc] initWithSet:[self.messages filteredSetUsingPredicate:messagePredicate]];
+            if ([predicate isKindOfClass:[LYRCompoundPredicate class]]) {
+                filteredSet = [[NSOrderedSet alloc] initWithSet:self.messages];
+            } else {
+                NSPredicate *messagePredicate = [self constructPredicateForMockPredicate:predicate];
+                filteredSet = [[NSOrderedSet alloc] initWithSet:[self.messages filteredSetUsingPredicate:messagePredicate]];
+            }
         } else {
             filteredSet = [[NSOrderedSet alloc] initWithSet:self.messages];
         }

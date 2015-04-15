@@ -466,10 +466,10 @@ extern NSString *const ATLAvatarImageViewAccessibilityLabel;
 - (void)testToVerifyAvatarImageURLLoad
 {
     self.viewController = [ATLSampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];
-    self.viewController.displaysAvatarItem = YES:
+    self.viewController.displaysAvatarItem = YES;
     [self setRootViewController:self.viewController];
     
-    ATLAvatarImageView *imageView = [tester waitForViewWithAccessibilityLabel:ATLAvatarImageViewAccessibilityLabel];
+    ATLAvatarImageView *imageView = (ATLAvatarImageView *)[tester waitForViewWithAccessibilityLabel:ATLAvatarImageViewAccessibilityLabel];
     expect(imageView.image).will.beTruthy;
 }
 
