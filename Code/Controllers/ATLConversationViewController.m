@@ -125,7 +125,7 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
     self.messageInputToolbar.inputToolBarDelegate = self;
     self.addressBarController.delegate = self;
     self.canDisableAddressBar = YES;
-    self.animationQueue = dispatch_queue_create("com.atlas.animationQueue", DISPATCH_QUEUE_CONCURRENT);
+    self.animationQueue = dispatch_queue_create("com.atlas.animationQueue", DISPATCH_QUEUE_SERIAL);
     [self atl_registerForNotifications];
 }
 

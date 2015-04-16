@@ -392,7 +392,7 @@ CGFloat const ATLMessageCellHorizontalMargin = 16.0f;
 {
     // Temporarily adding  the view to the hierarchy so that UIAppearance property values will be set based on containment.
     ATLMessageCollectionViewCell *cell = [self sharedCell];
-    [cell layoutSubviews];
+    [view addSubview:cell];
     [cell removeFromSuperview];
     
     LYRMessagePart *part = message.parts.firstObject;
