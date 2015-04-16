@@ -87,7 +87,9 @@ NSString *const LYRMockObjectChangeChangeTypeKey = @"mockObjectChangeChangeTypeK
 
 - (LYRQueryControllerMock *)queryControllerWithQuery:(LYRQuery *)query
 {
-    return [LYRQueryControllerMock initWithQuery:query];
+    LYRQueryControllerMock *mock = [LYRQueryControllerMock initWithQuery:query];
+    mock.layerClient = self;
+    return mock;
 }
 
 @end

@@ -45,6 +45,7 @@
 @property (nonatomic) ATLLocationManager *locationManager;
 @property (nonatomic) BOOL shouldShareLocation;
 @property (nonatomic) BOOL canDisableAddressBar;
+@property (nonatomic) dispatch_queue_t animationQueue;
 
 @end
 
@@ -124,6 +125,7 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
     self.messageInputToolbar.inputToolBarDelegate = self;
     self.addressBarController.delegate = self;
     self.canDisableAddressBar = YES;
+    self.animationQueue = dispatch_queue_create("com.atlas.animationQueue", DISPATCH_QUEUE_SERIAL);
     [self atl_registerForNotifications];
 }
 
@@ -394,7 +396,11 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
 - (CGFloat)defaultCellHeightForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     LYRMessage *message = [self.conversationDataSource messageAtCollectionViewIndexPath:indexPath];
-    return [ATLMessageCollectionViewCell cellHeightForMessage:message inView:self.view];
+    if ([message.sentByUserID isEqualToString:self.layerClient.authenticatedUserID]) {
+        return [ATLOutgoingMessageCollectionViewCell cellHeightForMessage:message inView:self.view];
+    } else {
+        return [ATLIncomingMessageCollectionViewCell cellHeightForMessage:message inView:self.view];
+    }
 }
 
 - (BOOL)shouldDisplayDateLabelForSection:(NSUInteger)section
@@ -888,41 +894,49 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
 
 - (void)reloadCellForMessage:(LYRMessage *)message
 {
-    NSIndexPath *indexPath = [self.conversationDataSource.queryController indexPathForObject:message];
-    if (indexPath) {
-        NSIndexPath *collectionViewIndexPath = [self.conversationDataSource collectionViewIndexPathForQueryControllerIndexPath:indexPath];
-        if (collectionViewIndexPath) {
-            [self.collectionView reloadItemsAtIndexPaths:@[ collectionViewIndexPath ]];
+    dispatch_async(self.animationQueue, ^{
+        NSIndexPath *indexPath = [self.conversationDataSource.queryController indexPathForObject:message];
+        if (indexPath) {
+            NSIndexPath *collectionViewIndexPath = [self.conversationDataSource collectionViewIndexPathForQueryControllerIndexPath:indexPath];
+            if (collectionViewIndexPath) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self.collectionView reloadItemsAtIndexPaths:@[ collectionViewIndexPath ]];
+                });
+            }
         }
-    }
+    });
 }
 
 - (void)reloadCellsForMessagesSentByParticipantWithIdentitifier:(NSString *)participantIdentifier
 {
-    // Query for the All the Messages in the set of identifiers we have where sent by user == participantIdentifier
-    LYRQuery *messageIdentifiersQuery = [self.conversationDataSource.queryController.query copy];
-    messageIdentifiersQuery.resultType = LYRQueryResultTypeIdentifiers;
-    NSError *error = nil;
-    NSOrderedSet *messageIdentifiers = [self.layerClient executeQuery:messageIdentifiersQuery error:&error];
-    if (!messageIdentifiers) {
-        NSLog(@"LayerKit failed to execute query with error: %@", error);
-        return;
-    }
-    
-    LYRQuery *query = [LYRQuery queryWithClass:[LYRMessage class]];
-    LYRPredicate *senderPredicate = [LYRPredicate predicateWithProperty:@"sentByUserID" operator:LYRPredicateOperatorIsEqualTo value:participantIdentifier];
-    LYRPredicate *objectIdentifiersPredicate = [LYRPredicate predicateWithProperty:@"identifier" operator:LYRPredicateOperatorIsIn value:messageIdentifiers];
-    query.predicate = [LYRCompoundPredicate compoundPredicateWithType:LYRCompoundPredicateTypeAnd subpredicates:@[ senderPredicate, objectIdentifiersPredicate ]];
-    query.resultType = LYRQueryResultTypeIdentifiers;
-    NSOrderedSet *messageIdentifiersToReload = [self.layerClient executeQuery:query error:&error];
-    if (!messageIdentifiers) {
-        NSLog(@"LayerKit failed to execute query with error: %@", error);
-        return;
-    }
-
-    NSDictionary *objectIdentifiersToIndexPaths = [self.conversationDataSource.queryController indexPathsForObjectsWithIdentifiers:messageIdentifiersToReload.set];
-    NSArray *indexPaths = [objectIdentifiersToIndexPaths allValues];
-    [self.collectionView reloadItemsAtIndexPaths:indexPaths];
+    dispatch_async(self.animationQueue, ^{
+        // Query for the All the Messages in the set of identifiers we have where sent by user == participantIdentifier
+        LYRQuery *messageIdentifiersQuery = [self.conversationDataSource.queryController.query copy];
+        messageIdentifiersQuery.resultType = LYRQueryResultTypeIdentifiers;
+        NSError *error = nil;
+        NSOrderedSet *messageIdentifiers = [self.layerClient executeQuery:messageIdentifiersQuery error:&error];
+        if (!messageIdentifiers) {
+            NSLog(@"LayerKit failed to execute query with error: %@", error);
+            return;
+        }
+        
+        LYRQuery *query = [LYRQuery queryWithClass:[LYRMessage class]];
+        LYRPredicate *senderPredicate = [LYRPredicate predicateWithProperty:@"sentByUserID" operator:LYRPredicateOperatorIsEqualTo value:participantIdentifier];
+        LYRPredicate *objectIdentifiersPredicate = [LYRPredicate predicateWithProperty:@"identifier" operator:LYRPredicateOperatorIsIn value:messageIdentifiers];
+        query.predicate = [LYRCompoundPredicate compoundPredicateWithType:LYRCompoundPredicateTypeAnd subpredicates:@[ senderPredicate, objectIdentifiersPredicate ]];
+        query.resultType = LYRQueryResultTypeIdentifiers;
+        NSOrderedSet *messageIdentifiersToReload = [self.layerClient executeQuery:query error:&error];
+        if (!messageIdentifiers) {
+            NSLog(@"LayerKit failed to execute query with error: %@", error);
+            return;
+        }
+        
+        NSDictionary *objectIdentifiersToIndexPaths = [self.conversationDataSource.queryController indexPathsForObjectsWithIdentifiers:messageIdentifiersToReload.set];
+        NSArray *indexPaths = [objectIdentifiersToIndexPaths allValues];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.collectionView reloadItemsAtIndexPaths:indexPaths];
+        });
+    });
 }
 
 #pragma mark - Delegate
@@ -1074,6 +1088,7 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
         return;
     }
     
+    dispatch_suspend(self.animationQueue);
     // Prevent scrolling if user has scrolled up into the conversation history.
     BOOL shouldScrollToBottom = [self shouldScrollToBottom];
     [self.collectionView performBatchUpdates:^{
@@ -1100,7 +1115,9 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
             }
         }
         [self.objectChanges removeAllObjects];
-    } completion:nil];
+    } completion:^(BOOL finished) {
+        dispatch_resume(self.animationQueue);
+    }];
     
     [self configureCollectionViewElements];
     

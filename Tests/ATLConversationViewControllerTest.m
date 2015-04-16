@@ -58,6 +58,7 @@ extern NSString *const ATLMessageInputToolbarSendButton;
 
 - (void)tearDown
 {
+    [tester waitForAnimationsToFinish];
     [self.testInterface dismissPresentedViewController];
     self.viewController.conversationDataSource = nil;
     self.viewController = nil;
@@ -270,6 +271,7 @@ extern NSString *const ATLMessageInputToolbarSendButton;
     [self setupConversationViewController];
     [self setRootViewController:self.viewController];
     
+    [tester waitForTimeInterval:10];
     [tester waitForViewWithAccessibilityLabel:ATLAvatarImageViewAccessibilityLabel];
 }
 
@@ -290,6 +292,65 @@ extern NSString *const ATLMessageInputToolbarSendButton;
     
     ATLAvatarImageView *imageView = (ATLAvatarImageView *)[tester waitForViewWithAccessibilityLabel:ATLAvatarImageViewAccessibilityLabel];
     expect(imageView.avatarImageViewDiameter).to.equal(40);
+}
+
+- (void)testtoVerifyReloadingCellsDuringQueryControllerAnimationDoesNotRaise
+{
+    [self setupConversationViewController];
+    [self setRootViewController:self.viewController];
+    
+    id delegateMock = OCMProtocolMock(@protocol(ATLConversationViewControllerDelegate));
+    self.viewController.delegate = delegateMock;
+    
+    [[[delegateMock expect] andDo:^(NSInvocation *invocation) {
+        ATLConversationViewController *controller;
+        [invocation getArgument:&controller atIndex:2];
+        expect(controller).to.equal(self.viewController);
+        
+        LYRMessage *message;
+        [invocation getArgument:&message atIndex:3];
+        expect(message).to.beKindOf([LYRMessageMock class]);
+        
+        expect(^{[self.viewController reloadCellForMessage:message];}).toNot.raise(NSInternalInconsistencyException);
+    }] conversationViewController:[OCMArg any] didSendMessage:[OCMArg any]];
+    
+    [tester enterText:@"test" intoViewWithAccessibilityLabel:ATLMessageInputToolbarTextInputView];
+    [tester tapViewWithAccessibilityLabel:ATLMessageInputToolbarSendButton];
+    [delegateMock verify];
+}
+
+- (void)testToVerifyReloadingCellsForMutlitpleMessagesDoesNotRaise
+{
+    [self setupConversationViewController];
+    [self setRootViewController:self.viewController];
+    
+    [tester enterText:@"test" intoViewWithAccessibilityLabel:ATLMessageInputToolbarTextInputView];
+    [tester tapViewWithAccessibilityLabel:ATLMessageInputToolbarSendButton];
+    
+    [tester enterText:@"test" intoViewWithAccessibilityLabel:ATLMessageInputToolbarTextInputView];
+    [tester tapViewWithAccessibilityLabel:ATLMessageInputToolbarSendButton];
+    
+    [tester enterText:@"test" intoViewWithAccessibilityLabel:ATLMessageInputToolbarTextInputView];
+    [tester tapViewWithAccessibilityLabel:ATLMessageInputToolbarSendButton];
+    
+    id delegateMock = OCMProtocolMock(@protocol(ATLConversationViewControllerDelegate));
+    self.viewController.delegate = delegateMock;
+    
+    [[[delegateMock expect] andDo:^(NSInvocation *invocation) {
+        ATLConversationViewController *controller;
+        [invocation getArgument:&controller atIndex:2];
+        expect(controller).to.equal(self.viewController);
+        
+        LYRMessage *message;
+        [invocation getArgument:&message atIndex:3];
+        expect(message).to.beKindOf([LYRMessageMock class]);
+        
+        expect(^{[self.viewController reloadCellsForMessagesSentByParticipantWithIdentitifier:self.viewController.layerClient.authenticatedUserID];}).toNot.raise(NSInternalInconsistencyException);
+    }] conversationViewController:[OCMArg any] didSendMessage:[OCMArg any]];
+    
+    [tester enterText:@"test" intoViewWithAccessibilityLabel:ATLMessageInputToolbarTextInputView];
+    [tester tapViewWithAccessibilityLabel:ATLMessageInputToolbarSendButton];
+    [delegateMock verify];
 }
 
 - (void)setupConversationViewController
@@ -324,7 +385,7 @@ extern NSString *const ATLMessageInputToolbarSendButton;
 - (void)setRootViewController:(UIViewController *)controller
 {
     [self.testInterface presentViewController:controller];
-    [tester waitForTimeInterval:1.0]; // Allow controller to be presented.
+    [tester waitForAnimationsToFinish];
 }
 
 @end

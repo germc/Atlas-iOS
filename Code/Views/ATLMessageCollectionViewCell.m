@@ -47,7 +47,7 @@ CGFloat const ATLMessageCellHorizontalMargin = 16.0f;
     static ATLMessageCollectionViewCell *_sharedCell;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        _sharedCell = [ATLMessageCollectionViewCell new];
+        _sharedCell = [[self class] new];
     });
     return _sharedCell;
 }
@@ -397,7 +397,10 @@ CGFloat const ATLMessageCellHorizontalMargin = 16.0f;
     
     LYRMessagePart *part = message.parts.firstObject;
     NSString *text = [[NSString alloc] initWithData:part.data encoding:NSUTF8StringEncoding];
-    UIFont *font = cell.messageTextFont;
+    UIFont *font = [[[self class] appearance] messageTextFont];
+    if (!font) {
+        font = cell.messageTextFont;
+    }
     CGSize size = ATLTextPlainSize(text, font);
     return size.height + ATLMessageBubbleLabelVerticalPadding * 2;
 }

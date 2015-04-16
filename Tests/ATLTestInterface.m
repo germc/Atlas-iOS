@@ -129,13 +129,13 @@ LYRMessagePartMock *ATLMessagePartWithLocation(CLLocation *location)
 {
     ProgrammaticAppDelegate *delegate = [[UIApplication sharedApplication] delegate];
     UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
-    delegate.window.rootViewController = navigationController;
+    [delegate.window.rootViewController presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)dismissPresentedViewController
 {
     ProgrammaticAppDelegate *delegate = [[UIApplication sharedApplication] delegate];
-    delegate.window.rootViewController = nil;
+    [delegate.window.rootViewController dismissViewControllerAnimated:YES completion:nil];
 }
 
 @end
