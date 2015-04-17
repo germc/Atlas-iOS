@@ -60,7 +60,6 @@
 		D6F405E71A8FDE3900AE9581 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D6F405E21A8FDE3900AE9581 /* Images.xcassets */; };
 		D6F405E91A8FDE3900AE9581 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = D6F405E41A8FDE3900AE9581 /* main.m */; };
 		D6F406261A8FDF5900AE9581 /* StoryboardAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = D6F405D61A8FDE1B00AE9581 /* StoryboardAppDelegate.m */; };
-		D6F4062B1A8FE20D00AE9581 /* StoryboardTests-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = D6F406101A8FDEEB00AE9581 /* StoryboardTests-Info.plist */; };
 		D6F4062C1A8FE28000AE9581 /* ATLConversationListViewControllerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D6F406011A8FDEEB00AE9581 /* ATLConversationListViewControllerTest.m */; };
 		D6F4062D1A8FE28000AE9581 /* ATLConversationTableViewCellTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D6F406021A8FDEEB00AE9581 /* ATLConversationTableViewCellTest.m */; };
 		D6F4062E1A8FE28000AE9581 /* ATLConversationViewControllerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = D6F406031A8FDEEB00AE9581 /* ATLConversationViewControllerTest.m */; };
@@ -158,7 +157,6 @@
 		D6F405D41A8FDE1B00AE9581 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = Examples/Storyboard/main.m; sourceTree = SOURCE_ROOT; };
 		D6F405D51A8FDE1B00AE9581 /* StoryboardAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StoryboardAppDelegate.h; path = Examples/Storyboard/StoryboardAppDelegate.h; sourceTree = SOURCE_ROOT; };
 		D6F405D61A8FDE1B00AE9581 /* StoryboardAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = StoryboardAppDelegate.m; path = Examples/Storyboard/StoryboardAppDelegate.m; sourceTree = SOURCE_ROOT; };
-		D6F405DE1A8FDE3900AE9581 /* .DS_Store */ = {isa = PBXFileReference; lastKnownFileType = text; name = .DS_Store; path = Examples/Programmatic/.DS_Store; sourceTree = SOURCE_ROOT; };
 		D6F405E11A8FDE3900AE9581 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = LaunchScreen.xib; sourceTree = "<group>"; };
 		D6F405E21A8FDE3900AE9581 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Examples/Programmatic/Images.xcassets; sourceTree = SOURCE_ROOT; };
 		D6F405E31A8FDE3900AE9581 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Examples/Programmatic/Info.plist; sourceTree = SOURCE_ROOT; };
@@ -443,7 +441,6 @@
 			children = (
 				D6C045431A9914080028E9D0 /* ProgrammaticAppDelegate.h */,
 				D6C045441A9914080028E9D0 /* ProgrammaticAppDelegate.m */,
-				D6F405DE1A8FDE3900AE9581 /* .DS_Store */,
 				D6F405DF1A8FDE3900AE9581 /* Base.lproj */,
 				D6F405E21A8FDE3900AE9581 /* Images.xcassets */,
 				D6F405E31A8FDE3900AE9581 /* Info.plist */,
@@ -654,7 +651,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D6F4062B1A8FE20D00AE9581 /* StoryboardTests-Info.plist in Resources */,
 				D63C68E11A94250000D235D5 /* test-logo.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1058,6 +1054,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -1104,6 +1101,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;

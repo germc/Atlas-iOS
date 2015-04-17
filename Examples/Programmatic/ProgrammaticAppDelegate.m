@@ -41,9 +41,6 @@ static BOOL ATLIsRunningTests()
     self.window.rootViewController = rootViewController;
     [self.window makeKeyAndVisible];
     
-    [[ATLOutgoingMessageCollectionViewCell appearance] setMessageTextFont:[UIFont systemFontOfSize:22]];
-    [[ATLIncomingMessageCollectionViewCell appearance] setMessageTextFont:[UIFont systemFontOfSize:22]];
-    
     return YES;
 }
 

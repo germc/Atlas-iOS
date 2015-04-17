@@ -33,6 +33,8 @@
 
 @implementation ATLBaseConversationViewController
 
+@dynamic view;
+
 static CGFloat const ATLTypingIndicatorHeight = 20;
 static CGFloat const ATLMaxScrollDistanceFromBottom = 150;
 
