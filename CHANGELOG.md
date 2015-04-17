@@ -1,5 +1,11 @@
 # Atlas Changelog
 
+## 1.0.6
+
+### Bug Fixes
+
+* Removed all compiler warnings. 
+
 ## 1.0.5
 
 ### Public API Changes
