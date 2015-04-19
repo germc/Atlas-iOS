@@ -100,6 +100,7 @@ NSString *const ATLAvatarImageViewAccessibilityLabel = @"ATLAvatarImageViewAcces
     } else if (avatarItem.avatarImage) {
         self.image = avatarItem.avatarImage;
     } else if (avatarItem.avatarInitials) {
+        self.image = nil;
         self.initialsLabel.text = avatarItem.avatarInitials;
     }
     _avatarItem = avatarItem;
