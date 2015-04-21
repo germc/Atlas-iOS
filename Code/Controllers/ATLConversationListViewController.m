@@ -70,7 +70,7 @@ NSString *const ATLConversationTableViewAccessibilityIdentifier = @"Conversation
 {
     _cellClass = [ATLConversationTableViewCell class];
     _deletionModes = @[@(LYRDeletionModeLocal), @(LYRDeletionModeAllParticipants)];
-    _displaysAvatarItem = YES;
+    _displaysAvatarItem = NO;
     _allowsEditing = YES;
     _rowHeight = 76.0f;
 }
