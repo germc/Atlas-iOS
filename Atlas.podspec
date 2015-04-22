@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name                        = "Atlas"
-  s.version                     = '1.0.4'
+  s.version                     = '1.0.5'
   s.summary                     = "Atlas is a library of communications user interface components integrated with LayerKit."
   s.homepage                    = 'https://atlas.layer.com/'
   s.social_media_url            = 'http://twitter.com/layer'
