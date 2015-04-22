@@ -210,8 +210,8 @@ NSString *const ATLConversationTableViewAccessibilityIdentifier = @"Conversation
 
 - (void)setupConversationDataSource
 {
-    LYRQuery *query = [LYRQuery queryWithClass:[LYRConversation class]];
-    query.predicate = [LYRPredicate predicateWithProperty:@"participants" operator:LYRPredicateOperatorIsIn value:self.layerClient.authenticatedUserID];
+    LYRQuery *query = [LYRQuery queryWithQueryableClass:[LYRConversation class]];
+    query.predicate = [LYRPredicate predicateWithProperty:@"participants" predicateOperator:LYRPredicateOperatorIsIn value:self.layerClient.authenticatedUserID];
     query.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"lastMessage.receivedAt" ascending:NO]];
 
     self.queryController = [self.layerClient queryControllerWithQuery:query];
@@ -425,8 +425,8 @@ NSString *const ATLConversationTableViewAccessibilityIdentifier = @"Conversation
             if (![searchString isEqualToString:controller.searchBar.text]) return;
             NSSet *participantIdentifiers = [filteredParticipants valueForKey:@"participantIdentifier"];
             
-            LYRQuery *query = [LYRQuery queryWithClass:[LYRConversation class]];
-            query.predicate = [LYRPredicate predicateWithProperty:@"participants" operator:LYRPredicateOperatorIsIn value:participantIdentifiers];
+            LYRQuery *query = [LYRQuery queryWithQueryableClass:[LYRConversation class]];
+            query.predicate = [LYRPredicate predicateWithProperty:@"participants" predicateOperator:LYRPredicateOperatorIsIn value:participantIdentifiers];
             query.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"lastMessage.receivedAt" ascending:NO]];
             self.searchQueryController = [self.layerClient queryControllerWithQuery:query];
             

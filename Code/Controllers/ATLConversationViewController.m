@@ -920,9 +920,9 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
             return;
         }
         
-        LYRQuery *query = [LYRQuery queryWithClass:[LYRMessage class]];
-        LYRPredicate *senderPredicate = [LYRPredicate predicateWithProperty:@"sentByUserID" operator:LYRPredicateOperatorIsEqualTo value:participantIdentifier];
-        LYRPredicate *objectIdentifiersPredicate = [LYRPredicate predicateWithProperty:@"identifier" operator:LYRPredicateOperatorIsIn value:messageIdentifiers];
+        LYRQuery *query = [LYRQuery queryWithQueryableClass:[LYRMessage class]];
+        LYRPredicate *senderPredicate = [LYRPredicate predicateWithProperty:@"sentByUserID" predicateOperator:LYRPredicateOperatorIsEqualTo value:participantIdentifier];
+        LYRPredicate *objectIdentifiersPredicate = [LYRPredicate predicateWithProperty:@"identifier" predicateOperator:LYRPredicateOperatorIsIn value:messageIdentifiers];
         query.predicate = [LYRCompoundPredicate compoundPredicateWithType:LYRCompoundPredicateTypeAnd subpredicates:@[ senderPredicate, objectIdentifiersPredicate ]];
         query.resultType = LYRQueryResultTypeIdentifiers;
         NSOrderedSet *messageIdentifiersToReload = [self.layerClient executeQuery:query error:&error];
@@ -1161,8 +1161,8 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
 {
     NSMutableSet *set = [participantIdentifiers mutableCopy];
     [set addObject:self.layerClient.authenticatedUserID];
-    LYRQuery *query = [LYRQuery queryWithClass:[LYRConversation class]];
-    query.predicate = [LYRPredicate predicateWithProperty:@"participants" operator:LYRPredicateOperatorIsEqualTo value:set];
+    LYRQuery *query = [LYRQuery queryWithQueryableClass:[LYRConversation class]];
+    query.predicate = [LYRPredicate predicateWithProperty:@"participants" predicateOperator:LYRPredicateOperatorIsEqualTo value:set];
     query.limit = 1;
     return [self.layerClient executeQuery:query error:nil].lastObject;
 }

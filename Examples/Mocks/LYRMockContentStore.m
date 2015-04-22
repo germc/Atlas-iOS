@@ -193,7 +193,7 @@
 
 - (void)reindexMessagesForConversation:(LYRConversationMock *)conversation
 {
-    LYRPredicate *predicate = [LYRPredicate predicateWithProperty:@"conversation" operator:LYRPredicateOperatorIsEqualTo value:conversation];
+    LYRPredicate *predicate = [LYRPredicate predicateWithProperty:@"conversation" predicateOperator:LYRPredicateOperatorIsEqualTo value:conversation];
     NSOrderedSet *message = [self fetchObjectsWithClass:[LYRMessage class] predicate:predicate sortDescriptior:@[[NSSortDescriptor sortDescriptorWithKey:@"index" ascending:YES]]];
     [message enumerateObjectsWithOptions:NSEnumerationConcurrent usingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
         [(LYRMessageMock *)obj setPosition:idx];
