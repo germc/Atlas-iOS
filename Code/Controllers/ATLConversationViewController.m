@@ -508,7 +508,9 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
             [self sendMessage:message];
         }
     } else {
-        [self sendLocationMessage];
+        if (messageInputToolbar.textInputView.text.length == 0) {
+            [self sendLocationMessage];
+        }
     }
     if (self.addressBarController) [self.addressBarController disable];
 }
