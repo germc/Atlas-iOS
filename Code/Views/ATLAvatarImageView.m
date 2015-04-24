@@ -133,7 +133,7 @@ NSString *const ATLAvatarImageViewAccessibilityLabel = @"ATLAvatarImageViewAcces
          
 - (void)loadAvatarImageWithURL:(NSURL *)imageURL
 {
-    if (![imageURL isKindOfClass:[NSURL class]]) {
+    if (![imageURL isKindOfClass:[NSURL class]] || imageURL.absoluteString.length == 0) {
         NSLog(@"Cannot fetch image without URL");
         return;
     }
