@@ -174,7 +174,7 @@
  @abstract Informs the receiver if it should display an avatar item representing a conversation.
  @discussion When `YES`, an avatar item will be displayed for every conversation cell.
  Typically, this image will be an avatar image representing the user or group of users.
- @default `YES`
+ @default `NO`
  @raises NSInternalInconsistencyException Raised if the value is mutated after the receiver has been presented.
  */
 @property (nonatomic, assign) BOOL displaysAvatarItem;
