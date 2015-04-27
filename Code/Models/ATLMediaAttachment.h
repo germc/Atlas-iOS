@@ -99,6 +99,11 @@ typedef NS_ENUM(NSUInteger, ATLMediaAttachmentType) {
 ///----------------------------
 
 /**
+ @abstract Maximum size of thummail when presented in input toolbar
+ */
+@property (nonatomic, assign) CGSize maximumInputSize;
+
+/**
  @abstract A text representation of the media, useful for push alert texts or cells that don't display media items (like conversation list view).
  @see `ATLMediaAttachmentType` what `textRepresentation` contains for different media attachment types.
  */
