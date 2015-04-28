@@ -75,11 +75,6 @@ NSString *const ATLConversationTableViewAccessibilityIdentifier = @"Conversation
     _rowHeight = 76.0f;
 }
 
-- (void)loadView
-{
-    self.view = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
-}
-
 - (id)init
 {
     [NSException raise:NSInternalInconsistencyException format:@"Failed to call designated initializer"];
@@ -101,9 +96,7 @@ NSString *const ATLConversationTableViewAccessibilityIdentifier = @"Conversation
     [super viewDidLoad];
     self.title = ATLConversationListViewControllerTitle;
     self.accessibilityLabel = ATLConversationListViewControllerTitle;
-    
-    self.tableView.delegate = self;
-    self.tableView.dataSource = self;
+
     self.tableView.accessibilityLabel = ATLConversationTableViewAccessibilityLabel;
     self.tableView.accessibilityIdentifier = ATLConversationTableViewAccessibilityIdentifier;
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
