@@ -95,13 +95,12 @@
 /**
  @abstract Asks the data source for the table view cell reuse identifier for a conversation.
  @param conversationListViewController The `ATLConversationListViewController` requesting the string.
- @param conversation The `LYRConversation` object to display in the cell.
  @return A string that will be used to dequeue a cell from the table view.
  @discussion Applications that wish to use prototype cells from a UIStoryboard in the ATLConversationListViewController cannot register their cells programmatically.
  The cell must be given a reuse identifier in the UIStoryboard and that string needs to be passed into the ATLConversationListViewController so it can properly dequeue a
  reuseable cell. If 'nil' is returned, the table view will default to internal values for reuse identifiers.
  */
-- (NSString *)conversationListViewController:(ATLConversationListViewController *)conversationListViewController reuseIdentifierForConversation:(LYRConversation *)conversation;
+- (NSString *)reuseIdentifierForConversationListViewController:(ATLConversationListViewController *)conversationListViewController;
 
 /**
  @abstract Asks the data source for a string to display on the delete button for a given deletion mode.
