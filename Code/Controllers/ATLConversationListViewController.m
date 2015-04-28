@@ -354,8 +354,8 @@ NSString *const ATLConversationTableViewAccessibilityIdentifier = @"Conversation
 - (NSString *)reuseIdentifierForConversation:(LYRConversation *)conversation atIndexPath:(NSIndexPath *)indexPath
 {
     NSString *reuseIdentifier;
-    if ([self.dataSource respondsToSelector:@selector(conversationListViewController:reuseIdentifierForConversation:)]) {
-        reuseIdentifier = [self.dataSource conversationListViewController:self reuseIdentifierForConversation:conversation];
+    if ([self.dataSource respondsToSelector:@selector(reuseIdentifierForConversationListViewController:)]) {
+        reuseIdentifier = [self.dataSource reuseIdentifierForConversationListViewController:self];
     }
     if (!reuseIdentifier) {
         reuseIdentifier = ATLConversationCellReuseIdentifier;
