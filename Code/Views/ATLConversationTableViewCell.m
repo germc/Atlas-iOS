@@ -283,7 +283,7 @@ NSString *const ATLGIFMIMETypePlaceholderText = @"Attachment: GIF";
             self.lastMessageLabel.text = ATLImageMIMETypePlaceholderText;
         }
     }
-      [self updateUnreadMessageIndicatorWithConversation:conversation];
+    [self updateUnreadMessageIndicatorWithConversation:conversation];
 }
 
 - (NSAttributedString *)attributedStringForMessageText:(NSString *)messageText
