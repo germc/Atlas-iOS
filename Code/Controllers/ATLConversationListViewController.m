@@ -23,7 +23,7 @@
 
 static NSString *const ATLConversationCellReuseIdentifier = @"ATLConversationCellReuseIdentifier";
 
-@interface ATLConversationListViewController () <UIActionSheetDelegate, LYRQueryControllerDelegate, UISearchBarDelegate, UISearchControllerDelegate, UISearchDisplayDelegate>
+@interface ATLConversationListViewController () <UIActionSheetDelegate, LYRQueryControllerDelegate, UISearchBarDelegate, UISearchControllerDelegate, UISearchDisplayDelegate, ATLConversationTableViewCellDataSource>
 
 @property (nonatomic) LYRQueryController *queryController;
 @property (nonatomic) LYRQueryController *searchQueryController;
@@ -250,6 +250,11 @@ NSString *const ATLConversationTableViewAccessibilityIdentifier = @"Conversation
     LYRConversation *conversation = [self.queryController objectAtIndexPath:indexPath];
     [conversationCell presentConversation:conversation];
     
+    if ([conversationCell isKindOfClass:[ATLConversationTableViewCell class]]) {
+        ATLConversationTableViewCell *cell = (ATLConversationTableViewCell*)conversationCell;
+        cell.dataSource = self;
+    }
+    
     if (self.displaysAvatarItem) {
         if ([self.dataSource respondsToSelector:@selector(conversationListViewController:avatarItemForConversation:)]) {
             id<ATLAvatarItem> avatarItem = [self.dataSource conversationListViewController:self avatarItemForConversation:conversation];
@@ -264,6 +269,17 @@ NSString *const ATLConversationTableViewAccessibilityIdentifier = @"Conversation
         [conversationCell updateWithConversationTitle:conversationTitle];
     } else {
         @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Conversation View Delegate must return a conversation label" userInfo:nil];
+    }
+}
+
+#pragma mark - ATLConversationTableViewCellDataSource
+
+- (NSString *)conversationTableViewCell:(ATLConversationTableViewCell *)conversationTableViewCell lastMessageTextForConversation:(LYRConversation *)conversation
+{
+    if ([self.dataSource respondsToSelector:@selector(conversationListViewController:lastMessageTextForConversation:)]) {
+        return [self.dataSource conversationListViewController:self lastMessageTextForConversation:conversation];
+    } else {
+        return nil;
     }
 }
 
