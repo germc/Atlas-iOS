@@ -251,7 +251,7 @@ NSString *const ATLConversationTableViewAccessibilityIdentifier = @"Conversation
     [conversationCell presentConversation:conversation];
     
     if ([conversationCell isKindOfClass:[ATLConversationTableViewCell class]]) {
-        ATLConversationTableViewCell *cell = (ATLConversationTableViewCell*)conversationCell;
+        ATLConversationTableViewCell *cell = (ATLConversationTableViewCell *)conversationCell;
         cell.dataSource = self;
     }
     
