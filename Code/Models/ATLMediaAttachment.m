@@ -330,22 +330,18 @@ ALAsset *ATLMediaAttachmentFromAssetURL(NSURL *assetURL, ALAssetsLibrary *assetL
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
     __block ALAsset *resultAsset;
     dispatch_async(asyncQueue, ^{
-        
-        
         [assetLibrary assetForURL:assetURL resultBlock:^(ALAsset *asset) {
              if (asset){
                  resultAsset = asset;
                  dispatch_semaphore_signal(semaphore);
              } else {
                  // On iOS 8.1 [library assetForUrl] Photo Streams always returns nil. Try to obtain it in an alternative way
-                 
                  [assetLibrary enumerateGroupsWithTypes:ALAssetsGroupPhotoStream usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
                       [group enumerateAssetsWithOptions:NSEnumerationReverse usingBlock:^(ALAsset *result, NSUInteger index, BOOL *stop) {
                           if([result.defaultRepresentation.url isEqual:assetURL]) {
                               resultAsset = result;
                               *stop = YES;
                               dispatch_semaphore_signal(semaphore);
-                              
                           }
                       }];
                   } failureBlock:^(NSError *error) {
