@@ -108,6 +108,14 @@
  */
 - (UIColor *)conversationListViewController:(ATLConversationListViewController *)conversationListViewController colorForButtonWithDeletionMode:(LYRDeletionMode)deletionMode;
 
+/**
+ @abstract Asks the data source for the text string to display as the conversation's last sent message.
+ @params conversation The conversation to return the last message text.
+ @return A string for the last sent message.  If `nil` is returned the controller will fall back to default behavior.
+ @discussion This is used when the application uses custom `MIMEType`s and wants to customize how they are displayed.
+ */
+- (NSString *)conversationListViewController:(ATLConversationListViewController *)conversationListViewController lastMessageTextForConversation:(LYRConversation *)conversation;
+
 @end
 
 /**

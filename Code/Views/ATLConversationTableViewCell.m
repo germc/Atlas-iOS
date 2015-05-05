@@ -262,19 +262,26 @@ NSString *const ATLGIFMIMETypePlaceholderText = @"Attachment: GIF";
     
     LYRMessage *message = conversation.lastMessage;
     LYRMessagePart *messagePart = message.parts.firstObject;
-    if ([messagePart.MIMEType isEqualToString:ATLMIMETypeTextPlain]) {
-        NSString *messageText = [[NSString alloc] initWithData:messagePart.data encoding:NSUTF8StringEncoding];
-        self.lastMessageLabel.attributedText = [self attributedStringForMessageText:messageText];
-    } else if ([messagePart.MIMEType isEqualToString:ATLMIMETypeImageJPEG]) {
-        self.lastMessageLabel.text = ATLImageMIMETypePlaceholderText;
-    } else if ([messagePart.MIMEType isEqualToString:ATLMIMETypeImagePNG]) {
-        self.lastMessageLabel.text = ATLImageMIMETypePlaceholderText;
-    } else if ([messagePart.MIMEType isEqualToString:ATLMIMETypeImageGIF]) {
-        self.lastMessageLabel.text = ATLGIFMIMETypePlaceholderText;
-    } else if ([messagePart.MIMEType isEqualToString:ATLMIMETypeLocation]) {
-        self.lastMessageLabel.text = ATLLocationMIMETypePlaceholderText;
-    } else {
-        self.lastMessageLabel.text = ATLImageMIMETypePlaceholderText;
+    NSString *lastMessage;
+    if ([self.dataSource respondsToSelector:@selector(conversationTableViewCell:lastMessageTextForConversation:)]) {
+        lastMessage = [self.dataSource conversationTableViewCell:self lastMessageTextForConversation:conversation];
+        self.lastMessageLabel.text = lastMessage;
+    }
+    if (lastMessage == nil) {
+        if ([messagePart.MIMEType isEqualToString:ATLMIMETypeTextPlain]) {
+            NSString *messageText = [[NSString alloc] initWithData:messagePart.data encoding:NSUTF8StringEncoding];
+            self.lastMessageLabel.attributedText = [self attributedStringForMessageText:messageText];
+        } else if ([messagePart.MIMEType isEqualToString:ATLMIMETypeImageJPEG]) {
+            self.lastMessageLabel.text = ATLImageMIMETypePlaceholderText;
+        } else if ([messagePart.MIMEType isEqualToString:ATLMIMETypeImagePNG]) {
+            self.lastMessageLabel.text = ATLImageMIMETypePlaceholderText;
+        } else if ([messagePart.MIMEType isEqualToString:ATLMIMETypeImageGIF]) {
+            self.lastMessageLabel.text = ATLGIFMIMETypePlaceholderText;
+        } else if ([messagePart.MIMEType isEqualToString:ATLMIMETypeLocation]) {
+            self.lastMessageLabel.text = ATLLocationMIMETypePlaceholderText;
+        } else {
+            self.lastMessageLabel.text = ATLImageMIMETypePlaceholderText;
+        }
     }
     [self updateUnreadMessageIndicatorWithConversation:conversation];
 }
