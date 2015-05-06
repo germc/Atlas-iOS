@@ -210,7 +210,7 @@
 /**
  @abstract The controller used to display search results.
  */
-@property (nonatomic, readonly) UISearchDisplayController *searchContorller;
+@property (nonatomic, readonly) UISearchDisplayController *searchController;
 
 
 ///------------------------------

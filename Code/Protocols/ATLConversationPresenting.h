@@ -48,4 +48,6 @@
  */
 - (void)updateWithAvatarItem:(id<ATLAvatarItem>)avatarItem;
 
+- (void)updateWithLastMessageText:(NSString *)lastMessageText;
+
 @end
