@@ -23,9 +23,9 @@
 #import "ATLMessagingUtilities.h"
 
 static NSString *const ATLConversationCellReuseIdentifier = @"ATLConversationCellReuseIdentifier";
-NSString *const ATLImageMIMETypePlaceholderText = @"Attachment: Image";
-NSString *const ATLLocationMIMETypePlaceholderText = @"Attachment: Location";
-NSString *const ATLGIFMIMETypePlaceholderText = @"Attachment: GIF";
+static NSString *const ATLImageMIMETypePlaceholderText = @"Attachment: Image";
+static NSString *const ATLLocationMIMETypePlaceholderText = @"Attachment: Location";
+static NSString *const ATLGIFMIMETypePlaceholderText = @"Attachment: GIF";
 
 @interface ATLConversationListViewController () <UIActionSheetDelegate, LYRQueryControllerDelegate, UISearchBarDelegate, UISearchControllerDelegate, UISearchDisplayDelegate>
 
