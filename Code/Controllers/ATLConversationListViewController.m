@@ -20,10 +20,14 @@
 
 #import <objc/runtime.h>
 #import "ATLConversationListViewController.h"
+#import "ATLMessagingUtilities.h"
 
 static NSString *const ATLConversationCellReuseIdentifier = @"ATLConversationCellReuseIdentifier";
+NSString *const ATLImageMIMETypePlaceholderText = @"Attachment: Image";
+NSString *const ATLLocationMIMETypePlaceholderText = @"Attachment: Location";
+NSString *const ATLGIFMIMETypePlaceholderText = @"Attachment: GIF";
 
-@interface ATLConversationListViewController () <UIActionSheetDelegate, LYRQueryControllerDelegate, UISearchBarDelegate, UISearchControllerDelegate, UISearchDisplayDelegate, ATLConversationTableViewCellDataSource>
+@interface ATLConversationListViewController () <UIActionSheetDelegate, LYRQueryControllerDelegate, UISearchBarDelegate, UISearchControllerDelegate, UISearchDisplayDelegate>
 
 @property (nonatomic) LYRQueryController *queryController;
 @property (nonatomic) LYRQueryController *searchQueryController;
@@ -250,11 +254,6 @@ NSString *const ATLConversationTableViewAccessibilityIdentifier = @"Conversation
     LYRConversation *conversation = [self.queryController objectAtIndexPath:indexPath];
     [conversationCell presentConversation:conversation];
     
-    if ([conversationCell isKindOfClass:[ATLConversationTableViewCell class]]) {
-        ATLConversationTableViewCell *cell = (ATLConversationTableViewCell *)conversationCell;
-        cell.dataSource = self;
-    }
-    
     if (self.displaysAvatarItem) {
         if ([self.dataSource respondsToSelector:@selector(conversationListViewController:avatarItemForConversation:)]) {
             id<ATLAvatarItem> avatarItem = [self.dataSource conversationListViewController:self avatarItemForConversation:conversation];
@@ -270,16 +269,15 @@ NSString *const ATLConversationTableViewAccessibilityIdentifier = @"Conversation
     } else {
         @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Conversation View Delegate must return a conversation label" userInfo:nil];
     }
-}
-
-#pragma mark - ATLConversationTableViewCellDataSource
-
-- (NSString *)conversationTableViewCell:(ATLConversationTableViewCell *)conversationTableViewCell lastMessageTextForConversation:(LYRConversation *)conversation
-{
+    
+    NSString *lastMessageText;
     if ([self.dataSource respondsToSelector:@selector(conversationListViewController:lastMessageTextForConversation:)]) {
-        return [self.dataSource conversationListViewController:self lastMessageTextForConversation:conversation];
+        lastMessageText = [self.dataSource conversationListViewController:self lastMessageTextForConversation:conversation];
+    }
+    if (lastMessageText == nil) {
+        [conversationCell updateWithLastMessageText:[self defaultLastMessageTextForConversation:conversation]];
     } else {
-        return nil;
+        [conversationCell updateWithLastMessageText:lastMessageText];
     }
 }
 
@@ -464,6 +462,27 @@ NSString *const ATLConversationTableViewAccessibilityIdentifier = @"Conversation
 }
 
 #pragma mark - Helpers
+
+- (NSString *)defaultLastMessageTextForConversation:(LYRConversation *)conversation
+{
+    NSString *lastMessageText;
+    LYRMessage *lastMessage = conversation.lastMessage;
+    LYRMessagePart *messagePart = lastMessage.parts[0];
+        if ([messagePart.MIMEType isEqualToString:ATLMIMETypeTextPlain]) {
+            lastMessageText = [[NSString alloc] initWithData:messagePart.data encoding:NSUTF8StringEncoding];
+        } else if ([messagePart.MIMEType isEqualToString:ATLMIMETypeImageJPEG]) {
+            lastMessageText = ATLImageMIMETypePlaceholderText;
+        } else if ([messagePart.MIMEType isEqualToString:ATLMIMETypeImagePNG]) {
+            lastMessageText = ATLImageMIMETypePlaceholderText;
+        } else if ([messagePart.MIMEType isEqualToString:ATLMIMETypeImageGIF]) {
+            lastMessageText = ATLGIFMIMETypePlaceholderText;
+        } else if ([messagePart.MIMEType isEqualToString:ATLMIMETypeLocation]) {
+            lastMessageText = ATLLocationMIMETypePlaceholderText;
+        } else {
+            lastMessageText = ATLImageMIMETypePlaceholderText;
+        }
+    return lastMessageText;
+}
 
 - (void)deleteConversationAtIndexPath:(NSIndexPath *)indexPath withDeletionMode:(LYRDeletionMode)deletionMode
 {

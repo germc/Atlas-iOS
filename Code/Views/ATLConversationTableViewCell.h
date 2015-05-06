@@ -21,22 +21,6 @@
 #import <UIKit/UIKit.h>
 #import "ATLConversationPresenting.h"
 
-@class ATLConversationTableViewCell;
-
-@protocol ATLConversationTableViewCellDataSource <NSObject>
-
-@optional
-
-/**
- @abstract Asks the data source for a title string to display for a given conversation.
- @param conversationTableViewCell The `ATLConversationTableViewCell` in which the string will appear.
- @param conversation The `LYRConversation` object.
- @return The string to be displayed as the last message text for a given conversation in the conversation list.
- */
-- (NSString *)conversationTableViewCell:(ATLConversationTableViewCell *)conversationTableViewCell lastMessageTextForConversation:(LYRConversation *)conversation;
-
-@end
-
 /**
  @abstract The `ATLConversationTableViewCell` class provides a lightweight, customizable table
  view cell for presenting Layer conversation objects.
@@ -82,10 +66,5 @@
  @abstract The background color for the cell. Default is white.
  */
 @property (nonatomic) UIColor *cellBackgroundColor UI_APPEARANCE_SELECTOR;
-
-/**
- @abstract The optional datasource for the cell.
- */
-@property (weak, nonatomic) id <ATLConversationTableViewCellDataSource> dataSource;
 
 @end
