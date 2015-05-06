@@ -274,11 +274,10 @@ NSString *const ATLConversationTableViewAccessibilityIdentifier = @"Conversation
     if ([self.dataSource respondsToSelector:@selector(conversationListViewController:lastMessageTextForConversation:)]) {
         lastMessageText = [self.dataSource conversationListViewController:self lastMessageTextForConversation:conversation];
     }
-    if (lastMessageText == nil) {
-        [conversationCell updateWithLastMessageText:[self defaultLastMessageTextForConversation:conversation]];
-    } else {
-        [conversationCell updateWithLastMessageText:lastMessageText];
+    if (!lastMessageText) {
+        lastMessageText = [self defaultLastMessageTextForConversation:conversation];
     }
+    [conversationCell updateWithLastMessageText:lastMessageText];
 }
 
 #pragma mark - Reloading Conversations
