@@ -21,6 +21,8 @@
 #import <UIKit/UIKit.h>
 #import <Atlas/Atlas.h>
 
+extern NSString *const ATLConversationTableViewAccessibilityIdentifier;
+
 @interface ATLSampleConversationListViewController : ATLConversationListViewController
 
 @end

@@ -108,6 +108,14 @@
  */
 - (UIColor *)conversationListViewController:(ATLConversationListViewController *)conversationListViewController colorForButtonWithDeletionMode:(LYRDeletionMode)deletionMode;
 
+/**
+ @abstract Asks the data source for the string to display as the conversation's last sent message.
+ @params conversation The conversation for which the last message text should be returned.
+ @return A string representing the content of the last message.  If `nil` is returned the controller will fall back to default behavior.
+ @discussion This is used when the application uses custom `MIMEType`s and wants to customize how they are displayed.
+ */
+- (NSString *)conversationListViewController:(ATLConversationListViewController *)conversationListViewController lastMessageTextForConversation:(LYRConversation *)conversation;
+
 @end
 
 /**
@@ -202,7 +210,7 @@
 /**
  @abstract The controller used to display search results.
  */
-@property (nonatomic, readonly) UISearchDisplayController *searchContorller;
+@property (nonatomic, readonly) UISearchDisplayController *searchController;
 
 
 ///------------------------------

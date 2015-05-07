@@ -24,6 +24,10 @@
 #import "ATLTestInterface.h"
 #import "ATLSampleConversationListViewController.h"
 
+ NSString *const ATLConversationTableViewAccessibilityLabel;
+ NSString *const ATLImageMIMETypePlaceholderText;
+ NSString *const ATLLocationMIMETypePlaceholderText;
+
 @interface ATLConversationTableViewCellTest : XCTestCase
 
 @property (nonatomic) ATLTestInterface *testInterface;
@@ -34,9 +38,6 @@
 @implementation ATLConversationTableViewCellTest
 
 NSString *ATLLastMessageText = @"ATLLastMessageText";
-extern NSString *const ATLConversationTableViewAccessibilityIdentifier;
-extern NSString *const ATLImageMIMETypePlaceholderText;
-extern NSString *const ATLLocationMIMETypePlaceholderText;
 
 - (void)setUp
 {
