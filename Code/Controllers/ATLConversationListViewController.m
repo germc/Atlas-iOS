@@ -79,11 +79,6 @@ NSString *const ATLConversationTableViewAccessibilityIdentifier = @"Conversation
     _rowHeight = 76.0f;
 }
 
-- (void)loadView
-{
-    self.view = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
-}
-
 - (id)init
 {
     [NSException raise:NSInternalInconsistencyException format:@"Failed to call designated initializer"];
@@ -105,9 +100,7 @@ NSString *const ATLConversationTableViewAccessibilityIdentifier = @"Conversation
     [super viewDidLoad];
     self.title = ATLConversationListViewControllerTitle;
     self.accessibilityLabel = ATLConversationListViewControllerTitle;
-    
-    self.tableView.delegate = self;
-    self.tableView.dataSource = self;
+
     self.tableView.accessibilityLabel = ATLConversationTableViewAccessibilityLabel;
     self.tableView.accessibilityIdentifier = ATLConversationTableViewAccessibilityIdentifier;
     self.tableView.isAccessibilityElement = YES;
@@ -238,7 +231,9 @@ NSString *const ATLConversationTableViewAccessibilityIdentifier = @"Conversation
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell<ATLConversationPresenting> *conversationCell = [tableView dequeueReusableCellWithIdentifier:ATLConversationCellReuseIdentifier forIndexPath:indexPath];
+    NSString *reuseIdentifier = [self reuseIdentifierForConversation:nil atIndexPath:indexPath];
+    
+    UITableViewCell<ATLConversationPresenting> *conversationCell = [tableView dequeueReusableCellWithIdentifier:reuseIdentifier forIndexPath:indexPath];
     [self configureCell:conversationCell atIndexPath:indexPath];
     return conversationCell;
 }
@@ -366,6 +361,20 @@ NSString *const ATLConversationTableViewAccessibilityIdentifier = @"Conversation
         [self setEditing:NO animated:YES];
     }
     self.conversationToDelete = nil;
+}
+
+#pragma mark - Data Source
+
+- (NSString *)reuseIdentifierForConversation:(LYRConversation *)conversation atIndexPath:(NSIndexPath *)indexPath
+{
+    NSString *reuseIdentifier;
+    if ([self.dataSource respondsToSelector:@selector(reuseIdentifierForConversationListViewController:)]) {
+        reuseIdentifier = [self.dataSource reuseIdentifierForConversationListViewController:self];
+    }
+    if (!reuseIdentifier) {
+        reuseIdentifier = ATLConversationCellReuseIdentifier;
+    }
+    return reuseIdentifier;
 }
 
 #pragma mark - LYRQueryControllerDelegate
