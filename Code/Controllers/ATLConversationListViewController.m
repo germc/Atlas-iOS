@@ -110,6 +110,7 @@ NSString *const ATLConversationTableViewAccessibilityIdentifier = @"Conversation
     self.tableView.dataSource = self;
     self.tableView.accessibilityLabel = ATLConversationTableViewAccessibilityLabel;
     self.tableView.accessibilityIdentifier = ATLConversationTableViewAccessibilityIdentifier;
+    self.tableView.isAccessibilityElement = YES;
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
     
     self.searchBar = [[UISearchBar alloc] initWithFrame:CGRectZero];
