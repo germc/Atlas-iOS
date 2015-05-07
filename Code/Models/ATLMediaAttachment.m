@@ -188,7 +188,7 @@ static float const ATLMediaAttachmentDefaultThumbnailJPEGCompression = 0.5f;
         ((ATLMediaInputStream *)self.thumbnailInputStream).maximumSize = thumbnailSize;
         ((ATLMediaInputStream *)self.thumbnailInputStream).compressionQuality = ATLMediaAttachmentDefaultThumbnailJPEGCompression;
         self.thumbnailMIMEType = ATLMIMETypeImageJPEGPreview;
-
+        
         // --------------------------------------------------------------------
         // Prepare the input stream and MIMEType for the metadata
         // about the asset.
@@ -315,7 +315,7 @@ static float const ATLMediaAttachmentDefaultThumbnailJPEGCompression = 0.5f;
 - (CGRect)attachmentBoundsForTextContainer:(NSTextContainer *)textContainer proposedLineFragment:(CGRect)lineFrag glyphPosition:(CGPoint)position characterIndex:(NSUInteger)charIndex
 {
     CGRect systemImageRect = [super attachmentBoundsForTextContainer:textContainer proposedLineFragment:lineFrag glyphPosition:position characterIndex:charIndex];
-    return ATLImageRectConstrainedToSize(systemImageRect.size, CGSizeMake(150, 150));
+    return ATLImageRectConstrainedToSize(systemImageRect.size, CGSizeEqualToSize(_maximumInputSize, CGSizeZero) ? CGSizeMake(150, 150) : _maximumInputSize);
 }
 
 @end
