@@ -53,6 +53,13 @@ static CGFloat const ATLLeftAccessoryButtonWidth = 40.0f;
 static CGFloat const ATLRightAccessoryButtonWidth = 46.0f;
 static CGFloat const ATLButtonHeight = 28.0f;
 
++ (void)initialize
+{
+    ATLMessageInputToolbar *proxy = [self appearance];
+    proxy.rightAccessoryButtonActiveColor = ATLBlueColor();
+    proxy.rightAccessoryButtonDisabledColor = [UIColor grayColor];
+}
+
 - (id)init
 {
     self = [super init];
@@ -221,6 +228,18 @@ static CGFloat const ATLButtonHeight = 28.0f;
     [self.rightAccessoryButton setImage:rightAccessoryImage forState:UIControlStateNormal];
 }
 
+- (void)setRightAccessoryButtonActiveColor:(UIColor *)rightAccessoryButtonActiveColor
+{
+    _rightAccessoryButtonActiveColor = rightAccessoryButtonActiveColor;
+    [self.rightAccessoryButton setTitleColor:rightAccessoryButtonActiveColor forState:UIControlStateNormal];
+}
+
+- (void)setRightAccessoryButtonDisabledColor:(UIColor *)rightAccessoryButtonDisabledColor
+{
+    _rightAccessoryButtonDisabledColor = rightAccessoryButtonDisabledColor;
+    [self.rightAccessoryButton setTitleColor:rightAccessoryButtonDisabledColor forState:UIControlStateDisabled];
+}
+
 #pragma mark - Actions
 
 - (void)leftAccessoryButtonTapped
@@ -345,8 +364,8 @@ static CGFloat const ATLButtonHeight = 28.0f;
     self.rightAccessoryButton.contentEdgeInsets = UIEdgeInsetsMake(2, 0, 0, 0);
     self.rightAccessoryButton.titleLabel.font = [UIFont boldSystemFontOfSize:17];
     [self.rightAccessoryButton setTitle:@"Send" forState:UIControlStateNormal];
-    [self.rightAccessoryButton setTitleColor:ATLBlueColor() forState:UIControlStateNormal];
-    [self.rightAccessoryButton setTitleColor:[UIColor grayColor] forState:UIControlStateDisabled];
+    [self.rightAccessoryButton setTitleColor:self.rightAccessoryButtonActiveColor forState:UIControlStateNormal];
+    [self.rightAccessoryButton setTitleColor:self.rightAccessoryButtonDisabledColor forState:UIControlStateDisabled];
 }
 
 - (void)configureRightAccessoryButtonForImage

@@ -101,6 +101,16 @@ extern NSString *const ATLMessageInputToolbarAccessibilityLabel;
 @property (nonatomic) UIButton *rightAccessoryButton;
 
 /**
+ @abstract The font color for the right accessory button in active state.
+ */
+@property (nonatomic) UIColor *rightAccessoryButtonActiveColor UI_APPEARANCE_SELECTOR;
+
+/**
+ @abstract The font color for the right accessory button in disabled state.
+ */
+@property (nonatomic) UIColor *rightAccessoryButtonDisabledColor UI_APPEARANCE_SELECTOR;
+
+/**
  @abstract The image displayed on left accessory button.
  @default A `camera` icon.
  */
