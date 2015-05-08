@@ -64,8 +64,8 @@
     LYRMessageMock *message2 = [client newMessageWithParts:@[messagePart2] options:nil error:nil];
     [conversation sendMessage:message2 error:nil];
     
-    LYRQuery *query = [LYRQuery queryWithClass:[LYRMessage class]];
-    query.predicate = [LYRPredicate predicateWithProperty:@"conversation" operator:LYRPredicateOperatorIsEqualTo value:conversation];
+    LYRQuery *query = [LYRQuery queryWithQueryableClass:[LYRMessage class]];
+    query.predicate = [LYRPredicate predicateWithProperty:@"conversation" predicateOperator:LYRPredicateOperatorIsEqualTo value:conversation];
     NSOrderedSet *messages = [client executeQuery:query error:nil];
     expect(messages.count).to.equal(2);
 }
@@ -88,12 +88,12 @@
     LYRMessageMock *message2 = [client newMessageWithParts:@[messagePart2] options:nil error:nil];
     [conversation2 sendMessage:message2 error:nil];
 
-    LYRQuery *query = [LYRQuery queryWithClass:[LYRConversation class]];
-    query.predicate = [LYRPredicate predicateWithProperty:@"identifier" operator:LYRPredicateOperatorIsEqualTo value:conversation1.identifier];
+    LYRQuery *query = [LYRQuery queryWithQueryableClass:[LYRConversation class]];
+    query.predicate = [LYRPredicate predicateWithProperty:@"identifier" predicateOperator:LYRPredicateOperatorIsEqualTo value:conversation1.identifier];
     LYRConversationMock *fetchedConversation = [[client executeQuery:query error:nil] lastObject];
     expect(conversation1).to.equal(fetchedConversation);
     
-    query.predicate = [LYRPredicate predicateWithProperty:@"identifier" operator:LYRPredicateOperatorIsEqualTo value:conversation2.identifier];
+    query.predicate = [LYRPredicate predicateWithProperty:@"identifier" predicateOperator:LYRPredicateOperatorIsEqualTo value:conversation2.identifier];
     fetchedConversation = [[client executeQuery:query error:nil] lastObject];
     expect(conversation2).to.equal(fetchedConversation);
 }
