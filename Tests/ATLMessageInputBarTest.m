@@ -23,6 +23,7 @@
 #import "ATLTestInterface.h"
 #import "ATLSampleConversationViewController.h"
 #import "ATLMediaAttachment.h"
+#import "ATLConstants.h"
 
 @interface ATLConversationViewController ()
 
@@ -335,6 +336,14 @@ extern NSString *const ATLMessageInputToolbarSendButton;
     
     expect(toolBar.rightAccessoryButton.imageView.image).to.equal(image);
     expect(toolBar.leftAccessoryButton.imageView.image).to.equal(image);
+}
+
+- (void)testToVerifyRightAccessoryButtonColor
+{
+    [self setRootViewController];
+    ATLMessageInputToolbar *toolBar = (ATLMessageInputToolbar *)[tester waitForViewWithAccessibilityLabel:@"Message Input Toolbar"];
+    expect([toolBar.rightAccessoryButton titleColorForState:UIControlStateNormal]).to.equal(ATLBlueColor());
+    expect([toolBar.rightAccessoryButton titleColorForState:UIControlStateDisabled]).to.equal([UIColor grayColor]);
 }
 
 - (void)setRootViewController
