@@ -20,13 +20,16 @@
 #import "LYRMessageMock.h"
 #import "LYRMockContentStore.h"
 
+@implementation LYRActorMock
+@end
+
 @interface LYRMessageMock ()
 
 @property (nonatomic, readwrite) NSURL *identifier;
 @property (nonatomic, readwrite) BOOL isSent;
 @property (nonatomic, readwrite) BOOL isDeleted;
 @property (nonatomic, readwrite) BOOL isUnread;
-@property (nonatomic, readwrite) NSString *sentByUserID;
+@property (nonatomic, readwrite) LYRActorMock *sender;
 
 @end
 
@@ -37,7 +40,8 @@
     self = [super init];
     if (self) {
         _parts = messageParts;
-        _sentByUserID = senderID;
+        _sender = [LYRActorMock new];
+        _sender.userID = senderID;
     }
     return self;    
 }

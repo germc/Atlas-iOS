@@ -150,7 +150,7 @@ extern NSString *const ATLAvatarImageViewAccessibilityLabel;
     [tester tapViewWithAccessibilityLabel:[NSString stringWithFormat:@"Delete %@", mockUser3.fullName]];
     [self deleteConversation:conversation3 deletionMode:LYRDeletionModeLocal];
     
-    LYRQuery *query = [LYRQuery queryWithClass:[LYRConversation class]];
+    LYRQuery *query = [LYRQuery queryWithQueryableClass:[LYRConversation class]];
     NSError *error;
     NSOrderedSet *conversations = [self.testInterface.layerClient executeQuery:query error:&error];
     expect(error).to.beNil;

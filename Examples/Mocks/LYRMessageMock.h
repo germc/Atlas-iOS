@@ -22,6 +22,12 @@
 
 @class LYRConversationMock;
 
+@interface LYRActorMock : NSObject
+
+@property (nonatomic, readwrite) NSString *userID;
+@property (nonatomic, readwrite) NSString *name;
+
+@end
 @interface LYRMessageMock : NSObject <LYRQueryable>
 
 @property (nonatomic, readonly) NSURL *identifier LYR_QUERYABLE_PROPERTY;
@@ -33,7 +39,7 @@
 @property (nonatomic, readonly) BOOL isUnread LYR_QUERYABLE_PROPERTY;
 @property (nonatomic) NSDate *sentAt LYR_QUERYABLE_PROPERTY;
 @property (nonatomic) NSDate *receivedAt LYR_QUERYABLE_PROPERTY;
-@property (nonatomic, readonly) NSString *sentByUserID LYR_QUERYABLE_PROPERTY;
+@property (nonatomic, readonly) LYRActorMock *sender;
 @property (nonatomic) NSDictionary *recipientStatusByUserID;
 
 + (instancetype)newMessageWithParts:(NSArray *)messageParts senderID:(NSString *)senderID;

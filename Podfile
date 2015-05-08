@@ -1,5 +1,7 @@
 platform :ios, '7.0'
 
+source 'git@github.com:layerhq/cocoapods-specs.git'
+
 # Import CocoaPods sources
 source 'https://github.com/CocoaPods/Specs.git'
 

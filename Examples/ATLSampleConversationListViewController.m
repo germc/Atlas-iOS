@@ -102,9 +102,9 @@
     
     // Put the latest message sender's name first
     ATLUserMock *firstUser;
-    if (![conversation.lastMessage.sentByUserID isEqualToString:self.layerClient.authenticatedUserID]) {
+    if (![conversation.lastMessage.sender.userID isEqualToString:self.layerClient.authenticatedUserID]) {
         if (conversation.lastMessage) {
-            NSPredicate *searchPredicate = [NSPredicate predicateWithFormat:@"SELF.participantIdentifier IN %@", conversation.lastMessage.sentByUserID];
+            NSPredicate *searchPredicate = [NSPredicate predicateWithFormat:@"SELF.participantIdentifier IN %@", conversation.lastMessage.sender.userID];
             ATLUserMock *lastMessageSender = [[[participants filteredSetUsingPredicate:searchPredicate] allObjects] lastObject];
             if (lastMessageSender) {
                 firstUser = lastMessageSender;
