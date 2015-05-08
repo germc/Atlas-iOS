@@ -18,5 +18,5 @@ Pod::Spec.new do |s|
   s.header_mappings_dir         = 'Code'
   s.ios.frameworks              = %w{UIKit CoreLocation MobileCoreServices}
   s.ios.deployment_target       = '7.0'
-  s.dependency                  'LayerKit', '>= 0.12.0'
+  s.dependency                  'LayerKit', '>= 0.13.0'
 end
