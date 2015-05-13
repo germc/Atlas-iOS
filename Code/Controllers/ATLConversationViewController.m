@@ -502,14 +502,12 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
     if (!self.conversation) {
         return;
     }
-    if (messageInputToolbar.mediaAttachments.count) {
-        NSOrderedSet *messages = [self messagesForMediaAttachments:messageInputToolbar.mediaAttachments];
+    NSOrderedSet *messages = [self messagesForMediaAttachments:messageInputToolbar.mediaAttachments];
+    if (messages.count == 0) {
+        [self sendLocationMessage];
+    } else {
         for (LYRMessage *message in messages) {
             [self sendMessage:message];
-        }
-    } else {
-        if (messageInputToolbar.textInputView.text.length == 0) {
-            [self sendLocationMessage];
         }
     }
     if (self.addressBarController) [self.addressBarController disable];
