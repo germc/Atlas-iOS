@@ -22,7 +22,7 @@ DEPENDENCIES:
 
 EXTERNAL SOURCES:
   Atlas:
-    :path: .
+    :path: "."
   KIFViewControllerActions:
     :git: https://github.com/blakewatters/KIFViewControllerActions.git
   LYRCountDownLatch:
@@ -45,4 +45,4 @@ SPEC CHECKSUMS:
   LYRCountDownLatch: 72a444f729ca5a8c6157c0b58f335a44e6702b48
   OCMock: a10ea9f0a6e921651f96f78b6faee95ebc813b92
 
-COCOAPODS: 0.36.0
+COCOAPODS: 0.37.0
