@@ -907,7 +907,7 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
     });
 }
 
-- (void)reloadCellsForMessagesSentByParticipantWithIdentitifier:(NSString *)participantIdentifier
+- (void)reloadCellsForMessagesSentByParticipantWithIdentifier:(NSString *)participantIdentifier
 {
     dispatch_async(self.animationQueue, ^{
         // Query for the All the Messages in the set of identifiers we have where sent by user == participantIdentifier
