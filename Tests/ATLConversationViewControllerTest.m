@@ -345,7 +345,7 @@ extern NSString *const ATLMessageInputToolbarSendButton;
         [invocation getArgument:&message atIndex:3];
         expect(message).to.beKindOf([LYRMessageMock class]);
         
-        expect(^{[self.viewController reloadCellsForMessagesSentByParticipantWithIdentitifier:self.viewController.layerClient.authenticatedUserID];}).toNot.raise(NSInternalInconsistencyException);
+        expect(^{[self.viewController reloadCellsForMessagesSentByParticipantWithIdentifier:self.viewController.layerClient.authenticatedUserID];}).toNot.raise(NSInternalInconsistencyException);
     }] conversationViewController:[OCMArg any] didSendMessage:[OCMArg any]];
     
     [tester enterText:@"test" intoViewWithAccessibilityLabel:ATLMessageInputToolbarTextInputView];

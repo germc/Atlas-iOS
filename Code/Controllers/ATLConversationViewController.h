@@ -202,7 +202,7 @@
  @discussion This method is useful after the completion of asynchronous user resolution activities.
  @param participantIdentifier The identifier of the participant whose messages are to be reloaded.
  */
-- (void)reloadCellsForMessagesSentByParticipantWithIdentitifier:(NSString *)participantIdentifier;
+- (void)reloadCellsForMessagesSentByParticipantWithIdentifier:(NSString *)participantIdentifier;
 
 /**
  @abstract Informs the reciever that it should send a message with the current location of the device.
