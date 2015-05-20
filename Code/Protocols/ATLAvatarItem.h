@@ -22,11 +22,10 @@
 
 /**
  @abstract Objects conforming to the `ATLAvatarItem` protocol will be used to display images or
- initials in a `ATLAvatarImageView`.
+ initials in a `ATLAvatarImageView`.  The objects can return `nil` if they do not want to use the
+ specific property.
  */
 @protocol ATLAvatarItem <NSObject>
-
-@optional
 
 /**
  @abstract Returns the image URL for an avatar image for the receiver.
