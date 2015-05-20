@@ -53,6 +53,10 @@
 
 static NSInteger const ATLMoreMessagesSection = 0;
 static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
+static NSString *const ATLDefaultPushAlertGIF = @"sent you a GIF.";
+static NSString *const ATLDefaultPushAlertImage = @"sent you a photo.";
+static NSString *const ATLDefaultPushAlertLocation = @"sent you a location.";
+static NSString *const ATLDefaultPushAlertText = @"sent you a message.";
 
 + (instancetype)conversationViewControllerWithLayerClient:(LYRClient *)layerClient;
 {
@@ -532,16 +536,36 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
     NSMutableOrderedSet *messages = [NSMutableOrderedSet new];
     for (ATLMediaAttachment *attachment in mediaAttachments){
         NSArray *messageParts = ATLMessagePartsWithMediaAttachment(attachment);
-        LYRMessage *message = [self messageForMessageParts:messageParts pushText:attachment.textRepresentation];
+        LYRMessage *message;
+        if ([attachment.mediaMIMEType isEqualToString:ATLMIMETypeTextPlain]) {
+            message = [self messageForMessageParts:messageParts MIMEType:attachment.mediaMIMEType pushText:attachment.textRepresentation];
+        } else {
+            message = [self messageForMessageParts:messageParts MIMEType:attachment.mediaMIMEType pushText:nil];
+        }
         if (message)[messages addObject:message];
     }
     return messages;
 }
 
-- (LYRMessage *)messageForMessageParts:(NSArray *)parts pushText:(NSString *)pushText;
+- (LYRMessage *)messageForMessageParts:(NSArray *)parts MIMEType:(NSString *)MIMEType pushText:(NSString *)pushText;
 {
     NSString *senderName = [[self participantForIdentifier:self.layerClient.authenticatedUserID] fullName];
-    NSDictionary *pushOptions = @{LYRMessageOptionsPushNotificationAlertKey : [NSString stringWithFormat:@"%@: %@", senderName, pushText],
+    NSString *completePushText;
+    if (pushText == nil) {
+        if ([MIMEType isEqualToString:ATLMIMETypeImageGIF]) {
+            completePushText = [NSString stringWithFormat:@"%@ %@", senderName, ATLDefaultPushAlertGIF];
+        } else if ([MIMEType isEqualToString:ATLMIMETypeImagePNG] || [MIMEType isEqualToString:ATLMIMETypeImageJPEG]) {
+            completePushText = [NSString stringWithFormat:@"%@ %@", senderName, ATLDefaultPushAlertImage];
+        } else if ([MIMEType isEqualToString:ATLMIMETypeLocation]) {
+            completePushText = [NSString stringWithFormat:@"%@ %@", senderName, ATLDefaultPushAlertLocation];
+        } else {
+            completePushText = [NSString stringWithFormat:@"%@ %@", senderName, ATLDefaultPushAlertText];
+        }
+    } else {
+        completePushText = [NSString stringWithFormat:@"%@: %@", senderName, pushText];
+    }
+
+    NSDictionary *pushOptions = @{LYRMessageOptionsPushNotificationAlertKey : completePushText,
                                   LYRMessageOptionsPushNotificationSoundNameKey : ATLPushNotificationSoundName};
     NSError *error;
     LYRMessage *message = [self.layerClient newMessageWithParts:parts options:pushOptions error:&error];
@@ -592,7 +616,7 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
 - (void)sendMessageWithLocation:(CLLocation *)location
 {
     ATLMediaAttachment *attachement = [ATLMediaAttachment mediaAttachmentWithLocation:location];
-    LYRMessage *message = [self messageForMessageParts:ATLMessagePartsWithMediaAttachment(attachement) pushText:@"Attachement: Location"];
+    LYRMessage *message = [self messageForMessageParts:ATLMessagePartsWithMediaAttachment(attachement) MIMEType:ATLMIMETypeLocation pushText:nil];
     [self sendMessage:message];
 }
 
