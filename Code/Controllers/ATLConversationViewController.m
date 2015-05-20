@@ -546,7 +546,7 @@ static NSString *const ATLDefaultPushAlertText = @"sent you a message.";
 {
     NSString *senderName = [[self participantForIdentifier:self.layerClient.authenticatedUserID] fullName];
     NSString *completePushText;
-    if (pushText == nil) {
+    if (!pushText) {
         if ([MIMEType isEqualToString:ATLMIMETypeImageGIF]) {
             completePushText = [NSString stringWithFormat:@"%@ %@", senderName, ATLDefaultPushAlertGIF];
         } else if ([MIMEType isEqualToString:ATLMIMETypeImagePNG] || [MIMEType isEqualToString:ATLMIMETypeImageJPEG]) {
