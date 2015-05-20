@@ -536,7 +536,7 @@ static NSString *const ATLDefaultPushAlertText = @"sent you a message.";
     NSMutableOrderedSet *messages = [NSMutableOrderedSet new];
     for (ATLMediaAttachment *attachment in mediaAttachments){
         NSArray *messageParts = ATLMessagePartsWithMediaAttachment(attachment);
-        LYRMessage *message = [self messageForMessageParts:messageParts MIMEType:attachment.mediaMIMEType pushText:(([attachment.mediaMIMEType isEqualToString:ATLMIMETypeTextPlain]) ? nil : attachment.textRepresentation)];
+        LYRMessage *message = [self messageForMessageParts:messageParts MIMEType:attachment.mediaMIMEType pushText:(([attachment.mediaMIMEType isEqualToString:ATLMIMETypeTextPlain]) ? attachment.textRepresentation : nil)];
         if (message)[messages addObject:message];
     }
     return messages;
