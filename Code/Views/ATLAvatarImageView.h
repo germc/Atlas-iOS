@@ -57,4 +57,9 @@ extern CGFloat const ATLAvatarImageDiameter;
  */
 @property (nonatomic) UIColor *imageViewBackgroundColor UI_APPEARANCE_SELECTOR;
 
+/**
+ @abstract Sets the avatar item, image view, and initial view to nil in preparation for reuse.
+ */
+- (void)resetView;
+
 @end

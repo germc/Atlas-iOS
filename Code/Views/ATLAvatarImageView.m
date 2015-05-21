@@ -93,13 +93,19 @@ NSString *const ATLAvatarImageViewAccessibilityLabel = @"ATLAvatarImageViewAcces
     return CGSizeMake(self.avatarImageViewDiameter, self.avatarImageViewDiameter);
 }
 
+- (void)resetView {
+    self.avatarItem = nil;
+    self.image = nil;
+    self.initialsLabel.text = nil;
+}
+
 - (void)setAvatarItem:(id<ATLAvatarItem>)avatarItem
 {
     if ([avatarItem avatarImageURL]) {
-        self.initialsLabel = nil;
+        self.initialsLabel.text = nil;
         [self loadAvatarImageWithURL:[avatarItem avatarImageURL]];
     } else if (avatarItem.avatarImage) {
-        self.initialsLabel = nil;
+        self.initialsLabel.text = nil;
         self.image = avatarItem.avatarImage;
     } else if (avatarItem.avatarInitials) {
         self.image = nil;
@@ -155,14 +161,17 @@ NSString *const ATLAvatarImageViewAccessibilityLabel = @"ATLAvatarImageViewAcces
             [[[self class] sharedImageCache] setObject:image forKey:stringURL cost:0];
         }
         dispatch_async(dispatch_get_main_queue(), ^{
-            [UIView animateWithDuration:0.2 animations:^{
-                self.alpha = 0.0;
-            } completion:^(BOOL finished) {
-                [UIView animateWithDuration:0.5 animations:^{
-                    self.image = image;
-                    self.alpha = 1.0;
+            // Try to avoid race conditions
+            if ([self.avatarItem avatarImageURL] && [[self.avatarItem avatarImageURL] isEqual:imageURL]) {
+                [UIView animateWithDuration:0.2 animations:^{
+                    self.alpha = 0.0;
+                } completion:^(BOOL finished) {
+                    [UIView animateWithDuration:0.5 animations:^{
+                        self.image = image;
+                        self.alpha = 1.0;
+                    }];
                 }];
-            }];
+            }
         });
     });
 }
