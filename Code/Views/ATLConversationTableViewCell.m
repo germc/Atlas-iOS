@@ -196,6 +196,7 @@ static CGFloat const ATLChevronIconViewRightPadding = 14.0f;
 - (void)prepareForReuse
 {
     [super prepareForReuse];
+    [self.conversationImageView resetView];
     self.conversationImageView.hidden = YES;
     [self setNeedsUpdateConstraints];
 }

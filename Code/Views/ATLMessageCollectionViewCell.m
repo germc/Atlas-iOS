@@ -100,6 +100,7 @@ CGFloat const ATLMessageCellHorizontalMargin = 16.0f;
     // Remove self from any previously assigned LYRProgress instance.
     self.progress.delegate = nil;
     self.lastProgressFractionCompleted = 0;
+    [self.avatarImageView resetView];
     [self.bubbleView prepareForReuse];
 }
 
