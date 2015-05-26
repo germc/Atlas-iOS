@@ -919,8 +919,9 @@ static NSString *const ATLDefaultPushAlertText = @"sent you a message.";
         if (indexPath) {
             NSIndexPath *collectionViewIndexPath = [self.conversationDataSource collectionViewIndexPathForQueryControllerIndexPath:indexPath];
             if (collectionViewIndexPath) {
+                // Configure the cell, the header, and the footer
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    [self.collectionView reloadItemsAtIndexPaths:@[ collectionViewIndexPath ]];
+                    [self configureCollectionViewElementsAtCollectionViewIndexPath:collectionViewIndexPath];
                 });
             }
         }
@@ -930,7 +931,7 @@ static NSString *const ATLDefaultPushAlertText = @"sent you a message.";
 - (void)reloadCellsForMessagesSentByParticipantWithIdentifier:(NSString *)participantIdentifier
 {
     dispatch_async(self.animationQueue, ^{
-        // Query for the All the Messages in the set of identifiers we have where sent by user == participantIdentifier
+        // Query for all of the message identifiers in the conversation
         LYRQuery *messageIdentifiersQuery = [self.conversationDataSource.queryController.query copy];
         messageIdentifiersQuery.resultType = LYRQueryResultTypeIdentifiers;
         NSError *error = nil;
@@ -939,7 +940,8 @@ static NSString *const ATLDefaultPushAlertText = @"sent you a message.";
             NSLog(@"LayerKit failed to execute query with error: %@", error);
             return;
         }
-        
+
+        // Query for the all of the message identifiers in the above set where user == participantIdentifier
         LYRQuery *query = [LYRQuery queryWithQueryableClass:[LYRMessage class]];
         LYRPredicate *senderPredicate = [LYRPredicate predicateWithProperty:@"sender.userID" predicateOperator:LYRPredicateOperatorIsEqualTo value:participantIdentifier];
         LYRPredicate *objectIdentifiersPredicate = [LYRPredicate predicateWithProperty:@"identifier" predicateOperator:LYRPredicateOperatorIsIn value:messageIdentifiers];
@@ -950,12 +952,17 @@ static NSString *const ATLDefaultPushAlertText = @"sent you a message.";
             NSLog(@"LayerKit failed to execute query with error: %@", error);
             return;
         }
-        
+
+        // Convert query controller index paths to collection view index paths
         NSDictionary *objectIdentifiersToIndexPaths = [self.conversationDataSource.queryController indexPathsForObjectsWithIdentifiers:messageIdentifiersToReload.set];
-        NSArray *indexPaths = [objectIdentifiersToIndexPaths allValues];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.collectionView reloadItemsAtIndexPaths:indexPaths];
-        });
+        NSArray *queryControllerIndexPaths = [objectIdentifiersToIndexPaths allValues];
+        for (NSIndexPath *indexPath in queryControllerIndexPaths) {
+            NSIndexPath *collectionViewIndexPath = [self.conversationDataSource collectionViewIndexPathForQueryControllerIndexPath:indexPath];
+            // Configure the cell, the header, and the footer
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self configureCollectionViewElementsAtCollectionViewIndexPath:collectionViewIndexPath];
+            });
+        }
     });
 }
 
@@ -1172,6 +1179,35 @@ static NSString *const ATLDefaultPushAlertText = @"sent you a message.";
         if (!queryControllerIndexPath) continue;
         NSIndexPath *collectionViewIndexPath = [self.conversationDataSource collectionViewIndexPathForQueryControllerIndexPath:queryControllerIndexPath];
         [self configureFooter:footer atIndexPath:collectionViewIndexPath];
+    }
+}
+
+- (void)configureCollectionViewElementsAtCollectionViewIndexPath:(NSIndexPath *)collectionViewIndexPath {
+    // Direct access to the message
+    LYRMessage *message = [self.conversationDataSource messageAtCollectionViewIndexPath:collectionViewIndexPath];
+    UICollectionViewCell *cell = [self.collectionView cellForItemAtIndexPath:collectionViewIndexPath];
+    if ([cell conformsToProtocol:@protocol(ATLMessagePresenting)]) {
+        [self configureCell:(UICollectionViewCell<ATLMessagePresenting> *)cell forMessage:message indexPath:collectionViewIndexPath];
+    }
+
+    // Find the header...
+    for (ATLConversationCollectionViewHeader *header in self.sectionHeaders) {
+        NSIndexPath *queryControllerIndexPath = [self.conversationDataSource.queryController indexPathForObject:header.message];
+        if (queryControllerIndexPath && [header.message.identifier isEqual:message.identifier]) {
+            NSIndexPath *collectionViewIndexPath = [self.conversationDataSource collectionViewIndexPathForQueryControllerIndexPath:queryControllerIndexPath];
+            [self configureHeader:header atIndexPath:collectionViewIndexPath];
+            break;
+        }
+    }
+
+    // ...and the footer
+    for (ATLConversationCollectionViewFooter *footer in self.sectionFooters) {
+        NSIndexPath *queryControllerIndexPath = [self.conversationDataSource.queryController indexPathForObject:footer.message];
+        if (queryControllerIndexPath && [footer.message.identifier isEqual:message.identifier]) {
+            NSIndexPath *collectionViewIndexPath = [self.conversationDataSource collectionViewIndexPathForQueryControllerIndexPath:queryControllerIndexPath];
+            [self configureFooter:footer atIndexPath:collectionViewIndexPath];
+            break;
+        }
     }
 }
 
