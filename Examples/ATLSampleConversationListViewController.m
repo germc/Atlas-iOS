@@ -36,7 +36,6 @@
     self.dataSource = self;
     self.delegate = self;
     self.deletionModes = @[@(LYRDeletionModeAllParticipants), @(LYRDeletionModeLocal)];
-    self.displaysAvatarItem = NO;
     
     UIBarButtonItem *new = [[UIBarButtonItem alloc] initWithTitle:@"New" style:UIBarButtonItemStylePlain target:self action:@selector(handleNewTap)];
     self.navigationItem.rightBarButtonItem = new;

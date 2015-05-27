@@ -259,36 +259,6 @@ extern NSString *const ATLMessageInputToolbarSendButton;
     [delegateMock verify];
 }
 
-- (void)testToVerifyHeightOfInputBarIsCapped
-{
-    [self setRootViewController];
-    ATLMessageInputToolbar *toolBar = (ATLMessageInputToolbar *)[tester waitForViewWithAccessibilityLabel:@"Message Input Toolbar"];
-    CGFloat toolbarHeight = toolBar.frame.size.height;
-    CGFloat toolbarNewHeight;
-    toolBar.maxNumberOfLines = 3;
-    
-    [tester tapViewWithAccessibilityLabel:ATLMessageInputToolbarTextInputView];
-    [tester enterText:@"" intoViewWithAccessibilityLabel:ATLMessageInputToolbarAccessibilityLabel];
-    [tester tapViewWithAccessibilityLabel:@"RETURN"];
-    toolbarNewHeight = toolBar.frame.size.height;
-    expect(toolbarNewHeight).to.beGreaterThan(toolbarHeight);
-    toolbarHeight = toolBar.frame.size.height;
-    
-    [tester tapViewWithAccessibilityLabel:@"RETURN"];
-    toolbarNewHeight = toolBar.frame.size.height;
-    expect(toolbarNewHeight).to.beGreaterThan(toolbarHeight);
-    toolbarHeight = toolBar.frame.size.height;
-    
-    [tester tapViewWithAccessibilityLabel:@"RETURN"];
-    toolbarNewHeight = toolBar.frame.size.height;
-    expect(toolbarNewHeight).to.equal(toolbarHeight);
-    toolbarHeight = toolBar.frame.size.height;
-    
-    [tester tapViewWithAccessibilityLabel:@"RETURN"];
-    toolbarNewHeight = toolBar.frame.size.height;
-    expect(toolbarNewHeight).to.equal(toolbarHeight);
-}
-
 - (void)testToVerifySelectingAndRemovingAnImageKeepsFontConsistent
 {
     [self setRootViewController];
