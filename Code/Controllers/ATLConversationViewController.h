@@ -144,6 +144,14 @@
 
 /**
  @abstract Asks the data source to configure the query used to fetch content for the controller.
+ @discussion The `LYRConversationViewController` uses the following default query:
+ 
+     LYRQuery *query = [LYRQuery queryWithQueryableClass:[LYRMessage class]];
+     query.predicate = [LYRPredicate predicateWithProperty:@"conversation" predicateOperator:LYRPredicateOperatorIsEqualTo value:self.conversation];
+     query.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"position" ascending:YES]];
+ 
+ Applications that require advanced query configuration can do so by implementing this data source method.
+ 
  @param viewController The `ATLConversationViewController` requesting the configuration.
  @param query An `LYRQuery` object with the default configuration for the controller. 
  @return An `LYRQuery` object with any additional configuration.
