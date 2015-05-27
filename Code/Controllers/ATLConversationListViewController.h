@@ -162,6 +162,13 @@
  */
 + (instancetype)conversationListViewControllerWithLayerClient:(LYRClient *)layerClient;
 
+/**
+ @abstract Creates and returns a new conversation list initialized with a given `LYRClient` object.
+ @param layerClient The `LYRClient` object from which conversations will be fetched for display.
+ @return An `LYRConversationListViewController` object.
+ */
+- (instancetype)initWithLayerClient:(LYRClient *)layerClient;
+
 ///-------------------------------------------------------
 /// @name Configuring Layer Client, Delegate & Data Source
 ///-------------------------------------------------------
