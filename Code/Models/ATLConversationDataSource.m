@@ -31,25 +31,22 @@
 NSInteger const ATLNumberOfSectionsBeforeFirstMessageSection = 1;
 NSInteger const ATLQueryControllerPaginationWindow = 30;
 
-+ (instancetype)dataSourceWithLayerClient:(LYRClient *)layerClient conversation:(LYRConversation *)conversation
++ (instancetype)dataSourceWithLayerClient:(LYRClient *)layerClient query:(LYRQuery *)query
 {
-    return [[self alloc] initWithLayerClient:layerClient conversation:conversation];
+    return [[self alloc] initWithLayerClient:layerClient query:query];
 }
 
-- (id)initWithLayerClient:(LYRClient *)layerClient conversation:(LYRConversation *)conversation
+- (id)initWithLayerClient:(LYRClient *)layerClient query:(LYRQuery *)query
 {
     self = [super init];
     if (self) {
-        LYRQuery *query = [LYRQuery queryWithQueryableClass:[LYRMessage class]];
-        query.predicate = [LYRPredicate predicateWithProperty:@"conversation" predicateOperator:LYRPredicateOperatorIsEqualTo value:conversation];
-        query.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"position" ascending:YES]];
-       
         NSUInteger numberOfMessagesAvailable = [layerClient countForQuery:query error:nil];
         NSUInteger numberOfMessagesToDisplay = MIN(numberOfMessagesAvailable, ATLQueryControllerPaginationWindow);
     
         _queryController = [layerClient queryControllerWithQuery:query];
         _queryController.updatableProperties = [NSSet setWithObjects:@"parts.transferStatus", @"recipientStatusByUserID", @"sentAt", nil];
         _queryController.paginationWindow = -numberOfMessagesToDisplay;
+        
         NSError *error = nil;
         BOOL success = [_queryController execute:&error];
         if (!success) NSLog(@"LayerKit failed to execute query with error: %@", error);
