@@ -211,7 +211,14 @@ NSString *const ATLConversationTableViewAccessibilityIdentifier = @"Conversation
     LYRQuery *query = [LYRQuery queryWithQueryableClass:[LYRConversation class]];
     query.predicate = [LYRPredicate predicateWithProperty:@"participants" predicateOperator:LYRPredicateOperatorIsIn value:self.layerClient.authenticatedUserID];
     query.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"lastMessage.receivedAt" ascending:NO]];
-
+    
+    if ([self.dataSource respondsToSelector:@selector(conversationListViewController:willLoadWithQuery:)]) {
+        query = [self.dataSource conversationListViewController:self willLoadWithQuery:query];
+        if (![query isKindOfClass:[LYRQuery class]]){
+            @throw [NSException exceptionWithName:NSInvalidArgumentException reason:@"Data source must return an `LYRQuery` object." userInfo:nil];
+        }
+    }
+    
     self.queryController = [self.layerClient queryControllerWithQuery:query];
     self.queryController.delegate = self;
     NSError *error;

@@ -353,6 +353,83 @@ extern NSString *const ATLMessageInputToolbarSendButton;
     [delegateMock verify];
 }
 
+- (void)testToVerifyDefaultQueryConfigurationDataSourceMethod
+{
+    [self setupConversationViewController];
+    [self setRootViewController:self.viewController];
+    
+    id delegateMock = OCMProtocolMock(@protocol(ATLConversationViewControllerDataSource));
+    self.viewController.dataSource = delegateMock;
+    
+    [[[delegateMock expect] andDo:^(NSInvocation *invocation) {
+        ATLConversationListViewController *controller;
+        [invocation getArgument:&controller atIndex:2];
+        expect(controller).to.equal(self.viewController);
+        
+        LYRQuery *query;
+        [invocation getArgument:&query atIndex:3];
+        expect(query).toNot.beNil();
+        
+        [invocation setReturnValue:&query];
+    }] conversationViewController:[OCMArg any] willLoadWithQuery:[OCMArg any]];
+
+    self.viewController.conversation = [self.viewController.layerClient newConversationWithParticipants:[NSSet setWithObject:@"test"] options:nil error:nil];
+    [delegateMock verifyWithDelay:1];
+}
+
+- (void)testToVerifyQueryConfigurationTakesEffect
+{
+    [self setupConversationViewController];
+    [self setRootViewController:self.viewController];
+    
+    id delegateMock = OCMProtocolMock(@protocol(ATLConversationViewControllerDataSource));
+    self.viewController.dataSource = delegateMock;
+    
+    __block NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"identifier" ascending:YES];
+    [[[delegateMock expect] andDo:^(NSInvocation *invocation) {
+        ATLConversationListViewController *controller;
+        [invocation getArgument:&controller atIndex:2];
+        expect(controller).to.equal(self.viewController);
+        
+        LYRQuery *query;
+        [invocation getArgument:&query atIndex:3];
+        expect(query).toNot.beNil();
+        
+        query.sortDescriptors = @[sortDescriptor];
+        [invocation setReturnValue:&query];
+    }] conversationViewController:[OCMArg any] willLoadWithQuery:[OCMArg any]];
+    
+    self.viewController.conversation = [self.viewController.layerClient newConversationWithParticipants:[NSSet setWithObject:@"test"] options:nil error:nil];
+    [delegateMock verifyWithDelay:1];
+    
+    expect(self.viewController.conversationDataSource.queryController.query.sortDescriptors).to.contain(sortDescriptor);
+}
+
+- (void)testToVerifyControllerAssertsIfNoQueryIsReturned
+{
+    [self setupConversationViewController];
+    [self setRootViewController:self.viewController];
+    
+    id delegateMock = OCMProtocolMock(@protocol(ATLConversationViewControllerDataSource));
+    self.viewController.dataSource = delegateMock;
+    
+    expect(^{
+        [[[delegateMock expect] andDo:^(NSInvocation *invocation) {
+            ATLConversationListViewController *controller;
+            [invocation getArgument:&controller atIndex:2];
+            expect(controller).to.equal(self.viewController);
+            
+            LYRQuery *query;
+            [invocation getArgument:&query atIndex:3];
+            expect(query).toNot.beNil();
+            
+        }] conversationViewController:[OCMArg any] willLoadWithQuery:[OCMArg any]];
+        
+        self.viewController.conversation = [self.viewController.layerClient newConversationWithParticipants:[NSSet setWithObject:@"test"] options:nil error:nil];
+        [delegateMock verifyWithDelay:1];
+    }).to.raise(NSInvalidArgumentException);
+}
+
 - (void)setupConversationViewController
 {
     self.viewController = [ATLSampleConversationViewController conversationViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];

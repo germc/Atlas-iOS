@@ -1,5 +1,12 @@
 # Atlas Changelog
 
+## 1.07
+
+### Public API Changes
+
+* Implemented `conversationListViewController:configurationForDefaultQuery:` to provide for query customization in the `ATLConversationListViewController`. 
+* Implemented `conversationViewController:configurationForDefaultQuery:` to provide for query customization in the `ATLConversationViewController`. 
+
 ## 1.0.6
 
 ### Bug Fixes

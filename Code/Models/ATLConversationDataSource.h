@@ -40,10 +40,10 @@ extern NSInteger const ATLNumberOfSectionsBeforeFirstMessageSection;
 /**
  @abstract Creates and returns an `ATLConversationDataSource` object.
  @param layerClient An `LYRClient` object used to initialize the `queryController` property.
- @param conversation An `LYRConversation` object used in the predicate of the `queryController` property's `LYRQuery`.
+ @param query An `LYRQuery` object used as the query for the `queryController` property.
  @return An `ATLConversationDataSource` object.
  */
-+ (instancetype)dataSourceWithLayerClient:(LYRClient *)layerClient conversation:(LYRConversation *)conversation;
++ (instancetype)dataSourceWithLayerClient:(LYRClient *)layerClient query:(LYRQuery *)query;
 
 /**
  @abstract The `LYRQueryController` object managing data displayed in the `ATLConversationViewController`.

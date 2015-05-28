@@ -32,10 +32,10 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "D0D778D21A02EB83000A5F51"
-               BuildableName = "Unit Tests.xctest"
-               BlueprintName = "Unit Tests"
-               ReferencedContainer = "container:LayerUIKit.xcodeproj">
+               BlueprintIdentifier = "D0294DD71A93F33900702856"
+               BuildableName = "UnitTests.xctest"
+               BlueprintName = "UnitTests"
+               ReferencedContainer = "container:Atlas.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -76,15 +76,6 @@
       useCustomWorkingDirectory = "NO"
       buildConfiguration = "Release"
       debugDocumentVersioning = "YES">
-      <MacroExpansion>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "D0D778D21A02EB83000A5F51"
-            BuildableName = "Unit Tests.xctest"
-            BlueprintName = "Unit Tests"
-            ReferencedContainer = "container:LayerUIKit.xcodeproj">
-         </BuildableReference>
-      </MacroExpansion>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">
