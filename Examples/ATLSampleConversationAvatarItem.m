@@ -21,14 +21,14 @@
 
 @implementation ATLSampleConversationAvatarItem 
 
-- (NSString *)avatarItemFullName
-{
-    return @"Kevin Coleman";
-}
-
-- (UIImage *)avatarItemImage
+- (UIImage *)avatarImage
 {
     return nil;
+}
+
+- (NSString *)avatarInitials
+{
+    return @"KC";
 }
 
 - (NSURL *)avatarImageURL

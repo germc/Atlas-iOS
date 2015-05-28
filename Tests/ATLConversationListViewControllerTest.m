@@ -481,7 +481,7 @@ extern NSString *const ATLAvatarImageViewAccessibilityLabel;
         expect(query).toNot.beNil();
         
         [invocation setReturnValue:&query];
-    }] conversationListViewController:[OCMArg any] configurationForDefaultQuery:[OCMArg any]];
+    }] conversationListViewController:[OCMArg any] willLoadWithQuery:[OCMArg any]];
     
     [self setRootViewController:self.viewController];
     [delegateMock verifyWithDelay:1];
@@ -507,7 +507,7 @@ extern NSString *const ATLAvatarImageViewAccessibilityLabel;
         
         query.sortDescriptors = @[sortDescriptor];
         [invocation setReturnValue:&query];
-    }] conversationListViewController:[OCMArg any] configurationForDefaultQuery:[OCMArg any]];
+    }] conversationListViewController:[OCMArg any] willLoadWithQuery:[OCMArg any]];
     
     [self setRootViewController:self.viewController];
     [delegateMock verifyWithDelay:2];

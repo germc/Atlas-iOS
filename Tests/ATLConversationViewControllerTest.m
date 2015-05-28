@@ -371,7 +371,7 @@ extern NSString *const ATLMessageInputToolbarSendButton;
         expect(query).toNot.beNil();
         
         [invocation setReturnValue:&query];
-    }] conversationViewController:[OCMArg any] configurationForDefaultQuery:[OCMArg any]];
+    }] conversationViewController:[OCMArg any] willLoadWithQuery:[OCMArg any]];
 
     self.viewController.conversation = [self.viewController.layerClient newConversationWithParticipants:[NSSet setWithObject:@"test"] options:nil error:nil];
     [delegateMock verifyWithDelay:1];
@@ -397,7 +397,7 @@ extern NSString *const ATLMessageInputToolbarSendButton;
         
         query.sortDescriptors = @[sortDescriptor];
         [invocation setReturnValue:&query];
-    }] conversationViewController:[OCMArg any] configurationForDefaultQuery:[OCMArg any]];
+    }] conversationViewController:[OCMArg any] willLoadWithQuery:[OCMArg any]];
     
     self.viewController.conversation = [self.viewController.layerClient newConversationWithParticipants:[NSSet setWithObject:@"test"] options:nil error:nil];
     [delegateMock verifyWithDelay:1];
@@ -423,7 +423,7 @@ extern NSString *const ATLMessageInputToolbarSendButton;
             [invocation getArgument:&query atIndex:3];
             expect(query).toNot.beNil();
             
-        }] conversationViewController:[OCMArg any] configurationForDefaultQuery:[OCMArg any]];
+        }] conversationViewController:[OCMArg any] willLoadWithQuery:[OCMArg any]];
         
         self.viewController.conversation = [self.viewController.layerClient newConversationWithParticipants:[NSSet setWithObject:@"test"] options:nil error:nil];
         [delegateMock verifyWithDelay:1];

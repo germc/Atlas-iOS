@@ -157,7 +157,7 @@
  @return An `LYRQuery` object with any additional configuration.
  @raises `NSInvalidArgumentException` if an `LYRQuery` object is not returned.
  */
-- (LYRQuery *)conversationViewController:(ATLConversationViewController *)viewController configurationForDefaultQuery:(LYRQuery *)defaultQuery;
+- (LYRQuery *)conversationViewController:(ATLConversationViewController *)viewController willLoadWithQuery:(LYRQuery *)defaultQuery;
 
 @end
 

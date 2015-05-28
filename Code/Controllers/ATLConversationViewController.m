@@ -199,8 +199,8 @@ static NSString *const ATLDefaultPushAlertText = @"sent you a message.";
     query.predicate = [LYRPredicate predicateWithProperty:@"conversation" predicateOperator:LYRPredicateOperatorIsEqualTo value:self.conversation];
     query.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"position" ascending:YES]];
     
-    if ([self.dataSource respondsToSelector:@selector(conversationViewController:configurationForDefaultQuery:)]) {
-        query = [self.dataSource conversationViewController:self configurationForDefaultQuery:query];
+    if ([self.dataSource respondsToSelector:@selector(conversationViewController:willLoadWithQuery:)]) {
+        query = [self.dataSource conversationViewController:self willLoadWithQuery:query];
         if (![query isKindOfClass:[LYRQuery class]]){
             @throw [NSException exceptionWithName:NSInvalidArgumentException reason:@"Data source must return an `LYRQuery` object." userInfo:nil];
         }
