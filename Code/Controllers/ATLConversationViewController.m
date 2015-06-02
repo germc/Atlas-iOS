@@ -738,14 +738,11 @@ static NSString *const ATLDefaultPushAlertText = @"sent you a message.";
     if (![notification.object isEqual:self.layerClient]) return;
     
     NSArray *changes = notification.userInfo[LYRClientObjectChangesUserInfoKey];
-    for (NSDictionary *change in changes) {
-        
-        id changedObject = change[LYRObjectChangeObjectKey];
-        if (![changedObject isEqual:self.conversation]) continue;
-        
-        LYRObjectChangeType changeType = [change[LYRObjectChangeTypeKey] integerValue];
-        NSString *changedProperty = change[LYRObjectChangePropertyKey];
-        if (changeType == LYRObjectChangeTypeUpdate && [changedProperty isEqualToString:@"participants"]) {
+    for (LYRObjectChange *change in changes) {
+        if (![change.object isEqual:self.conversation]) {
+            continue;
+        }
+        if (change.type == LYRObjectChangeTypeUpdate && [change.property isEqualToString:@"participants"]) {
             [self configureControllerForChangedParticipants];
             break;
         }
