@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name                        = "Atlas"
-  s.version                     = '1.0.6'
+  s.version                     = '1.0.8'
   s.summary                     = "Atlas is a library of communications user interface components integrated with LayerKit."
   s.homepage                    = 'https://atlas.layer.com/'
   s.social_media_url            = 'http://twitter.com/layer'
@@ -18,5 +18,5 @@ Pod::Spec.new do |s|
   s.header_mappings_dir         = 'Code'
   s.ios.frameworks              = %w{UIKit CoreLocation MobileCoreServices}
   s.ios.deployment_target       = '7.0'
-  s.dependency                  'LayerKit', '>= 0.13.0'
+  s.dependency                  'LayerKit', '>= 0.13.3'
 end
