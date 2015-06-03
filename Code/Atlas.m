@@ -20,4 +20,4 @@
 
 #import "Atlas.h"
 
-NSString *const ATLVersionString = @"1.0.6";
+NSString *const ATLVersionString = @"1.0.8";

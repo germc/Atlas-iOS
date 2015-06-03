@@ -1,6 +1,12 @@
 # Atlas Changelog
 
-## 1.07
+## 1.0.8
+
+### Enhancements
+
+* Updated change notification handling code due to LayerKit library upgrade to v0.13.3, which has some braking changes in change notifications dictionary.
+
+## 1.0.7
 
 ### Public API Changes
 
