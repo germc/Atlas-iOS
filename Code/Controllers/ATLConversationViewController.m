@@ -98,6 +98,7 @@ static NSString *const ATLDefaultPushAlertText = @"sent you a message.";
     _sectionHeaders = [NSHashTable weakObjectsHashTable];
     _sectionFooters = [NSHashTable weakObjectsHashTable];
     _objectChanges = [NSMutableArray new];
+    _animationQueue = dispatch_queue_create("com.atlas.animationQueue", DISPATCH_QUEUE_SERIAL);
 }
 
 - (void)loadView
@@ -130,7 +131,6 @@ static NSString *const ATLDefaultPushAlertText = @"sent you a message.";
     self.messageInputToolbar.inputToolBarDelegate = self;
     self.addressBarController.delegate = self;
     self.canDisableAddressBar = YES;
-    self.animationQueue = dispatch_queue_create("com.atlas.animationQueue", DISPATCH_QUEUE_SERIAL);
     [self atl_registerForNotifications];
 }
 
