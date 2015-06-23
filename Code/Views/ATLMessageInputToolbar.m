@@ -366,6 +366,11 @@ static CGFloat const ATLButtonHeight = 28.0f;
     [self.rightAccessoryButton setTitle:@"Send" forState:UIControlStateNormal];
     [self.rightAccessoryButton setTitleColor:self.rightAccessoryButtonActiveColor forState:UIControlStateNormal];
     [self.rightAccessoryButton setTitleColor:self.rightAccessoryButtonDisabledColor forState:UIControlStateDisabled];
+    if (!self.displaysRightAccessoryImage && !self.textInputView.text.length) {
+        self.rightAccessoryButton.enabled = NO;
+    } else {
+        self.rightAccessoryButton.enabled = YES;
+    }
 }
 
 - (void)configureRightAccessoryButtonForImage
