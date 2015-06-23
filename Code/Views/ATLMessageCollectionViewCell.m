@@ -104,7 +104,7 @@ CGFloat const ATLMessageCellHorizontalMargin = 16.0f;
     [self.bubbleView prepareForReuse];
 }
 
-- (void)presentMessage:(LYRMessage *)message;
+- (void)presentMessage:(LYRMessage *)message
 {
     self.message = message;
     LYRMessagePart *messagePart = message.parts.firstObject;
