@@ -53,7 +53,7 @@ NSString *const ATLConversationTableViewAccessibilityIdentifier = @"Conversation
 
 - (instancetype)initWithLayerClient:(LYRClient *)layerClient
 {
-	NSAssert(layerClient, @"Layer Client cannot be nil");
+    NSAssert(layerClient, @"Layer Client cannot be nil");
     self = [super initWithStyle:UITableViewStylePlain];
     if (self)  {
         _layerClient = layerClient;
