@@ -167,7 +167,7 @@
  @param layerClient The `LYRClient` object from which conversations will be fetched for display.
  @return An `LYRConversationListViewController` object initialized with the given `LYRClient` object.
  */
-- (instancetype)initWithLayerClient:(LYRClient *)layerClient NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithLayerClient:(LYRClient *)layerClient;
 
 ///-------------------------------------------------------
 /// @name Configuring Layer Client, Delegate & Data Source
