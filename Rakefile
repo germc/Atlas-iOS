@@ -55,7 +55,7 @@ task :init do
 end
 
 if defined?(XCTasks)
-  XCTasks::TestTask.new(test: :sim) do |t|
+  XCTasks::TestTask.new(:test) do |t|
     t.workspace = 'Atlas.xcworkspace'
     t.schemes_dir = 'Tests/Schemes'
     t.runner = :xcpretty

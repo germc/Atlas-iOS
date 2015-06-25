@@ -33,9 +33,13 @@ static NSString *const ATLGIFMIMETypePlaceholderText = @"Attachment: GIF";
 @property (nonatomic) LYRQueryController *searchQueryController;
 @property (nonatomic) LYRConversation *conversationToDelete;
 @property (nonatomic) LYRConversation *conversationSelectedBeforeContentChange;
-@property (nonatomic, readwrite) UISearchDisplayController *searchController;
 @property (nonatomic) UISearchBar *searchBar;
 @property (nonatomic) BOOL hasAppeared;
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+@property (nonatomic, readwrite) UISearchDisplayController *searchController;
+#pragma GCC diagnostic pop
 
 @end
 
@@ -114,7 +118,10 @@ NSString *const ATLConversationTableViewAccessibilityIdentifier = @"Conversation
     self.searchBar.delegate = self;
     self.tableView.tableHeaderView = self.searchBar;
     
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
     self.searchController = [[UISearchDisplayController alloc] initWithSearchBar:self.searchBar contentsController:self];
+#pragma GCC diagnostic pop
     self.searchController.delegate = self;
     self.searchController.searchResultsDelegate = self;
     self.searchController.searchResultsDataSource = self;
