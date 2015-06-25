@@ -263,6 +263,9 @@
             return [NSPredicate predicateWithFormat:@"SELF.%@ <= %@", predicate.property, predicate.value];
 
         case LYRPredicateOperatorIsIn: {
+            if ([predicate.value isKindOfClass:[NSSet class]]) {
+              return [NSPredicate predicateWithFormat:@"ANY SELF.%K IN %@", predicate.property, predicate.value];
+            }
             NSPredicate *predicatee = [NSPredicate predicateWithFormat:@"SELF.%@ CONTAINS %@ ", predicate.property,  predicate.value];
             return predicatee;
         }
