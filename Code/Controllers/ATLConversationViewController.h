@@ -180,6 +180,13 @@
 + (instancetype)conversationViewControllerWithLayerClient:(LYRClient *)layerClient;
 
 /**
+ @abstract Initializes a new `ATLConversationViewController` object with the given `LYRClient` object.
+ @param layerClient The `LYRClient` object from which to retrieve the messages for display.
+ @return An `LYRConversationViewController` object initialized with the given `LYRClient` object.
+ */
+- (instancetype)initWithLayerClient:(LYRClient *)layerClient NS_DESIGNATED_INITIALIZER;
+
+/**
  @abstract The `LYRClient` object used to initialize the controller.
  @discussion If using storyboards, the property must be set explicitly.
  @raises NSInternalInconsistencyException Raised if the value is mutated after the receiver has been presented.

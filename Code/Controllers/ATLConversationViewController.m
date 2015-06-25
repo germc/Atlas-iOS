@@ -64,7 +64,7 @@ static NSString *const ATLDefaultPushAlertText = @"sent you a message.";
     return [[self alloc] initWithLayerClient:layerClient];
 }
 
-- (id)initWithLayerClient:(LYRClient *)layerClient
+- (instancetype)initWithLayerClient:(LYRClient *)layerClient
 {
     self = [super init];
     if (self) {
