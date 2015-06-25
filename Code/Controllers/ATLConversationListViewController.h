@@ -163,9 +163,9 @@
 + (instancetype)conversationListViewControllerWithLayerClient:(LYRClient *)layerClient;
 
 /**
- @abstract Creates and returns a new conversation list initialized with a given `LYRClient` object.
+ @abstract Initializes a new `ATLConversationListViewController` object with the given `LYRClient` object.
  @param layerClient The `LYRClient` object from which conversations will be fetched for display.
- @return An `LYRConversationListViewController` object.
+ @return An `LYRConversationListViewController` object initialized with the given `LYRClient` object.
  */
 - (instancetype)initWithLayerClient:(LYRClient *)layerClient NS_DESIGNATED_INITIALIZER;
 
