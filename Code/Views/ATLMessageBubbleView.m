@@ -270,7 +270,43 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
         UIMenuController *menuController = [UIMenuController sharedMenuController];
         UIMenuItem *resetMenuItem = [[UIMenuItem alloc] initWithTitle:@"Copy" action:@selector(copyItem)];
         [menuController setMenuItems:@[resetMenuItem]];
-        [menuController setTargetRect:CGRectMake(self.frame.size.width / 2, 0.0f, 0.0f, 0.0f) inView:self];
+
+        // If we're in a scroll view, we might need to position the UIMenuController differently
+        UIView *superview = self.superview;
+        while (superview && ![superview isKindOfClass:[UIScrollView class]]) {
+            superview = superview.superview;
+        }
+
+        if ([superview isKindOfClass:[UIScrollView class]]) {
+            UIScrollView *containingScrollView = (UIScrollView *)superview;
+            CGPoint contentOffset = containingScrollView.contentOffset;
+            CGRect frame = containingScrollView.frame;
+            CGRect messageRect = [self convertRect:self.frame toView:superview];
+
+            // Top of the message bubble is not appropriate
+            CGFloat standardMargin = 8.0f;
+            CGFloat topVisibleY = contentOffset.y + containingScrollView.contentInset.top;
+            if (messageRect.origin.y <= topVisibleY + standardMargin) {
+                // Bottom of the message bubble is not appropriate either
+                CGFloat bottomVisibleY = contentOffset.y + frame.size.height - containingScrollView.contentInset.bottom;
+                if (messageRect.origin.y + messageRect.size.height >= bottomVisibleY - standardMargin) {
+                    // Get midpoint of the visible portion of the message bubble
+                    CGFloat middleVisibleY = topVisibleY + (frame.size.height - containingScrollView.contentInset.bottom) / 2 - messageRect.origin.y;
+                    [menuController setTargetRect:CGRectMake(self.frame.size.width / 2, middleVisibleY, 0.0f, 0.0f) inView:self];
+                    menuController.arrowDirection = UIMenuControllerArrowDefault;
+                } else {
+                    [menuController setTargetRect:CGRectMake(self.frame.size.width / 2, self.frame.size.height, 0.0f, 0.0f) inView:self];
+                    menuController.arrowDirection = UIMenuControllerArrowUp;
+                }
+            } else {
+                [menuController setTargetRect:CGRectMake(self.frame.size.width / 2, 0.0f, 0.0f, 0.0f) inView:self];
+                menuController.arrowDirection = UIMenuControllerArrowDefault;
+            }
+        } else {
+            [menuController setTargetRect:CGRectMake(self.frame.size.width / 2, 0.0f, 0.0f, 0.0f) inView:self];
+            menuController.arrowDirection = UIMenuControllerArrowDefault;
+        }
+
         [menuController setMenuVisible:YES animated:YES];
     }
 }
