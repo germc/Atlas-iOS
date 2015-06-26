@@ -49,7 +49,7 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
 
 @end
 
-@implementation ATLMessageBubbleView 
+@implementation ATLMessageBubbleView
 
 + (NSCache *)sharedCache
 {
@@ -67,7 +67,7 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
     if (self) {
         _locationShown = kCLLocationCoordinate2DInvalid;
         self.clipsToBounds = YES;
-        
+
         _bubbleViewLabel = [[UILabel alloc] init];
         _bubbleViewLabel.numberOfLines = 0;
         _bubbleViewLabel.userInteractionEnabled = YES;
@@ -79,12 +79,12 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
         _bubbleImageView.translatesAutoresizingMaskIntoConstraints = NO;
         _bubbleImageView.contentMode = UIViewContentModeScaleAspectFill;
         [self addSubview:_bubbleImageView];
-        
+
         _progressView = [[ATLProgressView alloc] initWithFrame:CGRectMake(0, 0, 128.0f, 128.0f)];
         _progressView.translatesAutoresizingMaskIntoConstraints = NO;
         _progressView.alpha = 1.0f;
         [self addSubview:_progressView];
-        
+
         [self configureBubbleViewLabelConstraints];
         [self configureBubbleImageViewConstraints];
         [self configureProgressViewConstraints];
@@ -92,10 +92,10 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
         _tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleLabelTap:)];
         _tapGestureRecognizer.delegate = self;
         [self.bubbleViewLabel addGestureRecognizer:_tapGestureRecognizer];
-        
+
         UILongPressGestureRecognizer *gestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
         [self addGestureRecognizer:gestureRecognizer];
-        
+
         [self prepareForReuse];
     }
     return self;
@@ -146,7 +146,7 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
         self.bubbleImageView.hidden = NO;
         return;
     }
-    
+
     self.snapshotter = [self snapshotterForLocation:location];
     [self.snapshotter startWithCompletionHandler:^(MKMapSnapshot *snapshot, NSError *error) {
         self.bubbleImageView.hidden = NO;
@@ -159,7 +159,7 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
         self.bubbleImageView.image = ATLPinPhotoForSnapshot(snapshot, location);
         self.locationShown = location;
         [[[self class] sharedCache] setObject:self.bubbleImageView.image forKey:cachedImageIdentifier];
-      
+
         // Animate into view.
         self.bubbleImageView.alpha = 0.0;
         [UIView animateWithDuration:0.2 animations:^{
@@ -188,14 +188,14 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
             self.bubbleImageView.image = nil;
             self.locationShown = kCLLocationCoordinate2DInvalid;
             break;
-            
+
         case ATLBubbleViewContentTypeImage:
             self.bubbleViewLabel.hidden = YES;
             self.bubbleImageView.hidden = NO;
             self.locationShown = kCLLocationCoordinate2DInvalid;
             self.bubbleViewLabel.text = nil;
             break;
-            
+
         case ATLBubbleViewContentTypeLocation:
             self.locationShown = kCLLocationCoordinate2DInvalid;
             self.bubbleImageView.hidden = YES;
@@ -203,7 +203,7 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
             self.bubbleViewLabel.hidden = YES;
             self.bubbleViewLabel.text = nil;
             break;
-            
+
         default:
             break;
     }
@@ -252,25 +252,61 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
 
 - (void)handleLongPress:(UILongPressGestureRecognizer *)recognizer
 {
-    if ([recognizer state] == UIGestureRecognizerStateBegan) {
-        
+    if ([recognizer state] == UIGestureRecognizerStateBegan && !self.longPressMask) {
+
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(menuControllerDisappeared)
                                                      name:UIMenuControllerDidHideMenuNotification
                                                    object:nil];
-        
+
         [self becomeFirstResponder];
-        
+
         self.longPressMask = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
         self.longPressMask.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         self.longPressMask.backgroundColor = [UIColor blackColor];
         self.longPressMask.alpha = 0.1;
         [self addSubview:self.longPressMask];
-        
+
         UIMenuController *menuController = [UIMenuController sharedMenuController];
         UIMenuItem *resetMenuItem = [[UIMenuItem alloc] initWithTitle:@"Copy" action:@selector(copyItem)];
         [menuController setMenuItems:@[resetMenuItem]];
-        [menuController setTargetRect:CGRectMake(self.frame.size.width / 2, 0.0f, 0.0f, 0.0f) inView:self];
+
+        // If we're in a scroll view, we might need to position the UIMenuController differently
+        UIView *superview = self.superview;
+        while (superview && ![superview isKindOfClass:[UIScrollView class]]) {
+            superview = superview.superview;
+        }
+
+        if ([superview isKindOfClass:[UIScrollView class]]) {
+            UIScrollView *containingScrollView = (UIScrollView *)superview;
+            CGPoint contentOffset = containingScrollView.contentOffset;
+            CGRect frame = containingScrollView.frame;
+            CGRect messageRect = [self convertRect:self.frame toView:superview];
+
+            // Top of the message bubble is not appropriate
+            CGFloat standardMargin = 8.0f;
+            CGFloat topVisibleY = contentOffset.y + containingScrollView.contentInset.top;
+            if (messageRect.origin.y <= topVisibleY + standardMargin) {
+                // Bottom of the message bubble is not appropriate either
+                CGFloat bottomVisibleY = contentOffset.y + frame.size.height - containingScrollView.contentInset.bottom;
+                if (messageRect.origin.y + messageRect.size.height >= bottomVisibleY - standardMargin) {
+                    // Get midpoint of the visible portion of the message bubble
+                    CGFloat middleVisibleY = topVisibleY + (frame.size.height - containingScrollView.contentInset.bottom) / 2 - messageRect.origin.y;
+                    [menuController setTargetRect:CGRectMake(self.frame.size.width / 2, middleVisibleY, 0.0f, 0.0f) inView:self];
+                    menuController.arrowDirection = UIMenuControllerArrowDefault;
+                } else {
+                    [menuController setTargetRect:CGRectMake(self.frame.size.width / 2, self.frame.size.height, 0.0f, 0.0f) inView:self];
+                    menuController.arrowDirection = UIMenuControllerArrowUp;
+                }
+            } else {
+                [menuController setTargetRect:CGRectMake(self.frame.size.width / 2, 0.0f, 0.0f, 0.0f) inView:self];
+                menuController.arrowDirection = UIMenuControllerArrowDefault;
+            }
+        } else {
+            [menuController setTargetRect:CGRectMake(self.frame.size.width / 2, 0.0f, 0.0f, 0.0f) inView:self];
+            menuController.arrowDirection = UIMenuControllerArrowDefault;
+        }
+
         [menuController setMenuVisible:YES animated:YES];
     }
 }
@@ -280,23 +316,23 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
 {
     if (gestureRecognizer != self.tapGestureRecognizer) return YES;
-    
+
     //http://stackoverflow.com/questions/21349725/character-index-at-touch-point-for-uilabel/26806991#26806991
     UILabel *textLabel = self.bubbleViewLabel;
     CGPoint tapLocation = [gestureRecognizer locationInView:textLabel];
-    
+
     // init text storage
     NSTextStorage *textStorage = [[NSTextStorage alloc] initWithAttributedString:textLabel.attributedText];
     NSLayoutManager *layoutManager = [[NSLayoutManager alloc] init];
     [textStorage addLayoutManager:layoutManager];
-    
+
     // init text container
     NSTextContainer *textContainer = [[NSTextContainer alloc] initWithSize:textLabel.frame.size];
     textContainer.lineFragmentPadding = 0;
     textContainer.maximumNumberOfLines = textLabel.numberOfLines;
     textContainer.lineBreakMode = textLabel.lineBreakMode;
     [layoutManager addTextContainer:textContainer];
-    
+
     NSUInteger characterIndex = [layoutManager characterIndexForPoint:tapLocation
                                                       inTextContainer:textContainer
                              fractionOfDistanceBetweenInsertionPoints:NULL];
