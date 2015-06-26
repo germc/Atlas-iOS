@@ -109,6 +109,9 @@ static CGFloat const ATLButtonHeight = 28.0f;
         self.firstAppearance = NO;
     }
     
+    // set the font for the dummy text view as well
+    self.dummyTextView.font = self.textInputView.font;
+    
     // We layout the views manually since using Auto Layout seems to cause issues in this context (i.e. an auto height resizing text view in an input accessory view) especially with iOS 7.1.
     CGRect frame = self.frame;
     CGRect leftButtonFrame = self.leftAccessoryButton.frame;

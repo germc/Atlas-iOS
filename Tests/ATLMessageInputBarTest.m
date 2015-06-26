@@ -316,6 +316,13 @@ extern NSString *const ATLMessageInputToolbarSendButton;
     expect([toolBar.rightAccessoryButton titleColorForState:UIControlStateDisabled]).to.equal([UIColor grayColor]);
 }
 
+- (void)testToVerifyDefaultFontForComposerTextInputView
+{
+    [self setRootViewController];
+    ATLMessageInputToolbar *toolBar = (ATLMessageInputToolbar *)[tester waitForViewWithAccessibilityLabel:@"Message Input Toolbar"];
+    expect(toolBar.textInputView.font).to.equal([UIFont systemFontOfSize:17]);
+}
+
 - (void)setRootViewController
 {
     self.viewController = [ATLSampleConversationViewController conversationViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];
