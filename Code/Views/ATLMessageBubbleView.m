@@ -252,7 +252,7 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
 
 - (void)handleLongPress:(UILongPressGestureRecognizer *)recognizer
 {
-    if ([recognizer state] == UIGestureRecognizerStateBegan) {
+    if ([recognizer state] == UIGestureRecognizerStateBegan && !self.longPressMask) {
 
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(menuControllerDisappeared)
