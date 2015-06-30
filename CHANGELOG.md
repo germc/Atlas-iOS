@@ -1,5 +1,15 @@
 # Atlas Changelog
 
+## 1.0.9
+
+### Public API Changes
+
+* Exposed private initializers of `ATLConversationViewController` and `ATLConversationListViewController` to allow subclassing for custom initialization.
+
+### Bug Fixes
+
+* Removed compiler warnings that showed from direct installation due to deprecations.
+
 ## 1.0.8
 
 ### Enhancements
