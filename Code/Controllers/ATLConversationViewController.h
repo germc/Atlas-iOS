@@ -247,7 +247,14 @@
 /**
  @abstract A Boolean value that determines whether or not an avatar is shown if there is only one other participant in the conversation.
  @default `NO`.
+ Should be set before `[super viewDidLoad]` is called.
  */
 @property (nonatomic) BOOL shouldDisplayAvatarItemForOneOtherParticipant;
+
+/**
+ @abstract A Boolean value that determines whether or not an avatar is shown next to the outgoing messages
+ @default `NO`.
+ */
+@property (nonatomic) BOOL shouldDisplayAvatarItemForOutgoingMessages;
 
 @end

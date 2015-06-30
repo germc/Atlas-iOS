@@ -23,7 +23,7 @@
 #import "ATLUIImageHelper.h"
 #import "ATLIncomingMessageCollectionViewCell.h"
 #import "ATLOutgoingMessageCollectionViewCell.h"
-#import <LayerKit/LayerKit.h> 
+#import <LayerKit/LayerKit.h>
 
 NSString *const ATLGIFAccessibilityLabel = @"Message: GIF";
 NSString *const ATLImageAccessibilityLabel = @"Message: Image";
@@ -34,6 +34,8 @@ NSString *const ATLImageAccessibilityLabel = @"Message: Image";
 @property (nonatomic) LYRMessage *message;
 @property (nonatomic) LYRProgress *progress;
 @property (nonatomic) NSUInteger lastProgressFractionCompleted;
+@property (nonatomic) NSLayoutConstraint *bubbleWithAvatarLeadConstraint;
+@property (nonatomic) NSLayoutConstraint *bubbleWithoutAvatarLeadConstraint;
 
 @end
 
@@ -41,6 +43,8 @@ NSString *const ATLImageAccessibilityLabel = @"Message: Image";
 
 CGFloat const ATLMessageCellMinimumHeight = 10.0f;
 CGFloat const ATLMessageCellHorizontalMargin = 16.0f;
+CGFloat const ATLAvatarImageLeadPadding = 12.0f;
+CGFloat const ATLAvatarImageTailPadding = 7.0f;
 
 + (ATLMessageCollectionViewCell *)sharedCell
 {
@@ -358,19 +362,35 @@ CGFloat const ATLMessageCellHorizontalMargin = 16.0f;
     [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationLessThanOrEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:maxBubbleWidth]];
     [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeHeight multiplier:1.0 constant:0]];
     [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeTop multiplier:1.0 constant:0]];
+    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.avatarImageView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0]];
 }
 
 - (void)updateWithSender:(id<ATLParticipant>)sender
 {
-    // Implemented by subclass
+    if (sender) {
+        self.avatarImageView.hidden = NO;
+        self.avatarImageView.avatarItem = sender;
+    } else {
+        self.avatarImageView.hidden = YES;
+    }
 }
 
 - (void)shouldDisplayAvatarItem:(BOOL)shouldDisplayAvatarItem
 {
-    // Implemented by subclass
+    NSArray *constraints = [self.contentView constraints];
+    if (shouldDisplayAvatarItem) {
+        if ([constraints containsObject:self.bubbleWithAvatarLeadConstraint]) return;
+        [self.contentView removeConstraint:self.bubbleWithoutAvatarLeadConstraint];
+        [self.contentView addConstraint:self.bubbleWithAvatarLeadConstraint];
+    } else {
+        if ([constraints containsObject:self.bubbleWithoutAvatarLeadConstraint]) return;
+        [self.contentView removeConstraint:self.bubbleWithAvatarLeadConstraint];
+        [self.contentView addConstraint:self.bubbleWithoutAvatarLeadConstraint];
+    }
+    [self setNeedsUpdateConstraints];
 }
 
-#pragma mark - Cell Height Calculations 
+#pragma mark - Cell Height Calculations
 
 + (CGFloat)cellHeightForMessage:(LYRMessage *)message inView:(UIView *)view
 {
