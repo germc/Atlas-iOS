@@ -1245,8 +1245,13 @@ static NSString *const ATLDefaultPushAlertText = @"sent you a message.";
 
 - (NSString *)participantNameForMessage:(LYRMessage *)message
 {
-    id<ATLParticipant> participant = [self participantForIdentifier:message.sender.userID];
-    NSString *participantName = participant.fullName ?: @"Unknown User";
+    NSString *participantName;
+    if (message.sender.userID) {
+        id<ATLParticipant> participant = [self participantForIdentifier:message.sender.userID];
+        participantName = participant.fullName ?: @"Unknown User";
+    } else {
+        participantName = message.sender.name;
+    }
     return participantName;
 }
 
