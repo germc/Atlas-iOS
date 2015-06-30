@@ -44,6 +44,8 @@
 
 + (instancetype)newMessageWithParts:(NSArray *)messageParts senderID:(NSString *)senderID;
 
++ (instancetype)newMessageWithParts:(NSArray *)messageParts senderName:(NSString *)senderName;
+
 - (BOOL)markAsRead:(NSError **)error;
 
 - (BOOL)delete:(LYRDeletionMode)deletionMode error:(NSError **)error;

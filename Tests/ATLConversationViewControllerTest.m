@@ -275,6 +275,42 @@ extern NSString *const ATLMessageInputToolbarSendButton;
     [tester waitForViewWithAccessibilityLabel:ATLAvatarImageViewAccessibilityLabel];
 }
 
+- (void)testToVerifySenderNameIsDisplayedInGroupConversation
+{
+    ATLUserMock *mockUser2 = [ATLUserMock userWithMockUserName:ATLMockUserNameKevin];
+    LYRClientMock *layerClient = [LYRClientMock layerClientMockWithAuthenticatedUserID:mockUser2.participantIdentifier];
+    [self.conversation addParticipants:[NSSet setWithObject:mockUser2.participantIdentifier] error:nil];
+    
+    LYRMessagePartMock *part = [LYRMessagePartMock messagePartWithText:@"Test"];
+    LYRMessageMock *message = [layerClient newMessageWithParts:@[part] options:nil error:nil];
+    [self.conversation sendMessage:message error:nil];
+    
+    [self setupConversationViewController];
+    [self setRootViewController:self.viewController];
+    
+    [tester waitForTimeInterval:10];
+    UILabel *label = (UILabel *)[tester waitForViewWithAccessibilityLabel:ATLConversationViewHeaderIdentifier];
+    expect(label.text).to.equal(mockUser2.fullName);
+}
+
+- (void)testToVerifyPlatformMessageSenderNameIsDisplayedInGroupConversation
+{
+    ATLUserMock *mockUser2 = [ATLUserMock userWithMockUserName:ATLMockUserNameKevin];
+    LYRClientMock *layerClient = [LYRClientMock layerClientMockWithAuthenticatedUserID:mockUser2.participantIdentifier];
+    [self.conversation addParticipants:[NSSet setWithObject:mockUser2.participantIdentifier] error:nil];
+    
+    LYRMessagePartMock *part = [LYRMessagePartMock messagePartWithText:@"Test"];
+    LYRMessageMock *message = [layerClient newPlatformMessageWithParts:@[part] senderName:@"Platform" options:nil error:nil];
+    [self.conversation sendMessage:message error:nil];
+    
+    [self setupConversationViewController];
+    [self setRootViewController:self.viewController];
+    
+    [tester waitForTimeInterval:10];
+    UILabel *label = (UILabel *)[tester waitForViewWithAccessibilityLabel:ATLConversationViewHeaderIdentifier];
+    expect(label.text).to.equal(@"Platform");
+}
+
 - (void)testToVerifyCustomAvatarImageDiameter
 {
     [[ATLAvatarImageView appearance] setAvatarImageViewDiameter:40];
