@@ -81,7 +81,7 @@ The table below details the most important classes in Atlas and is hyperlinked d
     </tr>
 </table>
 
-The complete API documentation can be found on [CocoaDocs](http://cocoadocs.org/docsets/Atlas/1.0.0/).
+The complete API documentation can be found on [CocoaDocs](http://cocoadocs.org/docsets/Atlas/).
 
 ## Installation
 
