@@ -46,9 +46,30 @@
     return self;    
 }
 
+- (id)initWithMessageParts:(NSArray *)messageParts senderName:(NSString *)senderName
+{
+    self = [super init];
+    if (self) {
+        _parts = messageParts;
+        _sender = [LYRActorMock new];
+        _sender.name = senderName;
+    }
+    return self;
+}
+
 + (instancetype)newMessageWithParts:(NSArray *)messageParts senderID:(NSString *)senderID
 {
     LYRMessageMock *mock = [[self alloc] initWithMessageParts:messageParts senderID:senderID];
+    mock.identifier = [NSURL URLWithString:[[NSUUID UUID] UUIDString]];
+    mock.isSent = NO;
+    mock.isDeleted = NO;
+    mock.isUnread = YES;
+    return mock;
+}
+
++ (instancetype)newMessageWithParts:(NSArray *)messageParts senderName:(NSString *)senderName
+{
+    LYRMessageMock *mock = [[self alloc] initWithMessageParts:messageParts senderName:senderName];
     mock.identifier = [NSURL URLWithString:[[NSUUID UUID] UUIDString]];
     mock.isSent = NO;
     mock.isDeleted = NO;

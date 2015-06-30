@@ -85,6 +85,7 @@ CGFloat const ATLConversationViewHeaderEmptyHeight = 1;
     self.participantLabel.font = _participantLabelFont;
     self.participantLabel.textColor = _participantLabelTextColor;
     self.participantLabel.translatesAutoresizingMaskIntoConstraints = NO;
+    self.participantLabel.accessibilityLabel = ATLConversationViewHeaderIdentifier;
     [self addSubview:self.participantLabel];
     
     [self configureDateLabelConstraints];

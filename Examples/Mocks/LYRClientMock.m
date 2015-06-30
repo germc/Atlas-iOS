@@ -75,6 +75,11 @@ NSString *const LYRMockObjectChangeChangeTypeKey = @"mockObjectChangeChangeTypeK
     return [LYRMessageMock newMessageWithParts:messageParts senderID:self.authenticatedUserID];
 }
 
+- (LYRMessageMock *)newPlatformMessageWithParts:(NSArray *)messageParts senderName:(NSString *)senderName options:(NSDictionary *)options error:(NSError *__autoreleasing *)error
+{
+    return [LYRMessageMock newMessageWithParts:messageParts senderName:senderName];
+}
+
 - (NSOrderedSet *)executeQuery:(LYRQuery *)query error:(NSError *__autoreleasing *)error
 {
     return [[LYRMockContentStore sharedStore] fetchObjectsWithClass:query.queryableClass predicate:query.predicate sortDescriptior:query.sortDescriptors];
