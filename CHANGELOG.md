@@ -1,5 +1,11 @@
 # Atlas Changelog
 
+## 1.0.10
+
+### Bug Fixes
+
+* Fixed bug introduced in 1.0.9 relating to media attachment text color for attributed string.
+
 ## 1.0.9
 
 ### Public API Changes
