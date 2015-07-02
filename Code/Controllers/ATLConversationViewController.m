@@ -30,6 +30,12 @@
 #import "ATLMediaAttachment.h"
 #import "ATLLocationManager.h"
 
+@interface ATLMessageInputToolbar ()
+
+- (void)configureRightAccessoryButtonState;
+
+@end
+
 @interface ATLConversationViewController () <UICollectionViewDataSource, UICollectionViewDelegate, ATLMessageInputToolbarDelegate, UIActionSheetDelegate, LYRQueryControllerDelegate, CLLocationManagerDelegate>
 
 @property (nonatomic) ATLConversationDataSource *conversationDataSource;
@@ -57,6 +63,16 @@ static NSString *const ATLDefaultPushAlertGIF = @"sent you a GIF.";
 static NSString *const ATLDefaultPushAlertImage = @"sent you a photo.";
 static NSString *const ATLDefaultPushAlertLocation = @"sent you a location.";
 static NSString *const ATLDefaultPushAlertText = @"sent you a message.";
+
++ (NSCache *)sharedCache
+{
+    static NSCache *_sharedCache;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        _sharedCache = [NSCache new];
+    });
+    return _sharedCache;
+}
 
 + (instancetype)conversationViewControllerWithLayerClient:(LYRClient *)layerClient;
 {
@@ -146,6 +162,7 @@ static NSString *const ATLDefaultPushAlertText = @"sent you a message.";
     if (!self.hasAppeared) {
         [self.collectionView layoutIfNeeded];
     }
+    if (!self.hasAppeared && [[[self class] sharedCache] objectForKey:self.conversation.identifier]) [self loadCachedMediaAttachments];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -160,8 +177,28 @@ static NSString *const ATLDefaultPushAlertText = @"sent you a message.";
 
 - (void)dealloc
 {
+    if (self.messageInputToolbar.mediaAttachments.count > 0) [self cacheMediaAttachments];
     self.collectionView.delegate = nil;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)cacheMediaAttachments
+{
+    [[[self class] sharedCache] setObject:self.messageInputToolbar.mediaAttachments forKey:self.conversation.identifier];
+}
+
+- (void)loadCachedMediaAttachments
+{
+    NSArray *mediaAttachments = [[[self class] sharedCache] objectForKey:self.conversation.identifier];
+    for (ATLMediaAttachment *attachment in mediaAttachments) {
+        if (attachment.mediaType == ATLMediaAttachmentTypeText) {
+            [self.messageInputToolbar.textInputView setText:attachment.textRepresentation];
+        } else {
+            [self.messageInputToolbar insertMediaAttachment:attachment];
+        }
+    }
+    [[[self class] sharedCache] removeObjectForKey:self.conversation.identifier];
+    [self.messageInputToolbar configureRightAccessoryButtonState];
 }
 
 #pragma mark - Conversation Data Source Setup
