@@ -97,6 +97,26 @@ extern NSString *const ATLMessageInputToolbarSendButton;
     [self sendPhotoMessage];
 }
 
+- (void)testToVerifyCachingMediaAttachments
+{
+    [self setupConversationViewController];
+    UIViewController *baseViewController = [UIViewController new];
+    [self setRootViewController:baseViewController];
+    [baseViewController.navigationController pushViewController:self.viewController animated:YES];
+    [tester waitForAnimationsToFinish];
+
+    ATLMessageInputToolbar *toolBar = (ATLMessageInputToolbar *)[tester waitForViewWithAccessibilityLabel:@"Message Input Toolbar"];
+    [toolBar.textInputView setText:@"Test"];
+    self.viewController = nil;
+    [baseViewController.navigationController dismissViewControllerAnimated:YES completion:nil];
+    [tester waitForAnimationsToFinish];
+
+    [self setupConversationViewController];
+    [baseViewController.navigationController pushViewController:self.viewController animated:YES];
+    toolBar = (ATLMessageInputToolbar *)[tester waitForViewWithAccessibilityLabel:@"Message Input Toolbar"];
+    expect(toolBar.textInputView.text).to.equal(@"Test");
+}
+
 #pragma mark - ATLConversationViewControllerDelegate
 
 //- (void)conversationViewController:(ATLConversationViewController *)viewController didSendMessage:(LYRMessage *)message;
