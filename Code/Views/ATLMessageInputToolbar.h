@@ -85,14 +85,6 @@ extern NSString *const ATLMessageInputToolbarAccessibilityLabel;
  */
 - (void)insertMediaAttachment:(ATLMediaAttachment *)mediaAttachment withEndLineBreak:(BOOL)endLineBreak;
 
-/**
- @abstract Configures the right accessory button directly without requiring a text change.
- @discussion When inserting `ATLMediaAttachment` objects in `viewWillAppear:`, the right accessory
- button doesn't update correctly because it normally updates from the textview changes.  This gives
- the ability to simulate native state change without needing to directly access the textview.
- */
-- (void)configureRightAccessoryButtonState;
-
 //-----------------------------
 // UI Customization
 //-----------------------------

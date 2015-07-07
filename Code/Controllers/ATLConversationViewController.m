@@ -190,11 +190,10 @@ static NSString *const ATLDefaultPushAlertText = @"sent you a message.";
     NSArray *mediaAttachments = [[[self class] sharedMediaAttachmentCache] objectForKey:self.conversation.identifier];
     for (int i = 0; i < mediaAttachments.count; i++) {
         ATLMediaAttachment *attachment = [mediaAttachments objectAtIndex:i];
-        BOOL shouldHaveLineBreak = i < mediaAttachments.count - 1;
+        BOOL shouldHaveLineBreak = (i < mediaAttachments.count - 1) || !(attachment.mediaMIMEType == ATLMIMETypeTextPlain);
         [self.messageInputToolbar insertMediaAttachment:attachment withEndLineBreak:shouldHaveLineBreak];
     }
     [[[self class] sharedMediaAttachmentCache] removeObjectForKey:self.conversation.identifier];
-    [self.messageInputToolbar configureRightAccessoryButtonState];
 }
 
 #pragma mark - Conversation Data Source Setup
