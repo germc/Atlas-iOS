@@ -171,7 +171,7 @@ static CGFloat const ATLButtonHeight = 28.0f;
             ATLMediaAttachment *mediaAttachment = [ATLMediaAttachment mediaAttachmentWithImage:image
                                                                                       metadata:nil
                                                                                  thumbnailSize:ATLDefaultThumbnailSize];
-            [self insertMediaAttachment:mediaAttachment];
+            [self insertMediaAttachment:mediaAttachment withEndLineBreak:YES];
         }
         return;
     }
@@ -186,7 +186,7 @@ static CGFloat const ATLButtonHeight = 28.0f;
     [self setNeedsLayout];
 }
 
-- (void)insertMediaAttachment:(ATLMediaAttachment *)mediaAttachment
+- (void)insertMediaAttachment:(ATLMediaAttachment *)mediaAttachment withEndLineBreak:(BOOL)endLineBreak;
 {
     UITextView *textView = self.textInputView;
 
@@ -196,9 +196,11 @@ static CGFloat const ATLButtonHeight = 28.0f;
         [attributedString appendAttributedString:lineBreak];
     }
 
-    NSMutableAttributedString *attachmentString = [[NSAttributedString attributedStringWithAttachment:mediaAttachment] mutableCopy];
+    NSMutableAttributedString *attachmentString = (mediaAttachment.mediaMIMEType == ATLMIMETypeTextPlain) ? [[NSAttributedString alloc] initWithString:mediaAttachment.textRepresentation] : [[NSAttributedString attributedStringWithAttachment:mediaAttachment] mutableCopy];
     [attributedString appendAttributedString:attachmentString];
-    [attributedString appendAttributedString:lineBreak];
+    if (endLineBreak) {
+        [attributedString appendAttributedString:lineBreak];
+    }
     [attributedString addAttribute:NSFontAttributeName value:textView.font range:NSMakeRange(0, attributedString.length)];
     if (textView.textColor) {
         [attributedString addAttribute:NSForegroundColorAttributeName value:textView.textColor range:NSMakeRange(0, attributedString.length)];
