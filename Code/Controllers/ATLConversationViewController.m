@@ -30,7 +30,7 @@
 #import "ATLMediaAttachment.h"
 #import "ATLLocationManager.h"
 
-@interface ATLConversationViewController () <UICollectionViewDataSource, UICollectionViewDelegate, ATLMessageInputToolbarDelegate, UIActionSheetDelegate, LYRQueryControllerDelegate, CLLocationManagerDelegate>
+@interface ATLConversationViewController () <UICollectionViewDataSource, UICollectionViewDelegate, ATLMessageInputToolbarDelegate, UIActionSheetDelegate, CLLocationManagerDelegate>
 
 @property (nonatomic) ATLConversationDataSource *conversationDataSource;
 @property (nonatomic) LYRQueryController *queryController;
