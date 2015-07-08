@@ -59,6 +59,16 @@ static NSString *const ATLDefaultPushAlertLocation = @"sent you a location.";
 static NSString *const ATLDefaultPushAlertText = @"sent you a message.";
 static NSInteger const ATLPhotoActionSheet = 1000;
 
++ (NSCache *)sharedMediaAttachmentCache
+{
+    static NSCache *_sharedCache;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        _sharedCache = [NSCache new];
+    });
+    return _sharedCache;
+}
+
 + (instancetype)conversationViewControllerWithLayerClient:(LYRClient *)layerClient;
 {
     NSAssert(layerClient, @"Layer Client cannot be nil");
@@ -147,6 +157,9 @@ static NSInteger const ATLPhotoActionSheet = 1000;
     if (!self.hasAppeared) {
         [self.collectionView layoutIfNeeded];
     }
+    if (!self.hasAppeared && [[[self class] sharedMediaAttachmentCache] objectForKey:self.conversation.identifier]) {
+        [self loadCachedMediaAttachments];
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -161,8 +174,27 @@ static NSInteger const ATLPhotoActionSheet = 1000;
 
 - (void)dealloc
 {
+    if (self.messageInputToolbar.mediaAttachments.count > 0) {
+        [self cacheMediaAttachments];
+    }
     self.collectionView.delegate = nil;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)cacheMediaAttachments
+{
+    [[[self class] sharedMediaAttachmentCache] setObject:self.messageInputToolbar.mediaAttachments forKey:self.conversation.identifier];
+}
+
+- (void)loadCachedMediaAttachments
+{
+    NSArray *mediaAttachments = [[[self class] sharedMediaAttachmentCache] objectForKey:self.conversation.identifier];
+    for (int i = 0; i < mediaAttachments.count; i++) {
+        ATLMediaAttachment *attachment = [mediaAttachments objectAtIndex:i];
+        BOOL shouldHaveLineBreak = (i < mediaAttachments.count - 1) || !(attachment.mediaMIMEType == ATLMIMETypeTextPlain);
+        [self.messageInputToolbar insertMediaAttachment:attachment withEndLineBreak:shouldHaveLineBreak];
+    }
+    [[[self class] sharedMediaAttachmentCache] removeObjectForKey:self.conversation.identifier];
 }
 
 #pragma mark - Conversation Data Source Setup
@@ -675,7 +707,7 @@ static NSInteger const ATLPhotoActionSheet = 1000;
             NSLog(@"Failed to capture last photo with error: %@", [error localizedDescription]);
         } else {
             ATLMediaAttachment *mediaAttachment = [ATLMediaAttachment mediaAttachmentWithAssetURL:assetURL thumbnailSize:ATLDefaultThumbnailSize];
-            [self.messageInputToolbar insertMediaAttachment:mediaAttachment];
+            [self.messageInputToolbar insertMediaAttachment:mediaAttachment withEndLineBreak:YES];
         }
     });
 }
@@ -697,7 +729,7 @@ static NSInteger const ATLPhotoActionSheet = 1000;
         } else {
             return;
         }
-        [self.messageInputToolbar insertMediaAttachment:mediaAttachment];
+        [self.messageInputToolbar insertMediaAttachment:mediaAttachment withEndLineBreak:YES];
     }
     [self.navigationController dismissViewControllerAnimated:YES completion:nil];
     [self.view becomeFirstResponder];

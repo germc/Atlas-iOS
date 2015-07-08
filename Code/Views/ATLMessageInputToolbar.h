@@ -78,11 +78,12 @@ extern NSString *const ATLMessageInputToolbarAccessibilityLabel;
 /**
  @abstract Inserts the mediaAttachment as an attributed text attachment which is inlined with text.
  @param mediaAttachment The `ATLMediaAttachment` instance containing information about the media.
+ @param endLineBreak A `BOOL` which if `YES` inserts a new line after the media attachment insertion.
  @discussion The view will automatically resize the attachment's thumbnail and itself to comfortably
  fit the thumbnail content. The image will also be cached and is accessible via the mediaAttachments
  property.
  */
-- (void)insertMediaAttachment:(ATLMediaAttachment *)mediaAttachment;
+- (void)insertMediaAttachment:(ATLMediaAttachment *)mediaAttachment withEndLineBreak:(BOOL)endLineBreak;
 
 //-----------------------------
 // UI Customization
