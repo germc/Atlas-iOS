@@ -11,7 +11,7 @@ Atlas is a lightweight, flexible set of user interface components designed to en
 
 ## Overview
 
-Atlas provides several complete user interface experiences as well as a large library of individual views. It was designed to address three use cases simulatenously:
+Atlas provides several complete user interface experiences as well as a large library of individual views. It was designed to address three use cases simultaneously:
 
 1. Provide good looking, high quality implementations of familiar messaging experiences out of the box. By default Atlas is styled to look much like iMessage.
 2. Enable quick and easy branding of the user experience via integration with `UIAppearance` and Interface Builder. All fonts, colors, etc. can be customized via an extensive set of `UIAppearance` selectors. This enables developers to quickly add messaging to an existing application and match the components with the existing style.
@@ -64,11 +64,11 @@ The table below details the most important classes in Atlas and is hyperlinked d
     </tr>
     <tr>
         <td><a href="Code/Protocols/ATLParticipant.h">ATLParticipant</a></td>
-        <td>A protocol adopted by objects that wish to represent participants in a Converation.</td>
+        <td>A protocol adopted by objects that wish to represent participants in a Conversation.</td>
     </tr>
     <tr>
         <td><a href="Code/Protocols/ATLParticipant.h">ATLParticipantPresenting</a></td>
-        <td>A protocol adopted by objects that wish to represent participants in a Converation.</td>
+        <td>A protocol adopted by objects that wish to represent participants in a Conversation.</td>
     </tr>
     <tr><th colspan="2" style="text-align:center;">Views</th></tr>
     <tr>
@@ -118,7 +118,7 @@ If you wish to install Atlas directly into your application from source, then cl
 2. Update your project settings to include the linker flags: `-ObjC -lz`
 3. Add the following Cocoa SDK frameworks to your project: `'CFNetwork', 'Security', 'MobileCoreServices', 'SystemConfiguration', 'CoreLocation', 'AssetsLibrary', 'ImageIO'`
 
-**Please note that LayerKit is a dependecy of `Atlas`. When manually installing `Atlas`, the same must be done with `LayerKit`. Instructions on doing so can be found in the [LayerKit releases repository](https://github.com/layerhq/releases-ios#framework-installation).**
+**Please note that LayerKit is a dependency of `Atlas`. When manually installing `Atlas`, the same must be done with `LayerKit`. Instructions on doing so can be found in the [LayerKit releases repository](https://github.com/layerhq/releases-ios#framework-installation).**
 
 Build and run your project to verify installation was successful.
 
