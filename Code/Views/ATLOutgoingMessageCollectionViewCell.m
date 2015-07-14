@@ -20,9 +20,17 @@
 
 #import "ATLOutgoingMessageCollectionViewCell.h"
 
-@implementation ATLOutgoingMessageCollectionViewCell
-
 NSString *const ATLOutgoingMessageCellIdentifier = @"ATLOutgoingMessageCellIdentifier";
+
+@interface ATLMessageCollectionViewCell()
+
+@property (nonatomic) NSLayoutConstraint *bubbleWithAvatarLeadConstraint;
+@property (nonatomic) NSLayoutConstraint *bubbleWithoutAvatarLeadConstraint;
+
+@end
+
+
+@implementation ATLOutgoingMessageCollectionViewCell
 
 + (void)initialize
 {
@@ -52,8 +60,15 @@ NSString *const ATLOutgoingMessageCellIdentifier = @"ATLOutgoingMessageCellIdent
 
 - (void)lyr_outgoingCommonInit
 {
-    self.avatarImageView.hidden = YES;
-    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleView  attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeRight multiplier:1.0 constant:-ATLMessageCellHorizontalMargin]];
+    [self configureConstraintsForOutgoingMessage];
+}
+
+- (void)configureConstraintsForOutgoingMessage
+{
+    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.avatarImageView attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeRight multiplier:1.0 constant:-ATLAvatarImageLeadPadding]];
+    self.bubbleWithAvatarLeadConstraint = [NSLayoutConstraint constraintWithItem:self.avatarImageView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem: self.bubbleView attribute: NSLayoutAttributeRight multiplier:1.0 constant:ATLAvatarImageTailPadding];
+    [self.contentView addConstraint:self.bubbleWithAvatarLeadConstraint];
+    self.bubbleWithoutAvatarLeadConstraint = [NSLayoutConstraint constraintWithItem:self.bubbleView attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem: self.contentView attribute:NSLayoutAttributeRight multiplier:1.0 constant:-ATLMessageCellHorizontalMargin];
 }
 
 @end
