@@ -28,6 +28,9 @@ extern CGFloat const ATLMessageCellHorizontalMargin;
 extern NSString *const ATLGIFAccessibilityLabel;
 extern NSString *const ATLImageAccessibilityLabel;
 
+extern CGFloat const ATLAvatarImageLeadPadding;
+extern CGFloat const ATLAvatarImageTailPadding;
+
 /**
  @abstract The `ATLMessageCollectionViewCell` class provides a lightweight, customizable collection
  view cell for presenting Layer message objects. The class is subclassed by `ATLIncomingMessageCollectionViewCell`
