@@ -20,12 +20,9 @@
 
 #import "ATLIncomingMessageCollectionViewCell.h"
 
-extern CGFloat const ATLAvatarImageLeadPadding;
-extern CGFloat const ATLAvatarImageTailPadding;
+NSString *const ATLIncomingMessageCellIdentifier = @"ATLIncomingMessageCellIdentifier";
 
 @interface ATLMessageCollectionViewCell ()
-
-- (void)configureLayoutConstraints;
 
 @property (nonatomic) NSLayoutConstraint *bubbleWithAvatarLeadConstraint;
 @property (nonatomic) NSLayoutConstraint *bubbleWithoutAvatarLeadConstraint;
@@ -33,8 +30,6 @@ extern CGFloat const ATLAvatarImageTailPadding;
 @end
 
 @implementation ATLIncomingMessageCollectionViewCell
-
-NSString *const ATLIncomingMessageCellIdentifier = @"ATLIncomingMessageCellIdentifier";
 
 + (void)initialize
 {

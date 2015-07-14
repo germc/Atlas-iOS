@@ -94,7 +94,7 @@ static NSString *const ATLDefaultPushAlertText = @"sent you a message.";
     _dateDisplayTimeInterval = 60*60;
     _marksMessagesAsRead = YES;
     _shouldDisplayAvatarItemForOneOtherParticipant = NO;
-    _shouldDisplayAvatarItemForOutgoingMessages = NO;
+    _shouldDisplayAvatarItemForAuthenticatedUser = NO;
     _typingParticipantIDs = [NSMutableOrderedSet new];
     _sectionHeaders = [NSHashTable weakObjectsHashTable];
     _sectionFooters = [NSHashTable weakObjectsHashTable];
@@ -373,7 +373,9 @@ static NSString *const ATLDefaultPushAlertText = @"sent you a message.";
 - (void)configureCell:(UICollectionViewCell<ATLMessagePresenting> *)cell forMessage:(LYRMessage *)message indexPath:(NSIndexPath *)indexPath
 {
     [cell presentMessage:message];
-    [cell shouldDisplayAvatarItem:self.shouldDisplayAvatarItem];
+
+    BOOL willDisplayAvatarItem = (![message.sender.userID isEqualToString:self.layerClient.authenticatedUserID]) ? self.shouldDisplayAvatarItem : (self.shouldDisplayAvatarItem && self.shouldDisplayAvatarItemForAuthenticatedUser);
+    [cell shouldDisplayAvatarItem:willDisplayAvatarItem];
     
     if ([self shouldDisplayAvatarItemAtIndexPath:indexPath]) {
         [cell updateWithSender:[self participantForIdentifier:message.sender.userID]];
@@ -487,7 +489,7 @@ static NSString *const ATLDefaultPushAlertText = @"sent you a message.";
     if (!self.shouldDisplayAvatarItem) return NO;
    
     LYRMessage *message = [self.conversationDataSource messageAtCollectionViewIndexPath:indexPath];
-    if ([message.sender.userID isEqualToString:self.layerClient.authenticatedUserID] && !self.shouldDisplayAvatarItemForOutgoingMessages) {
+    if ([message.sender.userID isEqualToString:self.layerClient.authenticatedUserID] && !self.shouldDisplayAvatarItemForAuthenticatedUser) {
         return NO;
     }
    

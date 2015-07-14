@@ -255,6 +255,6 @@
  @abstract A Boolean value that determines whether or not an avatar is shown next to the outgoing messages
  @default `NO`.
  */
-@property (nonatomic) BOOL shouldDisplayAvatarItemForOutgoingMessages;
+@property (nonatomic) BOOL shouldDisplayAvatarItemForAuthenticatedUser;
 
 @end
