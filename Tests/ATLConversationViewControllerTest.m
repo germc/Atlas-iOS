@@ -275,6 +275,23 @@ extern NSString *const ATLMessageInputToolbarSendButton;
     [tester waitForViewWithAccessibilityLabel:ATLAvatarImageViewAccessibilityLabel];
 }
 
+- (void)testToVerifyUserAvatarImageIsDisplayed
+{
+    LYRMessagePartMock *part = [LYRMessagePartMock messagePartWithText:@"Test"];
+    LYRMessageMock *message = [self.testInterface.layerClient newMessageWithParts:@[part] options:nil error:nil];
+    [self.conversation sendMessage:message error:nil];
+    
+    [self setupConversationViewController];
+    
+    self.viewController.shouldDisplayAvatarItemForOneOtherParticipant = YES;
+    self.viewController.shouldDisplayAvatarItemForAuthenticatedUser = YES;
+    
+    [self setRootViewController:self.viewController];
+    
+    [tester waitForTimeInterval:10];
+    [tester waitForViewWithAccessibilityLabel:ATLAvatarImageViewAccessibilityLabel];
+}
+
 - (void)testToVerifyCustomAvatarImageDiameter
 {
     [[ATLAvatarImageView appearance] setAvatarImageViewDiameter:40];
