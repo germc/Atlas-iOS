@@ -33,7 +33,7 @@
 @interface ATLConversationViewController () <UICollectionViewDataSource, UICollectionViewDelegate, ATLMessageInputToolbarDelegate, UIActionSheetDelegate, CLLocationManagerDelegate>
 
 @property (nonatomic) ATLConversationDataSource *conversationDataSource;
-@property (nonatomic) LYRQueryController *queryController;
+@property (nonatomic, readwrite) LYRQueryController *queryController;
 @property (nonatomic) BOOL shouldDisplayAvatarItem;
 @property (nonatomic) NSMutableOrderedSet *typingParticipantIDs;
 @property (nonatomic) NSMutableArray *objectChanges;
