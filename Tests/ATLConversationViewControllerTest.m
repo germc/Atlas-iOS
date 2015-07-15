@@ -467,24 +467,27 @@ extern NSString *const ATLMessageInputToolbarSendButton;
 
 - (void)testToVerifyAvatarImageIsDisplayedOncePerSection
 {
+    NSTimeInterval oneMinuteTwoSecondsAgoInterval = -62;
+    NSTimeInterval oneSecondAgoInterval = -1;
+    
     NSDate *now = [NSDate date];
-    NSTimeInterval oneMinuteTwoSecondAgo = -62;
-    NSTimeInterval oneSecondAgo = -1;
+    NSDate *oneSecondAgo = [now dateByAddingTimeInterval:oneSecondAgoInterval];
+    NSDate *oneMinuteTwoSecondsAgo = [now dateByAddingTimeInterval:oneMinuteTwoSecondsAgoInterval];
     
     LYRMessagePartMock *partOne = [LYRMessagePartMock messagePartWithText:@"One"];
     LYRMessageMock *messageOne = [self.testInterface.layerClient newMessageWithParts:@[partOne] options:nil error:nil];
-    messageOne.receivedAt = [now dateByAddingTimeInterval:oneMinuteTwoSecondAgo];
     [self.conversation sendMessage:messageOne error:nil];
+    messageOne.receivedAt = oneMinuteTwoSecondsAgo;
     
     LYRMessagePartMock *partTwo = [LYRMessagePartMock messagePartWithText:@"Two"];
     LYRMessageMock *messageTwo = [self.testInterface.layerClient newMessageWithParts:@[partTwo] options:nil error:nil];
-    messageTwo.receivedAt = [now dateByAddingTimeInterval:oneSecondAgo];
     [self.conversation sendMessage:messageTwo error:nil];
+    messageTwo.receivedAt = oneSecondAgo;
     
     LYRMessagePartMock *partThree = [LYRMessagePartMock messagePartWithText:@"Three"];
     LYRMessageMock *messageThree = [self.testInterface.layerClient newMessageWithParts:@[partThree] options:nil error:nil];
-    messageThree.receivedAt = now;
     [self.conversation sendMessage:messageThree error:nil];
+    messageThree.receivedAt = now;
     
     [self setupConversationViewController];
     
@@ -505,24 +508,27 @@ extern NSString *const ATLMessageInputToolbarSendButton;
 
 - (void)testToVerifyAvatarImageIsDisplayedOncePerCluster
 {
+    NSTimeInterval oneMinuteTwoSecondsAgoInterval = -62;
+    NSTimeInterval oneSecondAgoInterval = -1;
+    
     NSDate *now = [NSDate date];
-    NSTimeInterval oneMinuteTwoSecondAgo = -62;
-    NSTimeInterval oneSecondAgo = -1;
+    NSDate *oneSecondAgo = [now dateByAddingTimeInterval:oneSecondAgoInterval];
+    NSDate *oneMinuteTwoSecondsAgo = [now dateByAddingTimeInterval:oneMinuteTwoSecondsAgoInterval];
     
     LYRMessagePartMock *partOne = [LYRMessagePartMock messagePartWithText:@"One"];
     LYRMessageMock *messageOne = [self.testInterface.layerClient newMessageWithParts:@[partOne] options:nil error:nil];
-    messageOne.receivedAt = [now dateByAddingTimeInterval:oneMinuteTwoSecondAgo];
     [self.conversation sendMessage:messageOne error:nil];
+    messageOne.receivedAt = oneMinuteTwoSecondsAgo;
     
     LYRMessagePartMock *partTwo = [LYRMessagePartMock messagePartWithText:@"Two"];
     LYRMessageMock *messageTwo = [self.testInterface.layerClient newMessageWithParts:@[partTwo] options:nil error:nil];
-    messageTwo.receivedAt = [now dateByAddingTimeInterval:oneSecondAgo];
     [self.conversation sendMessage:messageTwo error:nil];
+    messageTwo.receivedAt = oneSecondAgo;
     
     LYRMessagePartMock *partThree = [LYRMessagePartMock messagePartWithText:@"Three"];
     LYRMessageMock *messageThree = [self.testInterface.layerClient newMessageWithParts:@[partThree] options:nil error:nil];
-    messageThree.receivedAt = now;
     [self.conversation sendMessage:messageThree error:nil];
+    messageThree.receivedAt = now;
     
     [self setupConversationViewController];
     
@@ -543,24 +549,27 @@ extern NSString *const ATLMessageInputToolbarSendButton;
 
 - (void)testToVerifyAvatarImageIsDisplayedForEveryMessage
 {
+    NSTimeInterval oneMinuteTwoSecondsAgoInterval = -62;
+    NSTimeInterval oneSecondAgoInterval = -1;
+    
     NSDate *now = [NSDate date];
-    NSTimeInterval oneMinuteTwoSecondAgo = -62;
-    NSTimeInterval oneSecondAgo = -1;
+    NSDate *oneSecondAgo = [now dateByAddingTimeInterval:oneSecondAgoInterval];
+    NSDate *oneMinuteTwoSecondsAgo = [now dateByAddingTimeInterval:oneMinuteTwoSecondsAgoInterval];
     
     LYRMessagePartMock *partOne = [LYRMessagePartMock messagePartWithText:@"One"];
     LYRMessageMock *messageOne = [self.testInterface.layerClient newMessageWithParts:@[partOne] options:nil error:nil];
-    messageOne.receivedAt = [now dateByAddingTimeInterval:oneMinuteTwoSecondAgo];
     [self.conversation sendMessage:messageOne error:nil];
+    messageOne.receivedAt = oneMinuteTwoSecondsAgo;
     
     LYRMessagePartMock *partTwo = [LYRMessagePartMock messagePartWithText:@"Two"];
     LYRMessageMock *messageTwo = [self.testInterface.layerClient newMessageWithParts:@[partTwo] options:nil error:nil];
-    messageTwo.receivedAt = [now dateByAddingTimeInterval:oneSecondAgo];
     [self.conversation sendMessage:messageTwo error:nil];
+    messageTwo.receivedAt = oneSecondAgo;
     
     LYRMessagePartMock *partThree = [LYRMessagePartMock messagePartWithText:@"Three"];
     LYRMessageMock *messageThree = [self.testInterface.layerClient newMessageWithParts:@[partThree] options:nil error:nil];
-    messageThree.receivedAt = now;
     [self.conversation sendMessage:messageThree error:nil];
+    messageThree.receivedAt = now;
     
     [self setupConversationViewController];
     
