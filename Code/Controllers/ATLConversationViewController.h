@@ -24,6 +24,11 @@
 #import "ATLParticipant.h"
 #import "ATLBaseConversationViewController.h"
 
+typedef NS_ENUM(NSUInteger, ATLAvatarItemDisplayFrequency) {
+    ATLAvatarItemDisplayFrequencySection,
+    ATLAvatarItemDisplayFrequencyCluster,
+    ATLAvatarItemDisplayFrequencyAll
+};
 
 @class ATLConversationViewController;
 @protocol ATLMessagePresenting;
@@ -273,5 +278,11 @@
  @default `NO`.
  */
 @property (nonatomic) BOOL shouldDisplayAvatarItemForAuthenticatedUser;
+
+/**
+ @abstract An Enum value that determines how often avatar items should be shown next to messages.
+ @default 'ATLAvatarItemDisplayFrequencySection'.
+ */
+@property (nonatomic) ATLAvatarItemDisplayFrequency avatarItemDisplayFrequency;
 
 @end
