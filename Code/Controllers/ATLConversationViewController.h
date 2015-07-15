@@ -69,6 +69,16 @@
 - (CGFloat)conversationViewController:(ATLConversationViewController *)viewController heightForMessage:(LYRMessage *)message withCellWidth:(CGFloat)cellWidth;
 
 /**
+ @abstract Informs the delegate of a cell being configured for the specified message.
+ @param viewController The `ATLConversationViewController` where the message cell will appear.
+ @param cell The `UICollectionViewCell` object that adheres to the `ATLMessagePresenting` protocol that will be displayed in the controller.
+ @param message The `LYRMessage` object that will be displayed in the cell.
+ @discussion Applications should implement this method if they want add further configuration that is not set up during cell initialization, such as gesture recognizers.
+ It is up to the application to typecast the cell to access custom cell properties.
+ */
+- (void)conversationViewController:(ATLConversationViewController *)conversationViewController configureCell:(UICollectionViewCell<ATLMessagePresenting> *)cell forMessage:(LYRMessage *)message;
+
+/**
  @abstract Asks the delegate for an `NSOrderedSet` of `LYRMessage` objects representing an `NSArray` of content parts.
  @param viewController The `ATLConversationViewController` supplying the content parts.
  @param mediaAttachments The array of `ATLMediaAttachment` items supplied via user input into the `messageInputToolbar` property of the controller.

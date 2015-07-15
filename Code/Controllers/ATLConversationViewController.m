@@ -309,6 +309,9 @@ static NSInteger const ATLPhotoActionSheet = 1000;
     
     UICollectionViewCell<ATLMessagePresenting> *cell =  [self.collectionView dequeueReusableCellWithReuseIdentifier:reuseIdentifier forIndexPath:indexPath];
     [self configureCell:cell forMessage:message indexPath:indexPath];
+    if ([self.delegate respondsToSelector:@selector(conversationViewController:configureCell:forMessage:)]) {
+        [self.delegate conversationViewController:self configureCell:cell forMessage:message];
+    }
     return cell;
 }
 
@@ -415,7 +418,6 @@ static NSInteger const ATLPhotoActionSheet = 1000;
         [cell updateWithSender:nil];
     }
     if (message.isUnread && [[UIApplication sharedApplication] applicationState] == UIApplicationStateActive) {
-        
         [message markAsRead:nil];
     }
 }

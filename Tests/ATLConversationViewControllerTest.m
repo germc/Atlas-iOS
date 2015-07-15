@@ -314,6 +314,35 @@ extern NSString *const ATLMessageInputToolbarSendButton;
     [tester waitForViewWithAccessibilityLabel:testMessageText];
 }
 
+//- (void)conversationViewController:(ATLConversationViewController *)conversationViewController configureCell:(UICollectionViewCell<ATLMessagePresenting> *)cell forMessage:(LYRMessage *)message;
+- (void)testToVerifyDelegateIsNotifiedOfCellCreation
+{
+    [self setupConversationViewController];
+    [self setRootViewController:self.viewController];
+    
+    id delegateMock = OCMProtocolMock(@protocol(ATLConversationViewControllerDelegate));
+    self.viewController.delegate = delegateMock;
+    
+    [[[delegateMock expect] andDo:^(NSInvocation *invocation) {
+        ATLConversationViewController *controller;
+        [invocation getArgument:&controller atIndex:2];
+        expect(controller).to.equal(self.viewController);
+        
+        UICollectionViewCell <ATLMessagePresenting> *cell;
+        [invocation getArgument:&cell atIndex:3];
+        expect(cell).to.beKindOf([UICollectionViewCell class]);
+        
+        LYRMessage *message;
+        [invocation getArgument:&message atIndex:4];
+        expect(message).to.beKindOf([LYRMessageMock class]);
+        
+    }] conversationViewController:[OCMArg any] configureCell:[OCMArg any] forMessage:[OCMArg any]];
+    
+    [self sendMessageWithText:@"This is a test"];
+    [tester tapViewWithAccessibilityLabel:@"Message: This is a test"];
+    [delegateMock verify];
+}
+
 - (void)testToVerityControllerDisplaysCorrectDataFromTheDataSource
 {
     [self setupConversationViewController];
