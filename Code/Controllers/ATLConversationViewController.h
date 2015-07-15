@@ -71,7 +71,7 @@
 /**
  @abstract Informs the delegate of a cell being configured for the specified message.
  @param viewController The `ATLConversationViewController` where the message cell will appear.
- @param cell The `UICollectionViewCell` object that adheres to the `ATLMessagePresenting` protocol that will be displayed in the controller.
+ @param cell The `UICollectionViewCell` object that confirms to the `ATLMessagePresenting` protocol that will be displayed in the controller.
  @param message The `LYRMessage` object that will be displayed in the cell.
  @discussion Applications should implement this method if they want add further configuration that is not set up during cell initialization, such as gesture recognizers.
  It is up to the application to typecast the cell to access custom cell properties.
