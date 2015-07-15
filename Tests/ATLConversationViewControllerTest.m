@@ -465,6 +465,120 @@ extern NSString *const ATLMessageInputToolbarSendButton;
     [tester waitForViewWithAccessibilityLabel:ATLAvatarImageViewAccessibilityLabel];
 }
 
+- (void)testToVerifyAvatarImageIsDisplayedOncePerSection
+{
+    NSDate *now = [NSDate date];
+    NSTimeInterval oneMinuteTwoSecondAgo = -62;
+    NSTimeInterval oneSecondAgo = -1;
+    
+    LYRMessagePartMock *partOne = [LYRMessagePartMock messagePartWithText:@"One"];
+    LYRMessageMock *messageOne = [self.testInterface.layerClient newMessageWithParts:@[partOne] options:nil error:nil];
+    messageOne.receivedAt = [now dateByAddingTimeInterval:oneMinuteTwoSecondAgo];
+    [self.conversation sendMessage:messageOne error:nil];
+    
+    LYRMessagePartMock *partTwo = [LYRMessagePartMock messagePartWithText:@"Two"];
+    LYRMessageMock *messageTwo = [self.testInterface.layerClient newMessageWithParts:@[partTwo] options:nil error:nil];
+    messageTwo.receivedAt = [now dateByAddingTimeInterval:oneSecondAgo];
+    [self.conversation sendMessage:messageTwo error:nil];
+    
+    LYRMessagePartMock *partThree = [LYRMessagePartMock messagePartWithText:@"Three"];
+    LYRMessageMock *messageThree = [self.testInterface.layerClient newMessageWithParts:@[partThree] options:nil error:nil];
+    messageThree.receivedAt = now;
+    [self.conversation sendMessage:messageThree error:nil];
+    
+    [self setupConversationViewController];
+    
+    self.viewController.shouldDisplayAvatarItemForOneOtherParticipant = YES;
+    self.viewController.shouldDisplayAvatarItemForAuthenticatedUser = YES;
+    self.viewController.avatarItemDisplayFrequency = ATLAvatarItemDisplayFrequencySection;
+    
+    [self setRootViewController:self.viewController];
+    
+    [tester waitForTimeInterval:10];
+    ATLMessageCollectionViewCell *cellOne = (ATLMessageCollectionViewCell *)[tester waitForViewWithAccessibilityLabel:@"Message: One"];
+    expect(cellOne.avatarImageView.hidden).to.equal(YES);
+    ATLMessageCollectionViewCell *cellTwo = (ATLMessageCollectionViewCell *)[tester waitForViewWithAccessibilityLabel:@"Message: Two"];
+    expect(cellTwo.avatarImageView.hidden).to.equal(YES);
+    ATLMessageCollectionViewCell *cellThree = (ATLMessageCollectionViewCell *)[tester waitForViewWithAccessibilityLabel:@"Message: Three"];
+    expect(cellThree.avatarImageView.hidden).to.equal(NO);
+}
+
+- (void)testToVerifyAvatarImageIsDisplayedOncePerCluster
+{
+    NSDate *now = [NSDate date];
+    NSTimeInterval oneMinuteTwoSecondAgo = -62;
+    NSTimeInterval oneSecondAgo = -1;
+    
+    LYRMessagePartMock *partOne = [LYRMessagePartMock messagePartWithText:@"One"];
+    LYRMessageMock *messageOne = [self.testInterface.layerClient newMessageWithParts:@[partOne] options:nil error:nil];
+    messageOne.receivedAt = [now dateByAddingTimeInterval:oneMinuteTwoSecondAgo];
+    [self.conversation sendMessage:messageOne error:nil];
+    
+    LYRMessagePartMock *partTwo = [LYRMessagePartMock messagePartWithText:@"Two"];
+    LYRMessageMock *messageTwo = [self.testInterface.layerClient newMessageWithParts:@[partTwo] options:nil error:nil];
+    messageTwo.receivedAt = [now dateByAddingTimeInterval:oneSecondAgo];
+    [self.conversation sendMessage:messageTwo error:nil];
+    
+    LYRMessagePartMock *partThree = [LYRMessagePartMock messagePartWithText:@"Three"];
+    LYRMessageMock *messageThree = [self.testInterface.layerClient newMessageWithParts:@[partThree] options:nil error:nil];
+    messageThree.receivedAt = now;
+    [self.conversation sendMessage:messageThree error:nil];
+    
+    [self setupConversationViewController];
+    
+    self.viewController.shouldDisplayAvatarItemForOneOtherParticipant = YES;
+    self.viewController.shouldDisplayAvatarItemForAuthenticatedUser = YES;
+    self.viewController.avatarItemDisplayFrequency = ATLAvatarItemDisplayFrequencyCluster;
+    
+    [self setRootViewController:self.viewController];
+    
+    [tester waitForTimeInterval:10];
+    ATLMessageCollectionViewCell *cellOne = (ATLMessageCollectionViewCell *)[tester waitForViewWithAccessibilityLabel:@"Message: One"];
+    expect(cellOne.avatarImageView.hidden).to.equal(NO);
+    ATLMessageCollectionViewCell *cellTwo = (ATLMessageCollectionViewCell *)[tester waitForViewWithAccessibilityLabel:@"Message: Two"];
+    expect(cellTwo.avatarImageView.hidden).to.equal(YES);
+    ATLMessageCollectionViewCell *cellThree = (ATLMessageCollectionViewCell *)[tester waitForViewWithAccessibilityLabel:@"Message: Three"];
+    expect(cellThree.avatarImageView.hidden).to.equal(NO);
+}
+
+- (void)testToVerifyAvatarImageIsDisplayedForEveryMessage
+{
+    NSDate *now = [NSDate date];
+    NSTimeInterval oneMinuteTwoSecondAgo = -62;
+    NSTimeInterval oneSecondAgo = -1;
+    
+    LYRMessagePartMock *partOne = [LYRMessagePartMock messagePartWithText:@"One"];
+    LYRMessageMock *messageOne = [self.testInterface.layerClient newMessageWithParts:@[partOne] options:nil error:nil];
+    messageOne.receivedAt = [now dateByAddingTimeInterval:oneMinuteTwoSecondAgo];
+    [self.conversation sendMessage:messageOne error:nil];
+    
+    LYRMessagePartMock *partTwo = [LYRMessagePartMock messagePartWithText:@"Two"];
+    LYRMessageMock *messageTwo = [self.testInterface.layerClient newMessageWithParts:@[partTwo] options:nil error:nil];
+    messageTwo.receivedAt = [now dateByAddingTimeInterval:oneSecondAgo];
+    [self.conversation sendMessage:messageTwo error:nil];
+    
+    LYRMessagePartMock *partThree = [LYRMessagePartMock messagePartWithText:@"Three"];
+    LYRMessageMock *messageThree = [self.testInterface.layerClient newMessageWithParts:@[partThree] options:nil error:nil];
+    messageThree.receivedAt = now;
+    [self.conversation sendMessage:messageThree error:nil];
+    
+    [self setupConversationViewController];
+    
+    self.viewController.shouldDisplayAvatarItemForOneOtherParticipant = YES;
+    self.viewController.shouldDisplayAvatarItemForAuthenticatedUser = YES;
+    self.viewController.avatarItemDisplayFrequency = ATLAvatarItemDisplayFrequencyAll;
+    
+    [self setRootViewController:self.viewController];
+    
+    [tester waitForTimeInterval:10];
+    ATLMessageCollectionViewCell *cellOne = (ATLMessageCollectionViewCell *)[tester waitForViewWithAccessibilityLabel:@"Message: One"];
+    expect(cellOne.avatarImageView.hidden).to.equal(NO);
+    ATLMessageCollectionViewCell *cellTwo = (ATLMessageCollectionViewCell *)[tester waitForViewWithAccessibilityLabel:@"Message: Two"];
+    expect(cellTwo.avatarImageView.hidden).to.equal(NO);
+    ATLMessageCollectionViewCell *cellThree = (ATLMessageCollectionViewCell *)[tester waitForViewWithAccessibilityLabel:@"Message: Three"];
+    expect(cellThree.avatarImageView.hidden).to.equal(NO);
+}
+
 - (void)testToVerifyCustomAvatarImageDiameter
 {
     [[ATLAvatarImageView appearance] setAvatarImageViewDiameter:40];
