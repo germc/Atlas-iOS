@@ -260,6 +260,25 @@ extern NSString *const ATLMessageInputToolbarSendButton;
     [delegateMock verify];
 }
 
+- (void)testToVerifySendingWhitespaceDoesNotSendLocation
+{
+    [self setRootViewController];
+    
+    id delegateMock = OCMProtocolMock(@protocol(ATLConversationViewControllerDelegate));
+    self.viewController.delegate = delegateMock;
+    
+    [[[delegateMock expect] andReturn:[NSOrderedSet orderedSet]] conversationViewController:self.viewController messagesForMediaAttachments:[OCMArg any]];
+    
+    id viewControllerMock = OCMPartialMock(self.viewController);
+    
+    [[[viewControllerMock stub] andDo:^(NSInvocation *invocation) {
+        failure(@"Shouldn't call send location message");
+    }] sendLocationMessage];
+    
+    [tester enterText:@" " intoViewWithAccessibilityLabel:ATLMessageInputToolbarAccessibilityLabel];
+    [tester tapViewWithAccessibilityLabel:ATLMessageInputToolbarSendButton];
+}
+
 - (void)testToVerifySelectingAndRemovingAnImageKeepsFontConsistent
 {
     [self setRootViewController];
