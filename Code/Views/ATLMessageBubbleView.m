@@ -141,6 +141,7 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
     NSString *cachedImageIdentifier = [NSString stringWithFormat:@"%f,%f", location.latitude, location.longitude];
     UIImage *cachedImage = [[[self class] sharedCache] objectForKey:cachedImageIdentifier];
     if (cachedImage) {
+        self.locationShown = location;
         self.bubbleImageView.image = cachedImage;
         self.bubbleImageView.contentMode = UIViewContentModeScaleAspectFill;
         self.bubbleImageView.hidden = NO;
