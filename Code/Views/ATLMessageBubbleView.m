@@ -42,6 +42,7 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
 @property (nonatomic) UIView *longPressMask;
 @property (nonatomic) CLLocationCoordinate2D locationShown;
 @property (nonatomic) UITapGestureRecognizer *tapGestureRecognizer;
+@property (nonatomic) UIPanGestureRecognizer *panGestureRecognizer;
 @property (nonatomic) NSURL *tappedURL;
 @property (nonatomic) NSLayoutConstraint *imageWidthConstraint;
 @property (nonatomic) MKMapSnapshotter *snapshotter;
@@ -92,6 +93,10 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
         _tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleLabelTap:)];
         _tapGestureRecognizer.delegate = self;
         [self.bubbleViewLabel addGestureRecognizer:_tapGestureRecognizer];
+        
+        _panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePan:)];
+        _panGestureRecognizer.delegate = self;
+        [self addGestureRecognizer:_panGestureRecognizer];
 
         UILongPressGestureRecognizer *gestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
         [self addGestureRecognizer:gestureRecognizer];
@@ -312,6 +317,10 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
     }
 }
 
+- (void)handlePan:(UIPanGestureRecognizer *)recognizer {
+    [[UIMenuController sharedMenuController] setMenuVisible:NO animated:YES];
+}
+
 #pragma mark - UIGestureRecognizerDelegate
 
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
@@ -343,6 +352,14 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
             self.tappedURL = result.URL;
             return YES;
         }
+    }
+    return NO;
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
+shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    if (gestureRecognizer == self.panGestureRecognizer || otherGestureRecognizer == self.panGestureRecognizer) {
+        return YES;
     }
     return NO;
 }
