@@ -29,6 +29,7 @@ CGFloat const ATLMessageBubbleMapHeight = 200.0f;
 CGFloat const ATLMessageBubbleDefaultHeight = 40.0f;
 
 NSString *const ATLUserDidTapLinkNotification = @"ATLUserDidTapLinkNotification";
+NSString *const ATLUserDidTapPhoneNumberNotification = @"ATLUserDidTapPhoneNumberNotification";
 
 typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
     ATLBubbleViewContentTypeText,
@@ -43,6 +44,7 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
 @property (nonatomic) CLLocationCoordinate2D locationShown;
 @property (nonatomic) UITapGestureRecognizer *tapGestureRecognizer;
 @property (nonatomic) NSURL *tappedURL;
+@property (nonatomic) NSString *tappedPhoneNumber;
 @property (nonatomic) NSLayoutConstraint *imageWidthConstraint;
 @property (nonatomic) MKMapSnapshotter *snapshotter;
 @property (nonatomic) ATLProgressView *progressView;
@@ -341,8 +343,18 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
     NSArray *results = ATLLinkResultsForText(self.bubbleViewLabel.attributedText.string, self.linkTypes);
     for (NSTextCheckingResult *result in results) {
         if (NSLocationInRange(characterIndex, result.range)) {
-            self.tappedURL = result.URL;
-            return YES;
+            switch (result.resultType) {
+                case NSTextCheckingTypeLink:
+                    self.tappedURL = result.URL;
+                    return YES;
+                    break;
+                case NSTextCheckingTypePhoneNumber:
+                    self.tappedPhoneNumber = result.phoneNumber;
+                    return YES;
+                    break;
+                default:
+                    break;
+            }
         }
     }
     return NO;
@@ -352,8 +364,15 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
 
 - (void)handleLabelTap:(UITapGestureRecognizer *)tapGestureRecognizer
 {
-    [[NSNotificationCenter defaultCenter] postNotificationName:ATLUserDidTapLinkNotification object:self.tappedURL];
-    self.tappedURL = nil;
+    if (self.tappedURL) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:ATLUserDidTapLinkNotification object:self.tappedURL];
+        self.tappedURL = nil;
+    }
+    
+    if (self.tappedPhoneNumber) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:ATLUserDidTapPhoneNumberNotification object:self.tappedPhoneNumber];
+        self.tappedURL = nil;
+    }
 }
 
 - (void)dealloc
