@@ -80,6 +80,7 @@ CGFloat const ATLAvatarImageTailPadding = 7.0f;
     _messageTextFont = [UIFont systemFontOfSize:17];
     _messageTextColor = [UIColor blackColor];
     _messageLinkTextColor = [UIColor whiteColor];
+    _messageLinkTypes = NSTextCheckingTypeLink;
     _bubbleViewColor = ATLBlueColor();
     _bubbleViewCornerRadius = 17.0f;
     
@@ -341,7 +342,7 @@ CGFloat const ATLAvatarImageTailPadding = 7.0f;
 {
     NSDictionary *attributes = @{NSFontAttributeName : self.messageTextFont, NSForegroundColorAttributeName : self.messageTextColor};
     NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:text attributes:attributes];
-    NSArray *linkResults = ATLLinkResultsForText(text);
+    NSArray *linkResults = ATLLinkResultsForText(text, self.messageLinkTypes);
     for (NSTextCheckingResult *result in linkResults) {
         NSDictionary *linkAttributes = @{NSForegroundColorAttributeName : self.messageLinkTextColor,
                                          NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle)};

@@ -54,6 +54,11 @@ extern CGFloat const ATLAvatarImageTailPadding;
 @property (nonatomic) UIColor *messageLinkTextColor UI_APPEARANCE_SELECTOR;
 
 /**
+ @abstract
+ */
+@property (nonatomic) NSTextCheckingType messageLinkTypes UI_APPEARANCE_SELECTOR;
+
+/**
  @abstract The background color for the bubble view displayed in the cell. Default is light gray.
  */
 @property (nonatomic) UIColor *bubbleViewColor UI_APPEARANCE_SELECTOR;
