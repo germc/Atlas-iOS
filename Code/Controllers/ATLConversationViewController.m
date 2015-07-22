@@ -565,7 +565,7 @@ static NSInteger const ATLPhotoActionSheet = 1000;
         return;
     }
     NSOrderedSet *messages = [self messagesForMediaAttachments:messageInputToolbar.mediaAttachments];
-    if (messages.count == 0 && messages) {
+    if (messages.count == 0 && self.messageInputToolbar.displaysRightAccessoryImage) {
         [self sendLocationMessage];
     } else {
         for (LYRMessage *message in messages) {

@@ -743,6 +743,23 @@ extern NSString *const ATLMessageInputToolbarSendButton;
     }).to.raise(NSInvalidArgumentException);
 }
 
+- (void)testToVerifySendingWhitespaceDoesNotSendLocation
+{
+    [self setupConversationViewController];
+    [self setRootViewController:self.viewController];
+    
+    self.viewController.messageInputToolbar.displaysRightAccessoryImage = NO;
+    
+    id viewControllerMock = OCMPartialMock(self.viewController);
+    
+    [[[viewControllerMock stub] andDo:^(NSInvocation *invocation) {
+        failure(@"Shouldn't call send location message");
+    }] sendLocationMessage];
+    
+    [tester enterText:@" " intoViewWithAccessibilityLabel:ATLMessageInputToolbarAccessibilityLabel];
+    [tester tapViewWithAccessibilityLabel:ATLMessageInputToolbarSendButton];
+}
+
 - (void)setupConversationViewController
 {
     self.viewController = [ATLSampleConversationViewController conversationViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];
