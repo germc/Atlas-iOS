@@ -119,8 +119,24 @@ extern NSString *const ATLConversationCollectionViewAccessibilityIdentifier;
     expect(cell.bubbleView.bubbleViewLabel.text).to.beNil;
 }
 
-#pragma mark - Outgoing Customization
+- (void)testToVerifyPhoneNumberIsUnderlinedIfLinkType
+{
+    NSString *test = @"0123456789";
+    LYRMessagePartMock *part = [LYRMessagePartMock messagePartWithText:@"0123456789"];
+    LYRMessageMock *message = [self.testInterface.layerClient newMessageWithParts:@[part] options:nil error:nil];
+    
+    ATLMessageCollectionViewCell *cell = [ATLMessageCollectionViewCell new];
+    cell.messageLinkTypes = NSTextCheckingTypePhoneNumber;
+    [cell presentMessage:(LYRMessage *)message];
+    
+    NSRange effectiveRange = NSMakeRange(0, 0);
+    NSDictionary *attributes = [cell.bubbleView.bubbleViewLabel.attributedText attributesAtIndex:0 effectiveRange:&effectiveRange];
+    expect(attributes[NSUnderlineStyleAttributeName]).to.equal(NSUnderlineStyleSingle);
+    expect(cell.bubbleView.bubbleViewLabel.text).to.equal(test);
+    expect(cell.bubbleView.bubbleImageView.image).to.beNil;
+}
 
+#pragma mark - Outgoing Customization
 - (void)testToVerifyOutgoingCustomMessageTextFont
 {
     UIFont *font = [UIFont systemFontOfSize:20];
