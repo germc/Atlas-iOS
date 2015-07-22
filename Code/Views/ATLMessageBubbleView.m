@@ -343,17 +343,12 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
     NSArray *results = ATLLinkResultsForText(self.bubbleViewLabel.attributedText.string, self.linkTypes);
     for (NSTextCheckingResult *result in results) {
         if (NSLocationInRange(characterIndex, result.range)) {
-            switch (result.resultType) {
-                case NSTextCheckingTypeLink:
-                    self.tappedURL = result.URL;
-                    return YES;
-                    break;
-                case NSTextCheckingTypePhoneNumber:
-                    self.tappedPhoneNumber = result.phoneNumber;
-                    return YES;
-                    break;
-                default:
-                    break;
+            if (result.resultType == NSTextCheckingTypeLink && self.linkTypes & NSTextCheckingTypeLink) {
+                self.tappedURL = result.URL;
+                return YES;
+            } else if (result.resultType == NSTextCheckingTypePhoneNumber && self.linkTypes & NSTextCheckingTypePhoneNumber) {
+                self.tappedPhoneNumber = result.phoneNumber;
+                return YES;
             }
         }
     }

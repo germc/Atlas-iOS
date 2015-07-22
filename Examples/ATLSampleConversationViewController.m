@@ -44,6 +44,7 @@
     [self configureTitle];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userDidTapLink:) name:ATLUserDidTapLinkNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userDidTapPhoneNumber:) name:ATLUserDidTapPhoneNumberNotification object:nil];
 }
 
 #pragma mark - ATLConversationViewControllerDataSource methods
@@ -124,6 +125,11 @@
 - (void)userDidTapLink:(NSNotification *)notification
 {
     [[UIApplication sharedApplication] openURL:notification.object];
+}
+
+- (void)userDidTapPhoneNumber:(NSNotification *)notification
+{
+    
 }
 
 @end
