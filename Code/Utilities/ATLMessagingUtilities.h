@@ -89,4 +89,4 @@ void ATLLastPhotoTaken(void(^completionHandler)(UIImage *image, NSError *error))
 
 UIImage *ATLPinPhotoForSnapshot(MKMapSnapshot *snapshot, CLLocationCoordinate2D location);
 
-NSArray *ATLLinkResultsForText(NSString *text, NSTextCheckingType linkTypes);
+NSArray *ATLTextCheckingResultsForText(NSString *text, NSTextCheckingType linkTypes);

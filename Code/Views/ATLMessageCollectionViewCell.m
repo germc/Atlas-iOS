@@ -348,7 +348,7 @@ CGFloat const ATLAvatarImageTailPadding = 7.0f;
 {
     NSDictionary *attributes = @{NSFontAttributeName : self.messageTextFont, NSForegroundColorAttributeName : self.messageTextColor};
     NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:text attributes:attributes];
-    NSArray *linkResults = ATLLinkResultsForText(text, self.messageLinkTypes);
+    NSArray *linkResults = ATLTextCheckingResultsForText(text, self.messageLinkTypes);
     for (NSTextCheckingResult *result in linkResults) {
         NSDictionary *linkAttributes = @{NSForegroundColorAttributeName : self.messageLinkTextColor,
                                          NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle)};

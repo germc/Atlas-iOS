@@ -119,21 +119,64 @@ extern NSString *const ATLConversationCollectionViewAccessibilityIdentifier;
     expect(cell.bubbleView.bubbleViewLabel.text).to.beNil;
 }
 
-- (void)testToVerifyPhoneNumberIsUnderlinedIfLinkType
+- (void)testToVerifyTextCheckingTypeLink
 {
-    NSString *test = @"0123456789";
-    LYRMessagePartMock *part = [LYRMessagePartMock messagePartWithText:@"0123456789"];
-    LYRMessageMock *message = [self.testInterface.layerClient newMessageWithParts:@[part] options:nil error:nil];
+    NSString *link = @"www.layer.com";
+    NSString *phoneNumber = @"734-769-6526";
+    NSString *linkAndPhoneNumber = [NSString stringWithFormat:@"%@ and %@", link, phoneNumber];
+    LYRMessagePartMock *part = [LYRMessagePartMock messagePartWithText:linkAndPhoneNumber];    LYRMessageMock *message = [self.testInterface.layerClient newMessageWithParts:@[part] options:nil error:nil];
+    
+    ATLMessageCollectionViewCell *cell = [ATLMessageCollectionViewCell new];
+    [cell presentMessage:(LYRMessage *)message];
+    
+    NSRange linkRange = [linkAndPhoneNumber rangeOfString:link];
+    NSDictionary *linkAttributes = [cell.bubbleView.bubbleViewLabel.attributedText attributesAtIndex:linkRange.location effectiveRange:&linkRange];
+    expect(linkAttributes[NSUnderlineStyleAttributeName]).to.equal(NSUnderlineStyleSingle);
+    
+    NSRange phoneNumberRange = [linkAndPhoneNumber rangeOfString:phoneNumber];
+    NSDictionary *phoneNumberAttributes = [cell.bubbleView.bubbleViewLabel.attributedText attributesAtIndex:phoneNumberRange.location effectiveRange:&phoneNumberRange];
+    expect(phoneNumberAttributes[NSUnderlineStyleAttributeName]).toNot.equal(NSUnderlineStyleSingle);
+}
+
+- (void)testToVerifyTextCheckingTypePhoneNumber
+{
+    NSString *link = @"www.layer.com";
+    NSString *phoneNumber = @"734-769-6526";
+    NSString *linkAndPhoneNumber = [NSString stringWithFormat:@"%@ and %@", link, phoneNumber];
+    LYRMessagePartMock *part = [LYRMessagePartMock messagePartWithText:linkAndPhoneNumber];    LYRMessageMock *message = [self.testInterface.layerClient newMessageWithParts:@[part] options:nil error:nil];
     
     ATLMessageCollectionViewCell *cell = [ATLMessageCollectionViewCell new];
     cell.messageLinkTypes = NSTextCheckingTypePhoneNumber;
     [cell presentMessage:(LYRMessage *)message];
     
-    NSRange effectiveRange = NSMakeRange(0, 0);
-    NSDictionary *attributes = [cell.bubbleView.bubbleViewLabel.attributedText attributesAtIndex:0 effectiveRange:&effectiveRange];
-    expect(attributes[NSUnderlineStyleAttributeName]).to.equal(NSUnderlineStyleSingle);
-    expect(cell.bubbleView.bubbleViewLabel.text).to.equal(test);
-    expect(cell.bubbleView.bubbleImageView.image).to.beNil;
+    NSRange linkRange = [linkAndPhoneNumber rangeOfString:link];
+    NSDictionary *linkAttributes = [cell.bubbleView.bubbleViewLabel.attributedText attributesAtIndex:linkRange.location effectiveRange:&linkRange];
+    expect(linkAttributes[NSUnderlineStyleAttributeName]).toNot.equal(NSUnderlineStyleSingle);
+    
+    NSRange phoneNumberRange = [linkAndPhoneNumber rangeOfString:phoneNumber];
+    NSDictionary *phoneNumberAttributes = [cell.bubbleView.bubbleViewLabel.attributedText attributesAtIndex:phoneNumberRange.location effectiveRange:&phoneNumberRange];
+    expect(phoneNumberAttributes[NSUnderlineStyleAttributeName]).to.equal(NSUnderlineStyleSingle);
+}
+
+- (void)testToVerifytextCheckingTypeLinkAndPhoneNumber
+{
+    NSString *link = @"www.layer.com";
+    NSString *phoneNumber = @"734-769-6526";
+    NSString *linkAndPhoneNumber = [NSString stringWithFormat:@"%@ and %@", link, phoneNumber];
+    LYRMessagePartMock *part = [LYRMessagePartMock messagePartWithText:linkAndPhoneNumber];
+    LYRMessageMock *message = [self.testInterface.layerClient newMessageWithParts:@[part] options:nil error:nil];
+    
+    ATLMessageCollectionViewCell *cell = [ATLMessageCollectionViewCell new];
+    cell.messageLinkTypes = NSTextCheckingTypeLink | NSTextCheckingTypePhoneNumber;
+    [cell presentMessage:(LYRMessage *)message];
+    
+    NSRange linkRange = [linkAndPhoneNumber rangeOfString:link];
+    NSDictionary *linkAttributes = [cell.bubbleView.bubbleViewLabel.attributedText attributesAtIndex:linkRange.location effectiveRange:&linkRange];
+    expect(linkAttributes[NSUnderlineStyleAttributeName]).to.equal(NSUnderlineStyleSingle);
+    
+    NSRange phoneNumberRange = [linkAndPhoneNumber rangeOfString:phoneNumber];
+    NSDictionary *phoneNumberAttributes = [cell.bubbleView.bubbleViewLabel.attributedText attributesAtIndex:phoneNumberRange.location effectiveRange:&phoneNumberRange];
+    expect(phoneNumberAttributes[NSUnderlineStyleAttributeName]).to.equal(NSUnderlineStyleSingle);
 }
 
 #pragma mark - Outgoing Customization

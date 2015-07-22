@@ -85,7 +85,9 @@ extern NSString *const ATLUserDidTapPhoneNumberNotification;
 @property (nonatomic) UIImageView *bubbleImageView;
 
 /**
- @abstract
+ @abstract The NSTextCheckingTypes that are set as links
+ @discussion Currently supports NSTextCheckingTypeLink and NSTextCheckingTypePhoneNumber
+ @default NSTextCheckingTypeLink
  */
 @property (nonatomic) NSTextCheckingType linkTypes;
 
