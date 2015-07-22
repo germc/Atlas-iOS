@@ -58,7 +58,7 @@ extern CGFloat const ATLAvatarImageTailPadding;
  @discussion Currently supports NSTextCheckingTypeLink and NSTextCheckingTypePhoneNumber
  @default NSTextCheckingTypeLink
  */
-@property (nonatomic) NSTextCheckingType messageLinkTypes UI_APPEARANCE_SELECTOR;
+@property (nonatomic) NSTextCheckingType messageTextCheckingTypes UI_APPEARANCE_SELECTOR;
 
 /**
  @abstract The background color for the bubble view displayed in the cell. Default is light gray.

@@ -80,7 +80,7 @@ CGFloat const ATLAvatarImageTailPadding = 7.0f;
     _messageTextFont = [UIFont systemFontOfSize:17];
     _messageTextColor = [UIColor blackColor];
     _messageLinkTextColor = [UIColor whiteColor];
-    _messageLinkTypes = NSTextCheckingTypeLink;
+    _messageTextCheckingTypes = NSTextCheckingTypeLink;
     _bubbleViewColor = ATLBlueColor();
     _bubbleViewCornerRadius = 17.0f;
     
@@ -304,10 +304,10 @@ CGFloat const ATLAvatarImageTailPadding = 7.0f;
     if ([self messageContainsTextContent]) [self configureBubbleViewForTextContent];
 }
 
-- (void)setMessageLinkTypes:(NSTextCheckingType)messageLinkTypes
+- (void)setMessageTextCheckingTypes:(NSTextCheckingType)messageLinkTypes
 {
-    _messageLinkTypes = messageLinkTypes;
-    self.bubbleView.linkTypes = messageLinkTypes;
+    _messageTextCheckingTypes = messageLinkTypes;
+    self.bubbleView.textCheckingTypes = messageLinkTypes;
 }
 
 - (void)setBubbleViewColor:(UIColor *)bubbleViewColor
@@ -348,7 +348,7 @@ CGFloat const ATLAvatarImageTailPadding = 7.0f;
 {
     NSDictionary *attributes = @{NSFontAttributeName : self.messageTextFont, NSForegroundColorAttributeName : self.messageTextColor};
     NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:text attributes:attributes];
-    NSArray *linkResults = ATLTextCheckingResultsForText(text, self.messageLinkTypes);
+    NSArray *linkResults = ATLTextCheckingResultsForText(text, self.messageTextCheckingTypes);
     for (NSTextCheckingResult *result in linkResults) {
         NSDictionary *linkAttributes = @{NSForegroundColorAttributeName : self.messageLinkTextColor,
                                          NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle)};

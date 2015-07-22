@@ -146,7 +146,7 @@ extern NSString *const ATLConversationCollectionViewAccessibilityIdentifier;
     LYRMessagePartMock *part = [LYRMessagePartMock messagePartWithText:linkAndPhoneNumber];    LYRMessageMock *message = [self.testInterface.layerClient newMessageWithParts:@[part] options:nil error:nil];
     
     ATLMessageCollectionViewCell *cell = [ATLMessageCollectionViewCell new];
-    cell.messageLinkTypes = NSTextCheckingTypePhoneNumber;
+    cell.messageTextCheckingTypes = NSTextCheckingTypePhoneNumber;
     [cell presentMessage:(LYRMessage *)message];
     
     NSRange linkRange = [linkAndPhoneNumber rangeOfString:link];
@@ -167,7 +167,7 @@ extern NSString *const ATLConversationCollectionViewAccessibilityIdentifier;
     LYRMessageMock *message = [self.testInterface.layerClient newMessageWithParts:@[part] options:nil error:nil];
     
     ATLMessageCollectionViewCell *cell = [ATLMessageCollectionViewCell new];
-    cell.messageLinkTypes = NSTextCheckingTypeLink | NSTextCheckingTypePhoneNumber;
+    cell.messageTextCheckingTypes = NSTextCheckingTypeLink | NSTextCheckingTypePhoneNumber;
     [cell presentMessage:(LYRMessage *)message];
     
     NSRange linkRange = [linkAndPhoneNumber rangeOfString:link];

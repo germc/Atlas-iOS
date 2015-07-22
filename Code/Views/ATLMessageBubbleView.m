@@ -82,7 +82,7 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
         _bubbleImageView.contentMode = UIViewContentModeScaleAspectFill;
         [self addSubview:_bubbleImageView];
 
-        _linkTypes = NSTextCheckingTypeLink;
+        _textCheckingTypes = NSTextCheckingTypeLink;
         
         _progressView = [[ATLProgressView alloc] initWithFrame:CGRectMake(0, 0, 128.0f, 128.0f)];
         _progressView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -340,13 +340,13 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
     NSUInteger characterIndex = [layoutManager characterIndexForPoint:tapLocation
                                                       inTextContainer:textContainer
                              fractionOfDistanceBetweenInsertionPoints:NULL];
-    NSArray *results = ATLTextCheckingResultsForText(self.bubbleViewLabel.attributedText.string, self.linkTypes);
+    NSArray *results = ATLTextCheckingResultsForText(self.bubbleViewLabel.attributedText.string, self.textCheckingTypes);
     for (NSTextCheckingResult *result in results) {
         if (NSLocationInRange(characterIndex, result.range)) {
-            if (result.resultType == NSTextCheckingTypeLink && self.linkTypes & NSTextCheckingTypeLink) {
+            if (result.resultType == NSTextCheckingTypeLink && self.textCheckingTypes & NSTextCheckingTypeLink) {
                 self.tappedURL = result.URL;
                 return YES;
-            } else if (result.resultType == NSTextCheckingTypePhoneNumber && self.linkTypes & NSTextCheckingTypePhoneNumber) {
+            } else if (result.resultType == NSTextCheckingTypePhoneNumber && self.textCheckingTypes & NSTextCheckingTypePhoneNumber) {
                 self.tappedPhoneNumber = result.phoneNumber;
                 return YES;
             }

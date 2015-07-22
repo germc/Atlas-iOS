@@ -34,7 +34,7 @@ extern CGFloat const ATLMessageBubbleDefaultHeight;
 extern NSString *const ATLUserDidTapLinkNotification;
 
 /**
- @abstract Posed when a user taps a phone number in a message bubble.
+ @abstract Posted when a user taps a phone number in a message bubble.
  */
 extern NSString *const ATLUserDidTapPhoneNumberNotification;
 
@@ -89,6 +89,6 @@ extern NSString *const ATLUserDidTapPhoneNumberNotification;
  @discussion Currently supports NSTextCheckingTypeLink and NSTextCheckingTypePhoneNumber
  @default NSTextCheckingTypeLink
  */
-@property (nonatomic) NSTextCheckingType linkTypes;
+@property (nonatomic) NSTextCheckingType textCheckingTypes;
 
 @end
