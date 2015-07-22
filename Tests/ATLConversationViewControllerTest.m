@@ -747,9 +747,7 @@ extern NSString *const ATLMessageInputToolbarSendButton;
 {
     [self setupConversationViewController];
     [self setRootViewController:self.viewController];
-    
-    self.viewController.messageInputToolbar.displaysRightAccessoryImage = NO;
-    
+        
     id viewControllerMock = OCMPartialMock(self.viewController);
     
     [[[viewControllerMock stub] andDo:^(NSInvocation *invocation) {
