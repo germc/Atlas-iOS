@@ -304,6 +304,12 @@ CGFloat const ATLAvatarImageTailPadding = 7.0f;
     if ([self messageContainsTextContent]) [self configureBubbleViewForTextContent];
 }
 
+- (void)setMessageLinkTypes:(NSTextCheckingType)messageLinkTypes
+{
+    _messageLinkTypes = messageLinkTypes;
+    self.bubbleView.linkTypes = messageLinkTypes;
+}
+
 - (void)setBubbleViewColor:(UIColor *)bubbleViewColor
 {
     _bubbleViewColor = bubbleViewColor;

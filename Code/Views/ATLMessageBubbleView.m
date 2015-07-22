@@ -336,7 +336,7 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
     NSUInteger characterIndex = [layoutManager characterIndexForPoint:tapLocation
                                                       inTextContainer:textContainer
                              fractionOfDistanceBetweenInsertionPoints:NULL];
-    NSArray *results = ATLLinkResultsForText(self.bubbleViewLabel.attributedText.string);
+    NSArray *results = ATLLinkResultsForText(self.bubbleViewLabel.attributedText.string, self.linkTypes);
     for (NSTextCheckingResult *result in results) {
         if (NSLocationInRange(characterIndex, result.range)) {
             self.tappedURL = result.URL;

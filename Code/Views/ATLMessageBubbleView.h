@@ -79,4 +79,9 @@ extern NSString *const ATLUserDidTapLinkNotification;
  */
 @property (nonatomic) UIImageView *bubbleImageView;
 
+/**
+ @abstract
+ */
+@property (nonatomic) NSTextCheckingType linkTypes;
+
 @end
