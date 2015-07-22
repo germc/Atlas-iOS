@@ -46,7 +46,7 @@ extern NSString *const ATLLocationLongitudeKey;
 // @name Internationalization Macro
 //---------------------------------
 
-#define ATLstr(key, value, comment) NSLocalizedStringWithDefaultValue(key, nil, [NSBundle mainBundle], value, comment)
+#define ATLLocalizedString(key, value, comment) NSLocalizedStringWithDefaultValue(key, nil, [NSBundle mainBundle], value, comment)
 
 //--------------------------
 // @name Max Cell Dimensions

@@ -47,7 +47,7 @@ static NSString *const ATLPlaceholderText = @"Enter Message";
 
         self.placeholderLabel = [UILabel new];
         self.placeholderLabel.font = self.font;
-        self.placeholderLabel.text = ATLstr(ATLPlaceHolderTextKey, self.placeholder, nil);;
+        self.placeholderLabel.text = ATLLocalizedString(ATLPlaceHolderTextKey, self.placeholder, nil);;
         self.placeholderLabel.textColor = [UIColor lightGrayColor];
         self.placeholderLabel.lineBreakMode = NSLineBreakByTruncatingTail;
         [self addSubview:self.placeholderLabel];
@@ -106,7 +106,7 @@ static NSString *const ATLPlaceholderText = @"Enter Message";
 - (void)setPlaceholder:(NSString *)placeholder
 {
     _placeholder = placeholder;
-    self.placeholderLabel.text = ATLstr(ATLPlaceHolderTextKey, placeholder, nil);
+    self.placeholderLabel.text = ATLLocalizedString(ATLPlaceHolderTextKey, placeholder, nil);
     [self setNeedsLayout];
 }
 
