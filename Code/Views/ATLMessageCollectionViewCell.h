@@ -27,6 +27,7 @@
 extern CGFloat const ATLMessageCellHorizontalMargin;
 extern NSString *const ATLGIFAccessibilityLabel;
 extern NSString *const ATLImageAccessibilityLabel;
+extern NSString *const ATLVideoAccessibilityLabel;
 
 extern CGFloat const ATLAvatarImageLeadPadding;
 extern CGFloat const ATLAvatarImageTailPadding;
@@ -52,13 +53,6 @@ extern CGFloat const ATLAvatarImageTailPadding;
  @abstract The text color for links displayed in the cell. Default is blue.
  */
 @property (nonatomic) UIColor *messageLinkTextColor UI_APPEARANCE_SELECTOR;
-
-/**
- @abstract The NSTextCheckingTypes that will be passed to the bubbleView
- @discussion Currently supports NSTextCheckingTypeLink and NSTextCheckingTypePhoneNumber
- @default NSTextCheckingTypeLink
- */
-@property (nonatomic) NSTextCheckingType messageTextCheckingTypes UI_APPEARANCE_SELECTOR;
 
 /**
  @abstract The background color for the bubble view displayed in the cell. Default is light gray.

@@ -20,6 +20,7 @@
 
 #import <AssetsLibrary/AssetsLibrary.h>
 #import <MobileCoreServices/MobileCoreServices.h>
+#import <MediaPlayer/MediaPlayer.h>
 #import "ATLConversationViewController.h"
 #import "ATLConversationCollectionView.h"
 #import "ATLConstants.h"
@@ -57,6 +58,7 @@ static NSString *const ATLPushNotificationSoundName = @"layerbell.caf";
 static NSString *const ATLDefaultPushAlertGIF = @"sent you a GIF.";
 static NSString *const ATLDefaultPushAlertImage = @"sent you a photo.";
 static NSString *const ATLDefaultPushAlertLocation = @"sent you a location.";
+static NSString *const ATLDefaultPushAlertVideo = @"sent you a video.";
 static NSString *const ATLDefaultPushAlertText = @"sent you a message.";
 static NSInteger const ATLPhotoActionSheet = 1000;
 
@@ -561,7 +563,7 @@ static NSInteger const ATLPhotoActionSheet = 1000;
                                                              delegate:self
                                                     cancelButtonTitle:ATLLocalizedString(@"atl.conversation.toolbar.actionsheet.cancel.key", @"Cancel", nil)
                                                destructiveButtonTitle:nil
-                                                    otherButtonTitles:ATLLocalizedString(@"atl.conversation.toolbar.actionsheet.takephoto.key", @"Take Photo", nil), ATLLocalizedString(@"atl.conversation.toolbar.actionsheet.lastphoto.key", @"Last Photo Taken", nil), ATLLocalizedString(@"atl.conversation.toolbar.actionsheet.library.key", @"Photo Library", nil), nil];
+                                                    otherButtonTitles:ATLLocalizedString(@"atl.conversation.toolbar.actionsheet.takephoto.key", @"Take Photo or Video", nil), ATLLocalizedString(@"atl.conversation.toolbar.actionsheet.lastphoto.key", @"Last Photo Taken", nil), ATLLocalizedString(@"atl.conversation.toolbar.actionsheet.library.key", @"Photo/Video Library", nil), nil];
     [actionSheet showInView:self.view];
     actionSheet.tag = ATLPhotoActionSheet;
 }
@@ -618,6 +620,8 @@ static NSInteger const ATLPhotoActionSheet = 1000;
             completePushText = [NSString stringWithFormat:@"%@ %@", senderName, ATLDefaultPushAlertImage];
         } else if ([MIMEType isEqualToString:ATLMIMETypeLocation]) {
             completePushText = [NSString stringWithFormat:@"%@ %@", senderName, ATLDefaultPushAlertLocation];
+        } else if ([MIMEType isEqualToString:ATLMIMETypeVideoMOVPreview]){
+            completePushText = [NSString stringWithFormat:@"%@ %@", senderName, ATLDefaultPushAlertVideo];
         } else {
             completePushText = [NSString stringWithFormat:@"%@ %@", senderName, ATLDefaultPushAlertText];
         }
@@ -713,6 +717,7 @@ static NSInteger const ATLPhotoActionSheet = 1000;
     if (pickerSourceTypeAvailable) {
         UIImagePickerController *picker = [[UIImagePickerController alloc] init];
         picker.delegate = self;
+        picker.mediaTypes = [UIImagePickerController availableMediaTypesForSourceType:sourceType];
         picker.sourceType = sourceType;
         [self.navigationController presentViewController:picker animated:YES completion:nil];
     }
@@ -735,9 +740,10 @@ static NSInteger const ATLPhotoActionSheet = 1000;
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
     NSString *mediaType = info[UIImagePickerControllerMediaType];
+    ATLMediaAttachment *mediaAttachment;
+    
     if ([mediaType isEqualToString:(__bridge NSString *)kUTTypeImage]) {
         NSURL *assetURL = (NSURL *)info[UIImagePickerControllerReferenceURL];
-        ATLMediaAttachment *mediaAttachment;
         if (assetURL) {
             mediaAttachment = [ATLMediaAttachment mediaAttachmentWithAssetURL:assetURL thumbnailSize:ATLDefaultThumbnailSize];
         } else if (info[UIImagePickerControllerOriginalImage]) {
@@ -748,12 +754,38 @@ static NSInteger const ATLPhotoActionSheet = 1000;
             return;
         }
         [self.messageInputToolbar insertMediaAttachment:mediaAttachment withEndLineBreak:YES];
+    } else if (CFStringCompare ((__bridge_retained CFStringRef)mediaType, kUTTypeMovie, 0)
+               == kCFCompareEqualTo) {   //if selected item is a video
+        
+        NSString *moviePath = (NSString *)[[info objectForKey:UIImagePickerControllerMediaURL] path];
+        NSInputStream *stream = [[NSInputStream alloc] initWithFileAtPath:moviePath];
+        
+        UIImage *backgroundImage = [self getThumbNail:(NSString *)moviePath];
+        
+        if (moviePath) {
+            mediaAttachment = [ATLMediaAttachment mediaAttachmentWithVideo:backgroundImage
+                                                                  metadata:info[UIImagePickerControllerMediaMetadata]
+                                                             thumbnailSize:ATLDefaultThumbnailSize videoStream:stream];
+        }
+        [self.messageInputToolbar insertMediaAttachment:mediaAttachment withEndLineBreak:YES];
     }
+    
     [self.navigationController dismissViewControllerAnimated:YES completion:nil];
     [self.view becomeFirstResponder];
-
+    
     // Workaround for collection view not displayed on iOS 7.1.
     [self.collectionView setNeedsLayout];
+}
+
+-(UIImage *)getThumbNail:(NSString *)stringPath
+{
+    NSURL *videoUrl = [NSURL fileURLWithPath:stringPath];
+    
+    MPMoviePlayerController *player = [[MPMoviePlayerController alloc]initWithContentURL:videoUrl];
+    UIImage *thumbnail = [player thumbnailImageAtTime:1.0 timeOption:MPMovieTimeOptionExact];
+    
+    [player stop];
+    return thumbnail;
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker

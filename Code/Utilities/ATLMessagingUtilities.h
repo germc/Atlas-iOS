@@ -34,6 +34,9 @@ extern NSString *const ATLMIMETypeImageSize;          // application/json+imageS
 extern NSString *const ATLMIMETypeLocation;           // location/coordinate
 extern NSString *const ATLMIMETypeDate;               // text/date
 
+extern NSString *const ATLMIMETypeVideoMOV;           // video/mov
+extern NSString *const ATLMIMETypeVideoMOVPreview;    // video/mov+preview
+
 extern NSUInteger const ATLDefaultThumbnailSize;      // 512px
 extern NSUInteger const ATLDefaultGIFThumbnailSize;   // 64px
 
@@ -96,4 +99,4 @@ void ATLLastPhotoTaken(void(^completionHandler)(UIImage *image, NSError *error))
 
 UIImage *ATLPinPhotoForSnapshot(MKMapSnapshot *snapshot, CLLocationCoordinate2D location);
 
-NSArray *ATLTextCheckingResultsForText(NSString *text, NSTextCheckingType linkTypes);
+NSArray *ATLLinkResultsForText(NSString *text);

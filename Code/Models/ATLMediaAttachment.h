@@ -36,7 +36,13 @@ typedef NS_ENUM(NSUInteger, ATLMediaAttachmentType) {
      @constant Media attachment containing image data.
      @discussion Sets mediaMIMEType = @"image/jpeg"; thumbnailMIMEType = @"image/jpeg+preview"; metadataMIMEType = @"application/json+imageSize"; textRepresentation = @"Attachment: Image";
      */
-    ATLMediaAttachmentTypeImage
+    ATLMediaAttachmentTypeImage,
+    /**
+     @constant Media attachment containing video data.
+     @discussion Sets mediaMIMEType = @"video/mov"; thumbnailMIMEType = @"image/jpeg+preview"; metadataMIMEType = @"application/json+imageSize"; textRepresentation = @"Attachment: Video";
+     */
+    ATLMediaAttachmentTypeVideo
+
 };
 
 /**
@@ -80,6 +86,8 @@ typedef NS_ENUM(NSUInteger, ATLMediaAttachmentType) {
  @return Instance of `ATLMediaAttachment` containing streams.
  */
 + (instancetype)mediaAttachmentWithLocation:(CLLocation *)location;
+
++ (instancetype)mediaAttachmentWithVideo:(UIImage *)image metadata:(NSDictionary *)metadata thumbnailSize:(NSUInteger)thumbnailSize videoStream:(NSInputStream *)stream;
 
 ///----------------------------
 /// @name Media Item Attributes

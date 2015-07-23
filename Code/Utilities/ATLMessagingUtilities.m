@@ -34,6 +34,9 @@ NSString *const ATLMIMETypeImageGIFPreview = @"image/gif+preview";
 NSString *const ATLMIMETypeLocation = @"location/coordinate";
 NSString *const ATLMIMETypeDate = @"text/date";
 
+NSString *const ATLMIMETypeVideoMOV = @"video/mov";
+NSString *const ATLMIMETypeVideoMOVPreview = @"video/mov+preview";
+
 NSUInteger const ATLDefaultThumbnailSize = 512;
 NSUInteger const ATLDefaultGIFThumbnailSize = 64;
 
@@ -268,12 +271,12 @@ UIImage *ATLPinPhotoForSnapshot(MKMapSnapshot *snapshot, CLLocationCoordinate2D 
     return finalImage;
 }
 
-NSArray *ATLTextCheckingResultsForText(NSString *text, NSTextCheckingType linkTypes)
+NSArray *ATLLinkResultsForText(NSString *text)
 {
     if (!text) return nil;
     
     NSError *error;
-    NSDataDetector *detector = [NSDataDetector dataDetectorWithTypes:linkTypes
+    NSDataDetector *detector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeLink
                                                                error:&error];
     if (error) return nil;
     return [detector matchesInString:text options:kNilOptions range:NSMakeRange(0, text.length)];
