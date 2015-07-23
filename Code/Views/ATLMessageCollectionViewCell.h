@@ -66,7 +66,7 @@ extern CGFloat const ATLAvatarImageTailPadding;
 */
 @property (nonatomic) NSTextCheckingType messageTextCheckingTypes UI_APPEARANCE_SELECTOR;
 
--/**
+/**
 
 /**
  @abstract The corner radius of the bubble view displayed in the cell. Default is 16.
