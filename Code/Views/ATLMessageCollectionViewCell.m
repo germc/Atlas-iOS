@@ -375,7 +375,7 @@ CGFloat const ATLAvatarImageTailPadding = 7.0f;
     if ([self messageContainsTextContent]) [self configureBubbleViewForTextContent];
 }
 
-(void)setMessageTextCheckingTypes:(NSTextCheckingType)messageLinkTypes
+- (void)setMessageTextCheckingTypes:(NSTextCheckingType)messageLinkTypes
 {
     _messageTextCheckingTypes = messageLinkTypes;
     self.bubbleView.textCheckingTypes = messageLinkTypes;

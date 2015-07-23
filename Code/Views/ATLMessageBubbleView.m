@@ -22,7 +22,6 @@
 #import "ATLMessagingUtilities.h"
 #import "ATLPlayView.h"
 
-
 CGFloat const ATLMessageBubbleLabelVerticalPadding = 8.0f;
 CGFloat const ATLMessageBubbleLabelHorizontalPadding = 13.0f;
 
@@ -31,6 +30,7 @@ CGFloat const ATLMessageBubbleMapHeight = 200.0f;
 CGFloat const ATLMessageBubbleDefaultHeight = 40.0f;
 
 NSString *const ATLUserDidTapLinkNotification = @"ATLUserDidTapLinkNotification";
+NSString *const ATLUserDidTapPhoneNumberNotification = @"ATLUserDidTapPhoneNumberNotification";
 
 typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
     ATLBubbleViewContentTypeText,
@@ -43,6 +43,7 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
 
 @property (nonatomic) ATLBubbleViewContentType contentType;
 @property (nonatomic) UIView *longPressMask;
+@property (nonatomic) NSString *tappedPhoneNumber;
 @property (nonatomic) CLLocationCoordinate2D locationShown;
 @property (nonatomic) UITapGestureRecognizer *tapGestureRecognizer;
 @property (nonatomic) UIPanGestureRecognizer *panGestureRecognizer;
@@ -327,7 +328,6 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
         while (superview && ![superview isKindOfClass:[UIScrollView class]]) {
             superview = superview.superview;
         }
-
         if ([superview isKindOfClass:[UIScrollView class]]) {
             UIScrollView *containingScrollView = (UIScrollView *)superview;
             CGPoint contentOffset = containingScrollView.contentOffset;
@@ -357,7 +357,6 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
             [menuController setTargetRect:CGRectMake(self.frame.size.width / 2, 0.0f, 0.0f, 0.0f) inView:self];
             menuController.arrowDirection = UIMenuControllerArrowDefault;
         }
-
         [menuController setMenuVisible:YES animated:YES];
     }
 }
