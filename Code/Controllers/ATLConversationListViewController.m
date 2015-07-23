@@ -103,7 +103,7 @@ NSString *const ATLConversationTableViewAccessibilityIdentifier = @"Conversation
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.title = ATLConversationListViewControllerTitle;
+    self.title = ATLLocalizedString(@"CONVERSATION_LIST_TITLE_KEY", ATLConversationListViewControllerTitle, nil);
     self.accessibilityLabel = ATLConversationListViewControllerTitle;
 
     self.tableView.accessibilityLabel = ATLConversationTableViewAccessibilityLabel;
