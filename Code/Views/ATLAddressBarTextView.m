@@ -77,7 +77,7 @@ static CGFloat const ATLLineSpacing = 6;
     
     self.toLabel = [UILabel new];
     self.toLabel.translatesAutoresizingMaskIntoConstraints = NO;
-    self.toLabel.text = @"To:";
+    self.toLabel.text = ATLLocalizedString(@"atl.addressbar.textview.tolabel.key", @"To:", nil);
     self.toLabel.textColor = [UIColor grayColor];
     self.toLabel.font = self.addressBarFont;
     [self addSubview:self.toLabel];
