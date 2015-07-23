@@ -79,7 +79,9 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
         _bubbleViewLabel.translatesAutoresizingMaskIntoConstraints = NO;
         [_bubbleViewLabel setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh + 1 forAxis:UILayoutConstraintAxisHorizontal];
         [self addSubview:_bubbleViewLabel];
-
+        
+        _textCheckingTypes = NSTextCheckingTypeLink;
+        
         _bubbleImageView = [[UIImageView alloc] init];
         _bubbleImageView.translatesAutoresizingMaskIntoConstraints = NO;
         _bubbleImageView.contentMode = UIViewContentModeScaleAspectFill;
@@ -392,6 +394,13 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
     NSArray *results = ATLLinkResultsForText(self.bubbleViewLabel.attributedText.string);
     for (NSTextCheckingResult *result in results) {
         if (NSLocationInRange(characterIndex, result.range)) {
+            if (result.resultType == NSTextCheckingTypeLink && self.textCheckingTypes & NSTextCheckingTypeLink) {
+                self.tappedURL = result.URL;
+                return YES;
+            } else if (result.resultType == NSTextCheckingTypePhoneNumber && self.textCheckingTypes & NSTextCheckingTypePhoneNumber) {
+                self.tappedPhoneNumber = result.phoneNumber;
+                return YES;
+            }
             self.tappedURL = result.URL;
             return YES;
         }
@@ -411,6 +420,15 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 
 - (void)handleLabelTap:(UITapGestureRecognizer *)tapGestureRecognizer
 {
+    if (self.tappedURL) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:ATLUserDidTapLinkNotification object:self.tappedURL];
+        self.tappedURL = nil;
+    }
+    
+    if (self.tappedPhoneNumber) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:ATLUserDidTapPhoneNumberNotification object:self.tappedPhoneNumber];
+        self.tappedURL = nil;
+    }
     [[NSNotificationCenter defaultCenter] postNotificationName:ATLUserDidTapLinkNotification object:self.tappedURL];
     self.tappedURL = nil;
 }

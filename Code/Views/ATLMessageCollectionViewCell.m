@@ -84,6 +84,7 @@ CGFloat const ATLAvatarImageTailPadding = 7.0f;
     _messageTextFont = [UIFont systemFontOfSize:17];
     _messageTextColor = [UIColor blackColor];
     _messageLinkTextColor = [UIColor whiteColor];
+    _messageTextCheckingTypes = NSTextCheckingTypeLink;
     _bubbleViewColor = ATLBlueColor();
     _bubbleViewCornerRadius = 17.0f;
     
@@ -149,7 +150,7 @@ CGFloat const ATLAvatarImageTailPadding = 7.0f;
     if (!fullResImagePart) {
         fullResImagePart = ATLMessagePartForMIMEType(self.message, ATLMIMETypeImagePNG);
     }
-
+    
     if (fullResImagePart && ((fullResImagePart.transferStatus == LYRContentTransferAwaitingUpload) ||
                              (fullResImagePart.transferStatus == LYRContentTransferUploading))) {
         // Set self for delegation, if full resolution message part
@@ -236,16 +237,16 @@ CGFloat const ATLAvatarImageTailPadding = 7.0f;
     } else {
         [self.bubbleView updateProgressIndicatorWithProgress:1.0 visible:NO animated:YES];
     }
-
+    
     UIImage *displayingImage;
     LYRMessagePart *previewImagePart = ATLMessagePartForMIMEType(self.message, ATLMIMETypeVideoMOVPreview);
     
     /* TODO: If there's no preview, use a black image
-    if (!previewImagePart) {
-        // If no preview image part found, resort to the full-resolution image.
-        previewImagePart = fullResImagePart;
-    }
-    */
+     if (!previewImagePart) {
+     // If no preview image part found, resort to the full-resolution image.
+     previewImagePart = fullResImagePart;
+     }
+     */
     
     if (previewImagePart.fileURL) {
         displayingImage = [UIImage imageWithContentsOfFile:previewImagePart.fileURL.path];
@@ -258,7 +259,7 @@ CGFloat const ATLAvatarImageTailPadding = 7.0f;
     if (sizePart) {
         size = ATLImageSizeForJSONData(sizePart.data);
         size = ATLConstrainImageSizeToCellSize(size);
-    }    
+    }
     
     [self.bubbleView updateWithVideoThumbnail:displayingImage width:size.width];
 }
@@ -268,7 +269,7 @@ CGFloat const ATLAvatarImageTailPadding = 7.0f;
     self.accessibilityLabel = ATLGIFAccessibilityLabel;
     
     LYRMessagePart *fullResImagePart = ATLMessagePartForMIMEType(self.message, ATLMIMETypeImageGIF);
-
+    
     if (fullResImagePart && ((fullResImagePart.transferStatus == LYRContentTransferAwaitingUpload) ||
                              (fullResImagePart.transferStatus == LYRContentTransferUploading))) {
         // Set self for delegation, if full resolution message part
@@ -374,6 +375,12 @@ CGFloat const ATLAvatarImageTailPadding = 7.0f;
     if ([self messageContainsTextContent]) [self configureBubbleViewForTextContent];
 }
 
+(void)setMessageTextCheckingTypes:(NSTextCheckingType)messageLinkTypes
+{
+    _messageTextCheckingTypes = messageLinkTypes;
+    self.bubbleView.textCheckingTypes = messageLinkTypes;
+}
+
 - (void)setBubbleViewColor:(UIColor *)bubbleViewColor
 {
     _bubbleViewColor = bubbleViewColor;
@@ -412,7 +419,7 @@ CGFloat const ATLAvatarImageTailPadding = 7.0f;
 {
     NSDictionary *attributes = @{NSFontAttributeName : self.messageTextFont, NSForegroundColorAttributeName : self.messageTextColor};
     NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:text attributes:attributes];
-    NSArray *linkResults = ATLLinkResultsForText(text);
+    NSArray *linkResults = ATLTextCheckingResultsForText(text, self.messageTextCheckingTypes);
     for (NSTextCheckingResult *result in linkResults) {
         NSDictionary *linkAttributes = @{NSForegroundColorAttributeName : self.messageLinkTextColor,
                                          NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle)};
@@ -466,7 +473,7 @@ CGFloat const ATLAvatarImageTailPadding = 7.0f;
 + (CGFloat)cellHeightForMessage:(LYRMessage *)message inView:(UIView *)view
 {
     LYRMessagePart *part = message.parts.firstObject;
-
+    
     CGFloat height = 0;
     if ([part.MIMEType isEqualToString:ATLMIMETypeTextPlain]) {
         height = [self cellHeightForTextMessage:message inView:view];
