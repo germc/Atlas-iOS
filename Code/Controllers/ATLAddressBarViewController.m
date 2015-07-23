@@ -21,6 +21,7 @@
 #import "ATLAddressBarViewController.h"
 #import "ATLConstants.h"
 #import "ATLAddressBarContainerView.h"
+#import "ATLMessagingUtilities.h"
 
 @interface ATLAddressBarViewController () <UITextViewDelegate, UITableViewDataSource, UITableViewDelegate>
 
@@ -486,8 +487,8 @@ static NSString *const ATLAddressBarParticipantAttributeName = @"ATLAddressBarPa
 
 - (NSString *)otherStringWithRemainingParticipants:(NSUInteger)remainingParticipants
 {
-    NSString *othersString = (remainingParticipants > 1) ? @"others" : @"other";
-    return [NSString stringWithFormat:@"and %lu %@", (unsigned long)remainingParticipants, othersString];
+    NSString *othersString = (remainingParticipants > 1) ? ATLLocalizedString(@"atl.addressbar.others.key", @"other", nil) : ATLLocalizedString(@"atl.addressbar.other.key", @"other", nil);
+    return [NSString stringWithFormat:@"%@ %lu %@", ATLLocalizedString(@"atl.addressbar.and.key", @"and", nil), (unsigned long)remainingParticipants, othersString];
 }
 
 - (BOOL)textViewHasSpaceForParticipantString:(NSString *)participantString

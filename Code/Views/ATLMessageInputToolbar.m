@@ -370,7 +370,7 @@ static CGFloat const ATLButtonHeight = 28.0f;
     [self.rightAccessoryButton setImage:nil forState:UIControlStateNormal];
     self.rightAccessoryButton.contentEdgeInsets = UIEdgeInsetsMake(2, 0, 0, 0);
     self.rightAccessoryButton.titleLabel.font = [UIFont boldSystemFontOfSize:17];
-    [self.rightAccessoryButton setTitle:@"Send" forState:UIControlStateNormal];
+    [self.rightAccessoryButton setTitle:ATLLocalizedString(@"atl.messagetoolbar.send.key", @"Send", nil) forState:UIControlStateNormal];
     [self.rightAccessoryButton setTitleColor:self.rightAccessoryButtonActiveColor forState:UIControlStateNormal];
     [self.rightAccessoryButton setTitleColor:self.rightAccessoryButtonDisabledColor forState:UIControlStateDisabled];
     if (!self.displaysRightAccessoryImage && !self.textInputView.text.length) {

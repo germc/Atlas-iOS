@@ -552,9 +552,9 @@ static NSInteger const ATLPhotoActionSheet = 1000;
 {
     UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
                                                              delegate:self
-                                                    cancelButtonTitle:@"Cancel"
+                                                    cancelButtonTitle:ATLLocalizedString(@"atl.conversation.toolbar.actionsheet.cancel.key", @"Cancel", nil)
                                                destructiveButtonTitle:nil
-                                                    otherButtonTitles:@"Take Photo", @"Last Photo Taken", @"Photo Library", nil];
+                                                    otherButtonTitles:ATLLocalizedString(@"atl.conversation.toolbar.actionsheet.takephoto.key", @"Take Photo", nil), ATLLocalizedString(@"atl.conversation.toolbar.actionsheet.lastphoto.key", @"Last Photo Taken", nil), ATLLocalizedString(@"atl.conversation.toolbar.actionsheet.library.key", @"Photo Library", nil), nil];
     [actionSheet showInView:self.view];
     actionSheet.tag = ATLPhotoActionSheet;
 }
@@ -1303,7 +1303,7 @@ static NSInteger const ATLPhotoActionSheet = 1000;
     NSString *participantName;
     if (message.sender.userID) {
         id<ATLParticipant> participant = [self participantForIdentifier:message.sender.userID];
-        participantName = participant.fullName ?: @"Unknown User";
+        participantName = participant.fullName ?: ATLLocalizedString(@"atl.conversation.participant.unknown.key", @"Unknown User", nil);
     } else {
         participantName = message.sender.name;
     }

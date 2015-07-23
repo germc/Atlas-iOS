@@ -48,6 +48,8 @@ static NSString *const ATLGIFMIMETypePlaceholderText = @"Attachment: GIF";
 NSString *const ATLConversationListViewControllerTitle = @"Messages";
 NSString *const ATLConversationTableViewAccessibilityLabel = @"Conversation Table View";
 NSString *const ATLConversationTableViewAccessibilityIdentifier = @"Conversation Table View Identifier";
+NSString *const ATLConversationListViewControllerDeletionModeLocal = @"Local";
+NSString *const ATLConversationListViewControllerDeletionModeGlobal = @"Global";
 
 + (instancetype)conversationListViewControllerWithLayerClient:(LYRClient *)layerClient
 {
@@ -103,7 +105,7 @@ NSString *const ATLConversationTableViewAccessibilityIdentifier = @"Conversation
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.title = ATLConversationListViewControllerTitle;
+    self.title = ATLLocalizedString(@"atl.conversationlist.title.key", ATLConversationListViewControllerTitle, nil);
     self.accessibilityLabel = ATLConversationListViewControllerTitle;
 
     self.tableView.accessibilityLabel = ATLConversationTableViewAccessibilityLabel;
@@ -317,10 +319,10 @@ NSString *const ATLConversationTableViewAccessibilityIdentifier = @"Conversation
         } else {
             switch (deletionMode.integerValue) {
                 case LYRDeletionModeLocal:
-                    actionString = @"Local";
+                    actionString = ATLLocalizedString(@"atl.conversationlist.deletionmode.local.key", ATLConversationListViewControllerDeletionModeLocal, nil);
                     break;
                 case LYRDeletionModeAllParticipants:
-                    actionString = @"Global";
+                    actionString = ATLLocalizedString(@"atl.conversationlist.deletionmode.global.key", ATLConversationListViewControllerDeletionModeGlobal, nil);
                     break;
                 default:
                     break;
@@ -352,7 +354,7 @@ NSString *const ATLConversationTableViewAccessibilityIdentifier = @"Conversation
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
     self.conversationToDelete = [self.queryController objectAtIndexPath:indexPath];
-    UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Global" otherButtonTitles:@"Local", nil];
+    UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:ATLConversationListViewControllerDeletionModeGlobal otherButtonTitles:ATLConversationListViewControllerDeletionModeLocal, nil];
     [actionSheet showInView:self.view];
 }
 
@@ -495,15 +497,15 @@ NSString *const ATLConversationTableViewAccessibilityIdentifier = @"Conversation
         if ([messagePart.MIMEType isEqualToString:ATLMIMETypeTextPlain]) {
             lastMessageText = [[NSString alloc] initWithData:messagePart.data encoding:NSUTF8StringEncoding];
         } else if ([messagePart.MIMEType isEqualToString:ATLMIMETypeImageJPEG]) {
-            lastMessageText = ATLImageMIMETypePlaceholderText;
+            lastMessageText = ATLLocalizedString(@"atl.conversationlist.lastMessage.text.text.key", ATLImageMIMETypePlaceholderText, nil);
         } else if ([messagePart.MIMEType isEqualToString:ATLMIMETypeImagePNG]) {
-            lastMessageText = ATLImageMIMETypePlaceholderText;
+            lastMessageText = ATLLocalizedString(@"atl.conversationlist.lastMessage.text.png.key", ATLImageMIMETypePlaceholderText, nil);
         } else if ([messagePart.MIMEType isEqualToString:ATLMIMETypeImageGIF]) {
-            lastMessageText = ATLGIFMIMETypePlaceholderText;
+            lastMessageText = ATLLocalizedString(@"atl.conversationlist.lastMessage.text.gif.key", ATLGIFMIMETypePlaceholderText, nil);
         } else if ([messagePart.MIMEType isEqualToString:ATLMIMETypeLocation]) {
-            lastMessageText = ATLLocationMIMETypePlaceholderText;
+            lastMessageText = ATLLocalizedString(@"atl.conversationlist.lastMessage.text.location.key", ATLLocationMIMETypePlaceholderText, nil);
         } else {
-            lastMessageText = ATLImageMIMETypePlaceholderText;
+            lastMessageText = ATLLocalizedString(@"atl.conversationlist.lastMessage.text.default.key", ATLImageMIMETypePlaceholderText, nil);
         }
     return lastMessageText;
 }
