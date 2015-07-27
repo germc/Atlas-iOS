@@ -78,6 +78,12 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
 
 @end
 
+@interface ATLVideoInputStream : ATLMediaInputStream
+
+- (instancetype)initWithAssetURL:(NSURL *)assetURL;
+
+@end
+
 @interface ATLAssetInputStream : ATLPhotoInputStream
 
 - (instancetype)initWithAssetURL:(NSURL *)assetURL;
@@ -374,7 +380,78 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
 
 @end
 
+@implementation ATLVideoInputStream
+
+- (instancetype)initWithAssetURL:(NSURL *)assetURL
+{
+    self = [super init];
+    if (self) {
+        if (!assetURL) {
+            @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"Cannot initialize %@ with `nil` assetURL.", self.class] userInfo:nil];
+        }
+        self.sourceAssetURL = assetURL;
+    }
+    return self;
+}
+
+- (void)open
+{
+    [super open];
+    // TODO: implement me
+    // Steps:
+    // 1. Prepare the temporary file URL (it should be a member property).
+    // 2. Prepare the AVExportSession (use the temp file url).
+}
+
+- (void)close
+{
+    [super close];
+    // TODO: implement me
+    // Steps:
+    // 1. Delete any temporary files it created during.
+    // 2. Nil out export session and do other cleanups. 
+}
+
+- (void)startConsumption
+{
+    // TODO: implement me
+    // Steps:
+    // 1. Start the export session (conversion).
+    // 2. When the export completes.
+    // 2.1 On fail, report the error throught the `self.streamError` and set the `self.mediaStreamStatus == NSStreamStatusError`.
+    // 2.2 On success, use a vanilla `NSInputStream` as proxy to read file data (add a `NSInputStream *exportedVideoFileInputStream` property to this class).
+    // 2.2.1 Use a while(done){} loop to wait for the requester to signal.
+    // 2.2.2 Once signalled, read from the proxy stream based on the `self.numberOfBytesRequested`.
+    // 2.2.3 When bytes are read from the stream, copy that chunk of data to `self.dataConsumed` signal the consumer.
+    // 2.2.4 When `read:` on proxy stream returns 0 bytes, it's done (self.mediaStreamStatus = NSStreamStatusAtEnd).
+}
+
+@end
+
 @implementation ATLMediaInputStream
+
+#pragma mark - Public Factories
+
++ (instancetype)mediaInputStreamWithAssetURL:(NSURL *)assetURL
+{
+    ALAssetsLibrary *assetsLibrary = [[ALAssetsLibrary alloc] init];
+    ALAsset *asset = ATLMediaInputStreamAssetForAssetURL(assetURL, assetsLibrary, nil);
+    if (!asset) {
+        return nil;
+    }
+    if ([[asset valueForProperty:ALAssetPropertyType] isEqualToString:ALAssetTypeVideo]) {
+        return [[ATLVideoInputStream alloc] initWithAssetURL:assetURL];
+    } else if ([[asset valueForProperty:ALAssetPropertyType] isEqualToString:ALAssetTypePhoto]) {
+        return [[ATLAssetInputStream alloc] initWithAssetURL:assetURL];
+    } else {
+        return nil;
+    }
+}
+
++ (instancetype)mediaInputStreamWithImage:(UIImage *)image metadata:(NSDictionary *)metadata;
+{
+    return [[ATLImageInputStream alloc] initWithImage:image metadata:metadata];
+}
 
 #pragma mark - Initializers
 
@@ -398,16 +475,6 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
         _transferBufferSerialGuard = dispatch_queue_create(ATLMediaInputConsumerSerialTransferQueueName, DISPATCH_QUEUE_SERIAL);
     }
     return self;
-}
-
-+ (instancetype)mediaInputStreamWithAssetURL:(NSURL *)assetURL
-{
-    return [[ATLAssetInputStream alloc] initWithAssetURL:assetURL];
-}
-
-+ (instancetype)mediaInputStreamWithImage:(UIImage *)image metadata:(NSDictionary *)metadata;
-{
-    return [[ATLImageInputStream alloc] initWithImage:image metadata:metadata];
 }
 
 - (void)dealloc
