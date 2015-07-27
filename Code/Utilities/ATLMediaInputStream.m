@@ -64,6 +64,12 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
 @property (nonatomic) ALAssetsLibrary *assetLibrary; // needs to be alive during transfer
 @property (nonatomic) ALAsset *asset;
 @property (nonatomic) ALAssetRepresentation *assetRepresentation;
+
+@end
+
+@interface ATLPhotoInputStream : ATLMediaInputStream
+
+/* References needed by ALAsset, Core Graphics and Image I/O used during transfer */
 @property (nonatomic, assign) CGDataProviderRef provider;
 @property (nonatomic, assign) CGImageSourceRef source;
 @property (nonatomic, assign) CGDataConsumerRef consumer;
@@ -72,129 +78,23 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
 
 @end
 
-@interface ATLAssetInputStream : ATLMediaInputStream
+@interface ATLAssetInputStream : ATLPhotoInputStream
 
 - (instancetype)initWithAssetURL:(NSURL *)assetURL;
 
 @end
 
-@interface ATLImageInputStream : ATLMediaInputStream
+@interface ATLImageInputStream : ATLPhotoInputStream
 
 - (instancetype)initWithImage:(UIImage *)image metadata:(NSDictionary *)metadata;;
 
 @end
 
-@implementation ATLAssetInputStream
-
-- (instancetype)initWithAssetURL:(NSURL *)assetURL
-{
-    self = [super init];
-    if (self) {
-        if (!assetURL) {
-            @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"Cannot initialize %@ with `nil` assetURL.", self.class] userInfo:nil];
-        }
-        self.sourceAssetURL = assetURL;
-    }
-    return self;
-}
-
-@end
-
-@implementation ATLImageInputStream
-
-- (instancetype)initWithImage:(UIImage *)image metadata:(NSDictionary *)metadata;
-{
-    self = [super init];
-    if (self) {
-        if (!image) {
-            @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"Cannot initialize %@ with `nil` image.", self.class] userInfo:nil];
-        }
-        self.sourceImage = image;
-        self.metadata = metadata;
-    }
-    return self;
-}
-
-@end
-
-@implementation ATLMediaInputStream
-
-#pragma mark - Initializers
-
-- (instancetype)init
-{
-    self = [super init];
-    if (self) {
-        if ([[self class] isEqual:[ATLMediaInputStream class]]) {
-            @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"Failed to call designated initializer. Use one of the following initialiers: %@", [@[ NSStringFromSelector(@selector(mediaInputStreamWithAssetURL:)), NSStringFromSelector(@selector(mediaInputStreamWithImage:metadata:)) ] componentsJoinedByString:@", "]] userInfo:nil];
-        }
-        _mediaStreamStatus = NSStreamStatusNotOpen;
-        _mediaStreamError = nil;
-        _dataConsumed = [NSData data];
-        _numberOfBytesRequested = 0;
-        _numberOfBytesProvided = 0;
-        _maximumSize = 0;
-        _compressionQuality = 0.0f;
-        _streamFlowRequesterSemaphore = dispatch_semaphore_create(0);
-        _streamFlowProviderSemaphore = dispatch_semaphore_create(0);
-        _consumerAsyncQueue = dispatch_queue_create(ATLMediaInputConsumerAsyncQueueName, DISPATCH_QUEUE_CONCURRENT);
-        _transferBufferSerialGuard = dispatch_queue_create(ATLMediaInputConsumerSerialTransferQueueName, DISPATCH_QUEUE_SERIAL);
-    }
-    return self;
-}
-
-+ (instancetype)mediaInputStreamWithAssetURL:(NSURL *)assetURL
-{
-    return [[ATLAssetInputStream alloc] initWithAssetURL:assetURL];
-}
-
-+ (instancetype)mediaInputStreamWithImage:(UIImage *)image metadata:(NSDictionary *)metadata;
-{
-    return [[ATLImageInputStream alloc] initWithImage:image metadata:metadata];
-}
-
-- (void)dealloc
-{
-    if (self.streamStatus != NSStreamStatusClosed) {
-        [self close];
-    }
-}
-
-#pragma mark - Transient isLossless implementation
-
-+ (NSSet *)keyPathsForValuesAffectingValueForKey:(NSString *)key
-{
-    NSSet *keyPaths = [super keyPathsForValuesAffectingValueForKey:key];
-    if ([key isEqualToString:@"isLossless"]) {
-        NSSet *affectingKey = [NSSet setWithObjects:@"maximumSize", @"compressionQuality", nil];
-        keyPaths = [keyPaths setByAddingObjectsFromSet:affectingKey];
-    }
-    return keyPaths;
-}
-
-- (BOOL)isLossless
-{
-    return (self.maximumSize == 0 && self.compressionQuality == 0.0f);
-}
-
-#pragma mark - Public Overrides
-
-- (NSStreamStatus)streamStatus
-{
-    return self.mediaStreamStatus;
-}
-
-- (NSError *)streamError
-{
-    return self.mediaStreamError;
-}
+@implementation ATLPhotoInputStream
 
 - (void)open
 {
-    // Tell receiver we're openning the stream.
-    self.mediaStreamStatus = NSStreamStatusOpening;
-    
-    ATLMediaInputStreamLog(@"opening stream...");
+    [super open];
     
     // Setup data provider.
     NSInteger numberOfSourceImages = 0;
@@ -222,7 +122,7 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
             self.mediaStreamError = error;
             return;
         }
-    }   
+    }
     
     // Setup data consumer.
     success = [self setupConsumerWithError:&error numberOfSourceImages:numberOfSourceImages];
@@ -231,23 +131,15 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
         self.mediaStreamError = error;
         return;
     }
-
+    
     // Tell receiver stream is successfully open
     self.mediaStreamStatus = NSStreamStatusOpen;
-    return;
 }
 
 - (void)close
 {
-    if (self.mediaStreamStatus == NSStreamStatusClosed) {
-        return;
-    }
+    [super close];
     
-    if (self.mediaStreamStatus == NSStreamStatusReading) {
-        // Close the stream gracefully.
-        self.numberOfBytesRequested = 0;
-        ATLMediaInputStreamLog(@"closing stream...");
-    }
     // Release Image I/O references
     if (_destination != NULL) {
         CFRelease(_destination);
@@ -267,55 +159,6 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
     }
     self.asset = nil;
     self.assetLibrary = nil;
-    // Signal any ongoing requests.
-    dispatch_semaphore_signal(self.streamFlowRequesterSemaphore);
-    self.mediaStreamStatus = NSStreamStatusClosed;
-}
-
-- (NSInteger)read:(uint8_t *)buffer maxLength:(NSUInteger)bytesToConsume
-{
-    if (self.mediaStreamStatus == NSStreamStatusOpen) {
-        [self startConsumption];
-    }
-    
-    // If already completed
-    if (self.mediaStreamStatus == NSStreamStatusAtEnd) {
-        return 0; // EOS
-    }
-    
-    // Cannot provide data, if not in reading state.
-    if (self.mediaStreamStatus != NSStreamStatusReading) {
-        return -1; // Operation fails
-    }
-
-    // Setting the data stream request.
-    ATLMediaInputStreamLog(@"input stream: requesting %lu of bytes", bytesToConsume);
-    self.numberOfBytesRequested = bytesToConsume;
-    
-    // Notify data provider that request is ready.
-    dispatch_semaphore_signal(self.streamFlowProviderSemaphore);
-    
-    // Wait for the response.
-    ATLMediaInputStreamLog(@"input stream: waiting for cosumer to prepare data");
-    dispatch_semaphore_wait(self.streamFlowRequesterSemaphore, DISPATCH_TIME_FOREVER);
-    
-    if (self.mediaStreamStatus == NSStreamStatusError) {
-        return -1; // Operation failed, see self.streamError;
-    }
-
-    // Copy the consumed image data to `buffer`.
-    [self.dataConsumed getBytes:buffer];
-    ATLMediaInputStreamLog(@"input stream: passed data to receiver");
-    
-    // Clear transfer buffer.
-    NSInteger bytesConsumed = self.dataConsumed.length;
-    self.dataConsumed = [NSData data];
-    return bytesConsumed;
-}
-
-- (BOOL)getBuffer:(uint8_t **)buffer length:(NSUInteger *)len
-{
-    @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"Method %@ on %@ not implemented", NSStringFromSelector(@selector(getBuffer:length:)), self.class] userInfo:nil];
 }
 
 #pragma mark - Private Methods
@@ -456,7 +299,7 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
         // In case source is the UIImage.
         _destination = CGImageDestinationCreateWithDataConsumer(_consumer, kUTTypeJPEG, 1, NULL);
     }
-
+    
     if (_consumer == NULL || _destination == NULL) {
         if (error) {
             *error = [NSError errorWithDomain:ATLMediaInputStreamErrorDomain code:ATLMediaInputStreamErrorFailedInitializingImageIOConsumer userInfo:nil];
@@ -494,6 +337,193 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
         CGImageDestinationSetProperties(_destination, (__bridge CFDictionaryRef)self.sourceImageProperties);
     }
     return YES;
+}
+
+@end
+
+@implementation ATLAssetInputStream
+
+- (instancetype)initWithAssetURL:(NSURL *)assetURL
+{
+    self = [super init];
+    if (self) {
+        if (!assetURL) {
+            @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"Cannot initialize %@ with `nil` assetURL.", self.class] userInfo:nil];
+        }
+        self.sourceAssetURL = assetURL;
+    }
+    return self;
+}
+
+@end
+
+@implementation ATLImageInputStream
+
+- (instancetype)initWithImage:(UIImage *)image metadata:(NSDictionary *)metadata;
+{
+    self = [super init];
+    if (self) {
+        if (!image) {
+            @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"Cannot initialize %@ with `nil` image.", self.class] userInfo:nil];
+        }
+        self.sourceImage = image;
+        self.metadata = metadata;
+    }
+    return self;
+}
+
+@end
+
+@implementation ATLMediaInputStream
+
+#pragma mark - Initializers
+
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        if ([[self class] isEqual:[ATLMediaInputStream class]]) {
+            @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"Failed to call designated initializer. Use one of the following initialiers: %@", [@[ NSStringFromSelector(@selector(mediaInputStreamWithAssetURL:)), NSStringFromSelector(@selector(mediaInputStreamWithImage:metadata:)) ] componentsJoinedByString:@", "]] userInfo:nil];
+        }
+        _mediaStreamStatus = NSStreamStatusNotOpen;
+        _mediaStreamError = nil;
+        _dataConsumed = [NSData data];
+        _numberOfBytesRequested = 0;
+        _numberOfBytesProvided = 0;
+        _maximumSize = 0;
+        _compressionQuality = 0.0f;
+        _streamFlowRequesterSemaphore = dispatch_semaphore_create(0);
+        _streamFlowProviderSemaphore = dispatch_semaphore_create(0);
+        _consumerAsyncQueue = dispatch_queue_create(ATLMediaInputConsumerAsyncQueueName, DISPATCH_QUEUE_CONCURRENT);
+        _transferBufferSerialGuard = dispatch_queue_create(ATLMediaInputConsumerSerialTransferQueueName, DISPATCH_QUEUE_SERIAL);
+    }
+    return self;
+}
+
++ (instancetype)mediaInputStreamWithAssetURL:(NSURL *)assetURL
+{
+    return [[ATLAssetInputStream alloc] initWithAssetURL:assetURL];
+}
+
++ (instancetype)mediaInputStreamWithImage:(UIImage *)image metadata:(NSDictionary *)metadata;
+{
+    return [[ATLImageInputStream alloc] initWithImage:image metadata:metadata];
+}
+
+- (void)dealloc
+{
+    if (self.streamStatus != NSStreamStatusClosed) {
+        [self close];
+    }
+}
+
+#pragma mark - Transient isLossless implementation
+
++ (NSSet *)keyPathsForValuesAffectingValueForKey:(NSString *)key
+{
+    NSSet *keyPaths = [super keyPathsForValuesAffectingValueForKey:key];
+    if ([key isEqualToString:@"isLossless"]) {
+        NSSet *affectingKey = [NSSet setWithObjects:@"maximumSize", @"compressionQuality", nil];
+        keyPaths = [keyPaths setByAddingObjectsFromSet:affectingKey];
+    }
+    return keyPaths;
+}
+
+- (BOOL)isLossless
+{
+    return (self.maximumSize == 0 && self.compressionQuality == 0.0f);
+}
+
+#pragma mark - Public Overrides
+
+- (NSStreamStatus)streamStatus
+{
+    return self.mediaStreamStatus;
+}
+
+- (NSError *)streamError
+{
+    return self.mediaStreamError;
+}
+
+- (void)open
+{
+    // Tell receiver we're openning the stream.
+    self.mediaStreamStatus = NSStreamStatusOpening;
+    
+    ATLMediaInputStreamLog(@"opening stream...");
+    return;
+}
+
+- (void)close
+{
+    if (self.mediaStreamStatus == NSStreamStatusClosed) {
+        return;
+    }
+    
+    if (self.mediaStreamStatus == NSStreamStatusReading) {
+        // Close the stream gracefully.
+        self.numberOfBytesRequested = 0;
+        ATLMediaInputStreamLog(@"closing stream...");
+    }
+    // Signal any ongoing requests.
+    dispatch_semaphore_signal(self.streamFlowRequesterSemaphore);
+    self.mediaStreamStatus = NSStreamStatusClosed;
+}
+
+- (NSInteger)read:(uint8_t *)buffer maxLength:(NSUInteger)bytesToConsume
+{
+    if (self.mediaStreamStatus == NSStreamStatusOpen) {
+        [self startConsumption];
+    }
+    
+    // If already completed
+    if (self.mediaStreamStatus == NSStreamStatusAtEnd) {
+        return 0; // EOS
+    }
+    
+    // Cannot provide data, if not in reading state.
+    if (self.mediaStreamStatus != NSStreamStatusReading) {
+        return -1; // Operation fails
+    }
+
+    // Setting the data stream request.
+    ATLMediaInputStreamLog(@"input stream: requesting %lu of bytes", bytesToConsume);
+    self.numberOfBytesRequested = bytesToConsume;
+    
+    // Notify data provider that request is ready.
+    dispatch_semaphore_signal(self.streamFlowProviderSemaphore);
+    
+    // Wait for the response.
+    ATLMediaInputStreamLog(@"input stream: waiting for cosumer to prepare data");
+    dispatch_semaphore_wait(self.streamFlowRequesterSemaphore, DISPATCH_TIME_FOREVER);
+    
+    if (self.mediaStreamStatus == NSStreamStatusError) {
+        return -1; // Operation failed, see self.streamError;
+    }
+
+    // Copy the consumed image data to `buffer`.
+    [self.dataConsumed getBytes:buffer];
+    ATLMediaInputStreamLog(@"input stream: passed data to receiver");
+    
+    // Clear transfer buffer.
+    NSInteger bytesConsumed = self.dataConsumed.length;
+    self.dataConsumed = [NSData data];
+    return bytesConsumed;
+}
+
+/**
+ @abstract Override this method to start providing data to the data consumer.
+ @note Do not call `[super close];` in your subclassed implementations.
+ */
+- (void)startConsumption
+{
+    [self close];
+}
+
+- (BOOL)getBuffer:(uint8_t **)buffer length:(NSUInteger *)len
+{
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"Method %@ on %@ not implemented", NSStringFromSelector(@selector(getBuffer:length:)), self.class] userInfo:nil];
 }
 
 @end
