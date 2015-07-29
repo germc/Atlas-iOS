@@ -30,9 +30,10 @@
 #import "ATLMediaAttachment.h"
 #import "ATLLocationManager.h"
 
-@interface ATLConversationViewController () <UICollectionViewDataSource, UICollectionViewDelegate, ATLMessageInputToolbarDelegate, UIActionSheetDelegate, LYRQueryControllerDelegate, CLLocationManagerDelegate>
+@interface ATLConversationViewController () <UICollectionViewDataSource, UICollectionViewDelegate, ATLMessageInputToolbarDelegate, UIActionSheetDelegate, CLLocationManagerDelegate>
 
 @property (nonatomic) ATLConversationDataSource *conversationDataSource;
+@property (nonatomic, readwrite) LYRQueryController *queryController;
 @property (nonatomic) BOOL shouldDisplayAvatarItem;
 @property (nonatomic) NSMutableOrderedSet *typingParticipantIDs;
 @property (nonatomic) NSMutableArray *objectChanges;
@@ -58,6 +59,16 @@ static NSString *const ATLDefaultPushAlertImage = @"sent you a photo.";
 static NSString *const ATLDefaultPushAlertLocation = @"sent you a location.";
 static NSString *const ATLDefaultPushAlertText = @"sent you a message.";
 static NSInteger const ATLPhotoActionSheet = 1000;
+
++ (NSCache *)sharedMediaAttachmentCache
+{
+    static NSCache *_sharedCache;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        _sharedCache = [NSCache new];
+    });
+    return _sharedCache;
+}
 
 + (instancetype)conversationViewControllerWithLayerClient:(LYRClient *)layerClient;
 {
@@ -95,6 +106,8 @@ static NSInteger const ATLPhotoActionSheet = 1000;
     _dateDisplayTimeInterval = 60*60;
     _marksMessagesAsRead = YES;
     _shouldDisplayAvatarItemForOneOtherParticipant = NO;
+    _shouldDisplayAvatarItemForAuthenticatedUser = NO;
+    _avatarItemDisplayFrequency = ATLAvatarItemDisplayFrequencySection;
     _typingParticipantIDs = [NSMutableOrderedSet new];
     _sectionHeaders = [NSHashTable weakObjectsHashTable];
     _sectionFooters = [NSHashTable weakObjectsHashTable];
@@ -147,6 +160,9 @@ static NSInteger const ATLPhotoActionSheet = 1000;
     if (!self.hasAppeared) {
         [self.collectionView layoutIfNeeded];
     }
+    if (!self.hasAppeared && [[[self class] sharedMediaAttachmentCache] objectForKey:self.conversation.identifier]) {
+        [self loadCachedMediaAttachments];
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -161,8 +177,27 @@ static NSInteger const ATLPhotoActionSheet = 1000;
 
 - (void)dealloc
 {
+    if (self.messageInputToolbar.mediaAttachments.count > 0) {
+        [self cacheMediaAttachments];
+    }
     self.collectionView.delegate = nil;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)cacheMediaAttachments
+{
+    [[[self class] sharedMediaAttachmentCache] setObject:self.messageInputToolbar.mediaAttachments forKey:self.conversation.identifier];
+}
+
+- (void)loadCachedMediaAttachments
+{
+    NSArray *mediaAttachments = [[[self class] sharedMediaAttachmentCache] objectForKey:self.conversation.identifier];
+    for (int i = 0; i < mediaAttachments.count; i++) {
+        ATLMediaAttachment *attachment = [mediaAttachments objectAtIndex:i];
+        BOOL shouldHaveLineBreak = (i < mediaAttachments.count - 1) || !(attachment.mediaMIMEType == ATLMIMETypeTextPlain);
+        [self.messageInputToolbar insertMediaAttachment:attachment withEndLineBreak:shouldHaveLineBreak];
+    }
+    [[[self class] sharedMediaAttachmentCache] removeObjectForKey:self.conversation.identifier];
 }
 
 #pragma mark - Conversation Data Source Setup
@@ -209,6 +244,7 @@ static NSInteger const ATLPhotoActionSheet = 1000;
     
     self.conversationDataSource = [ATLConversationDataSource dataSourceWithLayerClient:self.layerClient query:query];
     self.conversationDataSource.queryController.delegate = self;
+    self.queryController = self.conversationDataSource.queryController;
     self.showingMoreMessagesIndicator = [self.conversationDataSource moreMessagesAvailable];
     [self.collectionView reloadData];
 }
@@ -276,6 +312,9 @@ static NSInteger const ATLPhotoActionSheet = 1000;
     
     UICollectionViewCell<ATLMessagePresenting> *cell =  [self.collectionView dequeueReusableCellWithReuseIdentifier:reuseIdentifier forIndexPath:indexPath];
     [self configureCell:cell forMessage:message indexPath:indexPath];
+    if ([self.delegate respondsToSelector:@selector(conversationViewController:configureCell:forMessage:)]) {
+        [self.delegate conversationViewController:self configureCell:cell forMessage:message];
+    }
     return cell;
 }
 
@@ -373,7 +412,8 @@ static NSInteger const ATLPhotoActionSheet = 1000;
 - (void)configureCell:(UICollectionViewCell<ATLMessagePresenting> *)cell forMessage:(LYRMessage *)message indexPath:(NSIndexPath *)indexPath
 {
     [cell presentMessage:message];
-    [cell shouldDisplayAvatarItem:self.shouldDisplayAvatarItem];
+    BOOL willDisplayAvatarItem = (![message.sender.userID isEqualToString:self.layerClient.authenticatedUserID]) ? self.shouldDisplayAvatarItem : (self.shouldDisplayAvatarItem && self.shouldDisplayAvatarItemForAuthenticatedUser);
+    [cell shouldDisplayAvatarItem:willDisplayAvatarItem];
     
     if ([self shouldDisplayAvatarItemAtIndexPath:indexPath]) {
         [cell updateWithSender:[self participantForIdentifier:message.sender.userID]];
@@ -381,7 +421,6 @@ static NSInteger const ATLPhotoActionSheet = 1000;
         [cell updateWithSender:nil];
     }
     if (message.isUnread && [[UIApplication sharedApplication] applicationState] == UIApplicationStateActive) {
-        
         [message markAsRead:nil];
     }
 }
@@ -487,8 +526,12 @@ static NSInteger const ATLPhotoActionSheet = 1000;
     if (!self.shouldDisplayAvatarItem) return NO;
    
     LYRMessage *message = [self.conversationDataSource messageAtCollectionViewIndexPath:indexPath];
-    if ([message.sender.userID isEqualToString:self.layerClient.authenticatedUserID]) {
+    if ([message.sender.userID isEqualToString:self.layerClient.authenticatedUserID] && !self.shouldDisplayAvatarItemForAuthenticatedUser) {
         return NO;
+    }
+    
+    if (![self shouldClusterMessageAtSection:indexPath.section] && self.avatarItemDisplayFrequency == ATLAvatarItemDisplayFrequencyCluster) {
+        return YES;
     }
    
     NSInteger lastQueryControllerRow = [self.conversationDataSource.queryController numberOfObjectsInSection:0] - 1;
@@ -496,7 +539,7 @@ static NSInteger const ATLPhotoActionSheet = 1000;
     if (indexPath.section < lastSection) {
         LYRMessage *nextMessage = [self.conversationDataSource messageAtCollectionViewSection:indexPath.section + 1];
         // If the next message is sent by the same user, no
-        if ([nextMessage.sender.userID isEqualToString:message.sender.userID]) {
+        if ([nextMessage.sender.userID isEqualToString:message.sender.userID] && self.avatarItemDisplayFrequency != ATLAvatarItemDisplayFrequencyAll) {
             return NO;
         }
     }
@@ -509,9 +552,9 @@ static NSInteger const ATLPhotoActionSheet = 1000;
 {
     UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
                                                              delegate:self
-                                                    cancelButtonTitle:@"Cancel"
+                                                    cancelButtonTitle:ATLLocalizedString(@"atl.conversation.toolbar.actionsheet.cancel.key", @"Cancel", nil)
                                                destructiveButtonTitle:nil
-                                                    otherButtonTitles:@"Take Photo", @"Last Photo Taken", @"Photo Library", nil];
+                                                    otherButtonTitles:ATLLocalizedString(@"atl.conversation.toolbar.actionsheet.takephoto.key", @"Take Photo", nil), ATLLocalizedString(@"atl.conversation.toolbar.actionsheet.lastphoto.key", @"Last Photo Taken", nil), ATLLocalizedString(@"atl.conversation.toolbar.actionsheet.library.key", @"Photo Library", nil), nil];
     [actionSheet showInView:self.view];
     actionSheet.tag = ATLPhotoActionSheet;
 }
@@ -522,7 +565,7 @@ static NSInteger const ATLPhotoActionSheet = 1000;
         return;
     }
     NSOrderedSet *messages = [self messagesForMediaAttachments:messageInputToolbar.mediaAttachments];
-    if (messages.count == 0) {
+    if (messages.count == 0 && self.messageInputToolbar.textInputView.text.length == 0) {
         [self sendLocationMessage];
     } else {
         for (LYRMessage *message in messages) {
@@ -675,7 +718,7 @@ static NSInteger const ATLPhotoActionSheet = 1000;
             NSLog(@"Failed to capture last photo with error: %@", [error localizedDescription]);
         } else {
             ATLMediaAttachment *mediaAttachment = [ATLMediaAttachment mediaAttachmentWithAssetURL:assetURL thumbnailSize:ATLDefaultThumbnailSize];
-            [self.messageInputToolbar insertMediaAttachment:mediaAttachment];
+            [self.messageInputToolbar insertMediaAttachment:mediaAttachment withEndLineBreak:YES];
         }
     });
 }
@@ -697,7 +740,7 @@ static NSInteger const ATLPhotoActionSheet = 1000;
         } else {
             return;
         }
-        [self.messageInputToolbar insertMediaAttachment:mediaAttachment];
+        [self.messageInputToolbar insertMediaAttachment:mediaAttachment withEndLineBreak:YES];
     }
     [self.navigationController dismissViewControllerAnimated:YES completion:nil];
     [self.view becomeFirstResponder];
@@ -1114,6 +1157,11 @@ static NSInteger const ATLPhotoActionSheet = 1000;
     [self.objectChanges addObject:[ATLDataSourceChange changeObjectWithType:type newIndex:newIndex currentIndex:currentIndex]];
 }
 
+- (void)queryControllerWillChangeContent:(LYRQueryController *)queryController
+{
+    // Implemented by subclass
+}
+
 - (void)queryControllerDidChangeContent:(LYRQueryController *)queryController
 {
     if (self.conversationDataSource.isExpandingPaginationWindow) {
@@ -1255,7 +1303,7 @@ static NSInteger const ATLPhotoActionSheet = 1000;
     NSString *participantName;
     if (message.sender.userID) {
         id<ATLParticipant> participant = [self participantForIdentifier:message.sender.userID];
-        participantName = participant.fullName ?: @"Unknown User";
+        participantName = participant.fullName ?: ATLLocalizedString(@"atl.conversation.participant.unknown.key", @"Unknown User", nil);
     } else {
         participantName = message.sender.name;
     }

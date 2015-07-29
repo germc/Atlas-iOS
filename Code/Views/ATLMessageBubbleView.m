@@ -29,6 +29,7 @@ CGFloat const ATLMessageBubbleMapHeight = 200.0f;
 CGFloat const ATLMessageBubbleDefaultHeight = 40.0f;
 
 NSString *const ATLUserDidTapLinkNotification = @"ATLUserDidTapLinkNotification";
+NSString *const ATLUserDidTapPhoneNumberNotification = @"ATLUserDidTapPhoneNumberNotification";
 
 typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
     ATLBubbleViewContentTypeText,
@@ -43,6 +44,7 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
 @property (nonatomic) CLLocationCoordinate2D locationShown;
 @property (nonatomic) UITapGestureRecognizer *tapGestureRecognizer;
 @property (nonatomic) NSURL *tappedURL;
+@property (nonatomic) NSString *tappedPhoneNumber;
 @property (nonatomic) NSLayoutConstraint *imageWidthConstraint;
 @property (nonatomic) MKMapSnapshotter *snapshotter;
 @property (nonatomic) ATLProgressView *progressView;
@@ -80,6 +82,8 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
         _bubbleImageView.contentMode = UIViewContentModeScaleAspectFill;
         [self addSubview:_bubbleImageView];
 
+        _textCheckingTypes = NSTextCheckingTypeLink;
+        
         _progressView = [[ATLProgressView alloc] initWithFrame:CGRectMake(0, 0, 128.0f, 128.0f)];
         _progressView.translatesAutoresizingMaskIntoConstraints = NO;
         _progressView.alpha = 1.0f;
@@ -336,11 +340,16 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
     NSUInteger characterIndex = [layoutManager characterIndexForPoint:tapLocation
                                                       inTextContainer:textContainer
                              fractionOfDistanceBetweenInsertionPoints:NULL];
-    NSArray *results = ATLLinkResultsForText(self.bubbleViewLabel.attributedText.string);
+    NSArray *results = ATLTextCheckingResultsForText(self.bubbleViewLabel.attributedText.string, self.textCheckingTypes);
     for (NSTextCheckingResult *result in results) {
         if (NSLocationInRange(characterIndex, result.range)) {
-            self.tappedURL = result.URL;
-            return YES;
+            if (result.resultType == NSTextCheckingTypeLink && self.textCheckingTypes & NSTextCheckingTypeLink) {
+                self.tappedURL = result.URL;
+                return YES;
+            } else if (result.resultType == NSTextCheckingTypePhoneNumber && self.textCheckingTypes & NSTextCheckingTypePhoneNumber) {
+                self.tappedPhoneNumber = result.phoneNumber;
+                return YES;
+            }
         }
     }
     return NO;
@@ -350,8 +359,15 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
 
 - (void)handleLabelTap:(UITapGestureRecognizer *)tapGestureRecognizer
 {
-    [[NSNotificationCenter defaultCenter] postNotificationName:ATLUserDidTapLinkNotification object:self.tappedURL];
-    self.tappedURL = nil;
+    if (self.tappedURL) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:ATLUserDidTapLinkNotification object:self.tappedURL];
+        self.tappedURL = nil;
+    }
+    
+    if (self.tappedPhoneNumber) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:ATLUserDidTapPhoneNumberNotification object:self.tappedPhoneNumber];
+        self.tappedURL = nil;
+    }
 }
 
 - (void)dealloc

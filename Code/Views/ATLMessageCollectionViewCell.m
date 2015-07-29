@@ -23,10 +23,15 @@
 #import "ATLUIImageHelper.h"
 #import "ATLIncomingMessageCollectionViewCell.h"
 #import "ATLOutgoingMessageCollectionViewCell.h"
-#import <LayerKit/LayerKit.h> 
+#import <LayerKit/LayerKit.h>
 
 NSString *const ATLGIFAccessibilityLabel = @"Message: GIF";
 NSString *const ATLImageAccessibilityLabel = @"Message: Image";
+
+CGFloat const ATLMessageCellMinimumHeight = 10.0f;
+CGFloat const ATLMessageCellHorizontalMargin = 16.0f;
+CGFloat const ATLAvatarImageLeadPadding = 12.0f;
+CGFloat const ATLAvatarImageTailPadding = 7.0f;
 
 @interface ATLMessageCollectionViewCell () <LYRProgressDelegate>
 
@@ -34,13 +39,12 @@ NSString *const ATLImageAccessibilityLabel = @"Message: Image";
 @property (nonatomic) LYRMessage *message;
 @property (nonatomic) LYRProgress *progress;
 @property (nonatomic) NSUInteger lastProgressFractionCompleted;
+@property (nonatomic) NSLayoutConstraint *bubbleWithAvatarLeadConstraint;
+@property (nonatomic) NSLayoutConstraint *bubbleWithoutAvatarLeadConstraint;
 
 @end
 
 @implementation ATLMessageCollectionViewCell
-
-CGFloat const ATLMessageCellMinimumHeight = 10.0f;
-CGFloat const ATLMessageCellHorizontalMargin = 16.0f;
 
 + (ATLMessageCollectionViewCell *)sharedCell
 {
@@ -76,6 +80,7 @@ CGFloat const ATLMessageCellHorizontalMargin = 16.0f;
     _messageTextFont = [UIFont systemFontOfSize:17];
     _messageTextColor = [UIColor blackColor];
     _messageLinkTextColor = [UIColor whiteColor];
+    _messageTextCheckingTypes = NSTextCheckingTypeLink;
     _bubbleViewColor = ATLBlueColor();
     _bubbleViewCornerRadius = 17.0f;
     
@@ -299,6 +304,12 @@ CGFloat const ATLMessageCellHorizontalMargin = 16.0f;
     if ([self messageContainsTextContent]) [self configureBubbleViewForTextContent];
 }
 
+- (void)setMessageTextCheckingTypes:(NSTextCheckingType)messageLinkTypes
+{
+    _messageTextCheckingTypes = messageLinkTypes;
+    self.bubbleView.textCheckingTypes = messageLinkTypes;
+}
+
 - (void)setBubbleViewColor:(UIColor *)bubbleViewColor
 {
     _bubbleViewColor = bubbleViewColor;
@@ -337,7 +348,7 @@ CGFloat const ATLMessageCellHorizontalMargin = 16.0f;
 {
     NSDictionary *attributes = @{NSFontAttributeName : self.messageTextFont, NSForegroundColorAttributeName : self.messageTextColor};
     NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:text attributes:attributes];
-    NSArray *linkResults = ATLLinkResultsForText(text);
+    NSArray *linkResults = ATLTextCheckingResultsForText(text, self.messageTextCheckingTypes);
     for (NSTextCheckingResult *result in linkResults) {
         NSDictionary *linkAttributes = @{NSForegroundColorAttributeName : self.messageLinkTextColor,
                                          NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle)};
@@ -358,19 +369,35 @@ CGFloat const ATLMessageCellHorizontalMargin = 16.0f;
     [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationLessThanOrEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:maxBubbleWidth]];
     [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeHeight multiplier:1.0 constant:0]];
     [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.bubbleView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeTop multiplier:1.0 constant:0]];
+    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.avatarImageView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.contentView attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0]];
 }
 
 - (void)updateWithSender:(id<ATLParticipant>)sender
 {
-    // Implemented by subclass
+    if (sender) {
+        self.avatarImageView.hidden = NO;
+        self.avatarImageView.avatarItem = sender;
+    } else {
+        self.avatarImageView.hidden = YES;
+    }
 }
 
 - (void)shouldDisplayAvatarItem:(BOOL)shouldDisplayAvatarItem
 {
-    // Implemented by subclass
+    NSArray *constraints = [self.contentView constraints];
+    if (shouldDisplayAvatarItem) {
+        if ([constraints containsObject:self.bubbleWithAvatarLeadConstraint]) return;
+        [self.contentView removeConstraint:self.bubbleWithoutAvatarLeadConstraint];
+        [self.contentView addConstraint:self.bubbleWithAvatarLeadConstraint];
+    } else {
+        if ([constraints containsObject:self.bubbleWithoutAvatarLeadConstraint]) return;
+        [self.contentView removeConstraint:self.bubbleWithAvatarLeadConstraint];
+        [self.contentView addConstraint:self.bubbleWithoutAvatarLeadConstraint];
+    }
+    [self setNeedsUpdateConstraints];
 }
 
-#pragma mark - Cell Height Calculations 
+#pragma mark - Cell Height Calculations
 
 + (CGFloat)cellHeightForMessage:(LYRMessage *)message inView:(UIView *)view
 {

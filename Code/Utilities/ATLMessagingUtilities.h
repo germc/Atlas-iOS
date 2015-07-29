@@ -42,6 +42,12 @@ extern NSString *const ATLImagePreviewHeightKey;
 extern NSString *const ATLLocationLatitudeKey;
 extern NSString *const ATLLocationLongitudeKey;
 
+//---------------------------------
+// @name Internationalization Macro
+//---------------------------------
+
+#define ATLLocalizedString(key, value, comment) NSLocalizedStringWithDefaultValue(key, nil, [NSBundle mainBundle], value, comment)
+
 //--------------------------
 // @name Max Cell Dimensions
 //--------------------------
@@ -89,4 +95,4 @@ void ATLLastPhotoTaken(void(^completionHandler)(UIImage *image, NSError *error))
 
 UIImage *ATLPinPhotoForSnapshot(MKMapSnapshot *snapshot, CLLocationCoordinate2D location);
 
-NSArray *ATLLinkResultsForText(NSString *text);
+NSArray *ATLTextCheckingResultsForText(NSString *text, NSTextCheckingType linkTypes);

@@ -24,6 +24,11 @@
 #import "ATLParticipant.h"
 #import "ATLBaseConversationViewController.h"
 
+typedef NS_ENUM(NSUInteger, ATLAvatarItemDisplayFrequency) {
+    ATLAvatarItemDisplayFrequencySection,
+    ATLAvatarItemDisplayFrequencyCluster,
+    ATLAvatarItemDisplayFrequencyAll
+};
 
 @class ATLConversationViewController;
 @protocol ATLMessagePresenting;
@@ -67,6 +72,16 @@
  to internal height calculations.
  */
 - (CGFloat)conversationViewController:(ATLConversationViewController *)viewController heightForMessage:(LYRMessage *)message withCellWidth:(CGFloat)cellWidth;
+
+/**
+ @abstract Informs the delegate of a cell being configured for the specified message.
+ @param viewController The `ATLConversationViewController` where the message cell will appear.
+ @param cell The `UICollectionViewCell` object that confirms to the `ATLMessagePresenting` protocol that will be displayed in the controller.
+ @param message The `LYRMessage` object that will be displayed in the cell.
+ @discussion Applications should implement this method if they want add further configuration that is not set up during cell initialization, such as gesture recognizers.
+ It is up to the application to typecast the cell to access custom cell properties.
+ */
+- (void)conversationViewController:(ATLConversationViewController *)conversationViewController configureCell:(UICollectionViewCell<ATLMessagePresenting> *)cell forMessage:(LYRMessage *)message;
 
 /**
  @abstract Asks the delegate for an `NSOrderedSet` of `LYRMessage` objects representing an `NSArray` of content parts.
@@ -166,7 +181,7 @@
  a Layer conversation and the ability to send messages. The controller's design and functionality closely correlates with
  the conversation view controller in Messages.
 */
-@interface ATLConversationViewController : ATLBaseConversationViewController <ATLAddressBarViewControllerDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate>
+@interface ATLConversationViewController : ATLBaseConversationViewController <ATLAddressBarViewControllerDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, LYRQueryControllerDelegate>
 
 ///---------------------------------------
 /// @name Initializing a Controller
@@ -197,6 +212,11 @@
  @abstract The `LYRConversation` object whose messages will be displayed in the controller.
  */
 @property (nonatomic) LYRConversation *conversation;
+
+/**
+ @abstract The `LYRQueryController` object managing data displayed in the controller.
+ */
+@property (nonatomic, readonly) LYRQueryController *queryController;
 
 /**
  @abstract The `ATLConversationViewControllerDelegate` class informs the receiver to specific events that occurred within the controller.
@@ -254,7 +274,20 @@
 /**
  @abstract A Boolean value that determines whether or not an avatar is shown if there is only one other participant in the conversation.
  @default `NO`.
+ Should be set before `[super viewDidLoad]` is called.
  */
 @property (nonatomic) BOOL shouldDisplayAvatarItemForOneOtherParticipant;
+
+/**
+ @abstract A Boolean value that determines whether or not an avatar is shown next to the outgoing messages
+ @default `NO`.
+ */
+@property (nonatomic) BOOL shouldDisplayAvatarItemForAuthenticatedUser;
+
+/**
+ @abstract An Enum value that determines how often avatar items should be shown next to messages.
+ @default 'ATLAvatarItemDisplayFrequencySection'.
+ */
+@property (nonatomic) ATLAvatarItemDisplayFrequency avatarItemDisplayFrequency;
 
 @end

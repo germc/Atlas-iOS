@@ -7,6 +7,7 @@
 //
 
 #import "ATLLocationManager.h"
+#import "ATLMessagingUtilities.h"
 
 @interface ATLLocationManager () <CLLocationManagerDelegate>
 
@@ -42,10 +43,10 @@
 
 - (void)displayLocationEnablementAlert
 {
-    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Location Access Required"
-                                                        message:@"To share your location, enable location services for this app in the Privacy section of the Settings app."
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:ATLLocalizedString(@"atl.locationmanager.alert.title.key", @"Location Access Required", nil)
+                                                        message:ATLLocalizedString(@"atl.locationmanager.alert.message.key", @"To share your location, enable location services for this app in the Privacy section of the Settings app.", nil)
                                                        delegate:nil
-                                              cancelButtonTitle:@"OK"
+                                              cancelButtonTitle:ATLLocalizedString(@"atl.locationmanager.alert.cancel.key", @"OK", nil)
                                               otherButtonTitles:nil];
      [alertView show];
     
