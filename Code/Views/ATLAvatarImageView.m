@@ -24,7 +24,6 @@
 
 @property (nonatomic) UILabel *initialsLabel;
 @property (nonatomic) NSURLSessionDownloadTask *downloadTask;
-@property (nonatomic) NSURLSession *URLSession;
 
 @end
 
@@ -74,7 +73,6 @@ NSString *const ATLAvatarImageViewAccessibilityLabel = @"ATLAvatarImageViewAcces
     _initialsColor = [UIColor blackColor];
     _avatarImageViewDiameter = 27;
     
-    self.URLSession = [NSURLSession sharedSession];
     self.clipsToBounds = YES;
     self.layer.cornerRadius = _avatarImageViewDiameter / 2;
     self.contentMode = UIViewContentModeScaleAspectFill;
@@ -101,6 +99,11 @@ NSString *const ATLAvatarImageViewAccessibilityLabel = @"ATLAvatarImageViewAcces
     self.avatarItem = nil;
     self.image = nil;
     self.initialsLabel.text = nil;
+    [self.downloadTask cancel];
+}
+
+- (void)dealloc
+{
     [self.downloadTask cancel];
 }
 
@@ -165,7 +168,7 @@ NSString *const ATLAvatarImageViewAccessibilityLabel = @"ATLAvatarImageViewAcces
 
 - (void)fetchImageFromRemoteImageURL:(NSURL *)remoteImageURL
 {
-    self.downloadTask = [self.URLSession downloadTaskWithURL:remoteImageURL completionHandler:^(NSURL *location, NSURLResponse *response, NSError *error) {
+    self.downloadTask = [[NSURLSession sharedSession] downloadTaskWithURL:remoteImageURL completionHandler:^(NSURL *location, NSURLResponse *response, NSError *error) {
         if (!error && location) {
             __block UIImage *image = [UIImage imageWithData:[NSData dataWithContentsOfURL:location]];
             if (image) {
