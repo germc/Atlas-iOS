@@ -23,10 +23,8 @@
 @interface ATLAvatarImageView ()
 
 @property (nonatomic) UILabel *initialsLabel;
-@property (nonatomic) BOOL isFetchingImage;
 @property (nonatomic) NSURLSessionDownloadTask *downloadTask;
 @property (nonatomic) NSURLSession *URLSession;
-@property (nonatomic) NSURL *avatarImageURL;
 
 @end
 
@@ -111,8 +109,7 @@ NSString *const ATLAvatarImageViewAccessibilityLabel = @"ATLAvatarImageViewAcces
     NSLog(@"Updating avatar item:");
     if ([avatarItem avatarImageURL]) {
         self.initialsLabel.text = nil;
-        self.avatarImageURL = [avatarItem avatarImageURL];
-        [self loadAvatarImageWithURL:self.avatarImageURL];
+        [self loadAvatarImageWithURL:[avatarItem avatarImageURL]];
     } else if (avatarItem.avatarImage) {
         self.initialsLabel.text = nil;
         self.image = avatarItem.avatarImage;
