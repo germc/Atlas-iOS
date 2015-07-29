@@ -106,7 +106,6 @@ NSString *const ATLAvatarImageViewAccessibilityLabel = @"ATLAvatarImageViewAcces
 
 - (void)setAvatarItem:(id<ATLAvatarItem>)avatarItem
 {
-    NSLog(@"Updating avatar item:");
     if ([avatarItem avatarImageURL]) {
         self.initialsLabel.text = nil;
         [self loadAvatarImageWithURL:[avatarItem avatarImageURL]];
@@ -177,7 +176,6 @@ NSString *const ATLAvatarImageViewAccessibilityLabel = @"ATLAvatarImageViewAcces
             }
         }
     }];
-    self.downloadTask.taskDescription = remoteImageURL.absoluteString;
     [self.downloadTask resume];
 }
 
