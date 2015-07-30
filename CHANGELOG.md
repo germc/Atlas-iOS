@@ -1,5 +1,11 @@
 # Atlas Changelog
 
+## 1.0.11
+
+### Bug Fixes
+
+* Fixed bug that caused avatar images to flicker when loading photos from remote URLs.
+
 ## 1.0.10
 
 ### Bug Fixes
