@@ -30,6 +30,7 @@
 #import "ATLConversationDataSource.h"
 #import "ATLMediaAttachment.h"
 #import "ATLLocationManager.h"
+@import AVFoundation;
 
 @interface ATLConversationViewController () <UICollectionViewDataSource, UICollectionViewDelegate, ATLMessageInputToolbarDelegate, UIActionSheetDelegate, CLLocationManagerDelegate>
 
@@ -294,11 +295,11 @@ static NSInteger const ATLPhotoActionSheet = 1000;
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
     if (section == ATLMoreMessagesSection) return 0;
-
+    
     // Each message is represented by one cell no matter how many parts it has.
     return 1;
 }
- 
+
 /**
  Atlas - The `ATLConversationViewController` component uses `LYRMessage` objects to represent sections.
  */
@@ -488,7 +489,7 @@ static NSInteger const ATLPhotoActionSheet = 1000;
     
     LYRMessage *message = [self.conversationDataSource messageAtCollectionViewSection:section];
     if ([message.sender.userID isEqualToString:self.layerClient.authenticatedUserID]) return NO;
-
+    
     if (section > ATLNumberOfSectionsBeforeFirstMessageSection) {
         LYRMessage *previousMessage = [self.conversationDataSource messageAtCollectionViewSection:section - 1];
         if ([previousMessage.sender.userID isEqualToString:message.sender.userID]) {
@@ -504,7 +505,7 @@ static NSInteger const ATLPhotoActionSheet = 1000;
     NSInteger lastQueryControllerRow = [self.conversationDataSource.queryController numberOfObjectsInSection:0] - 1;
     NSInteger lastSection = [self.conversationDataSource collectionViewSectionForQueryControllerRow:lastQueryControllerRow];
     if (section != lastSection) return NO;
-
+    
     LYRMessage *message = [self.conversationDataSource messageAtCollectionViewSection:section];
     if (![message.sender.userID isEqualToString:self.layerClient.authenticatedUserID]) return NO;
     
@@ -529,7 +530,7 @@ static NSInteger const ATLPhotoActionSheet = 1000;
 - (BOOL)shouldDisplayAvatarItemAtIndexPath:(NSIndexPath *)indexPath
 {
     if (!self.shouldDisplayAvatarItem) return NO;
-   
+    
     LYRMessage *message = [self.conversationDataSource messageAtCollectionViewIndexPath:indexPath];
     if (message.sender.userID == nil) {
         return NO;
@@ -542,7 +543,7 @@ static NSInteger const ATLPhotoActionSheet = 1000;
     if (![self shouldClusterMessageAtSection:indexPath.section] && self.avatarItemDisplayFrequency == ATLAvatarItemDisplayFrequencyCluster) {
         return YES;
     }
-   
+    
     NSInteger lastQueryControllerRow = [self.conversationDataSource.queryController numberOfObjectsInSection:0] - 1;
     NSInteger lastSection = [self.conversationDataSource collectionViewSectionForQueryControllerRow:lastQueryControllerRow];
     if (indexPath.section < lastSection) {
@@ -628,7 +629,7 @@ static NSInteger const ATLPhotoActionSheet = 1000;
     } else {
         completePushText = [NSString stringWithFormat:@"%@: %@", senderName, pushText];
     }
-
+    
     NSDictionary *pushOptions = @{LYRMessageOptionsPushNotificationAlertKey : completePushText,
                                   LYRMessageOptionsPushNotificationSoundNameKey : ATLPushNotificationSoundName};
     NSError *error;
@@ -650,7 +651,7 @@ static NSInteger const ATLPhotoActionSheet = 1000;
     }
 }
 
-#pragma mark - Location Message 
+#pragma mark - Location Message
 
 - (void)sendLocationMessage
 {
@@ -741,9 +742,9 @@ static NSInteger const ATLPhotoActionSheet = 1000;
 {
     NSString *mediaType = info[UIImagePickerControllerMediaType];
     ATLMediaAttachment *mediaAttachment;
+    NSURL *assetURL = (NSURL *)info[UIImagePickerControllerReferenceURL];
     
     if ([mediaType isEqualToString:(__bridge NSString *)kUTTypeImage]) {
-        NSURL *assetURL = (NSURL *)info[UIImagePickerControllerReferenceURL];
         if (assetURL) {
             mediaAttachment = [ATLMediaAttachment mediaAttachmentWithAssetURL:assetURL thumbnailSize:ATLDefaultThumbnailSize];
         } else if (info[UIImagePickerControllerOriginalImage]) {
@@ -757,15 +758,12 @@ static NSInteger const ATLPhotoActionSheet = 1000;
     } else if (CFStringCompare ((__bridge_retained CFStringRef)mediaType, kUTTypeMovie, 0)
                == kCFCompareEqualTo) {   //if selected item is a video
         
-        NSString *moviePath = (NSString *)[[info objectForKey:UIImagePickerControllerMediaURL] path];
-        NSInputStream *stream = [[NSInputStream alloc] initWithFileAtPath:moviePath];
+        UIImage *backgroundImage = [self getThumbNail:assetURL];
         
-        UIImage *backgroundImage = [self getThumbNail:(NSString *)moviePath];
-        
-        if (moviePath) {
+        if (assetURL) {
             mediaAttachment = [ATLMediaAttachment mediaAttachmentWithVideo:backgroundImage
                                                                   metadata:info[UIImagePickerControllerMediaMetadata]
-                                                             thumbnailSize:ATLDefaultThumbnailSize videoStream:stream];
+                                                             thumbnailSize:ATLDefaultThumbnailSize videoAssetPath:assetURL];
         }
         [self.messageInputToolbar insertMediaAttachment:mediaAttachment withEndLineBreak:YES];
     }
@@ -777,22 +775,26 @@ static NSInteger const ATLPhotoActionSheet = 1000;
     [self.collectionView setNeedsLayout];
 }
 
--(UIImage *)getThumbNail:(NSString *)stringPath
+-(UIImage *)getThumbNail:(NSURL *)stringPath
 {
-    NSURL *videoUrl = [NSURL fileURLWithPath:stringPath];
+    AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:stringPath options:nil];
+    AVAssetImageGenerator *generate = [[AVAssetImageGenerator alloc] initWithAsset:asset];
+    NSError *err = NULL;
+    CMTime time = CMTimeMake(1, 60);
+    CGImageRef imgRef = [generate copyCGImageAtTime:time actualTime:NULL error:&err];
     
-    MPMoviePlayerController *player = [[MPMoviePlayerController alloc]initWithContentURL:videoUrl];
-    UIImage *thumbnail = [player thumbnailImageAtTime:1.0 timeOption:MPMovieTimeOptionExact];
+    if (!err) {
+        NSLog(@"Failed to create thumbnail!"); 
+    }
     
-    [player stop];
-    return thumbnail;
+    return [[UIImage alloc] initWithCGImage:imgRef];
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker
 {
     [self.navigationController dismissViewControllerAnimated:YES completion:nil];
     [self.view becomeFirstResponder];
-
+    
     // Workaround for collection view not displayed on iOS 7.1.
     [self.collectionView setNeedsLayout];
 }
@@ -921,13 +923,13 @@ static NSInteger const ATLPhotoActionSheet = 1000;
     if (CGRectEqualToRect(self.collectionView.frame, CGRectZero)) return;
     if (self.collectionView.isDragging) return;
     if (self.collectionView.isDecelerating) return;
-
+    
     CGFloat topOffset = -self.collectionView.contentInset.top;
     CGFloat distanceFromTop = self.collectionView.contentOffset.y - topOffset;
     CGFloat minimumDistanceFromTopToTriggerLoadingMore = 200;
     BOOL nearTop = distanceFromTop <= minimumDistanceFromTopToTriggerLoadingMore;
     if (!nearTop) return;
-
+    
     [self.conversationDataSource expandPaginationWindow];
 }
 
@@ -976,26 +978,26 @@ static NSInteger const ATLPhotoActionSheet = 1000;
 - (void)configureAddressBarForChangedParticipants
 {
     if (!self.addressBarController) return;
-
+    
     NSOrderedSet *existingParticipants = self.addressBarController.selectedParticipants;
     NSOrderedSet *existingParticipantIdentifiers = [existingParticipants valueForKey:@"participantIdentifier"];
-   
+    
     if (!existingParticipantIdentifiers && !self.conversation.participants) return;
     if ([existingParticipantIdentifiers.set isEqual:self.conversation.participants]) return;
-
+    
     NSMutableOrderedSet *removedIdentifiers = [NSMutableOrderedSet orderedSetWithOrderedSet:existingParticipantIdentifiers];
     [removedIdentifiers minusSet:self.conversation.participants];
-
+    
     NSMutableOrderedSet *addedIdentifiers = [NSMutableOrderedSet orderedSetWithSet:self.conversation.participants];
     [addedIdentifiers minusOrderedSet:existingParticipantIdentifiers];
     
     NSString *authenticatedUserID = self.layerClient.authenticatedUserID;
     if (authenticatedUserID) [addedIdentifiers removeObject:authenticatedUserID];
-
+    
     NSMutableOrderedSet *participantIdentifiers = [NSMutableOrderedSet orderedSetWithOrderedSet:existingParticipantIdentifiers];
     [participantIdentifiers minusOrderedSet:removedIdentifiers];
     [participantIdentifiers unionOrderedSet:addedIdentifiers];
-
+    
     NSOrderedSet *participants = [self participantsForIdentifiers:participantIdentifiers];
     self.addressBarController.selectedParticipants = participants;
 }
@@ -1035,7 +1037,7 @@ static NSInteger const ATLPhotoActionSheet = 1000;
             NSLog(@"LayerKit failed to execute query with error: %@", error);
             return;
         }
-
+        
         // Query for the all of the message identifiers in the above set where user == participantIdentifier
         LYRQuery *query = [LYRQuery queryWithQueryableClass:[LYRMessage class]];
         LYRPredicate *senderPredicate = [LYRPredicate predicateWithProperty:@"sender.userID" predicateOperator:LYRPredicateOperatorIsEqualTo value:participantIdentifier];
@@ -1047,7 +1049,7 @@ static NSInteger const ATLPhotoActionSheet = 1000;
             NSLog(@"LayerKit failed to execute query with error: %@", error);
             return;
         }
-
+        
         // Convert query controller index paths to collection view index paths
         NSDictionary *objectIdentifiersToIndexPaths = [self.conversationDataSource.queryController indexPathsForObjectsWithIdentifiers:messageIdentifiersToReload.set];
         NSArray *queryControllerIndexPaths = [objectIdentifiersToIndexPaths allValues];
@@ -1250,7 +1252,7 @@ static NSInteger const ATLPhotoActionSheet = 1000;
         } completion:^(BOOL finished) {
             dispatch_resume(self.animationQueue);
         }];
-    }    
+    }
     [self configureCollectionViewElements];
     
     if (shouldScrollToBottom)  {
@@ -1294,7 +1296,7 @@ static NSInteger const ATLPhotoActionSheet = 1000;
     if ([cell conformsToProtocol:@protocol(ATLMessagePresenting)]) {
         [self configureCell:(UICollectionViewCell<ATLMessagePresenting> *)cell forMessage:message indexPath:collectionViewIndexPath];
     }
-
+    
     // Find the header...
     for (ATLConversationCollectionViewHeader *header in self.sectionHeaders) {
         NSIndexPath *queryControllerIndexPath = [self.conversationDataSource.queryController indexPathForObject:header.message];
@@ -1304,7 +1306,7 @@ static NSInteger const ATLPhotoActionSheet = 1000;
             break;
         }
     }
-
+    
     // ...and the footer
     for (ATLConversationCollectionViewFooter *footer in self.sectionFooters) {
         NSIndexPath *queryControllerIndexPath = [self.conversationDataSource.queryController indexPathForObject:footer.message];
@@ -1354,7 +1356,7 @@ static NSInteger const ATLPhotoActionSheet = 1000;
 #pragma mark - NSNotification Center Registration
 
 - (void)atl_registerForNotifications
-{    
+{
     // Layer Notifications
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveTypingIndicator:) name:LYRConversationDidReceiveTypingIndicatorNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(layerClientObjectsDidChange:) name:LYRClientObjectsDidChangeNotification object:nil];

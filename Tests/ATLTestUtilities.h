@@ -42,3 +42,5 @@ UIImage *ATLTestAttachmentMakeImageWithSize(CGSize size);
  @return Returns ALAsset instance of the last image located in the Photos Library, or `nil` in case of a failure.
  */
 ALAsset *ATLAssetTestObtainLastImageFromAssetLibrary(ALAssetsLibrary *library);
+
+ALAsset *ATLVideoAssetTestObtainLastImageFromAssetLibrary(ALAssetsLibrary *library);

@@ -21,6 +21,7 @@
 #import "ATLMediaInputStream.h"
 #import <ImageIO/ImageIO.h>
 #import <MobileCoreServices/MobileCoreServices.h>
+@import AVFoundation;
 
 #ifdef DEBUG_ATLMediaInputStreamLog
 #define ATLMediaInputStreamLog(fmt, ...) NSLog(fmt, ##__VA_ARGS__)
@@ -80,7 +81,13 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
 
 @interface ATLVideoInputStream : ATLMediaInputStream
 
+@property (nonatomic, strong) NSURL *tempVideoURL;
+@property (nonatomic, strong) NSURL *tempVideoURL1;
+@property (nonatomic, strong) AVAssetExportSession *exportSession;
+@property (nonatomic, strong) NSInputStream *exportedVideoFileInputStream;
+
 - (instancetype)initWithAssetURL:(NSURL *)assetURL;
+-(void)consumeData;
 
 @end
 
@@ -398,32 +405,136 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
 {
     [super open];
     // TODO: implement me
+    AVAsset *videoAVAsset = [AVAsset assetWithURL:self.sourceAssetURL];
+    NSArray *presetWithAsset = [AVAssetExportSession exportPresetsCompatibleWithAsset: videoAVAsset];
+    ATLMediaInputStreamLog(@"Preset Values for AVAssetexportSession: %@", presetWithAsset);
+    
     // Steps:
     // 1. Prepare the temporary file URL (it should be a member property).
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, 1, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    NSString *myPathDocs =  [documentsDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"Video-%d.mp4",arc4random() % 1000]];
+    self.tempVideoURL = [NSURL fileURLWithPath:myPathDocs];
+    
     // 2. Prepare the AVExportSession (use the temp file url).
+    self.exportSession = [[AVAssetExportSession alloc] initWithAsset:videoAVAsset presetName:AVAssetExportPresetHighestQuality];
+    self.exportSession.outputURL = self.tempVideoURL;
+    self.exportSession.outputFileType = AVFileTypeMPEG4;
+    self.exportSession.shouldOptimizeForNetworkUse = YES;
+    
+    //succesful
+    self.mediaStreamStatus = NSStreamStatusOpen;
+    
 }
 
 - (void)close
 {
     [super close];
-    // TODO: implement me
-    // Steps:
-    // 1. Delete any temporary files it created during.
-    // 2. Nil out export session and do other cleanups. 
+    
+    [self removeTempFile];
+    // 2. Nil out export session and do other cleanups.
+    self.exportSession = nil;
+    self.tempVideoURL = nil;
+}
+
+-(void)removeTempFile
+{
+    NSError *error;
+    NSString *outputpathString;
+    NSString *path;
+    if (self.exportSession.outputURL) {
+        outputpathString = [[NSString stringWithFormat:@"%@",self.exportSession.outputURL] substringFromIndex:7];
+        path = outputpathString;
+    }
+
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    
+    if([fileManager fileExistsAtPath:path] == YES)
+    {
+        NSFileManager *fileManager = [NSFileManager defaultManager];
+        [fileManager removeItemAtPath:path error:&error];
+        if (error) {
+            self.mediaStreamStatus = NSStreamStatusError;
+            self.mediaStreamError = error;
+            ATLMediaInputStreamLog(@"error:%@", error);
+        }
+    }else {
+        self.mediaStreamStatus = NSStreamStatusError;
+        ATLMediaInputStreamLog(@"Temp file does not exist");
+    }
+    
 }
 
 - (void)startConsumption
 {
-    // TODO: implement me
-    // Steps:
-    // 1. Start the export session (conversion).
-    // 2. When the export completes.
-    // 2.1 On fail, report the error throught the `self.streamError` and set the `self.mediaStreamStatus == NSStreamStatusError`.
-    // 2.2 On success, use a vanilla `NSInputStream` as proxy to read file data (add a `NSInputStream *exportedVideoFileInputStream` property to this class).
-    // 2.2.1 Use a while(done){} loop to wait for the requester to signal.
-    // 2.2.2 Once signalled, read from the proxy stream based on the `self.numberOfBytesRequested`.
-    // 2.2.3 When bytes are read from the stream, copy that chunk of data to `self.dataConsumed` signal the consumer.
-    // 2.2.4 When `read:` on proxy stream returns 0 bytes, it's done (self.mediaStreamStatus = NSStreamStatusAtEnd).
+    
+    if (self.mediaStreamStatus == NSStreamStatusReading) {
+        [self consumeData];
+    } else {
+        self.mediaStreamStatus = NSStreamStatusReading;
+        [self.exportSession exportAsynchronouslyWithCompletionHandler:^
+         {
+             switch (self.exportSession.status) {
+                 case AVAssetExportSessionStatusFailed: {
+                     ATLMediaInputStreamLog(@"AVAssetExportSessionStatusFailed");
+                     self.mediaStreamError = self.exportSession.error;
+                     self.mediaStreamStatus = NSStreamStatusError;
+                     dispatch_semaphore_signal(self.streamFlowRequesterSemaphore);
+                     break;
+                 }
+                 case AVAssetExportSessionStatusCompleted: {
+                     ATLMediaInputStreamLog(@"AVAssetExportSessionStatusCompleted");
+                     [self consumeData];
+                     break;
+                 }
+                 default: {
+                     dispatch_semaphore_signal(self.streamFlowRequesterSemaphore);
+                     break;
+                 }
+             }
+         }];
+    }
+}
+
+-(void)consumeData
+{
+
+    self.exportedVideoFileInputStream = [[NSInputStream alloc]initWithURL:self.exportSession.outputURL];
+    NSMutableData *dataFromStream = [NSMutableData data];
+    uint8_t *buffer = malloc(self.numberOfBytesRequested);
+    NSInteger bytesRead;
+    
+    [self.exportedVideoFileInputStream open];
+    
+    if (self.exportedVideoFileInputStream.streamStatus != NSStreamStatusOpen) {
+        self.mediaStreamStatus = self.exportedVideoFileInputStream.streamStatus;
+        dispatch_semaphore_signal(self.streamFlowRequesterSemaphore);
+        return;
+    }
+    
+    do {
+        bytesRead = [self.exportedVideoFileInputStream read:buffer maxLength:self.numberOfBytesRequested];
+        if (bytesRead != 0) {
+            [dataFromStream appendBytes:buffer length:self.numberOfBytesRequested];
+        } else if (bytesRead < 0) {
+            self.mediaStreamStatus = NSStreamStatusError;
+            ATLMediaInputStreamLog(@"Was unable to read file");
+            self.mediaStreamStatus = NSStreamStatusAtEnd;
+        }
+    } while (bytesRead != 0);
+    free(buffer);
+    
+    [self.exportedVideoFileInputStream close];
+    
+    self.dataConsumed = dataFromStream;
+    
+    if (bytesRead == 0) {
+        self.mediaStreamStatus = NSStreamStatusAtEnd;
+    } else {
+        self.mediaStreamStatus = NSStreamStatusError;
+    }
+    dispatch_semaphore_signal(self.streamFlowRequesterSemaphore);
+
 }
 
 @end
@@ -540,7 +651,7 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
 
 - (NSInteger)read:(uint8_t *)buffer maxLength:(NSUInteger)bytesToConsume
 {
-    if (self.mediaStreamStatus == NSStreamStatusOpen) {
+    if (self.mediaStreamStatus == NSStreamStatusOpen || self.mediaStreamStatus == NSStreamStatusReading) {
         [self startConsumption];
     }
     
@@ -553,7 +664,7 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
     if (self.mediaStreamStatus != NSStreamStatusReading) {
         return -1; // Operation fails
     }
-
+    
     // Setting the data stream request.
     ATLMediaInputStreamLog(@"input stream: requesting %lu of bytes", bytesToConsume);
     self.numberOfBytesRequested = bytesToConsume;
@@ -568,7 +679,7 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
     if (self.mediaStreamStatus == NSStreamStatusError) {
         return -1; // Operation failed, see self.streamError;
     }
-
+    
     // Copy the consumed image data to `buffer`.
     [self.dataConsumed getBytes:buffer];
     ATLMediaInputStreamLog(@"input stream: passed data to receiver");

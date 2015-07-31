@@ -45,7 +45,7 @@ typedef NS_ENUM(NSUInteger, ATLMediaInputStreamError) {
 /**
  @abstract The `ATLMediaInputStream` class is responsible for streaming
  media content to the receiver.
-           
+ 
  It provides direct (lossless) content streaming or resampled and compressed
  image streaming. Depending on the input source, which can be either
  an `ALAsset` URL or an `UIImage`, streaming, resampling and compression will
@@ -53,7 +53,7 @@ typedef NS_ENUM(NSUInteger, ATLMediaInputStreamError) {
  
  @discussion Compression and resampling are enabled with setting the
  `compressionQuality` and `maximumSize` respectively.
-            
+ 
  If setting the `maximumSize = 0` and `compressionQuality = 0.0f`, media content
  will be directly transferred from the `ALAsset` or `UIImage`, depending
  on the source. Property `isLossless` indicates if the streaming
@@ -105,7 +105,7 @@ typedef NS_ENUM(NSUInteger, ATLMediaInputStreamError) {
  @discussion 1.0f sets the quality to 100% which preserves details in images,
  but also makes a larger output. 0.1f sets the quality to 10% which
  is the lowest quality, and makes the file size smaller.
-             
+ 
  Setting the property value to zero `0.0f` will disable compression.
  */
 @property (nonatomic) float compressionQuality;

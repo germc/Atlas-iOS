@@ -86,7 +86,7 @@ typedef NS_ENUM(NSUInteger, ATLMediaAttachmentType) {
  */
 + (instancetype)mediaAttachmentWithLocation:(CLLocation *)location;
 
-+ (instancetype)mediaAttachmentWithVideo:(UIImage *)image metadata:(NSDictionary *)metadata thumbnailSize:(NSUInteger)thumbnailSize videoStream:(NSInputStream *)stream;
++ (instancetype)mediaAttachmentWithVideo:(UIImage *)image metadata:(NSDictionary *)metadata thumbnailSize:(NSUInteger)thumbnailSize videoAssetPath:(NSURL *)assetURL;
 
 ///----------------------------
 /// @name Media Item Attributes

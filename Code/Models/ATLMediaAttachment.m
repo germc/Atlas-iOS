@@ -74,7 +74,8 @@ static float const ATLMediaAttachmentDefaultThumbnailJPEGCompression = 0.5f;
 @property (nonatomic) UIImage *inputImage;
 @property (nonatomic) NSInputStream *videoStream;
 
-- (instancetype)initWithVideo:(UIImage *)image metadata:(NSDictionary *)metadata thumbnailSize:(NSUInteger)thumbnailSize videoStream:(NSInputStream *)stream;
+- (instancetype)initWithVideo:(UIImage *)image metadata:(NSDictionary *)metadata thumbnailSize:(NSUInteger)thumbnailSize videoAssetPath:(NSURL *)assetURL;
+ALAsset *ATLVideoAssetTestObtainLastImageFromAssetLibrary(ALAssetsLibrary *library);
 
 @end
 
@@ -175,7 +176,7 @@ static float const ATLMediaAttachmentDefaultThumbnailJPEGCompression = 0.5f;
 
 @implementation ATLVideoMediaAttachment
 
-- (instancetype)initWithVideo:(UIImage *)image metadata:(NSDictionary *)metadata thumbnailSize:(NSUInteger)thumbnailSize videoStream:(NSInputStream *)stream
+- (instancetype)initWithVideo:(UIImage *)image metadata:(NSDictionary *)metadata thumbnailSize:(NSUInteger)thumbnailSize videoAssetPath:(NSURL *)assetURL
 {
     self = [super init];
     if (self) {
@@ -183,13 +184,19 @@ static float const ATLMediaAttachmentDefaultThumbnailJPEGCompression = 0.5f;
             @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"Cannot initialize %@ with `nil` image.", self.superclass] userInfo:nil];
         }
         self.inputImage = image;
-        self.videoStream = stream;
         
         // --------------------------------------------------------------------
         // Prepare the input stream and MIMEType for the full size media.
         // --------------------------------------------------------------------
-        //self.mediaInputStream = [ATLMediaInputStream mediaInputStreamWithImage:image metadata:metadata]; //NEED TO CHANGE
-        self.mediaInputStream = stream;
+        ALAssetsLibrary *assetLibrary = [[ALAssetsLibrary alloc] init];
+        ALAsset *asset = ATLMediaAttachmentFromAssetURL(assetURL, assetLibrary);
+        
+        self.mediaInputStream = [ATLMediaInputStream mediaInputStreamWithAssetURL:asset.defaultRepresentation.url];
+        
+        self.mediaInputStream = [ATLMediaInputStream mediaInputStreamWithAssetURL:asset.defaultRepresentation.url];
+        ((ATLMediaInputStream *)self.mediaInputStream).maximumSize = 480;
+        ((ATLMediaInputStream *)self.mediaInputStream).compressionQuality = .8;
+        //self.mediaInputStream = stream;
         self.mediaMIMEType = ATLMIMETypeVideoMOV;
         
         // --------------------------------------------------------------------
@@ -257,7 +264,7 @@ static float const ATLMediaAttachmentDefaultThumbnailJPEGCompression = 0.5f;
         // --------------------------------------------------------------------
         self.mediaInputStream = [ATLMediaInputStream mediaInputStreamWithImage:image metadata:metadata];
         self.mediaMIMEType = ATLMIMETypeImageJPEG;
-
+        
         // --------------------------------------------------------------------
         // Prepare the input stream and MIMEType for the thumbnail.
         // --------------------------------------------------------------------
@@ -281,7 +288,7 @@ static float const ATLMediaAttachmentDefaultThumbnailJPEGCompression = 0.5f;
         } else {
             NSLog(@"ATLMediaAttachment failed to generate a JSON object for image metadata");
         }
-
+        
         // --------------------------------------------------------------------
         // Prepare the attachable thumbnail meant for the UI (which is inlined
         // with text in the message composer).
@@ -361,9 +368,9 @@ static float const ATLMediaAttachmentDefaultThumbnailJPEGCompression = 0.5f;
     return [[ATLImageMediaAttachment alloc] initWithImage:image metadata:(NSDictionary *)metadata thumbnailSize:thumbnailSize];
 }
 
-+ (instancetype)mediaAttachmentWithVideo:(UIImage *)image metadata:(NSDictionary *)metadata thumbnailSize:(NSUInteger)thumbnailSize videoStream:(NSInputStream *)stream
++ (instancetype)mediaAttachmentWithVideo:(UIImage *)image metadata:(NSDictionary *)metadata thumbnailSize:(NSUInteger)thumbnailSize videoAssetPath:(NSURL *)assetURL
 {
-    return [[ATLVideoMediaAttachment alloc] initWithVideo:image metadata:(NSDictionary *)metadata thumbnailSize:thumbnailSize videoStream:stream];
+    return [[ATLVideoMediaAttachment alloc] initWithVideo:image metadata:(NSDictionary *)metadata thumbnailSize:thumbnailSize videoAssetPath:assetURL];
 }
 
 + (instancetype)mediaAttachmentWithText:(NSString *)text
@@ -413,26 +420,26 @@ ALAsset *ATLMediaAttachmentFromAssetURL(NSURL *assetURL, ALAssetsLibrary *assetL
     __block ALAsset *resultAsset;
     dispatch_async(asyncQueue, ^{
         [assetLibrary assetForURL:assetURL resultBlock:^(ALAsset *asset) {
-             if (asset){
-                 resultAsset = asset;
-                 dispatch_semaphore_signal(semaphore);
-             } else {
-                 // On iOS 8.1 [library assetForUrl] Photo Streams always returns nil. Try to obtain it in an alternative way
-                 [assetLibrary enumerateGroupsWithTypes:ALAssetsGroupPhotoStream usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
-                      [group enumerateAssetsWithOptions:NSEnumerationReverse usingBlock:^(ALAsset *result, NSUInteger index, BOOL *stop) {
-                          if([result.defaultRepresentation.url isEqual:assetURL]) {
-                              resultAsset = result;
-                              *stop = YES;
-                              dispatch_semaphore_signal(semaphore);
-                          }
-                      }];
-                  } failureBlock:^(NSError *error) {
-                      dispatch_semaphore_signal(semaphore);
-                  }];
-             }
-         } failureBlock:^(NSError *error) {
-             dispatch_semaphore_signal(semaphore);
-         }];
+            if (asset){
+                resultAsset = asset;
+                dispatch_semaphore_signal(semaphore);
+            } else {
+                // On iOS 8.1 [library assetForUrl] Photo Streams always returns nil. Try to obtain it in an alternative way
+                [assetLibrary enumerateGroupsWithTypes:ALAssetsGroupPhotoStream usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
+                    [group enumerateAssetsWithOptions:NSEnumerationReverse usingBlock:^(ALAsset *result, NSUInteger index, BOOL *stop) {
+                        if([result.defaultRepresentation.url isEqual:assetURL]) {
+                            resultAsset = result;
+                            *stop = YES;
+                            dispatch_semaphore_signal(semaphore);
+                        }
+                    }];
+                } failureBlock:^(NSError *error) {
+                    dispatch_semaphore_signal(semaphore);
+                }];
+            }
+        } failureBlock:^(NSError *error) {
+            dispatch_semaphore_signal(semaphore);
+        }];
     });
     dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
     return resultAsset;
@@ -444,7 +451,7 @@ NSData *ATLMediaAttachmentDataFromInputStream(NSInputStream *inputStream)
         @throw [NSException exceptionWithName:NSInvalidArgumentException reason:@"inputStream cannot be `nil`." userInfo:nil];
     }
     NSMutableData *dataFromStream = [NSMutableData data];
-
+    
     // Open stream
     [inputStream open];
     if (inputStream.streamError) {
