@@ -430,8 +430,9 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
 - (void)close
 {
     [super close];
-    
-    [self removeTempFile];
+    if (self.exportSession.outputURL) {
+        [self removeTempFile];
+    }
     // 2. Nil out export session and do other cleanups.
     self.exportSession = nil;
     self.tempVideoURL = nil;
@@ -442,11 +443,9 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
     NSError *error;
     NSString *outputpathString;
     NSString *path;
-    if (self.exportSession.outputURL) {
         outputpathString = [[NSString stringWithFormat:@"%@",self.exportSession.outputURL] substringFromIndex:7];
         path = outputpathString;
-    }
-
+    
     NSFileManager *fileManager = [NSFileManager defaultManager];
     
     if([fileManager fileExistsAtPath:path] == YES)
@@ -467,38 +466,33 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
 
 - (void)startConsumption
 {
-    
-    if (self.mediaStreamStatus == NSStreamStatusReading) {
-        [self consumeData];
-    } else {
-        self.mediaStreamStatus = NSStreamStatusReading;
-        [self.exportSession exportAsynchronouslyWithCompletionHandler:^
-         {
-             switch (self.exportSession.status) {
-                 case AVAssetExportSessionStatusFailed: {
-                     ATLMediaInputStreamLog(@"AVAssetExportSessionStatusFailed");
-                     self.mediaStreamError = self.exportSession.error;
-                     self.mediaStreamStatus = NSStreamStatusError;
-                     dispatch_semaphore_signal(self.streamFlowRequesterSemaphore);
-                     break;
-                 }
-                 case AVAssetExportSessionStatusCompleted: {
-                     ATLMediaInputStreamLog(@"AVAssetExportSessionStatusCompleted");
-                     [self consumeData];
-                     break;
-                 }
-                 default: {
-                     dispatch_semaphore_signal(self.streamFlowRequesterSemaphore);
-                     break;
-                 }
+    self.mediaStreamStatus = NSStreamStatusReading;
+    [self.exportSession exportAsynchronouslyWithCompletionHandler:^
+     {
+         switch (self.exportSession.status) {
+             case AVAssetExportSessionStatusFailed: {
+                 ATLMediaInputStreamLog(@"AVAssetExportSessionStatusFailed");
+                 self.mediaStreamError = self.exportSession.error;
+                 self.mediaStreamStatus = NSStreamStatusError;
+                 dispatch_semaphore_signal(self.streamFlowRequesterSemaphore);
+                 break;
              }
-         }];
-    }
+             case AVAssetExportSessionStatusCompleted: {
+                 ATLMediaInputStreamLog(@"AVAssetExportSessionStatusCompleted");
+                 [self consumeData];
+                 break;
+             }
+             default: {
+                 dispatch_semaphore_signal(self.streamFlowRequesterSemaphore);
+                 break;
+             }
+         }
+     }];
 }
 
 -(void)consumeData
 {
-
+    
     self.exportedVideoFileInputStream = [[NSInputStream alloc]initWithURL:self.exportSession.outputURL];
     NSMutableData *dataFromStream = [NSMutableData data];
     uint8_t *buffer = malloc(self.numberOfBytesRequested);
@@ -534,7 +528,7 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
         self.mediaStreamStatus = NSStreamStatusError;
     }
     dispatch_semaphore_signal(self.streamFlowRequesterSemaphore);
-
+    
 }
 
 @end
@@ -651,7 +645,7 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
 
 - (NSInteger)read:(uint8_t *)buffer maxLength:(NSUInteger)bytesToConsume
 {
-    if (self.mediaStreamStatus == NSStreamStatusOpen || self.mediaStreamStatus == NSStreamStatusReading) {
+    if (self.mediaStreamStatus == NSStreamStatusOpen) {
         [self startConsumption];
     }
     
