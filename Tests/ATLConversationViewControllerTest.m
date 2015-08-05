@@ -408,7 +408,6 @@ extern NSString *const ATLMessageInputToolbarSendButton;
     [self setupConversationViewController];
     [self setRootViewController:self.viewController];
     
-    [tester waitForTimeInterval:10];
     [tester waitForViewWithAccessibilityLabel:ATLAvatarImageViewAccessibilityLabel];
 }
 
@@ -425,7 +424,6 @@ extern NSString *const ATLMessageInputToolbarSendButton;
     [self setupConversationViewController];
     [self setRootViewController:self.viewController];
     
-    [tester waitForTimeInterval:10];
     UILabel *label = (UILabel *)[tester waitForViewWithAccessibilityLabel:ATLConversationViewHeaderIdentifier];
     expect(label.text).to.equal(mockUser2.fullName);
 }
@@ -443,7 +441,6 @@ extern NSString *const ATLMessageInputToolbarSendButton;
     [self setupConversationViewController];
     [self setRootViewController:self.viewController];
     
-    [tester waitForTimeInterval:10];
     UILabel *label = (UILabel *)[tester waitForViewWithAccessibilityLabel:ATLConversationViewHeaderIdentifier];
     expect(label.text).to.equal(@"Platform");
 }
@@ -461,7 +458,6 @@ extern NSString *const ATLMessageInputToolbarSendButton;
     
     [self setRootViewController:self.viewController];
     
-    [tester waitForTimeInterval:10];
     [tester waitForViewWithAccessibilityLabel:ATLAvatarImageViewAccessibilityLabel];
 }
 
@@ -497,7 +493,6 @@ extern NSString *const ATLMessageInputToolbarSendButton;
     
     [self setRootViewController:self.viewController];
     
-    [tester waitForTimeInterval:10];
     ATLMessageCollectionViewCell *cellOne = (ATLMessageCollectionViewCell *)[tester waitForViewWithAccessibilityLabel:@"Message: One"];
     expect(cellOne.avatarImageView.hidden).to.equal(YES);
     ATLMessageCollectionViewCell *cellTwo = (ATLMessageCollectionViewCell *)[tester waitForViewWithAccessibilityLabel:@"Message: Two"];
@@ -538,7 +533,6 @@ extern NSString *const ATLMessageInputToolbarSendButton;
     
     [self setRootViewController:self.viewController];
     
-    [tester waitForTimeInterval:10];
     ATLMessageCollectionViewCell *cellOne = (ATLMessageCollectionViewCell *)[tester waitForViewWithAccessibilityLabel:@"Message: One"];
     expect(cellOne.avatarImageView.hidden).to.equal(NO);
     ATLMessageCollectionViewCell *cellTwo = (ATLMessageCollectionViewCell *)[tester waitForViewWithAccessibilityLabel:@"Message: Two"];
@@ -579,7 +573,6 @@ extern NSString *const ATLMessageInputToolbarSendButton;
     
     [self setRootViewController:self.viewController];
     
-    [tester waitForTimeInterval:10];
     ATLMessageCollectionViewCell *cellOne = (ATLMessageCollectionViewCell *)[tester waitForViewWithAccessibilityLabel:@"Message: One"];
     expect(cellOne.avatarImageView.hidden).to.equal(NO);
     ATLMessageCollectionViewCell *cellTwo = (ATLMessageCollectionViewCell *)[tester waitForViewWithAccessibilityLabel:@"Message: Two"];
