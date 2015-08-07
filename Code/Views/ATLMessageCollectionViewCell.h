@@ -80,6 +80,8 @@ extern CGFloat const ATLAvatarImageTailPadding;
  */
 @property (nonatomic) ATLAvatarImageView *avatarImageView;
 
+@property (nonatomic) LYRMessage *message;
+
 /**
  @abstract Performs calculations to determine a cell's height.
  @param message The `LYRMessage` object that will be displayed in the cell.

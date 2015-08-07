@@ -91,4 +91,11 @@ extern NSString *const ATLUserDidTapPhoneNumberNotification;
  */
 @property (nonatomic) NSTextCheckingType textCheckingTypes;
 
+/**
+ @abstract `UIMenuItem` objects that the application wants to display on long press, overriding the default copy functionality.
+ @discussion If set to nil or an empty array, this will deactivate all menu controller actions.
+ @default empty, with default menu controller action of `copy`
+ */
+@property (nonatomic) NSArray *menuControllerActions;
+
 @end

@@ -99,6 +99,9 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
 
         UILongPressGestureRecognizer *gestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
         [self addGestureRecognizer:gestureRecognizer];
+        
+        UIMenuItem *resetMenuItem = [[UIMenuItem alloc] initWithTitle:@"Copy" action:@selector(copyItem)];
+        _menuControllerActions = @[resetMenuItem];
 
         [self prepareForReuse];
     }
@@ -257,6 +260,8 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
 - (void)handleLongPress:(UILongPressGestureRecognizer *)recognizer
 {
     if ([recognizer state] == UIGestureRecognizerStateBegan && !self.longPressMask) {
+        
+        if (!self.menuControllerActions || self.menuControllerActions.count == 0) return;
 
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(menuControllerDisappeared)
@@ -272,8 +277,7 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
         [self addSubview:self.longPressMask];
 
         UIMenuController *menuController = [UIMenuController sharedMenuController];
-        UIMenuItem *resetMenuItem = [[UIMenuItem alloc] initWithTitle:@"Copy" action:@selector(copyItem)];
-        [menuController setMenuItems:@[resetMenuItem]];
+        [menuController setMenuItems:self.menuControllerActions];
 
         // If we're in a scroll view, we might need to position the UIMenuController differently
         UIView *superview = self.superview;
