@@ -1112,13 +1112,16 @@ static NSString *const ATLDefaultPushAlertText = @"sent you a message.";
 
 - (void)queryControllerDidChangeContent:(LYRQueryController *)queryController
 {
+    NSArray *objectChanges = [self.objectChanges copy];
+    [self.objectChanges removeAllObjects];
+    
     if (self.conversationDataSource.isExpandingPaginationWindow) {
         self.showingMoreMessagesIndicator = [self.conversationDataSource moreMessagesAvailable];
         [self reloadCollectionViewAdjustingForContentHeightChange];
         return;
     }
     
-    if (self.objectChanges.count == 0) {
+    if (objectChanges.count == 0) {
         [self configurePaginationWindow];
         [self configureMoreMessagesIndicatorVisibility];
         return;
@@ -1128,7 +1131,7 @@ static NSString *const ATLDefaultPushAlertText = @"sent you a message.";
     // Prevent scrolling if user has scrolled up into the conversation history.
     BOOL shouldScrollToBottom = [self shouldScrollToBottom];
     [self.collectionView performBatchUpdates:^{
-        for (ATLDataSourceChange *change in self.objectChanges) {
+        for (ATLDataSourceChange *change in objectChanges) {
             switch (change.type) {
                 case LYRQueryControllerChangeTypeInsert:
                     [self.collectionView insertSections:[NSIndexSet indexSetWithIndex:change.newIndex]];
@@ -1150,7 +1153,6 @@ static NSString *const ATLDefaultPushAlertText = @"sent you a message.";
                     break;
             }
         }
-        [self.objectChanges removeAllObjects];
     } completion:^(BOOL finished) {
         dispatch_resume(self.animationQueue);
     }];
