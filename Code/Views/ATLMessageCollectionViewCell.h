@@ -80,6 +80,9 @@ extern CGFloat const ATLAvatarImageTailPadding;
  */
 @property (nonatomic) ATLAvatarImageView *avatarImageView;
 
+/**
+ @abstract The `LYRMessage` object passed in `ATLMessagePresenting` protocol `presentMessage:`.
+ */
 @property (nonatomic) LYRMessage *message;
 
 /**

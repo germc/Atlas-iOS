@@ -21,6 +21,7 @@
 #import "ATLMessagingUtilities.h"
 #import "ATLErrors.h"
 #import <AssetsLibrary/AssetsLibrary.h>
+#import "ATLMessageCollectionViewCell.h"
 
 NSString *const ATLMIMETypeTextPlain = @"text/plain";
 NSString *const ATLMIMETypeTextHTML = @"text/HTML";
@@ -274,4 +275,19 @@ NSArray *ATLTextCheckingResultsForText(NSString *text, NSTextCheckingType linkTy
                                                                error:&error];
     if (error) return nil;
     return [detector matchesInString:text options:kNilOptions range:NSMakeRange(0, text.length)];
+}
+
+#pragma mark - ATLConversationViewController menu controller methods
+
+LYRMessage *ATLMessageFromATLMessageCollectionViewCellForMenuController(UICollectionView *collectionview, UIMenuController *menuController)
+{
+    if ([menuController isKindOfClass:[UIMenuController class]]) {
+        CGRect frame = menuController.menuFrame;
+        CGPoint point = frame.origin;
+        NSIndexPath *indexPath = [collectionview indexPathForItemAtPoint:point];
+        ATLMessageCollectionViewCell *cell = (ATLMessageCollectionViewCell *)[collectionview cellForItemAtIndexPath:indexPath];
+        LYRMessage *message = cell.message;
+        return message;
+    }
+    return nil;
 }

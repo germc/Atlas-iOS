@@ -93,7 +93,9 @@ extern NSString *const ATLUserDidTapPhoneNumberNotification;
 
 /**
  @abstract `UIMenuItem` objects that the application wants to display on long press, overriding the default copy functionality.
- @discussion If set to nil or an empty array, this will deactivate all menu controller actions.
+ @discussion If set to nil or an empty array, this will deactivate all menu controller actions.  This property can be set in the
+ `ATLConversationViewController` subclass by implementing the delegate `conversationViewController:configureCell:forMessage` and
+ overriding this property's default value.
  @default empty, with default menu controller action of `copy`
  */
 @property (nonatomic) NSArray *menuControllerActions;
