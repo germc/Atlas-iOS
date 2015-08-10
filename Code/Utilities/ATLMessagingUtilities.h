@@ -108,4 +108,4 @@ NSArray *ATLTextCheckingResultsForText(NSString *text, NSTextCheckingType linkTy
  @param menuController The `UIMenuController` that handled the `UIMenuItem` selector.
  @return Returns the `LYRMessage` of the `ATLMessageCollectionViewCell` that had a `UIMenuItem` selected.
  */
-LYRMessage *ATLMessageFromATLMessageCollectionViewCellForMenuController(UICollectionView *collectionview, UIMenuController *menuController);
+LYRMessage *ATLMessageFromATLMessageCollectionViewForMenuController(UICollectionView *collectionview, UIMenuController *menuController);

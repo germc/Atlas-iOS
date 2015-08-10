@@ -279,7 +279,7 @@ NSArray *ATLTextCheckingResultsForText(NSString *text, NSTextCheckingType linkTy
 
 #pragma mark - ATLConversationViewController menu controller methods
 
-LYRMessage *ATLMessageFromATLMessageCollectionViewCellForMenuController(UICollectionView *collectionview, UIMenuController *menuController)
+LYRMessage *ATLMessageFromATLMessageCollectionViewForMenuController(UICollectionView *collectionview, UIMenuController *menuController)
 {
     if (collectionview && menuController && [menuController isKindOfClass:[UIMenuController class]] && [collectionview isKindOfClass:[UICollectionView class]]) {
         CGRect frame = menuController.menuFrame;
