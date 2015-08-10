@@ -281,7 +281,7 @@ NSArray *ATLTextCheckingResultsForText(NSString *text, NSTextCheckingType linkTy
 
 LYRMessage *ATLMessageFromATLMessageCollectionViewCellForMenuController(UICollectionView *collectionview, UIMenuController *menuController)
 {
-    if ([menuController isKindOfClass:[UIMenuController class]]) {
+    if (collectionview && menuController && [menuController isKindOfClass:[UIMenuController class]] && [collectionview isKindOfClass:[UICollectionView class]]) {
         CGRect frame = menuController.menuFrame;
         CGPoint point = frame.origin;
         NSIndexPath *indexPath = [collectionview indexPathForItemAtPoint:point];

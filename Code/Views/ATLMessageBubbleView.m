@@ -231,6 +231,16 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
     }
 }
 
+- (void)setMenuControllerActions:(NSArray *)menuControllerActions
+{
+    for (id object in menuControllerActions) {
+        if (![object isKindOfClass:[UIMenuItem class]]) {
+            [NSException raise:NSInternalInconsistencyException format:@"Menu controller actions must be of type UIMenuItem"];
+        }
+    }
+    _menuControllerActions = menuControllerActions;
+}
+
 #pragma mark - Copy / Paste Support
 
 - (void)copyItem

@@ -104,7 +104,7 @@ NSArray *ATLTextCheckingResultsForText(NSString *text, NSTextCheckingType linkTy
 /**
  @abstract Returns the `LYRMessage` object from a `UIMenuController` selection in an `ATLMessageCollectionViewCell`.  Used in the `UIMenuItem` selectors the developer
  implements when setting `menuControllerActions` of the `ATLMessageBubbleView` class.
- @param collectionview The collectionview in which the event occurred.
+ @param collectionview The `ATLConversationViewController`'s collectionview in which the event occurred.
  @param menuController The `UIMenuController` that handled the `UIMenuItem` selector.
  @return Returns the `LYRMessage` of the `ATLMessageCollectionViewCell` that had a `UIMenuItem` selected.
  */
