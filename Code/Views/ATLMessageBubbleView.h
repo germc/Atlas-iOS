@@ -34,6 +34,11 @@ extern CGFloat const ATLMessageBubbleDefaultHeight;
 extern NSString *const ATLUserDidTapLinkNotification;
 
 /**
+ @abstract Posted when a user taps a phone number in a message bubble.
+ */
+extern NSString *const ATLUserDidTapPhoneNumberNotification;
+
+/**
  @abstract The `ATLMessageBubbleView` class provides a lightweight, customizable view that 
  handles displaying the actual message content within a collection view cell.
  @discussion The view provides support for multiple content types including text,
@@ -78,5 +83,12 @@ extern NSString *const ATLUserDidTapLinkNotification;
  @abstract The view that handles displaying an image.
  */
 @property (nonatomic) UIImageView *bubbleImageView;
+
+/**
+ @abstract The NSTextCheckingTypes that are set as links
+ @discussion Currently supports NSTextCheckingTypeLink and NSTextCheckingTypePhoneNumber
+ @default NSTextCheckingTypeLink
+ */
+@property (nonatomic) NSTextCheckingType textCheckingTypes;
 
 @end

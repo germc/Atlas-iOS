@@ -1,5 +1,27 @@
 # Atlas Changelog
 
+## 1.0.11
+
+### Bug Fixes
+
+* Fixed bug that caused avatar images to flicker when loading photos from remote URLs.
+
+## 1.0.10
+
+### Bug Fixes
+
+* Fixed bug introduced in 1.0.9 relating to media attachment text color for attributed string.
+
+## 1.0.9
+
+### Public API Changes
+
+* Exposed private initializers of `ATLConversationViewController` and `ATLConversationListViewController` to allow subclassing for custom initialization.
+
+### Bug Fixes
+
+* Removed compiler warnings that showed from direct installation due to deprecations.
+
 ## 1.0.8
 
 ### Enhancements

@@ -265,12 +265,12 @@ UIImage *ATLPinPhotoForSnapshot(MKMapSnapshot *snapshot, CLLocationCoordinate2D 
     return finalImage;
 }
 
-NSArray *ATLLinkResultsForText(NSString *text)
+NSArray *ATLTextCheckingResultsForText(NSString *text, NSTextCheckingType linkTypes)
 {
     if (!text) return nil;
     
     NSError *error;
-    NSDataDetector *detector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeLink
+    NSDataDetector *detector = [NSDataDetector dataDetectorWithTypes:linkTypes
                                                                error:&error];
     if (error) return nil;
     return [detector matchesInString:text options:kNilOptions range:NSMakeRange(0, text.length)];
