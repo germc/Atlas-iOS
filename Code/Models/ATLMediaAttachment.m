@@ -24,8 +24,6 @@
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <MediaPlayer/MediaPlayer.h>
 
-@import AVFoundation;
-
 /**
  @abstract Fetches the ALAsset from library based on given `assetURL`.
  @param assetURL URL identifier representing the asset.
