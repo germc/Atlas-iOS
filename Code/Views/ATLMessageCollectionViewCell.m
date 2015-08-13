@@ -128,7 +128,7 @@ CGFloat const ATLAvatarImageTailPadding = 7.0f;
         [self configureBubbleViewForGIFContent];
     } else if ([messagePart.MIMEType isEqualToString:ATLMIMETypeLocation]) {
         [self configureBubbleViewForLocationContent];
-    } else if ([messagePart.MIMEType isEqualToString:ATLMIMETypeVideoMOV]) {
+    } else if ([messagePart.MIMEType isEqualToString:ATLMIMETypeVideoMP4]) {
         [self configureBubbleViewForVideoContent];
     }
 }
@@ -225,7 +225,7 @@ CGFloat const ATLAvatarImageTailPadding = 7.0f;
 {
     self.accessibilityLabel = ATLVideoAccessibilityLabel;
     
-    LYRMessagePart *fullResVideoPart = ATLMessagePartForMIMEType(self.message, ATLMIMETypeVideoMOV);
+    LYRMessagePart *fullResVideoPart = ATLMessagePartForMIMEType(self.message, ATLMIMETypeVideoMP4);
     if (fullResVideoPart && ((fullResVideoPart.transferStatus == LYRContentTransferAwaitingUpload) ||
                              (fullResVideoPart.transferStatus == LYRContentTransferUploading))) {
         // Set self for delegation, if full resolution message part
@@ -239,7 +239,7 @@ CGFloat const ATLAvatarImageTailPadding = 7.0f;
     }
     
     UIImage *displayingImage;
-    LYRMessagePart *previewImagePart = ATLMessagePartForMIMEType(self.message, ATLMIMETypeVideoMOVPreview);
+    LYRMessagePart *previewImagePart = ATLMessagePartForMIMEType(self.message, ATLMIMETypeVideoMP4Preview);
     
     /* TODO: If there's no preview, use a black image
      if (!previewImagePart) {
@@ -477,7 +477,7 @@ CGFloat const ATLAvatarImageTailPadding = 7.0f;
     CGFloat height = 0;
     if ([part.MIMEType isEqualToString:ATLMIMETypeTextPlain]) {
         height = [self cellHeightForTextMessage:message inView:view];
-    } else if ([part.MIMEType isEqualToString:ATLMIMETypeImageJPEG] || [part.MIMEType isEqualToString:ATLMIMETypeImagePNG] || [part.MIMEType isEqualToString:ATLMIMETypeImageGIF]|| [part.MIMEType isEqualToString:ATLMIMETypeVideoMOV]) {
+    } else if ([part.MIMEType isEqualToString:ATLMIMETypeImageJPEG] || [part.MIMEType isEqualToString:ATLMIMETypeImagePNG] || [part.MIMEType isEqualToString:ATLMIMETypeImageGIF]|| [part.MIMEType isEqualToString:ATLMIMETypeVideoMP4]) {
         height = [self cellHeightForImageMessage:message];
     } else if ([part.MIMEType isEqualToString:ATLMIMETypeLocation]) {
         height = ATLMessageBubbleMapHeight;

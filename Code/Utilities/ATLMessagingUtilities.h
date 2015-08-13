@@ -34,8 +34,8 @@ extern NSString *const ATLMIMETypeImageSize;          // application/json+imageS
 extern NSString *const ATLMIMETypeLocation;           // location/coordinate
 extern NSString *const ATLMIMETypeDate;               // text/date
 
-extern NSString *const ATLMIMETypeVideoMOV;           // video/mov
-extern NSString *const ATLMIMETypeVideoMOVPreview;    // video/mov+preview
+extern NSString *const ATLMIMETypeVideoMP4;           // video/mp4
+extern NSString *const ATLMIMETypeVideoMP4Preview;    // video/mp4+preview
 
 extern NSUInteger const ATLDefaultThumbnailSize;      // 512px
 extern NSUInteger const ATLDefaultGIFThumbnailSize;   // 64px

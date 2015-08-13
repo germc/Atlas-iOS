@@ -43,4 +43,4 @@ UIImage *ATLTestAttachmentMakeImageWithSize(CGSize size);
  */
 ALAsset *ATLAssetTestObtainLastImageFromAssetLibrary(ALAssetsLibrary *library);
 
-ALAsset *ATLVideoAssetTestObtainLastImageFromAssetLibrary(ALAssetsLibrary *library);
+ALAsset *ATLVideoAssetTestObtainLastVideoFromAssetLibrary(ALAssetsLibrary *library);

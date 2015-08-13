@@ -39,7 +39,7 @@ typedef NS_ENUM(NSUInteger, ATLMediaAttachmentType) {
     ATLMediaAttachmentTypeImage,
     /**
      @constant Media attachment containing video data.
-     @discussion Sets mediaMIMEType = @"video/mov"; thumbnailMIMEType = @"video/mov+preview"; metadataMIMEType = @"application/json+imageSize"; textRepresentation = @"Attachment: Video";
+     @discussion Sets mediaMIMEType = @"video/mp4"; thumbnailMIMEType = @"video/mp4+preview"; metadataMIMEType = @"application/json+imageSize"; textRepresentation = @"Attachment: Video";
      */
     ATLMediaAttachmentTypeVideo
 };
@@ -63,6 +63,8 @@ typedef NS_ENUM(NSUInteger, ATLMediaAttachmentType) {
  */
 + (instancetype)mediaAttachmentWithAssetURL:(NSURL *)assetURL thumbnailSize:(NSUInteger)thumbnailSize;
 
++ (instancetype)mediaAttachmentWithFileURL:(NSString *)fileURL metadata:(NSDictionary *)metadata thumbnailSize:(NSUInteger)thumbnailSize;
+
 /**
  @abstract Creates a new `ATLMediaAttachment` instance of type `ATLMediaAttachmentTypeImage` based on `UIImage`.
  @param assetURL Image in a form of `UIImage`.
@@ -85,8 +87,6 @@ typedef NS_ENUM(NSUInteger, ATLMediaAttachmentType) {
  @return Instance of `ATLMediaAttachment` containing streams.
  */
 + (instancetype)mediaAttachmentWithLocation:(CLLocation *)location;
-
-+ (instancetype)mediaAttachmentWithVideo:(UIImage *)image metadata:(NSDictionary *)metadata thumbnailSize:(NSUInteger)thumbnailSize videoAssetPath:(NSURL *)assetURL;
 
 ///----------------------------
 /// @name Media Item Attributes

@@ -515,7 +515,7 @@ NSString *const ATLConversationListViewControllerDeletionModeGlobal = @"Global";
             lastMessageText = ATLLocalizedString(@"atl.conversationlist.lastMessage.text.gif.key", ATLGIFMIMETypePlaceholderText, nil);
         } else if ([messagePart.MIMEType isEqualToString:ATLMIMETypeLocation]) {
             lastMessageText = ATLLocalizedString(@"atl.conversationlist.lastMessage.text.location.key", ATLLocationMIMETypePlaceholderText, nil);
-        } else if ([messagePart.MIMEType isEqualToString:ATLMIMETypeVideoMOV]) {
+        } else if ([messagePart.MIMEType isEqualToString:ATLMIMETypeVideoMP4]) {
 			lastMessageText = ATLLocalizedString(@"atl.conversationlist.lastMessage.text.video.key", ATLVideoMIMETypePlaceholderText, nil);
         } else {
             lastMessageText = ATLLocalizedString(@"atl.conversationlist.lastMessage.text.default.key", ATLImageMIMETypePlaceholderText, nil);

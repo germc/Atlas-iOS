@@ -33,10 +33,8 @@ NSString *const ATLMIMETypeImageJPEGPreview = @"image/jpeg+preview";
 NSString *const ATLMIMETypeImageGIFPreview = @"image/gif+preview";
 NSString *const ATLMIMETypeLocation = @"location/coordinate";
 NSString *const ATLMIMETypeDate = @"text/date";
-
-NSString *const ATLMIMETypeVideoMOV = @"video/mov";
-NSString *const ATLMIMETypeVideoMOVPreview = @"video/mov+preview";
-
+NSString *const ATLMIMETypeVideoMP4 = @"video/mp4";
+NSString *const ATLMIMETypeVideoMP4Preview = @"video/mp4+preview";
 NSUInteger const ATLDefaultThumbnailSize = 512;
 NSUInteger const ATLDefaultGIFThumbnailSize = 64;
 
@@ -193,7 +191,7 @@ void ATLAssetURLOfLastPhotoTaken(void(^completionHandler)(NSURL *assetURL, NSErr
         if (!group) return;
 
         // Within the group enumeration block, filter to enumerate just photos.
-        [group setAssetsFilter:[ALAssetsFilter allPhotos]];
+        [group setAssetsFilter:[ALAssetsFilter allAssets]];
 
         if ([group numberOfAssets] == 0) {
             completionHandler(nil, [NSError errorWithDomain:ATLErrorDomain code:ATLErrorNoPhotos userInfo:@{NSLocalizedDescriptionKey: @"There are no photos."}]);

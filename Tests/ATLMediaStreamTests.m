@@ -48,7 +48,7 @@
 - (void)testInputMediaStreamForVideo
 {
     ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
-    ALAsset *VideoSourceAsset = ATLVideoAssetTestObtainLastImageFromAssetLibrary(library);
+    ALAsset *VideoSourceAsset = ATLVideoAssetTestObtainLastVideoFromAssetLibrary(library);
     expect(VideoSourceAsset).toNot.beNil();
     
     NSURL *LastVideoURL = VideoSourceAsset.defaultRepresentation.url;
@@ -86,7 +86,104 @@
     NSString *path = [NSString stringWithFormat:@"%@test.mp4", NSTemporaryDirectory()];
     [data writeToFile:path atomically:NO];
     NSLog(@"check file: %@ length=%lu", path, data.length);
+    expect(data1.length == data.length);
 }
+
+-(void)testVideoStreamOpenStream
+{
+    ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
+    ALAsset *sourceAsset = ATLVideoAssetTestObtainLastVideoFromAssetLibrary(library);
+    expect(sourceAsset).toNot.beNil();
+    
+    NSURL *lastVideoURL = sourceAsset.defaultRepresentation.url;
+    
+    ATLMediaInputStream *streamDirect = [ATLMediaInputStream mediaInputStreamWithAssetURL:lastVideoURL];
+    expect(streamDirect.isLossless).to.beTruthy();
+    expect(streamDirect.streamStatus).to.equal(NSStreamStatusNotOpen);
+    expect(streamDirect.streamError).to.beNil();
+    [streamDirect open];
+    expect(streamDirect.streamStatus).to.equal(NSStreamStatusOpen);
+    expect(streamDirect.streamError).to.beNil();
+    
+    ATLMediaInputStream *streamResample = [ATLMediaInputStream mediaInputStreamWithAssetURL:lastVideoURL];
+    streamResample.maximumSize = 512;
+    streamResample.compressionQuality = 0.5f;
+    expect(streamResample.isLossless).to.beFalsy();
+    expect(streamResample.streamStatus).to.equal(NSStreamStatusNotOpen);
+    expect(streamResample.streamError).to.beNil();
+    [streamResample open];
+    expect(streamResample.streamStatus).to.equal(NSStreamStatusOpen);
+    expect(streamResample.streamError).to.beNil();
+
+}
+
+-(void)testVideoStreamCloseStream
+{
+    ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
+    ALAsset *sourceAsset = ATLVideoAssetTestObtainLastVideoFromAssetLibrary(library);
+    expect(sourceAsset).toNot.beNil();
+    
+    NSURL *lastVideoURL = sourceAsset.defaultRepresentation.url;
+    
+    ATLMediaInputStream *streamDirect = [ATLMediaInputStream mediaInputStreamWithAssetURL:lastVideoURL];
+    expect(streamDirect.streamStatus).to.equal(NSStreamStatusNotOpen);
+    expect(streamDirect.streamError).to.beNil();
+    [streamDirect open];
+    expect(streamDirect.streamStatus).to.equal(NSStreamStatusOpen);
+    expect(streamDirect.streamError).to.beNil();
+    [streamDirect close];
+    expect(streamDirect.streamStatus).to.equal(NSStreamStatusClosed);
+    expect(streamDirect.streamError).to.beNil();
+    
+    ATLMediaInputStream *streamResample = [ATLMediaInputStream mediaInputStreamWithAssetURL:lastVideoURL];
+    streamResample.maximumSize = 512;
+    streamResample.compressionQuality = 0.5f;
+    expect(streamResample.streamStatus).to.equal(NSStreamStatusNotOpen);
+    expect(streamResample.streamError).to.beNil();
+    [streamResample open];
+    expect(streamResample.streamStatus).to.equal(NSStreamStatusOpen);
+    expect(streamResample.streamError).to.beNil();
+    [streamResample close];
+    expect(streamResample.streamStatus).to.equal(NSStreamStatusClosed);
+    expect(streamResample.streamError).to.beNil();
+
+}
+
+- (void)testVideoStreamReadsStreamRenameMe
+{
+    ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
+    ALAsset *sourceAsset = ATLVideoAssetTestObtainLastVideoFromAssetLibrary(library);
+    expect(sourceAsset).toNot.beNil();
+    
+    NSURL *lastVideoURL = sourceAsset.defaultRepresentation.url;
+    
+    ATLMediaInputStream *stream = [ATLMediaInputStream mediaInputStreamWithAssetURL:lastVideoURL];
+    [stream open];
+    expect(stream.streamStatus).to.equal(NSStreamStatusOpen);
+    expect(stream.streamError).to.beNil();
+    
+    NSMutableData *data = [NSMutableData data];
+    NSUInteger size = 512 * 1024;
+    uint8_t *buffer = malloc(size);
+    NSInteger bytesRead = 0;
+    do {
+        bytesRead = [stream read:buffer maxLength:size];
+        expect(stream.streamError).to.beNil();
+        [data appendBytes:buffer length:bytesRead];
+    } while (bytesRead > 0);
+    free(buffer);
+    
+    expect(stream.streamStatus).to.equal(NSStreamStatusAtEnd);
+    [stream close];
+    expect(stream.streamStatus).to.equal(NSStreamStatusClosed);
+    expect(stream.streamError).to.beNil();
+    
+    NSString *path = [NSString stringWithFormat:@"%@test.mp4", NSTemporaryDirectory()];
+    [data writeToFile:path atomically:NO];
+    NSLog(@"check file: %@ length=%lu", path, data.length);
+}
+
+//END Video Tests
 
 - (void)testMediaStreamDesignatedInitFails
 {

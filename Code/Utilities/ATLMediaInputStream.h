@@ -79,6 +79,7 @@ typedef NS_ENUM(NSUInteger, ATLMediaInputStreamError) {
  */
 + (instancetype)mediaInputStreamWithImage:(UIImage *)image metadata:(NSDictionary *)metadata;
 
++ (instancetype)mediaInputStreamWithFilePath:(NSString *)filePath withInfo:(NSDictionary *)info;
 /**
  @abstract The source media asset in a form of an `NSURL`.
  */

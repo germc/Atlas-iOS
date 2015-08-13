@@ -145,7 +145,7 @@ ALAsset *ATLAssetTestObtainLastImageFromAssetLibrary(ALAssetsLibrary *library)
     return sourceAsset;
 }
 
-ALAsset *ATLVideoAssetTestObtainLastImageFromAssetLibrary(ALAssetsLibrary *library)
+ALAsset *ATLVideoAssetTestObtainLastVideoFromAssetLibrary(ALAssetsLibrary *library)
 {
     
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
