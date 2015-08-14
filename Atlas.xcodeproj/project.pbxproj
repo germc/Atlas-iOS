@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		2B6445637A4A449ABC5750C4 /* libPods-StoryboardTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DFFB13F66B57103A728CA624 /* libPods-StoryboardTests.a */; };
 		377EEF73853F61FE5B5568A2 /* libPods-Storyboard.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 12E6C660682C89FC093228B5 /* libPods-Storyboard.a */; };
+		5AEFC5CB1B79834300ADE4EC /* boatgif.gif in Resources */ = {isa = PBXBuildFile; fileRef = 5AEFC5CA1B79834300ADE4EC /* boatgif.gif */; };
+		5AEFC5CC1B79834300ADE4EC /* boatgif.gif in Resources */ = {isa = PBXBuildFile; fileRef = 5AEFC5CA1B79834300ADE4EC /* boatgif.gif */; };
 		5AF32FD31AA59C39005C13D7 /* ATLUserMockTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 5AF32FD21AA59C39005C13D7 /* ATLUserMockTest.m */; };
 		CE7BDC080170509511B89900 /* libPods-UnitTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F7012754989ED85BE6A8D69E /* libPods-UnitTests.a */; };
 		D0294DE71A93F37A00702856 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = D0294DE61A93F37A00702856 /* Info.plist */; };
@@ -111,6 +113,7 @@
 		358D1AE37F6A67F9CE5ADC47 /* libPods-Unit Tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Unit Tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		4A1A0BE9E193CC265341461A /* Pods-Unit Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Unit Tests.release.xcconfig"; path = "Pods/Target Support Files/Pods-Unit Tests/Pods-Unit Tests.release.xcconfig"; sourceTree = "<group>"; };
 		5A30E6805E705AAD798FE808 /* Pods-Programmatic.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Programmatic.release.xcconfig"; path = "Pods/Target Support Files/Pods-Programmatic/Pods-Programmatic.release.xcconfig"; sourceTree = "<group>"; };
+		5AEFC5CA1B79834300ADE4EC /* boatgif.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = boatgif.gif; sourceTree = "<group>"; };
 		5AF32FD21AA59C39005C13D7 /* ATLUserMockTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ATLUserMockTest.m; sourceTree = "<group>"; };
 		5C9A8B1181386C002F1F0585 /* Pods-Conversation.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Conversation.release.xcconfig"; path = "Pods/Target Support Files/Pods-Conversation/Pods-Conversation.release.xcconfig"; sourceTree = "<group>"; };
 		6334472F1BD9D5C3E110141E /* Pods-UnitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-UnitTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-UnitTests/Pods-UnitTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -421,6 +424,7 @@
 		D6F4060E1A8FDEEB00AE9581 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				5AEFC5CA1B79834300ADE4EC /* boatgif.gif */,
 				D63C68DF1A94250000D235D5 /* test-logo.png */,
 				D6F4060F1A8FDEEB00AE9581 /* ProgrammaticTests-Info.plist */,
 				D6F406101A8FDEEB00AE9581 /* StoryboardTests-Info.plist */,
@@ -636,6 +640,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5AEFC5CB1B79834300ADE4EC /* boatgif.gif in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -652,6 +657,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D63C68E11A94250000D235D5 /* test-logo.png in Resources */,
+				5AEFC5CC1B79834300ADE4EC /* boatgif.gif in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

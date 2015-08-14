@@ -37,6 +37,8 @@
 NSString *ATLTestMessageText = @"Test Message Text";
 
 extern NSString *const ATLConversationCollectionViewAccessibilityIdentifier;
+extern NSString *const ATLMessageInputToolbarSendButton;
+extern NSString *const ATLMIMETypeImageSize;
 
 - (void)setUp
 {
@@ -179,7 +181,36 @@ extern NSString *const ATLConversationCollectionViewAccessibilityIdentifier;
     expect(phoneNumberAttributes[NSUnderlineStyleAttributeName]).to.equal(NSUnderlineStyleSingle);
 }
 
+- (void)testToVerifyAsynchronousImageAndGifLoadingDoesNotRetainCells
+{
+    for (int i = 0; i < 20; i++) {
+        LYRMessagePart *part = [LYRMessagePart messagePartWithText:@"Hey Dude"];
+        LYRMessageMock *message = [LYRMessageMock newMessageWithParts:@[part] senderID:[ATLUserMock userWithMockUserName:ATLMockUserNameKlemen].participantIdentifier];
+        [self.conversation sendMessage:message error:nil];
+    }
+    NSBundle *parentBundle = [NSBundle bundleForClass:[self class]];
+    NSURL *url = [parentBundle URLForResource:@"boatgif" withExtension:@"gif"];
+    NSData *data = [NSData dataWithContentsOfURL:url];
+    UIImage *gif = [UIImage imageWithData:data];
+    
+    LYRMessagePartMock *part1 = [LYRMessagePartMock messagePartWithMIMEType:ATLMIMETypeImageGIF data:data];
+    NSDictionary *imageMetadata = @{ @"width": @(gif.size.width),
+                                     @"height": @(gif.size.height),
+                                     @"orientation": @(gif.imageOrientation) };
+    NSData *JSONData = [NSJSONSerialization dataWithJSONObject:imageMetadata options:NSJSONWritingPrettyPrinted error:nil];
+    LYRMessagePartMock *part2 = [LYRMessagePartMock messagePartWithMIMEType:ATLMIMETypeImageSize data:JSONData];
+    LYRMessageMock *message = [LYRMessageMock newMessageWithParts:@[ part1, part2 ] senderID:[ATLUserMock userWithMockUserName:ATLMockUserNameKlemen].participantIdentifier];
+    [self.conversation sendMessage:message error:nil];
+    [self.controller.collectionView setContentOffset:CGPointZero];
+    id partialmockedPart = OCMPartialMock(part1);
+    OCMStub([partialmockedPart data]).andReturn(data);
+    
+//    id mock = OCMClassMock([ATLMessageBubbleView class]);
+//    [[mock reject] updateWithImage:[OCMArg any] width:215];
+}
+
 #pragma mark - Outgoing Customization
+
 - (void)testToVerifyOutgoingCustomMessageTextFont
 {
     UIFont *font = [UIFont systemFontOfSize:20];
