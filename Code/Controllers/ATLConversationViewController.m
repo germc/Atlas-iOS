@@ -740,35 +740,25 @@ static NSInteger const ATLPhotoActionSheet = 1000;
 
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
-    NSString *mediaType = info[UIImagePickerControllerMediaType];
     ATLMediaAttachment *mediaAttachment;
     NSURL *assetURL = (NSURL *)info[UIImagePickerControllerReferenceURL];
     
-    if ([mediaType isEqualToString:(__bridge NSString *)kUTTypeImage]) {
-        if (assetURL) {
-            mediaAttachment = [ATLMediaAttachment mediaAttachmentWithAssetURL:assetURL thumbnailSize:ATLDefaultThumbnailSize];
-        } else if (info[UIImagePickerControllerOriginalImage]) {
-            mediaAttachment = [ATLMediaAttachment mediaAttachmentWithImage:info[UIImagePickerControllerOriginalImage]
-                                                                  metadata:info[UIImagePickerControllerMediaMetadata]
-                                                             thumbnailSize:ATLDefaultThumbnailSize];
-        } else {
-            return;
-        }
-        [self.messageInputToolbar insertMediaAttachment:mediaAttachment withEndLineBreak:YES];
-    } else if (CFStringCompare ((__bridge_retained CFStringRef)mediaType, kUTTypeMovie, 0)
-               == kCFCompareEqualTo) {   //if selected item is a video
-        
-        if (assetURL) {
-            mediaAttachment = [ATLMediaAttachment mediaAttachmentWithAssetURL:assetURL thumbnailSize:ATLDefaultThumbnailSize];
-        } else if (info[UIImagePickerControllerMediaURL]){
-            NSString *moviePath = (NSString *)[[info objectForKey:UIImagePickerControllerMediaURL] path];
-            mediaAttachment = [ATLMediaAttachment mediaAttachmentWithFileURL:moviePath metadata:info thumbnailSize:ATLDefaultThumbnailSize];
-        } else {
-            return;
-        }
-        [self.messageInputToolbar insertMediaAttachment:mediaAttachment withEndLineBreak:YES];
+    if (assetURL) { //asset exists locally
+        mediaAttachment = [ATLMediaAttachment mediaAttachmentWithAssetURL:assetURL thumbnailSize:ATLDefaultThumbnailSize];
+    } else if (info[UIImagePickerControllerOriginalImage]){ //live photo is taken
+        mediaAttachment = [ATLMediaAttachment mediaAttachmentWithImage:info[UIImagePickerControllerOriginalImage]
+                                                              metadata:info[UIImagePickerControllerMediaMetadata]
+                                                         thumbnailSize:ATLDefaultThumbnailSize];
+    } else if (info[UIImagePickerControllerMediaURL]) { //live video is taken
+        NSString *moviePath = (NSString *)[[info objectForKey:UIImagePickerControllerMediaURL] path];
+        mediaAttachment = [ATLMediaAttachment mediaAttachmentWithFileURL:moviePath metadata:info thumbnailSize:ATLDefaultThumbnailSize];
+    } else {
+        return;
     }
     
+    if (mediaAttachment) {
+        [self.messageInputToolbar insertMediaAttachment:mediaAttachment withEndLineBreak:YES];
+    }
     [self.navigationController dismissViewControllerAnimated:YES completion:nil];
     [self.view becomeFirstResponder];
     

@@ -31,6 +31,7 @@ extern NSString *const ATLMIMETypeImageJPEGPreview;   // image/jpeg+preview
 extern NSString *const ATLMIMETypeImageGIF;           // image/gif
 extern NSString *const ATLMIMETypeImageGIFPreview;    // image/gif+preview
 extern NSString *const ATLMIMETypeImageSize;          // application/json+imageSize
+extern NSString *const ATLMIMETypeVideoQuickTime;     // video/quicktime
 extern NSString *const ATLMIMETypeLocation;           // location/coordinate
 extern NSString *const ATLMIMETypeDate;               // text/date
 

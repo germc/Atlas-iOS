@@ -79,7 +79,14 @@ typedef NS_ENUM(NSUInteger, ATLMediaInputStreamError) {
  */
 + (instancetype)mediaInputStreamWithImage:(UIImage *)image metadata:(NSDictionary *)metadata;
 
+/**
+ @abstract Creates an input stream capable of direct streaming of the video content.
+ @param path `NsString` of video that will be serialized for streaming.
+ @param metadata A `NSDictionary` of metadata that will be attached in the serialized data. Passing `nil` won't attach any metadata to the serialized image.
+ @return A `ATLMediaInputStream` instance ready to be open.
+ */
 + (instancetype)mediaInputStreamWithFilePath:(NSString *)filePath withInfo:(NSDictionary *)info;
+
 /**
  @abstract The source media asset in a form of an `NSURL`.
  */

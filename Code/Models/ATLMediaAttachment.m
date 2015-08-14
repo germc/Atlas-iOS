@@ -113,11 +113,13 @@ static float const ATLMediaAttachmentDefaultThumbnailJPEGCompression = 0.5f;
         // Prepare the input stream and MIMEType for the full size media.
         // --------------------------------------------------------------------
         self.mediaInputStream = [ATLMediaInputStream mediaInputStreamWithAssetURL:asset.defaultRepresentation.url];
-        self.mediaMIMEType = (__bridge NSString *)(UTTypeCopyPreferredTagWithClass((__bridge CFStringRef)(asset.defaultRepresentation.UTI), kUTTagClassMIMEType));
         
-        if ([self.mediaMIMEType isEqualToString:@"video/quicktime"])
+        if ([(__bridge NSString *)(UTTypeCopyPreferredTagWithClass((__bridge CFStringRef)(asset.defaultRepresentation.UTI), kUTTagClassMIMEType))
+             isEqualToString:ATLMIMETypeVideoQuickTime])
         {
             self.mediaMIMEType = ATLMIMETypeVideoMP4; 
+        }else {
+            self.mediaMIMEType = (__bridge NSString *)(UTTypeCopyPreferredTagWithClass((__bridge CFStringRef)(asset.defaultRepresentation.UTI), kUTTagClassMIMEType));
         }
         
         // --------------------------------------------------------------------
@@ -194,7 +196,6 @@ static float const ATLMediaAttachmentDefaultThumbnailJPEGCompression = 0.5f;
     // Prepare the input stream and MIMEType for the full size media.
     // --------------------------------------------------------------------
     self.mediaInputStream = [ATLMediaInputStream mediaInputStreamWithFilePath:fileURL withInfo:metadata];
-    //self.mediaInputStream = [[NSInputStream alloc]initWithFileAtPath:fileURL];
     self.mediaMIMEType = ATLMIMETypeVideoMP4;
 
     // --------------------------------------------------------------------

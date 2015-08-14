@@ -44,9 +44,11 @@
     [super tearDown];
 }
 
-//Unit test for sending a video across
 - (void)testInputMediaStreamForVideo
 {
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, 1, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    int count; 
     ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
     ALAsset *VideoSourceAsset = ATLVideoAssetTestObtainLastVideoFromAssetLibrary(library);
     expect(VideoSourceAsset).toNot.beNil();
@@ -86,7 +88,13 @@
     NSString *path = [NSString stringWithFormat:@"%@test.mp4", NSTemporaryDirectory()];
     [data writeToFile:path atomically:NO];
     NSLog(@"check file: %@ length=%lu", path, data.length);
-    expect(data1.length == data.length);
+    expect(data1.length).to.equal(data.length);
+    
+    NSArray *directoryContent = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:documentsDirectory error:NULL];
+    for (count = 0; count < (int)[directoryContent count]; count++) {
+        NSLog(@"File %d: %@", (count + 1), [directoryContent objectAtIndex:count]);
+    }
+    expect([directoryContent count]).to.equal(0);
 }
 
 -(void)testVideoStreamOpenStream
@@ -114,7 +122,6 @@
     [streamResample open];
     expect(streamResample.streamStatus).to.equal(NSStreamStatusOpen);
     expect(streamResample.streamError).to.beNil();
-
 }
 
 -(void)testVideoStreamCloseStream
@@ -146,7 +153,6 @@
     [streamResample close];
     expect(streamResample.streamStatus).to.equal(NSStreamStatusClosed);
     expect(streamResample.streamError).to.beNil();
-
 }
 
 - (void)testVideoStreamReadsStreamRenameMe
@@ -183,7 +189,43 @@
     NSLog(@"check file: %@ length=%lu", path, data.length);
 }
 
-//END Video Tests
+-(void)testTempVideoFilesCleaned
+{
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, 1, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    
+    ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
+    ALAsset *sourceAsset = ATLVideoAssetTestObtainLastVideoFromAssetLibrary(library);
+    expect(sourceAsset).toNot.beNil();
+    
+    NSURL *lastVideoURL = sourceAsset.defaultRepresentation.url;
+    
+    ATLMediaInputStream *stream = [ATLMediaInputStream mediaInputStreamWithAssetURL:lastVideoURL];
+    [stream open];
+    expect(stream.streamStatus).to.equal(NSStreamStatusOpen);
+    expect(stream.streamError).to.beNil();
+    
+    NSMutableData *data = [NSMutableData data];
+    NSUInteger size = 512 * 1024;
+    uint8_t *buffer = malloc(size);
+    NSInteger bytesRead = 0;
+    do {
+        bytesRead = [stream read:buffer maxLength:size];
+        expect(stream.streamError).to.beNil();
+        [data appendBytes:buffer length:bytesRead];
+    } while (bytesRead > 0);
+    free(buffer);
+    expect(stream.streamStatus).to.equal(NSStreamStatusAtEnd);
+    [stream close];
+    
+    int count;
+    
+    NSArray *directoryContent = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:documentsDirectory error:NULL];
+    for (count = 0; count < (int)[directoryContent count]; count++) {
+        NSLog(@"File %d: %@", (count + 1), [directoryContent objectAtIndex:count]);
+    }
+    expect([directoryContent count]).to.equal(0);
+}
 
 - (void)testMediaStreamDesignatedInitFails
 {

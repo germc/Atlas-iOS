@@ -95,6 +95,7 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
 @property (nonatomic, strong) NSString *sourceFilePath;
 @property (nonatomic, strong) NSDictionary *info;
 @property (nonatomic, strong) NSString *videoPath;
+
 - (instancetype)initWithFilePath:(NSString *)fileURL withInfo:(NSDictionary *)info;
 
 @end
@@ -395,7 +396,6 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
 
 - (void)open
 {
-    //[super open];
     NSString *docDir = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, 1, YES) objectAtIndex:0];
     self.videoPath = [NSString stringWithFormat:@"%@/test.mov",docDir];
     NSURL *videoURL = [self.info objectForKey:UIImagePickerControllerMediaURL];
@@ -413,7 +413,6 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
 
     //succesful
     self.mediaStreamStatus = NSStreamStatusOpen;
-    
 }
 
 -(void)close
@@ -466,19 +465,17 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
 - (void)open
 {
     [super open];
-    // TODO: implement me
     AVAsset *videoAVAsset = [AVAsset assetWithURL:self.sourceAssetURL];
     NSArray *presetWithAsset = [AVAssetExportSession exportPresetsCompatibleWithAsset:videoAVAsset];
     ATLMediaInputStreamLog(@"Preset Values for AVAssetexportSession: %@", presetWithAsset);
     
-    // Steps:
-    // 1. Prepare the temporary file URL (it should be a member property).
+    // Prepare the temporary file URL (it should be a member property).
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, 1, YES);
     NSString *documentsDirectory = [paths objectAtIndex:0];
     NSString *myPathDocs =  [documentsDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"Video-%d.mp4",arc4random() % 1000]];
     self.tempVideoURL = [NSURL fileURLWithPath:myPathDocs];
     
-    // 2. Prepare the AVExportSession (use the temp file url).
+    // Prepare the AVExportSession (use the temp file url).
     self.exportSession = [[AVAssetExportSession alloc] initWithAsset:videoAVAsset presetName:AVAssetExportPresetHighestQuality];
     self.exportSession.outputURL = self.tempVideoURL;
     self.exportSession.outputFileType = AVFileTypeMPEG4;
@@ -495,25 +492,22 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
     if (self.exportSession.outputURL) {
         [self removeTempFile];
     }
-    // 2. Nil out export session and do other cleanups.
+    // Nil out export session and do other cleanups.
     self.exportSession = nil;
     self.tempVideoURL = nil;
     self.dataConsumed = nil;
+    self.mediaStreamStatus = NSStreamStatusClosed;
 }
 
 -(void)removeTempFile
 {
     NSError *error;
-    NSString *outputpathString;
-    NSString *path;
-        outputpathString = [[NSString stringWithFormat:@"%@",self.exportSession.outputURL] substringFromIndex:7];
-        path = outputpathString;
+    //substring to remove the prepended "file://" string
+    NSString *path = [[NSString stringWithFormat:@"%@",self.exportSession.outputURL] substringFromIndex:7];
     
     NSFileManager *fileManager = [NSFileManager defaultManager];
     
-    if([fileManager fileExistsAtPath:path] == YES)
-    {
-        NSFileManager *fileManager = [NSFileManager defaultManager];
+    if([fileManager fileExistsAtPath:path] == YES) {
         [fileManager removeItemAtPath:path error:&error];
         if (error) {
             self.mediaStreamStatus = NSStreamStatusError;
