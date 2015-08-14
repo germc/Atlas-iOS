@@ -57,6 +57,7 @@ CGFloat ATLMaxCellHeight()
 
 CGSize ATLSizeProportionallyConstrainedToSize(CGSize nativeSize, CGSize maxSize)
 {
+    if (nativeSize.width < maxSize.width && nativeSize.height < maxSize.height) return nativeSize;
     CGSize itemSize;
     CGFloat widthScale = maxSize.width / nativeSize.width;
     CGFloat heightScale = maxSize.height / nativeSize.height;
