@@ -85,7 +85,7 @@ typedef NS_ENUM(NSUInteger, ATLMediaInputStreamError) {
  @param metadata A `NSDictionary` of metadata that will be attached in the serialized data. Passing `nil` won't attach any metadata to the serialized image.
  @return A `ATLMediaInputStream` instance ready to be open.
  */
-+ (instancetype)mediaInputStreamWithFilePath:(NSString *)filePath withInfo:(NSDictionary *)info;
++ (instancetype)mediaInputStreamWithVideoInfo: (NSDictionary *)info;
 
 /**
  @abstract The source media asset in a form of an `NSURL`.

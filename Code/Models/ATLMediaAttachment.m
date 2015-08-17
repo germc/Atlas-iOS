@@ -114,9 +114,7 @@ static float const ATLMediaAttachmentDefaultThumbnailJPEGCompression = 0.5f;
         // --------------------------------------------------------------------
         self.mediaInputStream = [ATLMediaInputStream mediaInputStreamWithAssetURL:asset.defaultRepresentation.url];
         
-        if ([(__bridge NSString *)(UTTypeCopyPreferredTagWithClass((__bridge CFStringRef)(asset.defaultRepresentation.UTI), kUTTagClassMIMEType))
-             isEqualToString:ATLMIMETypeVideoQuickTime])
-        {
+        if ( [assetType isEqualToString:ALAssetTypeVideo]) {
             self.mediaMIMEType = ATLMIMETypeVideoMP4; 
         }else {
             self.mediaMIMEType = (__bridge NSString *)(UTTypeCopyPreferredTagWithClass((__bridge CFStringRef)(asset.defaultRepresentation.UTI), kUTTagClassMIMEType));
@@ -132,6 +130,7 @@ static float const ATLMediaAttachmentDefaultThumbnailJPEGCompression = 0.5f;
         } else if ([self.mediaMIMEType isEqualToString:ATLMIMETypeVideoMP4]) {
             UIImage *image = [self getThumbNail:assetURL];
             self.thumbnailInputStream = [ATLMediaInputStream mediaInputStreamWithImage:image metadata:nil];
+            //self.thumbnailInputStream = [ATLMediaInputStream mediaInputStreamWithAssetURL:asset.defaultRepresentation.url];
             ((ATLMediaInputStream *)self.thumbnailInputStream).maximumSize = thumbnailSize;
             ((ATLMediaInputStream *)self.thumbnailInputStream).compressionQuality = ATLMediaAttachmentDefaultThumbnailJPEGCompression;
             self.thumbnailMIMEType = ATLMIMETypeVideoMP4Preview;
@@ -195,7 +194,7 @@ static float const ATLMediaAttachmentDefaultThumbnailJPEGCompression = 0.5f;
     // --------------------------------------------------------------------
     // Prepare the input stream and MIMEType for the full size media.
     // --------------------------------------------------------------------
-    self.mediaInputStream = [ATLMediaInputStream mediaInputStreamWithFilePath:fileURL withInfo:metadata];
+    self.mediaInputStream = [ATLMediaInputStream mediaInputStreamWithVideoInfo:metadata];
     self.mediaMIMEType = ATLMIMETypeVideoMP4;
 
     // --------------------------------------------------------------------

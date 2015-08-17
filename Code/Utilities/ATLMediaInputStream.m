@@ -92,11 +92,10 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
 
 @interface ATLRecordedVideoInputStream : ATLVideoInputStream
 
-@property (nonatomic, strong) NSString *sourceFilePath;
 @property (nonatomic, strong) NSDictionary *info;
 @property (nonatomic, strong) NSString *videoPath;
 
-- (instancetype)initWithFilePath:(NSString *)fileURL withInfo:(NSDictionary *)info;
+- (instancetype)initWithVideoInfo:(NSDictionary *)info;
 
 @end
 
@@ -108,7 +107,8 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
 
 @interface ATLImageInputStream : ATLPhotoInputStream
 
-- (instancetype)initWithImage:(UIImage *)image metadata:(NSDictionary *)metadata;;
+- (instancetype)initWithImage:(UIImage *)image metadata:(NSDictionary *)metadata;
+
 
 @end
 
@@ -381,14 +381,13 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
 
 @implementation ATLRecordedVideoInputStream
 
-- (instancetype)initWithFilePath:(NSString *)fileURL withInfo:(NSDictionary *)info;
+- (instancetype)initWithVideoInfo:(NSDictionary *)info;
 {
     self = [super init];
     if (self) {
-        if (!fileURL) {
+        if (!info) {
             @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"Cannot initialize %@ with `nil` fileURL path.", self.class] userInfo:nil];
         }
-        self.sourceFilePath = fileURL;
         self.info = info;
     }
     return self;
@@ -467,8 +466,8 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
     [super open];
     AVAsset *videoAVAsset = [AVAsset assetWithURL:self.sourceAssetURL];
     NSArray *presetWithAsset = [AVAssetExportSession exportPresetsCompatibleWithAsset:videoAVAsset];
+    self.sourceImage = [self getThumbNail:self.sourceAssetURL];
     ATLMediaInputStreamLog(@"Preset Values for AVAssetexportSession: %@", presetWithAsset);
-    
     // Prepare the temporary file URL (it should be a member property).
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, 1, YES);
     NSString *documentsDirectory = [paths objectAtIndex:0];
@@ -598,6 +597,23 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
     dispatch_semaphore_signal(self.streamFlowRequesterSemaphore);
 }
 
+-(UIImage *)getThumbNail:(NSURL *)stringPath
+{
+    AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:stringPath options:nil];
+    AVAssetImageGenerator *generate = [[AVAssetImageGenerator alloc] initWithAsset:asset];
+    generate.appliesPreferredTrackTransform = YES;
+    NSError *err = NULL;
+    CMTime time = CMTimeMake(1, 60);
+    CGImageRef imgRef = [generate copyCGImageAtTime:time actualTime:NULL error:&err];
+    
+    if (err) {
+        NSLog(@"Failed to create thumbnail!");
+    }
+    
+    return [[UIImage alloc] initWithCGImage:imgRef];
+}
+
+
 @end
 
 @implementation ATLMediaInputStream
@@ -625,9 +641,9 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
     return [[ATLImageInputStream alloc] initWithImage:image metadata:metadata];
 }
 
-+ (instancetype)mediaInputStreamWithFilePath:(NSString *)filePath withInfo:(NSDictionary *)info
++ (instancetype)mediaInputStreamWithVideoInfo:(NSDictionary *)info
 {
-    return [[ATLRecordedVideoInputStream alloc] initWithFilePath:filePath withInfo:info];
+    return [[ATLRecordedVideoInputStream alloc] initWithVideoInfo:info];
 }
 
 #pragma mark - Initializers
@@ -747,7 +763,6 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
     }
     
     // Copy the consumed data to `buffer`.
-    //[self.dataConsumed getBytes:buffer]; // can this overflow?
     [self.dataConsumed getBytes:buffer length:bytesToConsume];
     ATLMediaInputStreamLog(@"input stream: passed data to receiver");
     
