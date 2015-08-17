@@ -200,13 +200,28 @@ extern NSString *const ATLMIMETypeImageSize;
     NSData *JSONData = [NSJSONSerialization dataWithJSONObject:imageMetadata options:NSJSONWritingPrettyPrinted error:nil];
     LYRMessagePartMock *part2 = [LYRMessagePartMock messagePartWithMIMEType:ATLMIMETypeImageSize data:JSONData];
     LYRMessageMock *message = [LYRMessageMock newMessageWithParts:@[ part1, part2 ] senderID:[ATLUserMock userWithMockUserName:ATLMockUserNameKlemen].participantIdentifier];
-    [self.conversation sendMessage:message error:nil];
-    [self.controller.collectionView setContentOffset:CGPointZero];
-    id partialmockedPart = OCMPartialMock(part1);
-    OCMStub([partialmockedPart data]).andReturn(data);
     
-//    id mock = OCMClassMock([ATLMessageBubbleView class]);
-//    [[mock reject] updateWithImage:[OCMArg any] width:215];
+    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+
+//    id partialmockedPart = OCMPartialMock(part1);
+//    OCMStub([partialmockedPart data]).andDo(^(NSInvocation *invocation){
+//        NSLog(@"wait %@", [NSThread callStackSymbols]);
+//        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+//        [invocation setReturnValue:(__bridge void *)data];
+//        NSLog(@"second tiem");
+//    });
+//    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+//        [self.conversation sendMessage:message error:nil];
+//    });
+    [self.conversation sendMessage:message error:nil];
+
+    [self.controller.collectionView setContentOffset:CGPointZero];
+    
+    dispatch_semaphore_signal(semaphore);
+    
+    id mock = OCMClassMock([ATLMessageBubbleView class]);
+    [[[mock reject] ignoringNonObjectArgs] updateWithImage:[OCMArg any] width:1337];
+    [mock verify];
 }
 
 #pragma mark - Outgoing Customization
