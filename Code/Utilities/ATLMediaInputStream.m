@@ -466,7 +466,6 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
     [super open];
     AVAsset *videoAVAsset = [AVAsset assetWithURL:self.sourceAssetURL];
     NSArray *presetWithAsset = [AVAssetExportSession exportPresetsCompatibleWithAsset:videoAVAsset];
-    self.sourceImage = [self getThumbNail:self.sourceAssetURL];
     ATLMediaInputStreamLog(@"Preset Values for AVAssetexportSession: %@", presetWithAsset);
     // Prepare the temporary file URL (it should be a member property).
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, 1, YES);
@@ -482,7 +481,6 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
     
     //succesful
     self.mediaStreamStatus = NSStreamStatusOpen;
-    
 }
 
 - (void)close
@@ -596,23 +594,6 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
     }
     dispatch_semaphore_signal(self.streamFlowRequesterSemaphore);
 }
-
--(UIImage *)getThumbNail:(NSURL *)stringPath
-{
-    AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:stringPath options:nil];
-    AVAssetImageGenerator *generate = [[AVAssetImageGenerator alloc] initWithAsset:asset];
-    generate.appliesPreferredTrackTransform = YES;
-    NSError *err = NULL;
-    CMTime time = CMTimeMake(1, 60);
-    CGImageRef imgRef = [generate copyCGImageAtTime:time actualTime:NULL error:&err];
-    
-    if (err) {
-        NSLog(@"Failed to create thumbnail!");
-    }
-    
-    return [[UIImage alloc] initWithCGImage:imgRef];
-}
-
 
 @end
 
