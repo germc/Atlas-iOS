@@ -30,6 +30,19 @@
 #import "ATLMediaAttachment.h"
 #import "ATLLocationManager.h"
 
+LYRMessage *ATLMessageFromATLMessageCollectionViewForMenuController(UICollectionView *collectionview, UIMenuController *menuController)
+{
+    if (collectionview && menuController && [menuController isKindOfClass:[UIMenuController class]] && [collectionview isKindOfClass:[UICollectionView class]]) {
+        CGRect frame = menuController.menuFrame;
+        CGPoint point = frame.origin;
+        NSIndexPath *indexPath = [collectionview indexPathForItemAtPoint:point];
+        ATLMessageCollectionViewCell *cell = (ATLMessageCollectionViewCell *)[collectionview cellForItemAtIndexPath:indexPath];
+        LYRMessage *message = cell.message;
+        return message;
+    }
+    return nil;
+}
+
 @interface ATLConversationViewController () <UICollectionViewDataSource, UICollectionViewDelegate, ATLMessageInputToolbarDelegate, UIActionSheetDelegate, CLLocationManagerDelegate>
 
 @property (nonatomic) ATLConversationDataSource *conversationDataSource;

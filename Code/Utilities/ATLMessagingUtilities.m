@@ -276,18 +276,3 @@ NSArray *ATLTextCheckingResultsForText(NSString *text, NSTextCheckingType linkTy
     if (error) return nil;
     return [detector matchesInString:text options:kNilOptions range:NSMakeRange(0, text.length)];
 }
-
-#pragma mark - ATLConversationViewController menu controller methods
-
-LYRMessage *ATLMessageFromATLMessageCollectionViewForMenuController(UICollectionView *collectionview, UIMenuController *menuController)
-{
-    if (collectionview && menuController && [menuController isKindOfClass:[UIMenuController class]] && [collectionview isKindOfClass:[UICollectionView class]]) {
-        CGRect frame = menuController.menuFrame;
-        CGPoint point = frame.origin;
-        NSIndexPath *indexPath = [collectionview indexPathForItemAtPoint:point];
-        ATLMessageCollectionViewCell *cell = (ATLMessageCollectionViewCell *)[collectionview cellForItemAtIndexPath:indexPath];
-        LYRMessage *message = cell.message;
-        return message;
-    }
-    return nil;
-}
