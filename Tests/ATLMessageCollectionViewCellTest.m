@@ -180,6 +180,7 @@ extern NSString *const ATLConversationCollectionViewAccessibilityIdentifier;
 }
 
 #pragma mark - Outgoing Customization
+
 - (void)testToVerifyOutgoingCustomMessageTextFont
 {
     UIFont *font = [UIFont systemFontOfSize:20];
