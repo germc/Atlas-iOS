@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		2B6445637A4A449ABC5750C4 /* libPods-StoryboardTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DFFB13F66B57103A728CA624 /* libPods-StoryboardTests.a */; };
 		377EEF73853F61FE5B5568A2 /* libPods-Storyboard.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 12E6C660682C89FC093228B5 /* libPods-Storyboard.a */; };
+		5A86A2D11B82BB11005AF74B /* ATLMessageCollectionViewCellTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 5A86A2D01B82BB11005AF74B /* ATLMessageCollectionViewCellTests.m */; };
+		5A86A2D21B82BB11005AF74B /* ATLMessageCollectionViewCellTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 5A86A2D01B82BB11005AF74B /* ATLMessageCollectionViewCellTests.m */; };
 		5AEFC5CB1B79834300ADE4EC /* boatgif.gif in Resources */ = {isa = PBXBuildFile; fileRef = 5AEFC5CA1B79834300ADE4EC /* boatgif.gif */; };
 		5AEFC5CC1B79834300ADE4EC /* boatgif.gif in Resources */ = {isa = PBXBuildFile; fileRef = 5AEFC5CA1B79834300ADE4EC /* boatgif.gif */; };
 		5AF32FD31AA59C39005C13D7 /* ATLUserMockTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 5AF32FD21AA59C39005C13D7 /* ATLUserMockTest.m */; };
@@ -113,6 +115,7 @@
 		358D1AE37F6A67F9CE5ADC47 /* libPods-Unit Tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Unit Tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		4A1A0BE9E193CC265341461A /* Pods-Unit Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Unit Tests.release.xcconfig"; path = "Pods/Target Support Files/Pods-Unit Tests/Pods-Unit Tests.release.xcconfig"; sourceTree = "<group>"; };
 		5A30E6805E705AAD798FE808 /* Pods-Programmatic.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Programmatic.release.xcconfig"; path = "Pods/Target Support Files/Pods-Programmatic/Pods-Programmatic.release.xcconfig"; sourceTree = "<group>"; };
+		5A86A2D01B82BB11005AF74B /* ATLMessageCollectionViewCellTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ATLMessageCollectionViewCellTests.m; sourceTree = "<group>"; };
 		5AEFC5CA1B79834300ADE4EC /* boatgif.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = boatgif.gif; sourceTree = "<group>"; };
 		5AF32FD21AA59C39005C13D7 /* ATLUserMockTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ATLUserMockTest.m; sourceTree = "<group>"; };
 		5C9A8B1181386C002F1F0585 /* Pods-Conversation.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Conversation.release.xcconfig"; path = "Pods/Target Support Files/Pods-Conversation/Pods-Conversation.release.xcconfig"; sourceTree = "<group>"; };
@@ -273,6 +276,7 @@
 		D0294DE31A93F36100702856 /* Unit Tests */ = {
 			isa = PBXGroup;
 			children = (
+				5A86A2D01B82BB11005AF74B /* ATLMessageCollectionViewCellTests.m */,
 				D0294DE41A93F37000702856 /* ATLMediaStreamTests.m */,
 				D04517131A9F9A0C00E137D9 /* ATLMediaAttachmentTests.m */,
 				D0294DE61A93F37A00702856 /* Info.plist */,
@@ -862,6 +866,7 @@
 				D6F4062F1A8FE28000AE9581 /* ATLMessageCollectionViewCellTest.m in Sources */,
 				D6F406301A8FE28000AE9581 /* ATLMessageInputBarTest.m in Sources */,
 				D6C0454F1A9953C70028E9D0 /* ALTAddressBarControllerTest.m in Sources */,
+				5A86A2D11B82BB11005AF74B /* ATLMessageCollectionViewCellTests.m in Sources */,
 				D6F406321A8FE28000AE9581 /* ATLParticipantTableViewControllerTest.m in Sources */,
 				D6F406331A8FE28000AE9581 /* ATLParticipantTableViewCellTest.m in Sources */,
 			);
@@ -902,6 +907,7 @@
 				D6A122BC1A9D2CA2004F67BE /* ATLConversationViewControllerTest.m in Sources */,
 				D6A122BD1A9D2CA2004F67BE /* ATLMessageInputBarTest.m in Sources */,
 				D6A122BE1A9D2CA2004F67BE /* ATLParticipantTableViewControllerTest.m in Sources */,
+				5A86A2D21B82BB11005AF74B /* ATLMessageCollectionViewCellTests.m in Sources */,
 				D6A122BF1A9D2CA2004F67BE /* ALTAddressBarControllerTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
