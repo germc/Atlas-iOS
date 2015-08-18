@@ -273,12 +273,12 @@ CGFloat const ATLAvatarImageTailPadding = 7.0f;
                     [weakSelf.bubbleView updateWithImage:displayingImage width:size.width];
                 } else if (fullResImagePart.transferStatus == LYRContentTransferDownloading) {
                     LYRProgress *progress = fullResImagePart.progress;
-                    [progress setDelegate:self];
+                    [progress setDelegate:weakSelf];
                     weakSelf.progress = progress;
                     [weakSelf.bubbleView updateProgressIndicatorWithProgress:progress.fractionCompleted visible:YES animated:NO];
                     [weakSelf.bubbleView updateWithImage:displayingImage width:size.width];
                 } else {
-                    dispatch_async(self.imageProcessingConcurrentQueue, ^{
+                    dispatch_async(weakSelf.imageProcessingConcurrentQueue, ^{
                         displayingImage = ATLAnimatedImageWithAnimatedGIFData(fullResImagePart.data);
                         dispatch_async(dispatch_get_main_queue(), ^{
                             if (weakSelf.message != previousMessage) {
