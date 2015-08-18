@@ -37,8 +37,6 @@
 NSString *ATLTestMessageText = @"Test Message Text";
 
 extern NSString *const ATLConversationCollectionViewAccessibilityIdentifier;
-extern NSString *const ATLMessageInputToolbarSendButton;
-extern NSString *const ATLMIMETypeImageSize;
 
 - (void)setUp
 {
