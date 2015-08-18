@@ -238,6 +238,8 @@ CGFloat const ATLAvatarImageTailPadding = 7.0f;
         // If no preview image part found, resort to the full-resolution image.
         previewImagePart = fullResImagePart;
     }
+    __weak typeof(self) weakSelf = self;
+    __block LYRMessage *previousMessage = weakSelf.message;
     
     dispatch_async(self.imageProcessingConcurrentQueue, ^{
         if (previewImagePart.fileURL) {
@@ -261,31 +263,33 @@ CGFloat const ATLAvatarImageTailPadding = 7.0f;
             // For GIFs we only download full resolution parts when rendered in the UI
             // Low res GIFs are autodownloaded but blurry
             if ([fullResImagePart.MIMEType isEqualToString:ATLMIMETypeImageGIF]) {
-                if (fullResImagePart && (fullResImagePart.transferStatus == LYRContentTransferReadyForDownload)) {
+                if (fullResImagePart.transferStatus == LYRContentTransferReadyForDownload) {
                     NSError *error;
                     LYRProgress *progress = [fullResImagePart downloadContent:&error];
                     if (!progress) {
                         NSLog(@"failed to request for a content download from the UI with error=%@", error);
                     }
-                    [self.bubbleView updateProgressIndicatorWithProgress:0.0 visible:NO animated:NO];
-                } else if (fullResImagePart && (fullResImagePart.transferStatus == LYRContentTransferDownloading)) {
+                    [weakSelf.bubbleView updateProgressIndicatorWithProgress:0.0 visible:NO animated:NO];
+                    [weakSelf.bubbleView updateWithImage:displayingImage width:size.width];
+                } else if (fullResImagePart.transferStatus == LYRContentTransferDownloading) {
                     LYRProgress *progress = fullResImagePart.progress;
                     [progress setDelegate:self];
-                    self.progress = progress;
-                    [self.bubbleView updateProgressIndicatorWithProgress:progress.fractionCompleted visible:YES animated:NO];
+                    weakSelf.progress = progress;
+                    [weakSelf.bubbleView updateProgressIndicatorWithProgress:progress.fractionCompleted visible:YES animated:NO];
+                    [weakSelf.bubbleView updateWithImage:displayingImage width:size.width];
                 } else {
                     dispatch_async(self.imageProcessingConcurrentQueue, ^{
                         displayingImage = ATLAnimatedImageWithAnimatedGIFData(fullResImagePart.data);
                         dispatch_async(dispatch_get_main_queue(), ^{
-                            [self.bubbleView updateProgressIndicatorWithProgress:1.0 visible:NO animated:YES];
-                            [self.bubbleView updateWithImage:displayingImage width:size.width];
-                            return;
+                            if (weakSelf.message != previousMessage) {
+                                return;
+                            }
+                            [weakSelf.bubbleView updateProgressIndicatorWithProgress:1.0 visible:NO animated:YES];
+                            [weakSelf.bubbleView updateWithImage:displayingImage width:size.width];
                         });
                     });
                 }
             }
-            
-            [self.bubbleView updateWithImage:displayingImage width:size.width];
         });
     });
 }

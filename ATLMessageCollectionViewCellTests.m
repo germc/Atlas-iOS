@@ -10,18 +10,13 @@
 #import <XCTest/XCTest.h>
 #import <AssetsLibrary/AssetsLibrary.h>
 #import "ATLMessageCollectionViewCell.h"
+#import "ATLTestClasses.h"
 #import "ATLTestUtilities.h"
 #define EXP_SHORTHAND
 #import <Expecta/Expecta.h>
 #import <OCMock/OCMock.h>
 #import "LYRMessageMock.h"
 #import "LYRMessagePartMock.h"
-
-@interface ATLMessageCollectionViewCell ()
-
-@property (strong, nonatomic) LYRMessage *message;
-
-@end
 
 @interface ATLMessageCollectionViewCellTests : XCTestCase
 
@@ -62,21 +57,22 @@
     LYRMessageMock *messageMock1 = [LYRMessageMock newMessageWithParts:@[ part1, part2 ] senderID:[ATLUserMock userWithMockUserName:ATLMockUserNameKlemen].participantIdentifier];
     LYRMessageMock *messageMock2 = [LYRMessageMock newMessageWithParts:@[ [LYRMessagePartMock messagePartWithMIMEType:@"text/plain" data:[@"test" dataUsingEncoding:NSUTF8StringEncoding]] ]  senderID:[ATLUserMock userWithMockUserName:ATLMockUserNameKlemen].participantIdentifier];
     
-    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+    dispatch_semaphore_t semaphore = dispatch_semaphore_create(2);
 
     id partialmockedPart = OCMPartialMock(part1);
-    OCMStub([partialmockedPart data]).andDo(^(NSInvocation *invocation){
-        NSLog(@"test");
+    [[partialmockedPart expect] andForwardToRealObject];
+    [[partialmockedPart expect] andForwardToRealObject];
+    [[partialmockedPart expect] andForwardToRealObject];
+    [[partialmockedPart expect] andDo:^(NSInvocation *invocation) {
         dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
-        [invocation setReturnValue:(__bridge void *)data];
-        NSLog(@"test2");
-    });
-    
-    [cell presentMessage:messageMock1];
-    //[cell presentMessage:messageMock2];
-    
-    dispatch_semaphore_signal(semaphore);
+        [invocation setReturnValue:(__bridge void *)(data)];
+    }];
+    [cell presentMessage:(LYRMessage *)messageMock1];
+    [cell prepareForReuse];
+    [cell presentMessage:(LYRMessage *)messageMock2];
 
+    dispatch_semaphore_signal(semaphore);
+    
    [partialMock verifyWithDelay:2.0f];
 }
 
