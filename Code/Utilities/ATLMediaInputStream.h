@@ -42,60 +42,93 @@ typedef NS_ENUM(NSUInteger, ATLMediaInputStreamError) {
     ATLMediaInputStreamErrorAssetHasNoImages                       = 1003,
 };
 
+typedef NS_ENUM(NSUInteger, ATLMediaClipTrimType) {
+    /**
+     @abstract Creates a full length media clip.
+     */
+    ATLMediaClipTrimTypeNone,
+    /**
+     @abstract Creates a trimmed media clip based on the desired range.
+     */
+    ATLMediaClipTrimTypeRange,
+    /**
+     @abstract Creates a media clip montage with short clippings.
+     */
+    ATLMediaClipTrimTypeMontage
+};
+
 /**
  @abstract The `ATLMediaInputStream` class is responsible for streaming
- media content to the receiver.
+   media content to the receiver.
  
- It provides direct (lossless) content streaming or resampled and compressed
- image streaming. Depending on the input source, which can be either
- an `ALAsset` URL or an `UIImage`, streaming, resampling and compression will
- be performed without bringing the full image data into the memory.
+   It provides direct (lossless) content streaming or resampled and compressed
+   image streaming. Depending on the input source, which can be either
+   an `ALAsset` URL, an `UIImage` or a direct file URL, streaming, resampling
+   and encoding will be performed without bringing the full media data
+   into the memory.
  
- @discussion Compression and resampling are enabled with setting the
- `compressionQuality` and `maximumSize` respectively.
+ @discussion Media encoding and resampling are enabled with setting the
+   `compressionQuality` and `maximumSize` respectively.
  
- If setting the `maximumSize = 0` and `compressionQuality = 0.0f`, media content
- will be directly transferred from the `ALAsset` or `UIImage`, depending
- on the source. Property `isLossless` indicates if the streaming
- will be lossless.
+   If setting the `maximumSize = 0` and `compressionQuality = 0.0f`, media content
+   will be directly transferred from the `ALAsset`, `UIImage` or `fileURL`,
+   depending on the source. Property `isLossless` indicates if the streaming
+   will be lossless.
  
  @warning `ATLMediaInputStream` is GCD based and doesn't utilize `NSRunLoops`.
- It may be unrealiable, if paired with a network stream.
+   It may be unrealiable, if paired with a network stream.
  */
 @interface ATLMediaInputStream : NSInputStream
 
 /**
- @abstract Creates an input stream capable of direct streaming of an ALAsset's content.
- @param assetURL `NSURL` path of the asset (URL starts with `asset://`) that will be serialized for streaming.
+ @abstract Creates an input stream capable of direct or re-encoded streaming
+   of an ALAsset's content.
+ @param assetURL `NSURL` path of the asset (URL starts with `asset://`) that
+   will be serialized for streaming.
  @return A `ATLMediaInputStream` instance ready to be open.
  */
 + (instancetype)mediaInputStreamWithAssetURL:(NSURL *)assetURL;
 
 /**
- @abstract Creates an input stream capable of direct streaming of the UIImage's content.
+ @abstract Creates an input stream capable of direct or re-encoded streaming
+   of the UIImage's content.
  @param image `UIImage` instance that will be serialized for streaming.
- @param metadata A `NSDictionary` of metadata that will be attached in the serialized data. Passing `nil` won't attach any metadata to the serialized image.
+ @param metadata A `NSDictionary` of metadata that will be embedded into the
+   image. Passing `nil` won't embed any metadata information.
  @return A `ATLMediaInputStream` instance ready to be open.
  */
 + (instancetype)mediaInputStreamWithImage:(UIImage *)image metadata:(NSDictionary *)metadata;
 
 /**
- @abstract Creates an input stream capable of direct streaming of the video content.
- @param path `NsString` of video that will be serialized for streaming.
- @param metadata A `NSDictionary` of metadata that will be attached in the serialized data. Passing `nil` won't attach any metadata to the serialized image.
+ @abstract Creates an input stream capable of direct or re-encoded media
+   streaming from a file.
+ @param fileURL File URL path to the media content (URL starts with `file://`).
  @return A `ATLMediaInputStream` instance ready to be open.
+ @discussion The input stream will attempt to preserve any embedded
+   metadata information of the media content.
  */
-+ (instancetype)mediaInputStreamWithVideoInfo: (NSDictionary *)info;
++ (instancetype)mediaInputStreamWithFileURL:(NSURL *)fileURL;
 
 /**
  @abstract The source media asset in a form of an `NSURL`.
+ @discussion Set only when input stream is initialized with the `assetURL`,
+   otherwise it's `nil`.
  */
 @property (nonatomic, readonly) NSURL *sourceAssetURL;
 
 /**
- @abstract The source media in a form of an `UIImage`.
+ @abstract The source image in a form of an `UIImage`.
+ @discussion Set only when input stream is initialized with the `image`,
+   otherwise it's `nil`.
  */
 @property (nonatomic, readonly) UIImage *sourceImage;
+
+/**
+ @abstract The source media file URL in a form of `NSURL`.
+ @discussion Set only when input stream is initialized with the `fileURL`,
+   otherwise it's `nil`.
+ */
+@property (nonatomic, readonly) NSURL *fileURL;
 
 /**
  @abstract A boolean value indicating if streaming is going to be lossless.
@@ -103,7 +136,8 @@ typedef NS_ENUM(NSUInteger, ATLMediaInputStreamError) {
 @property (nonatomic, readonly) BOOL isLossless;
 
 /**
- @abstract The size in pixels of the output image when being streamed. Default is set to 0.
+ @abstract The size in pixels of the output image when being streamed.
+   Default is set to 0.
  @discussion If set to zero `0`, resampling is disabled.
  */
 @property (nonatomic) NSUInteger maximumSize;
@@ -111,11 +145,32 @@ typedef NS_ENUM(NSUInteger, ATLMediaInputStreamError) {
 /**
  @abstract The compression quality in percent. Default is set to 0.0f.
  @discussion 1.0f sets the quality to 100% which preserves details in images,
- but also makes a larger output. 0.1f sets the quality to 10% which
- is the lowest quality, and makes the file size smaller.
- 
- Setting the property value to zero `0.0f` will disable compression.
+   but also makes a larger output. 0.1f sets the quality to 10% which
+   is the lowest quality, and makes the file size smaller.
+ @note Setting the property value to zero `0.0f` will disable compression.
  */
 @property (nonatomic) float compressionQuality;
+
+/**
+ @abstract Sets the media clip trip type @see ATLMediaClipTrimType
+ @note Only applicable when streaming media clips (audio and video).
+ */
+@property (nonatomic, assign) ATLMediaClipTrimType mediaClipTrimType;
+
+/**
+ @abstract When media clip trimming is enabled this property sets the
+   start of the media clip. Value is defined in seconds.
+ @note Default value is zero `0`.
+ @warning If begin time is bigger than the original media clip's length,
+   output might result in a blank 0 second clip.
+ */
+@property (nonatomic, assign) NSTimeInterval mediaClipTrimBeginTime;
+
+/**
+ @abstract When media clip trimming is enabled this property defines
+   the length of the trimmed media clip. Value is defined in seconds.
+ @note Default value is `NSUIntegerMax`.
+ */
+@property (nonatomic, assign) NSTimeInterval mediaClipTrimDuration;
 
 @end
