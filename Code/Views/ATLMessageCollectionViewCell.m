@@ -168,6 +168,9 @@ CGFloat const ATLAvatarImageTailPadding = 7.0f;
         previewImagePart = fullResImagePart;
     }
     
+    __weak typeof(self) weakSelf = self;
+    __block LYRMessage *previousMessage = weakSelf.message;
+    
     dispatch_async(self.imageProcessingConcurrentQueue, ^{
         if (previewImagePart.fileURL) {
             displayingImage = [UIImage imageWithContentsOfFile:previewImagePart.fileURL.path];
@@ -188,27 +191,29 @@ CGFloat const ATLAvatarImageTailPadding = 7.0f;
         dispatch_async(dispatch_get_main_queue(), ^{
             // Fall-back to programatically requesting for a content download of
             // single message part messages (Android compatibillity).
-            if ([[self.message valueForKeyPath:@"parts.MIMEType"] isEqual:@[ATLMIMETypeImageJPEG]]) {
+            if ([[weakSelf.message valueForKeyPath:@"parts.MIMEType"] isEqual:@[ATLMIMETypeImageJPEG]]) {
                 if (fullResImagePart && (fullResImagePart.transferStatus == LYRContentTransferReadyForDownload)) {
                     NSError *error;
                     LYRProgress *progress = [fullResImagePart downloadContent:&error];
                     if (!progress) {
                         NSLog(@"failed to request for a content download from the UI with error=%@", error);
                     }
-                    [self.bubbleView updateProgressIndicatorWithProgress:0.0 visible:NO animated:NO];
+                    [weakSelf.bubbleView updateProgressIndicatorWithProgress:0.0 visible:NO animated:NO];
                 } else if (fullResImagePart && (fullResImagePart.transferStatus == LYRContentTransferDownloading)) {
                     // Set self for delegation, if single image message part message
                     // hasn't been downloaded yet, or is still downloading.
                     LYRProgress *progress = fullResImagePart.progress;
-                    [progress setDelegate:self];
-                    self.progress = progress;
-                    [self.bubbleView updateProgressIndicatorWithProgress:progress.fractionCompleted visible:YES animated:NO];
+                    [progress setDelegate:weakSelf];
+                    weakSelf.progress = progress;
+                    [weakSelf.bubbleView updateProgressIndicatorWithProgress:progress.fractionCompleted visible:YES animated:NO];
                 } else {
-                    [self.bubbleView updateProgressIndicatorWithProgress:1.0 visible:NO animated:YES];
+                    [weakSelf.bubbleView updateProgressIndicatorWithProgress:1.0 visible:NO animated:YES];
                 }
             }
-            
-            [self.bubbleView updateWithImage:displayingImage width:size.width];
+            if (weakSelf.message != previousMessage) {
+                return;
+            }
+            [weakSelf.bubbleView updateWithImage:displayingImage width:size.width];
         });
     });
 }

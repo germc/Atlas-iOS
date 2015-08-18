@@ -46,7 +46,7 @@
     [super tearDown];
 }
 
-- (void)testThatAsynchronousImageAndGifLoadingDoesNotUpdateReusedCells
+- (void)testThatAsynchronousGifLoadingDoesNotUpdateReusedCells
 {
     ATLMessageCollectionViewCell *cell = [[ATLMessageCollectionViewCell alloc] initWithFrame:CGRectZero];
     ATLMessageBubbleView *bubbleView = cell.bubbleView;
@@ -85,6 +85,45 @@
     dispatch_semaphore_signal(semaphore);
     
    [partialMock verifyWithDelay:2.0f];
+}
+
+- (void)testThatAsynchronousImageLoadingDoesNotUpdateReusedCells
+{
+    ATLMessageCollectionViewCell *cell = [[ATLMessageCollectionViewCell alloc] initWithFrame:CGRectZero];
+    ATLMessageBubbleView *bubbleView = cell.bubbleView;
+    id partialMock = OCMPartialMock(bubbleView);
+    [[[partialMock reject] ignoringNonObjectArgs] updateWithImage:[OCMArg any] width:1337];
+    
+    UIImage *image = ATLTestAttachmentMakeImageWithSize(CGSizeMake(800, 800));
+    NSData *data = UIImageJPEGRepresentation(image, 1.0f);
+                                                        
+    LYRMessagePartMock *part1 = [LYRMessagePartMock messagePartWithMIMEType:ATLMIMETypeImageJPEG data:data];
+    data = part1.data;
+    NSDictionary *imageMetadata = @{ @"width": @(image.size.width),
+                                     @"height": @(image.size.height),
+                                     @"orientation": @(image.imageOrientation) };
+    NSData *JSONData = [NSJSONSerialization dataWithJSONObject:imageMetadata options:NSJSONWritingPrettyPrinted error:nil];
+    LYRMessagePartMock *part2 = [LYRMessagePartMock messagePartWithMIMEType:ATLMIMETypeImageSize data:JSONData];
+    LYRMessageMock *messageMock1 = [LYRMessageMock newMessageWithParts:@[ part1, part2 ] senderID:[ATLUserMock userWithMockUserName:ATLMockUserNameKlemen].participantIdentifier];
+    LYRMessageMock *messageMock2 = [LYRMessageMock newMessageWithParts:@[ [LYRMessagePartMock messagePartWithMIMEType:@"text/plain" data:[@"test" dataUsingEncoding:NSUTF8StringEncoding]] ]  senderID:[ATLUserMock userWithMockUserName:ATLMockUserNameKlemen].participantIdentifier];
+    
+    dispatch_semaphore_t semaphore = dispatch_semaphore_create(2);
+    
+    id partialmockedPart = OCMPartialMock(part1);
+    [[partialmockedPart expect] andForwardToRealObject];
+    [[partialmockedPart expect] andForwardToRealObject];
+    [[partialmockedPart expect] andForwardToRealObject];
+    [[partialmockedPart expect] andDo:^(NSInvocation *invocation) {
+        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+        [invocation setReturnValue:(__bridge void *)(data)];
+    }];
+    [cell presentMessage:(LYRMessage *)messageMock1];
+    [cell prepareForReuse];
+    [cell presentMessage:(LYRMessage *)messageMock2];
+    
+    dispatch_semaphore_signal(semaphore);
+    
+    [partialMock verifyWithDelay:2.0f];
 }
 
 @end
