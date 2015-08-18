@@ -36,7 +36,6 @@ CGFloat const ATLAvatarImageTailPadding = 7.0f;
 @interface ATLMessageCollectionViewCell () <LYRProgressDelegate>
 
 @property (nonatomic) BOOL messageSentState;
-@property (nonatomic) LYRMessage *message;
 @property (nonatomic) LYRProgress *progress;
 @property (nonatomic) NSUInteger lastProgressFractionCompleted;
 @property (nonatomic) NSLayoutConstraint *bubbleWithAvatarLeadConstraint;
