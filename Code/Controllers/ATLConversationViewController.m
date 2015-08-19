@@ -295,7 +295,6 @@ static NSInteger const ATLPhotoActionSheet = 1000;
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
     if (section == ATLMoreMessagesSection) return 0;
-    
     // Each message is represented by one cell no matter how many parts it has.
     return 1;
 }
@@ -489,7 +488,6 @@ static NSInteger const ATLPhotoActionSheet = 1000;
     
     LYRMessage *message = [self.conversationDataSource messageAtCollectionViewSection:section];
     if ([message.sender.userID isEqualToString:self.layerClient.authenticatedUserID]) return NO;
-    
     if (section > ATLNumberOfSectionsBeforeFirstMessageSection) {
         LYRMessage *previousMessage = [self.conversationDataSource messageAtCollectionViewSection:section - 1];
         if ([previousMessage.sender.userID isEqualToString:message.sender.userID]) {
@@ -505,7 +503,6 @@ static NSInteger const ATLPhotoActionSheet = 1000;
     NSInteger lastQueryControllerRow = [self.conversationDataSource.queryController numberOfObjectsInSection:0] - 1;
     NSInteger lastSection = [self.conversationDataSource collectionViewSectionForQueryControllerRow:lastQueryControllerRow];
     if (section != lastSection) return NO;
-    
     LYRMessage *message = [self.conversationDataSource messageAtCollectionViewSection:section];
     if (![message.sender.userID isEqualToString:self.layerClient.authenticatedUserID]) return NO;
     
@@ -530,7 +527,6 @@ static NSInteger const ATLPhotoActionSheet = 1000;
 - (BOOL)shouldDisplayAvatarItemAtIndexPath:(NSIndexPath *)indexPath
 {
     if (!self.shouldDisplayAvatarItem) return NO;
-    
     LYRMessage *message = [self.conversationDataSource messageAtCollectionViewIndexPath:indexPath];
     if (message.sender.userID == nil) {
         return NO;
@@ -539,11 +535,9 @@ static NSInteger const ATLPhotoActionSheet = 1000;
     if ([message.sender.userID isEqualToString:self.layerClient.authenticatedUserID] && !self.shouldDisplayAvatarItemForAuthenticatedUser) {
         return NO;
     }
-    
     if (![self shouldClusterMessageAtSection:indexPath.section] && self.avatarItemDisplayFrequency == ATLAvatarItemDisplayFrequencyCluster) {
         return YES;
     }
-    
     NSInteger lastQueryControllerRow = [self.conversationDataSource.queryController numberOfObjectsInSection:0] - 1;
     NSInteger lastSection = [self.conversationDataSource collectionViewSectionForQueryControllerRow:lastQueryControllerRow];
     if (indexPath.section < lastSection) {
