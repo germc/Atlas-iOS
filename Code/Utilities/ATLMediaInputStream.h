@@ -42,21 +42,6 @@ typedef NS_ENUM(NSUInteger, ATLMediaInputStreamError) {
     ATLMediaInputStreamErrorAssetHasNoImages                       = 1003,
 };
 
-typedef NS_ENUM(NSUInteger, ATLMediaClipTrimType) {
-    /**
-     @abstract Creates a full length media clip.
-     */
-    ATLMediaClipTrimTypeNone,
-    /**
-     @abstract Creates a trimmed media clip based on the desired range.
-     */
-    ATLMediaClipTrimTypeRange,
-    /**
-     @abstract Creates a media clip montage with short clippings.
-     */
-    ATLMediaClipTrimTypeMontage
-};
-
 /**
  @abstract The `ATLMediaInputStream` class is responsible for streaming
    media content to the receiver.
@@ -67,12 +52,12 @@ typedef NS_ENUM(NSUInteger, ATLMediaClipTrimType) {
    and encoding will be performed without bringing the full media data
    into the memory.
  
- @discussion Media encoding and resampling are enabled with setting the
+ @discussion Media encoding and resampling are enabled by setting the
    `compressionQuality` and `maximumSize` respectively.
  
    If setting the `maximumSize = 0` and `compressionQuality = 0.0f`, media content
    will be directly transferred from the `ALAsset`, `UIImage` or `fileURL`,
-   depending on the source. Property `isLossless` indicates if the streaming
+   depending on the source. Property `isLossless` indicates the streaming
    will be lossless.
  
  @warning `ATLMediaInputStream` is GCD based and doesn't utilize `NSRunLoops`.
@@ -150,27 +135,5 @@ typedef NS_ENUM(NSUInteger, ATLMediaClipTrimType) {
  @note Setting the property value to zero `0.0f` will disable compression.
  */
 @property (nonatomic) float compressionQuality;
-
-/**
- @abstract Sets the media clip trip type @see ATLMediaClipTrimType
- @note Only applicable when streaming media clips (audio and video).
- */
-@property (nonatomic, assign) ATLMediaClipTrimType mediaClipTrimType;
-
-/**
- @abstract When media clip trimming is enabled this property sets the
-   start of the media clip. Value is defined in seconds.
- @note Default value is zero `0`.
- @warning If begin time is bigger than the original media clip's length,
-   output might result in a blank 0 second clip.
- */
-@property (nonatomic, assign) NSTimeInterval mediaClipTrimBeginTime;
-
-/**
- @abstract When media clip trimming is enabled this property defines
-   the length of the trimmed media clip. Value is defined in seconds.
- @note Default value is `NSUIntegerMax`.
- */
-@property (nonatomic, assign) NSTimeInterval mediaClipTrimDuration;
 
 @end
