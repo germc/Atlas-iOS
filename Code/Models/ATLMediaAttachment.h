@@ -59,20 +59,26 @@ typedef NS_ENUM(NSUInteger, ATLMediaAttachmentType) {
  @abstract Creates a new `ATLMediaAttachment` instance of type `ATLMediaAttachmentTypeImage` based on Apple's Photo Library's `ALAsset` URL identifier.
  @param assetURL URL path of the media asset.
  @param thumbnailSize The size of the thumbnail.
- @return Instance of `ATLMediaAttachment` containing streams.
+ @return Instance of `ATLMediaAttachment` containing the streams.
  */
 + (instancetype)mediaAttachmentWithAssetURL:(NSURL *)assetURL thumbnailSize:(NSUInteger)thumbnailSize;
-
-+ (instancetype)mediaAttachmentWithFileURL:(NSString *)fileURL metadata:(NSDictionary *)metadata thumbnailSize:(NSUInteger)thumbnailSize;
 
 /**
  @abstract Creates a new `ATLMediaAttachment` instance of type `ATLMediaAttachmentTypeImage` based on `UIImage`.
  @param assetURL Image in a form of `UIImage`.
  @param metadata The metadata that will be attached to the image content (such as EXIF).
  @param thumbnailSize The size of the thumbnail.
- @return Instance of `ATLMediaAttachment` containing streams.
+ @return Instance of `ATLMediaAttachment` containing the streams.
  */
 + (instancetype)mediaAttachmentWithImage:(UIImage *)image metadata:(NSDictionary *)metadata thumbnailSize:(NSUInteger)thumbnailSize;
+
+/**
+ @abstract Creates a new `ATLMediaAttachment` instance either of type `ATLMediaAttachmentTypeImage` or `ATLMediaAttachmentTypeVideo`, depending on the input file.
+ @param fileURL File path in a form of `NSURL`.
+ @param thumbnailSize The size of the thumbnail.
+ @return Instance of `ATLMediaAttachment` containing the streams.
+ */
++ (instancetype)mediaAttachmentWithFileURL:(NSURL *)fileURL thumbnailSize:(NSUInteger)thumbnailSize;
 
 /**
  @abstract Creates a new `ATLMediaAttachment` instance of type `ATLMediaAttachmentTypeText` based on `NSString` text.
