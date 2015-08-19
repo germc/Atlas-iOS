@@ -44,6 +44,13 @@
     [super tearDown];
 }
 
+- (void)testMakeVideoWritesToDesiredPath
+{
+    NSURL *outputFileURL = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:@"temporary-test-video.mov"]];
+    ATLTestMakeVideo(outputFileURL, CGSizeMake(1280, 720), 30, 2);
+    expect([[NSFileManager defaultManager] fileExistsAtPath:outputFileURL.path]).to.beTruthy();
+}
+
 - (void)testInputMediaStreamForVideo
 {
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, 1, YES);
