@@ -750,8 +750,8 @@ static NSInteger const ATLPhotoActionSheet = 1000;
                                                               metadata:info[UIImagePickerControllerMediaMetadata]
                                                          thumbnailSize:ATLDefaultThumbnailSize];
     } else if (info[UIImagePickerControllerMediaURL]) { //live video is taken
-        NSString *moviePath = (NSString *)[[info objectForKey:UIImagePickerControllerMediaURL] path];
-        mediaAttachment = [ATLMediaAttachment mediaAttachmentWithFileURL:moviePath metadata:info thumbnailSize:ATLDefaultThumbnailSize];
+        NSURL *moviePath = [NSURL fileURLWithPath:(NSString *)[[info objectForKey:UIImagePickerControllerMediaURL] path]];
+        mediaAttachment = [ATLMediaAttachment mediaAttachmentWithFileURL:moviePath thumbnailSize:ATLDefaultThumbnailSize];
     } else {
         return;
     }

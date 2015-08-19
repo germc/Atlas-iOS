@@ -59,7 +59,7 @@ static float const ATLMediaAttachmentDefaultThumbnailJPEGCompression = 0.5f;
 @property (nonatomic) NSURL *inputAssetURL;
 
 - (instancetype)initWithAssetURL:(NSURL *)assetURL thumbnailSize:(NSUInteger)thumbnailSize;
-- (instancetype)initWithFileURL:(NSString *)fileURL metadata:(NSDictionary *)metadata thumbnailSize:(NSUInteger)thumbnailSize;
+- (instancetype)initWithFileURL:(NSURL *)fileURL thumbnailSize:(NSUInteger)thumbnailSize;
 
 @end
 
@@ -183,9 +183,9 @@ static float const ATLMediaAttachmentDefaultThumbnailJPEGCompression = 0.5f;
     return self;
 }
 
-- (instancetype)initWithFileURL:(NSString *)fileURL metadata:(NSDictionary *)metadata thumbnailSize:(NSUInteger)thumbnailSize
+- (instancetype)initWithFileURL:(NSURL *)fileURL thumbnailSize:(NSUInteger)thumbnailSize
 {
-    UIImage *image = [self getThumbNailWithPath:fileURL];
+    UIImage *image = [self getThumbNail:fileURL];
     
     if (!image) {
         @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"Cannot initialize %@ with `nil` image.", self.superclass] userInfo:nil];
@@ -194,13 +194,13 @@ static float const ATLMediaAttachmentDefaultThumbnailJPEGCompression = 0.5f;
     // --------------------------------------------------------------------
     // Prepare the input stream and MIMEType for the full size media.
     // --------------------------------------------------------------------
-    self.mediaInputStream = [ATLMediaInputStream mediaInputStreamWithVideoInfo:metadata];
+    self.mediaInputStream = [ATLMediaInputStream mediaInputStreamWithFileURL:fileURL];
     self.mediaMIMEType = ATLMIMETypeVideoMP4;
 
     // --------------------------------------------------------------------
     // Prepare the input stream and MIMEType for the thumbnail.
     // --------------------------------------------------------------------
-    self.thumbnailInputStream = [ATLMediaInputStream mediaInputStreamWithImage:image metadata:metadata];
+    self.thumbnailInputStream = [ATLMediaInputStream mediaInputStreamWithImage:image metadata:nil];
     ((ATLMediaInputStream *)self.thumbnailInputStream).maximumSize = thumbnailSize;
     ((ATLMediaInputStream *)self.thumbnailInputStream).compressionQuality = ATLMediaAttachmentDefaultThumbnailJPEGCompression;
     self.thumbnailMIMEType = ATLMIMETypeVideoMP4Preview;
@@ -227,7 +227,7 @@ static float const ATLMediaAttachmentDefaultThumbnailJPEGCompression = 0.5f;
     // Since we got the full resolution UIImage, we need to create a
     // thumbnail size in the initializer.
     // --------------------------------------------------------------------
-    ATLMediaInputStream *attachableThumbnailInputStream = [ATLMediaInputStream mediaInputStreamWithImage:image metadata:metadata];
+    ATLMediaInputStream *attachableThumbnailInputStream = [ATLMediaInputStream mediaInputStreamWithImage:image metadata:nil];
     attachableThumbnailInputStream.maximumSize = thumbnailSize;
     attachableThumbnailInputStream.compressionQuality = ATLMediaAttachmentDefaultThumbnailJPEGCompression;
     NSData *resampledImageData = ATLMediaAttachmentDataFromInputStream(attachableThumbnailInputStream);
@@ -238,18 +238,6 @@ static float const ATLMediaAttachmentDefaultThumbnailJPEGCompression = 0.5f;
     self.textRepresentation = @"Attachment: Video";
     
     return self;
-}
-
-//TODO: NEED better way to get thumbnail for live recordings
--(UIImage *)getThumbNailWithPath:(NSString *)stringPath
-{
-    NSURL *videoUrl = [NSURL fileURLWithPath:stringPath];
-    
-    MPMoviePlayerController *player = [[MPMoviePlayerController alloc]initWithContentURL:videoUrl];
-    UIImage *thumbnail = [player thumbnailImageAtTime:1.0 timeOption:MPMovieTimeOptionExact];
-    
-    [player stop];
-    return thumbnail;
 }
 
 -(UIImage *)getThumbNail:(NSURL *)stringPath
@@ -385,9 +373,9 @@ static float const ATLMediaAttachmentDefaultThumbnailJPEGCompression = 0.5f;
     return [[ATLAssetMediaAttachment alloc] initWithAssetURL:assetURL thumbnailSize:thumbnailSize];
 }
 
-+ (instancetype)mediaAttachmentWithFileURL:(NSString *)fileURL metadata:(NSDictionary *)metadata thumbnailSize:(NSUInteger)thumbnailSize
++ (instancetype)mediaAttachmentWithFileURL:(NSURL *)fileURL thumbnailSize:(NSUInteger)thumbnailSize
 {
-    return [[ATLAssetMediaAttachment alloc]initWithFileURL:fileURL metadata:(NSDictionary *)metadata thumbnailSize:thumbnailSize];
+    return [[ATLAssetMediaAttachment alloc]initWithFileURL:fileURL thumbnailSize:thumbnailSize];
 }
 
 + (instancetype)mediaAttachmentWithImage:(UIImage *)image metadata:(NSDictionary *)metadata thumbnailSize:(NSUInteger)thumbnailSize;

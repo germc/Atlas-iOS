@@ -92,10 +92,10 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
 
 @interface ATLRecordedVideoInputStream : ATLVideoInputStream
 
-@property (nonatomic, strong) NSDictionary *info;
 @property (nonatomic, strong) NSString *videoPath;
+@property (nonatomic, strong) NSURL *URLofFile;
 
-- (instancetype)initWithVideoInfo:(NSDictionary *)info;
+- (instancetype)initWithVideoURL:(NSURL *)fileURL;
 
 @end
 
@@ -381,29 +381,25 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
 
 @implementation ATLRecordedVideoInputStream
 
-- (instancetype)initWithVideoInfo:(NSDictionary *)info;
+- (instancetype)initWithVideoURL:(NSURL *)fileURL;
 {
     self = [super init];
     if (self) {
-        if (!info) {
+        if (!fileURL) {
             @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"Cannot initialize %@ with `nil` fileURL path.", self.class] userInfo:nil];
         }
-        self.info = info;
+        self.URLofFile = fileURL;
     }
     return self;
 }
 
 - (void)open
 {
-    NSString *docDir = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, 1, YES) objectAtIndex:0];
-    self.videoPath = [NSString stringWithFormat:@"%@/test.mov",docDir];
-    NSURL *videoURL = [self.info objectForKey:UIImagePickerControllerMediaURL];
-    NSData *videoData = [NSData dataWithContentsOfURL:videoURL];
-    [videoData writeToFile:self.videoPath atomically:NO];
+    AVURLAsset *avAsset = [[AVURLAsset alloc] initWithURL:self.URLofFile options:nil];
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, 1, YES);
+    NSString *documentsDirectory = [paths objectAtIndex:0];
+    NSString *myPathDocs =  [documentsDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"Video-%d.mp4",arc4random() % 1000]];
     
-    AVURLAsset *avAsset = [AVURLAsset URLAssetWithURL:[NSURL fileURLWithPath:self.videoPath] options:nil];
-    NSString *myPathDocs =  [docDir stringByAppendingPathComponent:[NSString stringWithFormat:@"Video-%d.mp4",arc4random() % 1000]];
-
     self.tempVideoURL = [NSURL fileURLWithPath:myPathDocs];
     self.exportSession = [[AVAssetExportSession alloc] initWithAsset:avAsset presetName:AVAssetExportPresetHighestQuality];
     self.exportSession.outputURL = self.tempVideoURL;
@@ -412,20 +408,6 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
 
     //succesful
     self.mediaStreamStatus = NSStreamStatusOpen;
-}
-
--(void)close
-{
-    [super close];
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSError *error;
-    [fileManager removeItemAtPath:self.videoPath error:&error];
-    if (error) {
-        self.mediaStreamStatus = NSStreamStatusError;
-        self.mediaStreamError = error;
-        ATLMediaInputStreamLog(@"error:%@", error);
-    }
-    self.mediaStreamStatus = NSStreamStatusClosed;
 }
 
 @end
@@ -622,9 +604,9 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
     return [[ATLImageInputStream alloc] initWithImage:image metadata:metadata];
 }
 
-+ (instancetype)mediaInputStreamWithVideoInfo:(NSDictionary *)info
++ (instancetype)mediaInputStreamWithFileURL:(NSURL *)fileURL
 {
-    return [[ATLRecordedVideoInputStream alloc] initWithVideoInfo:info];
+    return [[ATLRecordedVideoInputStream alloc] initWithVideoURL:fileURL];
 }
 
 #pragma mark - Initializers
