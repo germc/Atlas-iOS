@@ -58,6 +58,7 @@ static CGFloat const ATLButtonHeight = 28.0f;
     ATLMessageInputToolbar *proxy = [self appearance];
     proxy.rightAccessoryButtonActiveColor = ATLBlueColor();
     proxy.rightAccessoryButtonDisabledColor = [UIColor grayColor];
+    proxy.rightAccessoryButtonFont = [UIFont boldSystemFontOfSize:17];
 }
 
 - (id)init
@@ -247,6 +248,12 @@ static CGFloat const ATLButtonHeight = 28.0f;
     [self.rightAccessoryButton setTitleColor:rightAccessoryButtonDisabledColor forState:UIControlStateDisabled];
 }
 
+- (void)setRightAccessoryButtonFont:(UIFont *)rightAccessoryButtonFont
+{
+    _rightAccessoryButtonFont = rightAccessoryButtonFont;
+    [self.rightAccessoryButton.titleLabel setFont:rightAccessoryButtonFont];
+}
+
 #pragma mark - Actions
 
 - (void)leftAccessoryButtonTapped
@@ -369,7 +376,7 @@ static CGFloat const ATLButtonHeight = 28.0f;
     self.rightAccessoryButton.accessibilityLabel = ATLMessageInputToolbarSendButton;
     [self.rightAccessoryButton setImage:nil forState:UIControlStateNormal];
     self.rightAccessoryButton.contentEdgeInsets = UIEdgeInsetsMake(2, 0, 0, 0);
-    self.rightAccessoryButton.titleLabel.font = [UIFont boldSystemFontOfSize:17];
+    self.rightAccessoryButton.titleLabel.font = self.rightAccessoryButtonFont;
     [self.rightAccessoryButton setTitle:ATLLocalizedString(@"atl.messagetoolbar.send.key", @"Send", nil) forState:UIControlStateNormal];
     [self.rightAccessoryButton setTitleColor:self.rightAccessoryButtonActiveColor forState:UIControlStateNormal];
     [self.rightAccessoryButton setTitleColor:self.rightAccessoryButtonDisabledColor forState:UIControlStateDisabled];
