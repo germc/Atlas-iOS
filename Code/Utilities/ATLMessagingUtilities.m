@@ -37,6 +37,7 @@ NSString *const ATLMIMETypeDate = @"text/date";
 NSUInteger const ATLDefaultThumbnailSize = 512;
 NSUInteger const ATLDefaultGIFThumbnailSize = 64;
 
+NSString *const ATLPasteboardImageKey = @"image";
 NSString *const ATLImagePreviewWidthKey = @"width";
 NSString *const ATLImagePreviewHeightKey = @"height";
 NSString *const ATLLocationLatitudeKey = @"lat";
