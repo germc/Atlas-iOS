@@ -22,7 +22,7 @@
 #import "ATLMessagingUtilities.h"
 #import "ATLMediaInputStream.h"
 #import <MobileCoreServices/MobileCoreServices.h>
-#import <MediaPlayer/MediaPlayer.h>
+#import <AVFoundation/AVFoundation.h>
 
 /**
  @abstract Fetches the ALAsset from library based on given `assetURL`.
@@ -32,6 +32,15 @@
  */
 ALAsset *ATLMediaAttachmentFromAssetURL(NSURL *assetURL, ALAssetsLibrary *assetLibrary);
 NSData *ATLMediaAttachmentDataFromInputStream(NSInputStream *inputStream);
+
+/**
+ @abstract Generates a thumbnail from the desired video by taking a still
+ snapshot of 30th frame in the video.
+ @param fileURL File path of the video asset in a form of an `NSURL`
+ @return Returns a thumbnail image in a form of an `NSUImage`; In case of a
+ failure, function returns `nil`.
+ */
+UIImage *ATLMediaAttachmentGenerateThumbnailFromVideoFileURL(NSURL *videoFileURL);
 
 static char const ATLMediaAttachmentAsyncToBlockingQueueName[] = "com.layer.Atlas.ATLMediaAttachment.blocking";
 static NSUInteger const ATLMediaAttachmentDataFromStreamBufferSize = 1024 * 1024;
@@ -115,7 +124,7 @@ static float const ATLMediaAttachmentDefaultThumbnailJPEGCompression = 0.5f;
         self.mediaInputStream = [ATLMediaInputStream mediaInputStreamWithAssetURL:asset.defaultRepresentation.url];
         
         if ( [assetType isEqualToString:ALAssetTypeVideo]) {
-            self.mediaMIMEType = ATLMIMETypeVideoMP4; 
+            self.mediaMIMEType = ATLMIMETypeVideoMP4;
         }else {
             self.mediaMIMEType = (__bridge NSString *)(UTTypeCopyPreferredTagWithClass((__bridge CFStringRef)(asset.defaultRepresentation.UTI), kUTTagClassMIMEType));
         }
@@ -128,9 +137,8 @@ static float const ATLMediaAttachmentDefaultThumbnailJPEGCompression = 0.5f;
             ((ATLMediaInputStream *)self.thumbnailInputStream).maximumSize = ATLDefaultGIFThumbnailSize;
             self.thumbnailMIMEType = ATLMIMETypeImageGIFPreview;
         } else if ([self.mediaMIMEType isEqualToString:ATLMIMETypeVideoMP4]) {
-            UIImage *image = [self getThumbNail:assetURL];
+            UIImage *image = ATLMediaAttachmentGenerateThumbnailFromVideoFileURL(assetURL);
             self.thumbnailInputStream = [ATLMediaInputStream mediaInputStreamWithImage:image metadata:nil];
-            //self.thumbnailInputStream = [ATLMediaInputStream mediaInputStreamWithAssetURL:asset.defaultRepresentation.url];
             ((ATLMediaInputStream *)self.thumbnailInputStream).maximumSize = thumbnailSize;
             ((ATLMediaInputStream *)self.thumbnailInputStream).compressionQuality = ATLMediaAttachmentDefaultThumbnailJPEGCompression;
             self.thumbnailMIMEType = ATLMIMETypeVideoMP4Preview;
@@ -169,12 +177,10 @@ static float const ATLMediaAttachmentDefaultThumbnailJPEGCompression = 0.5f;
         if ([assetType isEqualToString:ALAssetTypePhoto] ) {
             self.mediaType = ATLMediaAttachmentTypeImage;
             self.textRepresentation = @"Attachment: Image";
-
         } else if ([assetType isEqualToString:ALAssetTypeVideo])
         {
             self.mediaType = ATLMediaAttachmentTypeVideo;
             self.textRepresentation = @"Attachment: Video";
-
         } else {
             return nil;
         }
@@ -185,33 +191,52 @@ static float const ATLMediaAttachmentDefaultThumbnailJPEGCompression = 0.5f;
 
 - (instancetype)initWithFileURL:(NSURL *)fileURL thumbnailSize:(NSUInteger)thumbnailSize
 {
-    UIImage *image = [self getThumbNail:fileURL];
-    
-    if (!image) {
-        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"Cannot initialize %@ with `nil` image.", self.superclass] userInfo:nil];
+    UIImage *thumbnailImage;
+    CFStringRef fileExtension = (__bridge CFStringRef)[fileURL pathExtension];
+    CFStringRef fileUTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, fileExtension, NULL);
+    if ((UTTypeConformsTo(fileUTI, kUTTypeVideo) || UTTypeConformsTo(fileUTI, kUTTypeQuickTimeMovie))) {
+        if ([[NSFileManager defaultManager] fileExistsAtPath:[fileURL path]]) {
+            thumbnailImage = ATLMediaAttachmentGenerateThumbnailFromVideoFileURL(fileURL);
+        } else {
+            @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"Cannot initialize %@. File not found", self.superclass] userInfo:nil];
+        }
+        if (!thumbnailImage) {
+            @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"Cannot initialize %@. Unsupported MIMEtype", self.superclass] userInfo:nil];
+        }
     }
-
+    
     // --------------------------------------------------------------------
     // Prepare the input stream and MIMEType for the full size media.
     // --------------------------------------------------------------------
+    if (UTTypeConformsTo(fileUTI, kUTTypeImage)) {
+        self.mediaMIMEType = (__bridge NSString *)(UTTypeCopyPreferredTagWithClass(fileUTI, kUTTagClassMIMEType));
+    } else if (UTTypeConformsTo(fileUTI, kUTTypeVideo) || UTTypeConformsTo(fileUTI, kUTTypeQuickTimeMovie)) {
+        self.mediaMIMEType = ATLMIMETypeVideoMP4;
+    } else {
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"Cannot initialize %@ with `nil` image.", self.superclass] userInfo:nil];
+    }
     self.mediaInputStream = [ATLMediaInputStream mediaInputStreamWithFileURL:fileURL];
-    self.mediaMIMEType = ATLMIMETypeVideoMP4;
-
+    
     // --------------------------------------------------------------------
     // Prepare the input stream and MIMEType for the thumbnail.
     // --------------------------------------------------------------------
-    self.thumbnailInputStream = [ATLMediaInputStream mediaInputStreamWithImage:image metadata:nil];
+    if (UTTypeConformsTo(fileUTI, kUTTypeImage)) {
+        self.thumbnailInputStream = [ATLMediaInputStream mediaInputStreamWithFileURL:fileURL];
+        self.thumbnailMIMEType = ATLMIMETypeImageJPEGPreview;
+    } else if (UTTypeConformsTo(fileUTI, kUTTypeVideo) || UTTypeConformsTo(fileUTI, kUTTypeQuickTimeMovie)) {
+        self.thumbnailInputStream = [ATLMediaInputStream mediaInputStreamWithImage:thumbnailImage metadata:nil];
+        self.thumbnailMIMEType = ATLMIMETypeVideoMP4Preview;
+    }
     ((ATLMediaInputStream *)self.thumbnailInputStream).maximumSize = thumbnailSize;
     ((ATLMediaInputStream *)self.thumbnailInputStream).compressionQuality = ATLMediaAttachmentDefaultThumbnailJPEGCompression;
-    self.thumbnailMIMEType = ATLMIMETypeVideoMP4Preview;
     
     // --------------------------------------------------------------------
     // Prepare the input stream and MIMEType for the metadata
     // about the asset.
     // --------------------------------------------------------------------
-    NSDictionary *imageMetadata = @{ @"width": @(image.size.width),
-                                     @"height": @(image.size.height),
-                                     @"orientation": @(image.imageOrientation) };
+    NSDictionary *imageMetadata = @{ @"width": @(thumbnailImage.size.width),
+                                     @"height": @(thumbnailImage.size.height),
+                                     @"orientation": @(thumbnailImage.imageOrientation) };
     NSError *JSONSerializerError;
     NSData *JSONData = [NSJSONSerialization dataWithJSONObject:imageMetadata options:NSJSONWritingPrettyPrinted error:&JSONSerializerError];
     if (JSONData) {
@@ -227,33 +252,27 @@ static float const ATLMediaAttachmentDefaultThumbnailJPEGCompression = 0.5f;
     // Since we got the full resolution UIImage, we need to create a
     // thumbnail size in the initializer.
     // --------------------------------------------------------------------
-    ATLMediaInputStream *attachableThumbnailInputStream = [ATLMediaInputStream mediaInputStreamWithImage:image metadata:nil];
+    ATLMediaInputStream *attachableThumbnailInputStream;
+    if (UTTypeConformsTo(fileUTI, kUTTypeImage)) {
+        attachableThumbnailInputStream = [ATLMediaInputStream mediaInputStreamWithFileURL:fileURL];
+    } else if (UTTypeConformsTo(fileUTI, kUTTypeVideo) || UTTypeConformsTo(fileUTI, kUTTypeQuickTimeMovie)) {
+        attachableThumbnailInputStream = [ATLMediaInputStream mediaInputStreamWithImage:thumbnailImage metadata:nil];
+    }
+    
     attachableThumbnailInputStream.maximumSize = thumbnailSize;
     attachableThumbnailInputStream.compressionQuality = ATLMediaAttachmentDefaultThumbnailJPEGCompression;
     NSData *resampledImageData = ATLMediaAttachmentDataFromInputStream(attachableThumbnailInputStream);
-    self.attachableThumbnailImage = [UIImage imageWithData:resampledImageData scale:image.scale];
+    self.attachableThumbnailImage = [UIImage imageWithData:resampledImageData scale:thumbnailImage.scale];
     
     self.thumbnailSize = thumbnailSize;
-    self.mediaType = ATLMediaAttachmentTypeVideo;
-    self.textRepresentation = @"Attachment: Video";
-    
-    return self;
-}
-
--(UIImage *)getThumbNail:(NSURL *)stringPath
-{
-    AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:stringPath options:nil];
-    AVAssetImageGenerator *generate = [[AVAssetImageGenerator alloc] initWithAsset:asset];
-    generate.appliesPreferredTrackTransform = YES;
-    NSError *err = NULL;
-    CMTime time = CMTimeMake(1, 60);
-    CGImageRef imgRef = [generate copyCGImageAtTime:time actualTime:NULL error:&err];
-    
-    if (err) {
-        NSLog(@"Failed to create thumbnail!");
+    if (UTTypeConformsTo(fileUTI, kUTTypeImage)) {
+        self.mediaType = ATLMediaAttachmentTypeImage;
+        self.textRepresentation = @"Attachment: Image";
+    } else if (UTTypeConformsTo(fileUTI, kUTTypeVideo) || UTTypeConformsTo(fileUTI, kUTTypeQuickTimeMovie)) {
+        self.mediaType = ATLMediaAttachmentTypeVideo;
+        self.textRepresentation = @"Attachment: Video";
     }
-    
-    return [[UIImage alloc] initWithCGImage:imgRef];
+    return self;
 }
 
 @end
@@ -485,4 +504,26 @@ NSData *ATLMediaAttachmentDataFromInputStream(NSInputStream *inputStream)
     
     // Done
     return dataFromStream;
+}
+
+UIImage *ATLMediaAttachmentGenerateThumbnailFromVideoFileURL(NSURL *videoFileURL)
+{
+    AVURLAsset *URLasset = [[AVURLAsset alloc] initWithURL:videoFileURL options:nil];
+    AVAssetImageGenerator *assetImageGenerator = [[AVAssetImageGenerator alloc] initWithAsset:URLasset];
+    assetImageGenerator.appliesPreferredTrackTransform = YES;
+    NSError *error = NULL;
+    AVAssetTrack *videoAssetTrack = [[URLasset tracksWithMediaType:AVMediaTypeVideo] firstObject];
+    CMTime time;
+    if (videoAssetTrack) {
+        time = CMTimeMake(1, videoAssetTrack.nominalFrameRate);
+    }
+    CGImageRef imageRef = [assetImageGenerator copyCGImageAtTime:time actualTime:NULL error:&error];
+    
+    if (error) {
+        NSLog(@"Failed to create thumbnail!");
+    }
+    UIImage *outputImage = [UIImage imageWithCGImage:imageRef];
+    CGImageRelease(imageRef);
+    return outputImage;
+    
 }

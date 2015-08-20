@@ -80,7 +80,7 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
 
 @end
 
-@interface ATLVideoInputStream : ATLMediaInputStream
+@interface ATLAssetVideoInputStream : ATLMediaInputStream
 
 @property (nonatomic, strong) NSURL *tempVideoURL;
 @property (nonatomic, strong) AVAssetExportSession *exportSession;
@@ -91,7 +91,7 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
 
 @end
 
-@interface ATLRecordedVideoInputStream : ATLVideoInputStream
+@interface ATLRecordedVideoInputStream : ATLAssetVideoInputStream
 
 @property (nonatomic, strong) NSString *videoPath;
 @property (nonatomic, strong) NSURL *URLofFile;
@@ -490,7 +490,7 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
 
 @end
 
-@implementation ATLVideoInputStream
+@implementation ATLAssetVideoInputStream
 
 - (instancetype)initWithAssetURL:(NSURL *)assetURL
 {
@@ -652,7 +652,7 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
         return nil;
     }
     if ([[asset valueForProperty:ALAssetPropertyType] isEqualToString:ALAssetTypeVideo]) {
-        return [[ATLVideoInputStream alloc] initWithAssetURL:assetURL];
+        return [[ATLAssetVideoInputStream alloc] initWithAssetURL:assetURL];
     } else if ([[asset valueForProperty:ALAssetPropertyType] isEqualToString:ALAssetTypePhoto]) {
         return [[ATLPhotoAssetInputStream alloc] initWithPhotoAssetURL:assetURL];
     } else {

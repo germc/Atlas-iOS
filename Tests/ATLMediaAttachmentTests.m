@@ -153,6 +153,62 @@
     expect(imageSizeMetadataJSON).to.equal([NSJSONSerialization dataWithJSONObject:@{ @"width":@1024, @"height":@512, @"orientation":@(UIImageOrientationUp) } options:NSJSONWritingPrettyPrinted error:nil]);
 }
 
+- (void)testMediaAttachmentWithFileURLWithImage
+{
+    //Get Last Video
+    // Generate a test image at a temporary path.
+    NSURL *imageFileURL = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:@"test-image.jpeg"]];
+    [[NSFileManager defaultManager] removeItemAtURL:imageFileURL error:nil];
+    UIImage *generatedTestImage = ATLTestAttachmentMakeImageWithSize(CGSizeMake(1920, 1080));
+    NSData *imageData = UIImageJPEGRepresentation(generatedTestImage, 1.0);
+    [imageData writeToURL:imageFileURL atomically:NO];
+    expect([[NSFileManager defaultManager] fileExistsAtPath:imageFileURL.path]).to.beTruthy();
+    
+    //check properties of ATLMediaAttachment Object
+    ATLMediaAttachment *mediaAttachment = [ATLMediaAttachment mediaAttachmentWithFileURL:imageFileURL thumbnailSize:512];
+    expect(mediaAttachment).toNot.beNil();
+    expect(NSStringFromClass(mediaAttachment.class)).to.equal(@"ATLAssetMediaAttachment");
+    expect(mediaAttachment.textRepresentation).to.equal(@"Attachment: Image");
+    expect(mediaAttachment.thumbnailSize).to.equal(512);
+    expect(mediaAttachment.mediaMIMEType).to.equal(@"image/jpeg");
+    expect(mediaAttachment.mediaInputStream).toNot.beNil();
+    expect(mediaAttachment.mediaInputStream.streamStatus).to.equal(NSStreamStatusNotOpen);
+    expect(mediaAttachment.thumbnailMIMEType).to.equal(@"image/jpeg+preview");
+    expect(mediaAttachment.thumbnailInputStream).toNot.beNil();
+    expect(mediaAttachment.metadataMIMEType).to.equal(@"application/json+imageSize");
+    expect(mediaAttachment.metadataInputStream).toNot.beNil();
+    
+    // Verifying stream content
+    NSInputStream *stream = mediaAttachment.mediaInputStream;
+    [stream open];
+    expect(stream.streamStatus).to.equal(NSStreamStatusOpen);
+    expect(stream.streamError).to.beNil();
+    
+    NSData *mediaPayload = ATLTestAttachmentDataFromStream(mediaAttachment.mediaInputStream);
+    expect(mediaPayload).toNot.beNil();
+    UIImage *processedImage = [UIImage imageWithData:mediaPayload];
+    expect(processedImage.size).to.equal(CGSizeMake(1920, 1080));
+    expect(processedImage.imageOrientation).to.equal(UIImageOrientationUp);
+    
+    [stream close];
+    expect(stream.streamError).to.beNil();
+    expect(stream.streamStatus).to.equal(NSStreamStatusClosed);
+    NSString *path = [NSString stringWithFormat:@"%@result.jpeg", NSTemporaryDirectory()];
+    [mediaPayload writeToFile:path atomically:NO];
+    NSLog(@"check file: %@ length=%lu", path, mediaPayload.length);
+    
+    // Verifying thumbnail content
+    NSData *thumbnailPayload = ATLTestAttachmentDataFromStream(mediaAttachment.thumbnailInputStream);
+    expect(thumbnailPayload).toNot.beNil();
+    processedImage = [UIImage imageWithData:thumbnailPayload];
+    expect(processedImage.size).to.equal(CGSizeMake(512, 288));
+    expect(processedImage.imageOrientation).to.equal(UIImageOrientationUp);
+    
+    // Verifying image metadata JSON
+    NSData *imageSizeMetadataJSON = ATLTestAttachmentDataFromStream(mediaAttachment.metadataInputStream);
+    expect(imageSizeMetadataJSON).toNot.beNil();
+}
+
 - (void)testMediaWithAsset
 {
     [Expecta setAsynchronousTestTimeout:10];
@@ -274,6 +330,65 @@
     expect(thumbnailPayload).toNot.beNil();
     UIImage *processedImage = [UIImage imageWithData:thumbnailPayload];
     expect(processedImage.size).toNot.beNil(); 
+    expect(processedImage.imageOrientation).to.equal(UIImageOrientationUp);
+    
+    // Verifying image metadata JSON
+    NSData *imageSizeMetadataJSON = ATLTestAttachmentDataFromStream(mediaAttachment.metadataInputStream);
+    expect(imageSizeMetadataJSON).toNot.beNil();
+}
+
+- (void)testMediaAttachmentWithFileURLWithVideo
+{
+    //Get Last Video
+    // Generate video at a temporary path.
+    NSURL *videoFileURL = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:@"temporary-test-video.mov"]];
+    ATLTestMakeVideo(videoFileURL, CGSizeMake(1280, 720), 30, 2);
+    expect([[NSFileManager defaultManager] fileExistsAtPath:videoFileURL.path]).to.beTruthy();
+    
+    //check properties of ATLMediaAttachment Object
+    ATLMediaAttachment *mediaAttachment = [ATLMediaAttachment mediaAttachmentWithFileURL:videoFileURL thumbnailSize:512];
+    expect(mediaAttachment).toNot.beNil();
+    expect(NSStringFromClass(mediaAttachment.class)).to.equal(@"ATLAssetMediaAttachment");
+    expect(mediaAttachment.textRepresentation).to.equal(@"Attachment: Video");
+    expect(mediaAttachment.thumbnailSize).to.equal(512);
+    expect(mediaAttachment.mediaMIMEType).to.equal(@"video/mp4");
+    expect(mediaAttachment.mediaInputStream).toNot.beNil();
+    expect(mediaAttachment.mediaInputStream.streamStatus).to.equal(NSStreamStatusNotOpen);
+    expect(mediaAttachment.thumbnailMIMEType).to.equal(@"video/mp4+preview");
+    expect(mediaAttachment.thumbnailInputStream).toNot.beNil();
+    expect(mediaAttachment.metadataMIMEType).to.equal(@"application/json+imageSize");
+    expect(mediaAttachment.metadataInputStream).toNot.beNil();
+    
+    // Verifying stream content
+    NSInputStream *stream = mediaAttachment.mediaInputStream;
+    [stream open];
+    expect(stream.streamStatus).to.equal(NSStreamStatusOpen);
+    expect(stream.streamError).to.beNil();
+    
+    NSMutableData *data = [NSMutableData data];
+    NSUInteger sizeOfBuffer = 512 * 1024;
+    NSUInteger sizeOfRead = 512*1024;
+    uint8_t *buffer = malloc(sizeOfBuffer);
+    NSInteger bytesRead = 0;
+    do {
+        bytesRead = [stream read:buffer maxLength:sizeOfRead];
+        expect(stream.streamError).to.beNil();
+        [data appendBytes:buffer length:bytesRead];
+    } while (bytesRead > 0);
+    free(buffer);
+    
+    [stream close];
+    expect(stream.streamError).to.beNil();
+    expect(stream.streamStatus).to.equal(NSStreamStatusClosed);
+    NSString *path = [NSString stringWithFormat:@"%@result-video.mp4", NSTemporaryDirectory()];
+    [data writeToFile:path atomically:NO];
+    NSLog(@"check file: %@ length=%lu", path, data.length);
+    
+    // Verifying thumbnail content
+    NSData *thumbnailPayload = ATLTestAttachmentDataFromStream(mediaAttachment.thumbnailInputStream);
+    expect(thumbnailPayload).toNot.beNil();
+    UIImage *processedImage = [UIImage imageWithData:thumbnailPayload];
+    expect(processedImage.size).toNot.beNil();
     expect(processedImage.imageOrientation).to.equal(UIImageOrientationUp);
     
     // Verifying image metadata JSON
