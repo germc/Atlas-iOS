@@ -113,7 +113,7 @@ typedef NS_ENUM(NSUInteger, ATLMediaInputStreamError) {
  @discussion Set only when input stream is initialized with the `fileURL`,
    otherwise it's `nil`.
  */
-@property (nonatomic, readonly) NSURL *fileURL;
+@property (nonatomic, readonly) NSURL *sourceFileURL;
 
 /**
  @abstract A boolean value indicating if streaming is going to be lossless.

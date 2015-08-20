@@ -44,6 +44,7 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
 
 /* Private and public properties */
 @property (nonatomic, readwrite) NSURL *sourceAssetURL;
+@property (nonatomic, readwrite) NSURL *sourceFileURL;
 @property (nonatomic, readwrite) UIImage *sourceImage;
 @property (nonatomic, readwrite) NSDictionary *metadata;
 @property (nonatomic, readwrite) BOOL isLossless;
@@ -99,11 +100,18 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
 
 @end
 
-@interface ATLAssetInputStream : ATLPhotoInputStream
+@interface ATLPhotoAssetInputStream : ATLPhotoInputStream
 
-- (instancetype)initWithAssetURL:(NSURL *)assetURL;
+- (instancetype)initWithPhotoAssetURL:(NSURL *)assetURL;
 
 @end
+
+@interface ATLPhotoFileInputStream : ATLPhotoInputStream
+
+- (instancetype)initWithPhotoFileURL:(NSURL *)fileURL;
+
+@end
+
 
 @interface ATLImageInputStream : ATLPhotoInputStream
 
@@ -126,6 +134,8 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
     } else if (self.sourceImage) {
         // UIImages don't need a data provider, we're adding them to CGImageDestination directly.
         numberOfSourceImages = 1;
+    } else if (self.sourceFileURL) {
+        numberOfSourceImages = [self setupProviderForFileStreamingWithError:&error];
     } else {
         @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Failed setting up data provider because source media not defined." userInfo:nil];
     }
@@ -266,6 +276,36 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
 }
 
 /**
+ @abstract Prepares the CGDataProvider that has the direct access to the file content based on the self.sourceFileURL defined at init.
+ @param error A reference to an `NSError` object that will contain error information in case the action was not successful.
+ @return Returns the number of images that source will provide if the setup was successful; On failures, method sets the `error` and returns `0`.
+ */
+- (NSInteger)setupProviderForFileStreamingWithError:(NSError **)error
+{
+    _provider = CGDataProviderCreateWithURL((CFURLRef)self.sourceFileURL);
+    _source = CGImageSourceCreateWithDataProvider(_provider, NULL);
+    if (self.provider == NULL || self.source == NULL) {
+        if (error) {
+            *error = [NSError errorWithDomain:ATLMediaInputStreamErrorDomain code:ATLMediaInputStreamErrorFailedInitializingAssetProvider userInfo:@{ NSLocalizedDescriptionKey: @"Failed initializing the Quartz image data provider/source pair." }];
+        }
+        return 0;
+    }
+    
+    // There should be at least one image found in the source.
+    size_t count = CGImageSourceGetCount(_source);
+    if (count <= 0) {
+        if (error) {
+            *error = [NSError errorWithDomain:ATLMediaInputStreamErrorDomain code:ATLMediaInputStreamErrorAssetHasNoImages userInfo:@{ NSLocalizedDescriptionKey: @"Failed initializing the Quartz image data provider/source, because source asset doesn't include any images." }];
+        }
+        return 0;
+    }
+    
+    // Get source image's properties, because we'll copy it to the destination later.
+    self.sourceImageProperties = (__bridge NSDictionary *)(CGImageSourceCopyProperties(_source, NULL));
+    return count;
+}
+
+/**
  @abstract Takes the content of the self.sourceAssetURL (ALAssetRepresentation) or sourceImage (UIImage) and resamples the image back into self.sourceImage.
  @param error A reference to an `NSError` object that will contain error information in case the action was not successful.
  @return Returns `YES` if setup was successful; On failures, method sets the `error` and returns `NO`.
@@ -317,6 +357,11 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
     if (self.assetRepresentation) {
         // In case source is the ALAsset.
         _destination = CGImageDestinationCreateWithDataConsumer(_consumer, (CFStringRef)self.assetRepresentation.UTI, numberOfSourceImages, NULL);
+    } else if (self.sourceFileURL) {
+        // In case source if a file.
+        CFStringRef fileExtension = (__bridge CFStringRef)[self.sourceFileURL pathExtension];
+        CFStringRef fileUTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, fileExtension, NULL);
+        _destination = CGImageDestinationCreateWithDataConsumer(_consumer, fileUTI, numberOfSourceImages, NULL);
     } else {
         // In case source is the UIImage.
         _destination = CGImageDestinationCreateWithDataConsumer(_consumer, kUTTypeJPEG, 1, NULL);
@@ -347,11 +392,11 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
         [mutableTiffDict setObject:self.metadata[(NSString *)kCGImagePropertyOrientation] forKey:(NSString *)kCGImagePropertyTIFFOrientation];
         [destinationOptions setObject:mutableTiffDict forKey:ATLMediaInputStreamAppleCameraTIFFOptionsKey];
     }
-    if (self.assetRepresentation) {
+    if (self.assetRepresentation || self.sourceFileURL) {
         for (NSInteger idx=0; idx<numberOfSourceImages; idx++) {
             CGImageDestinationAddImageFromSource(_destination, self.source, idx, (__bridge CFDictionaryRef)destinationOptions);
         }
-    } else {
+    } else if (!self.assetRepresentation && self.sourceImage) {
         CGImageDestinationAddImage(_destination, self.sourceImage.CGImage, (__bridge CFDictionaryRef)destinationOptions);
     }
     // Apply the image properties (we took from the source earlier) onto destination.
@@ -363,9 +408,9 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
 
 @end
 
-@implementation ATLAssetInputStream
+@implementation ATLPhotoAssetInputStream
 
-- (instancetype)initWithAssetURL:(NSURL *)assetURL
+- (instancetype)initWithPhotoAssetURL:(NSURL *)assetURL
 {
     self = [super init];
     if (self) {
@@ -373,6 +418,22 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
             @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"Cannot initialize %@ with `nil` assetURL.", self.class] userInfo:nil];
         }
         self.sourceAssetURL = assetURL;
+    }
+    return self;
+}
+
+@end
+
+@implementation ATLPhotoFileInputStream
+
+- (instancetype)initWithPhotoFileURL:(NSURL *)fileURL
+{
+    self = [super init];
+    if (self) {
+        if (!fileURL) {
+            @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"Cannot initialize %@ with `nil` fileURL.", self.class] userInfo:nil];
+        }
+        self.sourceFileURL = fileURL;
     }
     return self;
 }
@@ -593,7 +654,7 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
     if ([[asset valueForProperty:ALAssetPropertyType] isEqualToString:ALAssetTypeVideo]) {
         return [[ATLVideoInputStream alloc] initWithAssetURL:assetURL];
     } else if ([[asset valueForProperty:ALAssetPropertyType] isEqualToString:ALAssetTypePhoto]) {
-        return [[ATLAssetInputStream alloc] initWithAssetURL:assetURL];
+        return [[ATLPhotoAssetInputStream alloc] initWithPhotoAssetURL:assetURL];
     } else {
         return nil;
     }
@@ -606,7 +667,19 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
 
 + (instancetype)mediaInputStreamWithFileURL:(NSURL *)fileURL
 {
-    return [[ATLRecordedVideoInputStream alloc] initWithVideoURL:fileURL];
+    if (!fileURL) {
+        return nil;
+    }
+    CFStringRef fileExtension = (__bridge CFStringRef)[fileURL pathExtension];
+    CFStringRef fileUTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, fileExtension, NULL);
+    if (UTTypeConformsTo(fileUTI, kUTTypeImage)) {
+        return [[ATLPhotoFileInputStream alloc] initWithPhotoFileURL:fileURL];
+    } else if (UTTypeConformsTo(fileUTI, kUTTypeMovie)) {
+        return [[ATLRecordedVideoInputStream alloc] initWithVideoURL:fileURL];
+    } else {
+        NSLog(@"Failed to initialize an input stream for an unkown type: '%@'", (__bridge NSString *)UTTypeCopyDescription(fileUTI));
+        return nil;
+    }
 }
 
 #pragma mark - Initializers
