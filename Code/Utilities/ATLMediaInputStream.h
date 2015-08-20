@@ -86,7 +86,7 @@ typedef NS_ENUM(NSUInteger, ATLMediaInputStreamError) {
 
 /**
  @abstract Creates an input stream capable of direct or re-encoded media
-   streaming from a file.
+   streaming from the file system.
  @param fileURL File URL path to the media content (URL starts with `file://`).
  @return A `ATLMediaInputStream` instance ready to be open.
  @discussion The input stream will attempt to preserve any embedded
