@@ -141,7 +141,7 @@ static float const ATLMediaAttachmentDefaultThumbnailJPEGCompression = 0.5f;
             self.thumbnailInputStream = [ATLMediaInputStream mediaInputStreamWithImage:image metadata:nil];
             ((ATLMediaInputStream *)self.thumbnailInputStream).maximumSize = thumbnailSize;
             ((ATLMediaInputStream *)self.thumbnailInputStream).compressionQuality = ATLMediaAttachmentDefaultThumbnailJPEGCompression;
-            self.thumbnailMIMEType = ATLMIMETypeVideoMP4Preview;
+            self.thumbnailMIMEType = ATLMIMETypeImageJPEGPreview;
         } else {
             self.thumbnailInputStream = [ATLMediaInputStream mediaInputStreamWithAssetURL:asset.defaultRepresentation.url];
             ((ATLMediaInputStream *)self.thumbnailInputStream).maximumSize = thumbnailSize;
@@ -225,7 +225,7 @@ static float const ATLMediaAttachmentDefaultThumbnailJPEGCompression = 0.5f;
         self.thumbnailMIMEType = ATLMIMETypeImageJPEGPreview;
     } else if (UTTypeConformsTo(fileUTI, kUTTypeVideo) || UTTypeConformsTo(fileUTI, kUTTypeQuickTimeMovie)) {
         self.thumbnailInputStream = [ATLMediaInputStream mediaInputStreamWithImage:thumbnailImage metadata:nil];
-        self.thumbnailMIMEType = ATLMIMETypeVideoMP4Preview;
+        self.thumbnailMIMEType = ATLMIMETypeImageJPEGPreview;
     }
     ((ATLMediaInputStream *)self.thumbnailInputStream).maximumSize = thumbnailSize;
     ((ATLMediaInputStream *)self.thumbnailInputStream).compressionQuality = ATLMediaAttachmentDefaultThumbnailJPEGCompression;

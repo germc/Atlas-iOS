@@ -615,7 +615,7 @@ static NSInteger const ATLPhotoActionSheet = 1000;
             completePushText = [NSString stringWithFormat:@"%@ %@", senderName, ATLDefaultPushAlertImage];
         } else if ([MIMEType isEqualToString:ATLMIMETypeLocation]) {
             completePushText = [NSString stringWithFormat:@"%@ %@", senderName, ATLDefaultPushAlertLocation];
-        } else if ([MIMEType isEqualToString:ATLMIMETypeVideoMP4Preview]){
+        } else if ([MIMEType isEqualToString:ATLMIMETypeVideoMP4]){
             completePushText = [NSString stringWithFormat:@"%@ %@", senderName, ATLDefaultPushAlertVideo];
         } else {
             completePushText = [NSString stringWithFormat:@"%@ %@", senderName, ATLDefaultPushAlertText];

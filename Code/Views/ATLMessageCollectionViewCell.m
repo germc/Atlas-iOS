@@ -234,19 +234,10 @@ CGFloat const ATLAvatarImageTailPadding = 7.0f;
         [progress setDelegate:self];
         self.progress = progress;
         [self.bubbleView updateProgressIndicatorWithProgress:progress.fractionCompleted visible:YES animated:NO];
-    } else {
-        [self.bubbleView updateProgressIndicatorWithProgress:1.0 visible:NO animated:YES];
     }
+    LYRMessagePart *previewImagePart = ATLMessagePartForMIMEType(self.message, ATLMIMETypeImageJPEGPreview);
     
-    UIImage *displayingImage;
-    LYRMessagePart *previewImagePart = ATLMessagePartForMIMEType(self.message, ATLMIMETypeVideoMP4Preview);
-    
-    /* TODO: If there's no preview, use a black image
-     if (!previewImagePart) {
-     // If no preview image part found, resort to the full-resolution image.
-     previewImagePart = fullResImagePart;
-     }
-     */
+    __block UIImage *displayingImage;
     
     if (previewImagePart.fileURL) {
         displayingImage = [UIImage imageWithContentsOfFile:previewImagePart.fileURL.path];
@@ -260,8 +251,54 @@ CGFloat const ATLAvatarImageTailPadding = 7.0f;
         size = ATLImageSizeForJSONData(sizePart.data);
         size = ATLConstrainImageSizeToCellSize(size);
     }
-    
+    __weak typeof(self) weakSelf = self;
+    __block LYRMessage *previousMessage = weakSelf.message;
     [self.bubbleView updateWithVideoThumbnail:displayingImage width:size.width];
+
+    dispatch_async(self.imageProcessingConcurrentQueue, ^{
+        if (previewImagePart.fileURL) {
+            displayingImage = [UIImage imageWithContentsOfFile:previewImagePart.fileURL.path];
+        } else if (previewImagePart.data) {
+            displayingImage = [UIImage imageWithData:previewImagePart.data];
+        }
+        
+        CGSize size = CGSizeZero;
+        LYRMessagePart *sizePart = ATLMessagePartForMIMEType(self.message, ATLMIMETypeImageSize);
+        if (sizePart) {
+            size = ATLImageSizeForJSONData(sizePart.data);
+            size = ATLConstrainImageSizeToCellSize(size);
+        }
+        if (CGSizeEqualToSize(size, CGSizeZero)) {
+            // Resort to image's size, if no dimensions metadata message parts found.
+            size = ATLImageSizeForData(fullResVideoPart.data);
+        }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if ([fullResVideoPart.MIMEType isEqualToString:ATLMIMETypeVideoMP4]) {
+                if (fullResVideoPart.transferStatus == LYRContentTransferReadyForDownload) {
+                    NSError *error;
+                    LYRProgress *progress = [fullResVideoPart downloadContent:&error];
+                    if (!progress) {
+                        NSLog(@"failed to request for a content download from the UI with error=%@", error);
+                    }
+                } else if (fullResVideoPart.transferStatus == LYRContentTransferDownloading) {
+                    LYRProgress *progress = fullResVideoPart.progress;
+                    [progress setDelegate:weakSelf];
+                    weakSelf.progress = progress;
+                    [weakSelf.bubbleView updateProgressIndicatorWithProgress:progress.fractionCompleted visible:YES animated:NO];
+                    [weakSelf.bubbleView updateWithImage:displayingImage width:size.width];
+                } else {
+                    dispatch_async(weakSelf.imageProcessingConcurrentQueue, ^{
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            if (weakSelf.message != previousMessage) {
+                                return;
+                            }
+                        });
+                    });
+                }
+            }
+        });
+    });
+    
 }
 
 - (void)configureBubbleViewForGIFContent
