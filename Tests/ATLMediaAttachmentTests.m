@@ -323,7 +323,7 @@
     expect(mediaAttachment.mediaMIMEType).to.equal(@"video/mp4");
     expect(mediaAttachment.mediaInputStream).toNot.beNil();
     expect(mediaAttachment.mediaInputStream.streamStatus).to.equal(NSStreamStatusNotOpen);
-    expect(mediaAttachment.thumbnailMIMEType).to.equal(@"video/jpeg+preview");
+    expect(mediaAttachment.thumbnailMIMEType).to.equal(@"image/jpeg+preview");
     expect(mediaAttachment.thumbnailInputStream).toNot.beNil();
     expect(mediaAttachment.metadataMIMEType).to.equal(@"application/json+imageSize");
     expect(mediaAttachment.metadataInputStream).toNot.beNil();
@@ -376,7 +376,7 @@
     expect(mediaAttachment.mediaMIMEType).to.equal(@"video/mp4");
     expect(mediaAttachment.mediaInputStream).toNot.beNil();
     expect(mediaAttachment.mediaInputStream.streamStatus).to.equal(NSStreamStatusNotOpen);
-    expect(mediaAttachment.thumbnailMIMEType).to.equal(@"video/jpeg+preview");
+    expect(mediaAttachment.thumbnailMIMEType).to.equal(@"image/jpeg+preview");
     expect(mediaAttachment.thumbnailInputStream).toNot.beNil();
     expect(mediaAttachment.metadataMIMEType).to.equal(@"application/json+imageSize");
     expect(mediaAttachment.metadataInputStream).toNot.beNil();
