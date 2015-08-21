@@ -35,13 +35,14 @@ NSData *ATLMediaAttachmentDataFromInputStream(NSInputStream *inputStream);
 
 /**
  @abstract Generates a thumbnail from the desired video by taking a still
- snapshot of 30th frame in the video.
+   snapshot from a frame located at the first second in the video.
  @param fileURL File path of the video asset in a form of an `NSURL`
  @return Returns a thumbnail image in a form of an `NSUImage`; In case of a
- failure, function returns `nil`.
+   failure, function returns `nil`.
  */
 UIImage *ATLMediaAttachmentGenerateThumbnailFromVideoFileURL(NSURL *videoFileURL);
 
+static int const ATLMediaAttachmentTIFFOrientationToImageOrientationMap[9] = { 0, 0, 6, 1, 5, 4, 4, 7, 2 };
 static char const ATLMediaAttachmentAsyncToBlockingQueueName[] = "com.layer.Atlas.ATLMediaAttachment.blocking";
 static NSUInteger const ATLMediaAttachmentDataFromStreamBufferSize = 1024 * 1024;
 static float const ATLMediaAttachmentDefaultThumbnailJPEGCompression = 0.5f;
@@ -177,8 +178,7 @@ static float const ATLMediaAttachmentDefaultThumbnailJPEGCompression = 0.5f;
         if ([assetType isEqualToString:ALAssetTypePhoto] ) {
             self.mediaType = ATLMediaAttachmentTypeImage;
             self.textRepresentation = @"Attachment: Image";
-        } else if ([assetType isEqualToString:ALAssetTypeVideo])
-        {
+        } else if ([assetType isEqualToString:ALAssetTypeVideo]) {
             self.mediaType = ATLMediaAttachmentTypeVideo;
             self.textRepresentation = @"Attachment: Video";
         } else {
@@ -191,20 +191,20 @@ static float const ATLMediaAttachmentDefaultThumbnailJPEGCompression = 0.5f;
 
 - (instancetype)initWithFileURL:(NSURL *)fileURL thumbnailSize:(NSUInteger)thumbnailSize
 {
+    if (![[NSFileManager defaultManager] fileExistsAtPath:[fileURL path]]) {
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"Cannot initialize %@. File not found at path='%@'.", self.superclass, fileURL] userInfo:nil];
+    }
+
+    // --------------------------------------------------------------------
+    // Figure out the type of the media from the file extension.
+    // --------------------------------------------------------------------
     UIImage *thumbnailImage;
     CFStringRef fileExtension = (__bridge CFStringRef)[fileURL pathExtension];
     CFStringRef fileUTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, fileExtension, NULL);
-    if ((UTTypeConformsTo(fileUTI, kUTTypeVideo) || UTTypeConformsTo(fileUTI, kUTTypeQuickTimeMovie))) {
-        if ([[NSFileManager defaultManager] fileExistsAtPath:[fileURL path]]) {
-            thumbnailImage = ATLMediaAttachmentGenerateThumbnailFromVideoFileURL(fileURL);
-        } else {
-            @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"Cannot initialize %@. File not found", self.superclass] userInfo:nil];
-        }
-        if (!thumbnailImage) {
-            @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"Cannot initialize %@. Unsupported MIMEtype", self.superclass] userInfo:nil];
-        }
+    if (!(UTTypeConformsTo(fileUTI, kUTTypeImage) || UTTypeConformsTo(fileUTI, kUTTypeVideo) || UTTypeConformsTo(fileUTI, kUTTypeQuickTimeMovie))) {
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"Cannot initialize %@. Unsupported MIMEtype='%@'.", self.superclass, (__bridge NSString *)UTTypeCopyDescription(fileUTI)] userInfo:nil];
     }
-    
+
     // --------------------------------------------------------------------
     // Prepare the input stream and MIMEType for the full size media.
     // --------------------------------------------------------------------
@@ -212,8 +212,6 @@ static float const ATLMediaAttachmentDefaultThumbnailJPEGCompression = 0.5f;
         self.mediaMIMEType = (__bridge NSString *)(UTTypeCopyPreferredTagWithClass(fileUTI, kUTTagClassMIMEType));
     } else if (UTTypeConformsTo(fileUTI, kUTTypeVideo) || UTTypeConformsTo(fileUTI, kUTTypeQuickTimeMovie)) {
         self.mediaMIMEType = ATLMIMETypeVideoMP4;
-    } else {
-        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"Cannot initialize %@ with `nil` image.", self.superclass] userInfo:nil];
     }
     self.mediaInputStream = [ATLMediaInputStream mediaInputStreamWithFileURL:fileURL];
     
@@ -224,6 +222,9 @@ static float const ATLMediaAttachmentDefaultThumbnailJPEGCompression = 0.5f;
         self.thumbnailInputStream = [ATLMediaInputStream mediaInputStreamWithFileURL:fileURL];
         self.thumbnailMIMEType = ATLMIMETypeImageJPEGPreview;
     } else if (UTTypeConformsTo(fileUTI, kUTTypeVideo) || UTTypeConformsTo(fileUTI, kUTTypeQuickTimeMovie)) {
+        if ((UTTypeConformsTo(fileUTI, kUTTypeVideo) || UTTypeConformsTo(fileUTI, kUTTypeQuickTimeMovie))) {
+            thumbnailImage = ATLMediaAttachmentGenerateThumbnailFromVideoFileURL(fileURL);
+        }
         self.thumbnailInputStream = [ATLMediaInputStream mediaInputStreamWithImage:thumbnailImage metadata:nil];
         self.thumbnailMIMEType = ATLMIMETypeImageJPEGPreview;
     }
@@ -231,20 +232,41 @@ static float const ATLMediaAttachmentDefaultThumbnailJPEGCompression = 0.5f;
     ((ATLMediaInputStream *)self.thumbnailInputStream).compressionQuality = ATLMediaAttachmentDefaultThumbnailJPEGCompression;
     
     // --------------------------------------------------------------------
-    // Prepare the input stream and MIMEType for the metadata
-    // about the asset.
+    // Prepare the input stream and MIMEType for the metadata information
+    // about the asset (dimension and orientation).
     // --------------------------------------------------------------------
-    NSDictionary *imageMetadata = @{ @"width": @(thumbnailImage.size.width),
-                                     @"height": @(thumbnailImage.size.height),
-                                     @"orientation": @(thumbnailImage.imageOrientation) };
+    CGSize mediaDimensions = CGSizeZero;
+    UIImageOrientation mediaOrientation = UIImageOrientationUp;
+    if (UTTypeConformsTo(fileUTI, kUTTypeImage)) {
+        // In case it's an image.
+        CGDataProviderRef providerRef = CGDataProviderCreateWithURL((CFURLRef)fileURL);
+        CGImageSourceRef imageSourceRef = CGImageSourceCreateWithDataProvider(providerRef, NULL);
+        NSDictionary *dict = (__bridge NSDictionary *)(CGImageSourceCopyPropertiesAtIndex(imageSourceRef, 0, NULL));
+        CGDataProviderRelease(providerRef);
+        CFRelease(imageSourceRef);
+        mediaDimensions.width = [dict[(NSString *)kCGImagePropertyPixelWidth] integerValue];
+        mediaDimensions.height = [dict[(NSString *)kCGImagePropertyPixelHeight] integerValue];
+        int CGImageTIFFOrientation = [dict[(NSString *)kCGImagePropertyTIFFOrientation] intValue];
+        mediaOrientation = ATLMediaAttachmentTIFFOrientationToImageOrientationMap[CGImageTIFFOrientation];
+    } else if (UTTypeConformsTo(fileUTI, kUTTypeVideo) || UTTypeConformsTo(fileUTI, kUTTypeQuickTimeMovie)) {
+        // Or if it's a video.
+        AVAsset *videoAsset = [AVAsset assetWithURL:fileURL];
+        AVAssetTrack *firstVideoAssetTrack = [[videoAsset tracksWithMediaType:AVMediaTypeVideo] firstObject];
+        mediaDimensions = firstVideoAssetTrack.naturalSize;
+    }
+
+    NSDictionary *mediaMetadata = @{ @"width": @(mediaDimensions.width),
+                                     @"height": @(mediaDimensions.height),
+                                     @"orientation": @(mediaOrientation) };
     NSError *JSONSerializerError;
-    NSData *JSONData = [NSJSONSerialization dataWithJSONObject:imageMetadata options:NSJSONWritingPrettyPrinted error:&JSONSerializerError];
+    NSData *JSONData = [NSJSONSerialization dataWithJSONObject:mediaMetadata options:NSJSONWritingPrettyPrinted error:&JSONSerializerError];
     if (JSONData) {
         self.metadataInputStream = [NSInputStream inputStreamWithData:JSONData];
         self.metadataMIMEType = ATLMIMETypeImageSize;
     } else {
         NSLog(@"ATLMediaAttachment failed to generate a JSON object for image metadata");
     }
+    
     // --------------------------------------------------------------------
     // Prepare the attachable thumbnail meant for the UI (which is inlined
     // with text in the message composer).
@@ -394,7 +416,7 @@ static float const ATLMediaAttachmentDefaultThumbnailJPEGCompression = 0.5f;
 
 + (instancetype)mediaAttachmentWithFileURL:(NSURL *)fileURL thumbnailSize:(NSUInteger)thumbnailSize
 {
-    return [[ATLAssetMediaAttachment alloc]initWithFileURL:fileURL thumbnailSize:thumbnailSize];
+    return [[ATLAssetMediaAttachment alloc] initWithFileURL:fileURL thumbnailSize:thumbnailSize];
 }
 
 + (instancetype)mediaAttachmentWithImage:(UIImage *)image metadata:(NSDictionary *)metadata thumbnailSize:(NSUInteger)thumbnailSize;

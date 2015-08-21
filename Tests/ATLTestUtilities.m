@@ -113,12 +113,15 @@ UIImage *ATLTestAttachmentMakeImageWithSizeAndAnimationSequenceFrame(CGSize imag
     const NSUInteger fps = 30;
     for (NSUInteger n=0; n<text.length; n++) {
         CGRect charFrame = CGRectMake(frame.origin.x + (frame.size.width/(text.length+1) * n), frame.origin.y, frame.size.width/(text.length+1), frame.size.height);
+        UIColor *textColor;
         if (animationSequenceFrame != 0) {
             charFrame.origin.y += sin((animationSequenceFrame + n * 2) * M_PI / fps) * charFrame.size.height / 2;
+            float hue = (float)((animationSequenceFrame+n)%100)/100;
+            textColor = [UIColor colorWithHue:hue saturation:1.0f brightness:1.0f alpha:1.0f];
+        } else {
+            textColor = [UIColor blackColor];
         }
         NSString *character = [text substringWithRange:NSMakeRange(n, 1)];
-        float hue = (float)((animationSequenceFrame+n)%100)/100;
-        UIColor *textColor = [UIColor colorWithHue:hue saturation:1.0f brightness:1.0f alpha:1.0f];
         CGFloat height = charFrame.size.height;
         [character drawInRect:CGRectMake(CGRectGetMinX(charFrame), CGRectGetMinY(charFrame) + (CGRectGetHeight(charFrame) - height) / 2, CGRectGetWidth(charFrame), height) withAttributes:@{ NSFontAttributeName: font, NSForegroundColorAttributeName: textColor }];
     }
@@ -237,7 +240,6 @@ BOOL ATLTestMakeVideo(NSURL *outputFileURL, CGSize videoSize, NSUInteger framesP
 
 ALAsset *ATLVideoAssetTestObtainLastVideoFromAssetLibrary(ALAssetsLibrary *library)
 {
-    
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
     dispatch_queue_t asyncQueue = dispatch_queue_create("com.layer.ATLMediaStreamTest.ObtainLastImage.async", DISPATCH_QUEUE_CONCURRENT);
     
