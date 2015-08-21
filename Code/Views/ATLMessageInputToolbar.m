@@ -173,7 +173,6 @@ static CGFloat const ATLButtonHeight = 28.0f;
                                                                                   metadata:nil
                                                                              thumbnailSize:ATLDefaultThumbnailSize];
         [self insertMediaAttachment:mediaAttachment withEndLineBreak:YES];
-
     }
 }
 
