@@ -37,6 +37,7 @@ extern NSString *const ATLMIMETypeDate;               // text/date
 extern NSUInteger const ATLDefaultThumbnailSize;      // 512px
 extern NSUInteger const ATLDefaultGIFThumbnailSize;   // 64px
 
+extern NSString *const ATLPasteboardImageKey;
 extern NSString *const ATLImagePreviewWidthKey;
 extern NSString *const ATLImagePreviewHeightKey;
 extern NSString *const ATLLocationLatitudeKey;

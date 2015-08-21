@@ -166,15 +166,13 @@ static CGFloat const ATLButtonHeight = 28.0f;
 
 - (void)paste:(id)sender
 {
-    NSArray *images = [UIPasteboard generalPasteboard].images;
-    if (images.count > 0) {
-        for (UIImage *image in images) {
-            ATLMediaAttachment *mediaAttachment = [ATLMediaAttachment mediaAttachmentWithImage:image
-                                                                                      metadata:nil
-                                                                                 thumbnailSize:ATLDefaultThumbnailSize];
-            [self insertMediaAttachment:mediaAttachment withEndLineBreak:YES];
-        }
-        return;
+    NSData *imageData = [[UIPasteboard generalPasteboard] dataForPasteboardType:ATLPasteboardImageKey];
+    if (imageData) {
+        UIImage *image = [UIImage imageWithData:imageData];
+        ATLMediaAttachment *mediaAttachment = [ATLMediaAttachment mediaAttachmentWithImage:image
+                                                                                  metadata:nil
+                                                                             thumbnailSize:ATLDefaultThumbnailSize];
+        [self insertMediaAttachment:mediaAttachment withEndLineBreak:YES];
     }
 }
 
