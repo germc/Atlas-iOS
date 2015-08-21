@@ -523,6 +523,69 @@
     expect([directoryContent count]).to.equal(0);
 }
 
+- (void)testMediaStreamOpensStreamForVideoFile
+{
+    // Generate a video image at a temporary path.
+    NSURL *videoFileURL = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:@"temporary-test-video.mov"]];
+    ATLTestMakeVideo(videoFileURL, CGSizeMake(1280, 720), 30, 2);
+    expect([[NSFileManager defaultManager] fileExistsAtPath:videoFileURL.path]).to.beTruthy();
+
+    
+    // Try opening a stream for direct photo streaming.
+    ATLMediaInputStream *streamDirect = [ATLMediaInputStream mediaInputStreamWithFileURL:videoFileURL];
+    expect(streamDirect.isLossless).to.beTruthy();
+    expect(streamDirect.streamStatus).to.equal(NSStreamStatusNotOpen);
+    expect(streamDirect.streamError).to.beNil();
+    [streamDirect open];
+    expect(streamDirect.streamStatus).to.equal(NSStreamStatusOpen);
+    expect(streamDirect.streamError).to.beNil();
+    
+    // Try opening a stream for resampled photo streaming.
+    ATLMediaInputStream *streamResample = [ATLMediaInputStream mediaInputStreamWithFileURL:videoFileURL];
+    streamResample.maximumSize = 512;
+    streamResample.compressionQuality = 0.5f;
+    expect(streamResample.isLossless).to.beFalsy();
+    expect(streamResample.streamStatus).to.equal(NSStreamStatusNotOpen);
+    expect(streamResample.streamError).to.beNil();
+    [streamResample open];
+    expect(streamResample.streamStatus).to.equal(NSStreamStatusOpen);
+    expect(streamResample.streamError).to.beNil();
+}
+
+- (void)testMediaStreamClosesStreamForVideoFile
+{
+    // Generate a video image at a temporary path.
+    NSURL *videoFileURL = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:@"temporary-test-video.mov"]];
+    ATLTestMakeVideo(videoFileURL, CGSizeMake(1280, 720), 30, 2);
+    expect([[NSFileManager defaultManager] fileExistsAtPath:videoFileURL.path]).to.beTruthy();
+    
+    // Try opening and then closing the stream for direct photo streaming.
+    ATLMediaInputStream *streamDirect = [ATLMediaInputStream mediaInputStreamWithFileURL:videoFileURL];
+    expect(streamDirect.isLossless).to.beTruthy();
+    expect(streamDirect.streamStatus).to.equal(NSStreamStatusNotOpen);
+    expect(streamDirect.streamError).to.beNil();
+    [streamDirect open];
+    expect(streamDirect.streamStatus).to.equal(NSStreamStatusOpen);
+    expect(streamDirect.streamError).to.beNil();
+    [streamDirect close];
+    expect(streamDirect.streamStatus).to.equal(NSStreamStatusClosed);
+    expect(streamDirect.streamError).to.beNil();
+    
+    // Try opening and then closing the stream for resampled photo streaming.
+    ATLMediaInputStream *streamResample = [ATLMediaInputStream mediaInputStreamWithFileURL:videoFileURL];
+    streamResample.maximumSize = 512;
+    streamResample.compressionQuality = 0.5f;
+    expect(streamResample.isLossless).to.beFalsy();
+    expect(streamResample.streamStatus).to.equal(NSStreamStatusNotOpen);
+    expect(streamResample.streamError).to.beNil();
+    [streamResample open];
+    expect(streamResample.streamStatus).to.equal(NSStreamStatusOpen);
+    expect(streamResample.streamError).to.beNil();
+    [streamResample close];
+    expect(streamResample.streamStatus).to.equal(NSStreamStatusClosed);
+    expect(streamResample.streamError).to.beNil();
+}
+
 #pragma mark - General Behavior
 
 - (void)testMediaStreamDesignatedInitFails

@@ -155,7 +155,6 @@
 
 - (void)testMediaAttachmentWithFileURLWithImage
 {
-    //Get Last Video
     // Generate a test image at a temporary path.
     NSURL *imageFileURL = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:@"test-image.jpeg"]];
     [[NSFileManager defaultManager] removeItemAtURL:imageFileURL error:nil];
@@ -287,7 +286,7 @@
     expect(mediaAttachment.mediaMIMEType).to.equal(@"video/mp4");
     expect(mediaAttachment.mediaInputStream).toNot.beNil();
     expect(mediaAttachment.mediaInputStream.streamStatus).to.equal(NSStreamStatusNotOpen);
-    expect(mediaAttachment.thumbnailMIMEType).to.equal(@"video/mp4+preview");
+    expect(mediaAttachment.thumbnailMIMEType).to.equal(@"image/jpeg+preview");
     expect(mediaAttachment.thumbnailInputStream).toNot.beNil();
     expect(mediaAttachment.metadataMIMEType).to.equal(@"application/json+imageSize");
     expect(mediaAttachment.metadataInputStream).toNot.beNil();
@@ -335,6 +334,7 @@
     // Verifying image metadata JSON
     NSData *imageSizeMetadataJSON = ATLTestAttachmentDataFromStream(mediaAttachment.metadataInputStream);
     expect(imageSizeMetadataJSON).toNot.beNil();
+    expect(imageSizeMetadataJSON).to.equal([NSJSONSerialization dataWithJSONObject:@{ @"width":@360, @"height":@640, @"orientation":@(UIImageOrientationUp) } options:NSJSONWritingPrettyPrinted error:nil]);
 }
 
 - (void)testMediaAttachmentWithFileURLWithVideo
@@ -354,7 +354,7 @@
     expect(mediaAttachment.mediaMIMEType).to.equal(@"video/mp4");
     expect(mediaAttachment.mediaInputStream).toNot.beNil();
     expect(mediaAttachment.mediaInputStream.streamStatus).to.equal(NSStreamStatusNotOpen);
-    expect(mediaAttachment.thumbnailMIMEType).to.equal(@"video/mp4+preview");
+    expect(mediaAttachment.thumbnailMIMEType).to.equal(@"image/jpeg+preview");
     expect(mediaAttachment.thumbnailInputStream).toNot.beNil();
     expect(mediaAttachment.metadataMIMEType).to.equal(@"application/json+imageSize");
     expect(mediaAttachment.metadataInputStream).toNot.beNil();
@@ -394,6 +394,7 @@
     // Verifying image metadata JSON
     NSData *imageSizeMetadataJSON = ATLTestAttachmentDataFromStream(mediaAttachment.metadataInputStream);
     expect(imageSizeMetadataJSON).toNot.beNil();
+    expect(imageSizeMetadataJSON).to.equal([NSJSONSerialization dataWithJSONObject:@{ @"width":@1280, @"height":@720, @"orientation":@(UIImageOrientationUp) } options:NSJSONWritingPrettyPrinted error:nil]);
 }
 
 @end
