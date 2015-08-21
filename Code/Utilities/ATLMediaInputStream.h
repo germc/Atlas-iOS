@@ -40,6 +40,14 @@ typedef NS_ENUM(NSUInteger, ATLMediaInputStreamError) {
      @abstract An error to open stream if the source asset doesn't contain any items.
      */
     ATLMediaInputStreamErrorAssetHasNoImages                       = 1003,
+    /**
+     @abstract An error to open stream when device doesn't have any compatible export presets.
+     */
+    ATLMediaInputStreamErrorNoVideoExportPresetsAvailable          = 1004,
+    /**
+     @abstract An error during video export process.
+     */
+    ATLMediaInputStreamErrorVideoExportFailed                      = 1005,
 };
 
 /**

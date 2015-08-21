@@ -203,7 +203,7 @@ BOOL ATLTestMakeVideo(NSURL *outputFileURL, CGSize videoSize, NSUInteger framesP
     NSError *error;
     [[NSFileManager defaultManager] removeItemAtURL:outputFileURL error:nil];
     AVAssetWriter *videoWriter = [[AVAssetWriter alloc] initWithURL:outputFileURL fileType:AVFileTypeQuickTimeMovie error:&error];
-    NSDictionary *videoSettings = [NSDictionary dictionaryWithObjectsAndKeys:AVVideoCodecH264, AVVideoCodecKey, [NSNumber numberWithInt:videoSize.width], AVVideoWidthKey, [NSNumber numberWithInt:videoSize.height], AVVideoHeightKey, nil];
+    NSDictionary *videoSettings = [NSDictionary dictionaryWithObjectsAndKeys:AVVideoCodecJPEG, AVVideoCodecKey, [NSNumber numberWithInt:videoSize.width], AVVideoWidthKey, [NSNumber numberWithInt:videoSize.height], AVVideoHeightKey, nil];
     AVAssetWriterInput* writerInput = [AVAssetWriterInput assetWriterInputWithMediaType:AVMediaTypeVideo outputSettings:videoSettings];
     [videoWriter addInput:writerInput];
     NSDictionary *bufferAttributes = @{ (NSString *)kCVPixelBufferPixelFormatTypeKey: @(kCVPixelFormatType_32ARGB) };

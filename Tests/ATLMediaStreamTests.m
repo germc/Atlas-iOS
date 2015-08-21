@@ -384,7 +384,6 @@
     NSString *path = [NSString stringWithFormat:@"%@test.mp4", NSTemporaryDirectory()];
     [data writeToFile:path atomically:NO];
     NSLog(@"check file: %@ length=%lu", path, data.length);
-    expect(data1.length).to.equal(data.length);
     
     NSArray *directoryContent = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:documentsDirectory error:NULL];
     for (count = 0; count < (int)[directoryContent count]; count++) {

@@ -34,6 +34,8 @@ static char const ATLMediaInputConsumerAsyncQueueName[] = "com.layer.Atlas.ATLMe
 static char const ATLMediaInputConsumerSerialTransferQueueName[] = "com.layer.Atlas.ATLMediaInputStream.serialTransferQueue";
 static char const ATLMediaInputStreamAsyncToBlockingQueueName[] = "com.layer.Atlas.ATLMediaInputStream.blocking";
 NSString *const ATLMediaInputStreamAppleCameraTIFFOptionsKey = @"{TIFF}";
+static NSUInteger const ATLMediaInputDefaultFileStreamBuffer = 1024 * 1024;
+NSString *const ATLMediaInputStreamTempDirectory = @"com.layer.atlas";
 
 /* Core I/O callbacks */
 ALAsset *ATLMediaInputStreamAssetForAssetURL(NSURL *assetURL, ALAssetsLibrary *assetLibrary, NSError **error);
@@ -82,21 +84,15 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
 
 @interface ATLAssetVideoInputStream : ATLMediaInputStream
 
-@property (nonatomic, strong) NSURL *tempVideoURL;
-@property (nonatomic, strong) AVAssetExportSession *exportSession;
-@property (nonatomic, strong) NSInputStream *exportedVideoFileInputStream;
+@property (nonatomic, strong) AVAssetExportSession *videoAssetExportSession;
 
 - (instancetype)initWithAssetURL:(NSURL *)assetURL;
--(void)consumeData;
 
 @end
 
-@interface ATLRecordedVideoInputStream : ATLAssetVideoInputStream
+@interface ATLFileVideoInputStream : ATLAssetVideoInputStream
 
-@property (nonatomic, strong) NSString *videoPath;
-@property (nonatomic, strong) NSURL *URLofFile;
-
-- (instancetype)initWithVideoURL:(NSURL *)fileURL;
+- (instancetype)initWithFileURL:(NSURL *)fileURL;
 
 @end
 
@@ -112,11 +108,9 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
 
 @end
 
-
 @interface ATLImageInputStream : ATLPhotoInputStream
 
 - (instancetype)initWithImage:(UIImage *)image metadata:(NSDictionary *)metadata;
-
 
 @end
 
@@ -440,39 +434,6 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
 
 @end
 
-@implementation ATLRecordedVideoInputStream
-
-- (instancetype)initWithVideoURL:(NSURL *)fileURL;
-{
-    self = [super init];
-    if (self) {
-        if (!fileURL) {
-            @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"Cannot initialize %@ with `nil` fileURL path.", self.class] userInfo:nil];
-        }
-        self.URLofFile = fileURL;
-    }
-    return self;
-}
-
-- (void)open
-{
-    AVURLAsset *avAsset = [[AVURLAsset alloc] initWithURL:self.URLofFile options:nil];
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, 1, YES);
-    NSString *documentsDirectory = [paths objectAtIndex:0];
-    NSString *myPathDocs =  [documentsDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"Video-%d.mp4",arc4random() % 1000]];
-    
-    self.tempVideoURL = [NSURL fileURLWithPath:myPathDocs];
-    self.exportSession = [[AVAssetExportSession alloc] initWithAsset:avAsset presetName:AVAssetExportPresetHighestQuality];
-    self.exportSession.outputURL = self.tempVideoURL;
-    self.exportSession.outputFileType = AVFileTypeMPEG4;
-    self.exportSession.shouldOptimizeForNetworkUse = YES;
-
-    //succesful
-    self.mediaStreamStatus = NSStreamStatusOpen;
-}
-
-@end
-
 @implementation ATLImageInputStream
 
 - (instancetype)initWithImage:(UIImage *)image metadata:(NSDictionary *)metadata;
@@ -484,6 +445,22 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
         }
         self.sourceImage = image;
         self.metadata = metadata;
+    }
+    return self;
+}
+
+@end
+
+@implementation ATLFileVideoInputStream
+
+- (instancetype)initWithFileURL:(NSURL *)fileURL
+{
+    self = [super init];
+    if (self) {
+        if (!fileURL) {
+            @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"Cannot initialize %@ with `nil` fileURL.", self.class] userInfo:nil];
+        }
+        self.sourceFileURL = fileURL;
     }
     return self;
 }
@@ -507,108 +484,118 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
 - (void)open
 {
     [super open];
-    AVAsset *videoAVAsset = [AVAsset assetWithURL:self.sourceAssetURL];
-    NSArray *presetWithAsset = [AVAssetExportSession exportPresetsCompatibleWithAsset:videoAVAsset];
-    ATLMediaInputStreamLog(@"Preset Values for AVAssetexportSession: %@", presetWithAsset);
+    
+    // Prepare the AVAsset (works with both ALAsset and files).
+    AVAsset *videoAVAsset = [AVAsset assetWithURL:self.sourceAssetURL ?: self.sourceFileURL];
+
+    // Set the appropriate encoder preset based on the self.compressionQuality.
+    NSString *encoderPresetName;
+    if (self.compressionQuality >= 0.8f || self.compressionQuality == 0.0f) {
+        encoderPresetName = AVAssetExportPresetHighestQuality;
+    } else if (self.compressionQuality < 0.8f && self.compressionQuality >= 0.5f) {
+        encoderPresetName = AVAssetExportPresetMediumQuality;
+    } else if (self.compressionQuality < 0.5f) {
+        encoderPresetName = AVAssetExportPresetLowQuality;
+    }
+    
+    // Check if it's compatible with this device.
+    NSArray *availablePressets = [AVAssetExportSession exportPresetsCompatibleWithAsset:videoAVAsset];
+    if (![availablePressets containsObject:encoderPresetName]) {
+        // Bah, it's not. Fall back to whatever's the first preset.
+        encoderPresetName = availablePressets.firstObject;
+        if (!encoderPresetName) {
+            self.mediaStreamError = [NSError errorWithDomain:ATLMediaInputStreamErrorDomain code:ATLMediaInputStreamErrorNoVideoExportPresetsAvailable userInfo:@{ NSLocalizedDescriptionKey: @"Could not find any export presets for the host device." }];
+            self.mediaStreamStatus = NSStreamEventErrorOccurred;
+            return;
+        }
+    }
+    
     // Prepare the temporary file URL (it should be a member property).
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, 1, YES);
-    NSString *documentsDirectory = [paths objectAtIndex:0];
-    NSString *myPathDocs =  [documentsDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"Video-%d.mp4",arc4random() % 1000]];
-    self.tempVideoURL = [NSURL fileURLWithPath:myPathDocs];
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+    NSString *basePath = ([paths count] > 0) ? [paths objectAtIndex:0] : nil;
+    NSURL *baseURL = [NSURL fileURLWithPath:basePath isDirectory:YES];
+    NSURL *outputDirURL = [NSURL URLWithString:ATLMediaInputStreamTempDirectory relativeToURL:baseURL];
+    NSURL *outputURL = [NSURL URLWithString:[NSString stringWithFormat:@"exported-video-%@.mp4", [[NSUUID UUID] UUIDString]] relativeToURL:outputDirURL];
+    [[NSFileManager defaultManager] createDirectoryAtURL:outputDirURL withIntermediateDirectories:YES attributes:nil error:nil];
+    [[NSFileManager defaultManager] removeItemAtURL:outputURL error:nil];
     
     // Prepare the AVExportSession (use the temp file url).
-    self.exportSession = [[AVAssetExportSession alloc] initWithAsset:videoAVAsset presetName:AVAssetExportPresetHighestQuality];
-    self.exportSession.outputURL = self.tempVideoURL;
-    self.exportSession.outputFileType = AVFileTypeMPEG4;
-    self.exportSession.shouldOptimizeForNetworkUse = YES;
+    self.videoAssetExportSession = [[AVAssetExportSession alloc] initWithAsset:videoAVAsset presetName:encoderPresetName];
+    self.videoAssetExportSession.outputURL = outputURL.absoluteURL;
+    self.videoAssetExportSession.outputFileType = AVFileTypeMPEG4;
+    self.videoAssetExportSession.shouldOptimizeForNetworkUse = YES;
     
-    //succesful
+    // Success
     self.mediaStreamStatus = NSStreamStatusOpen;
 }
 
 - (void)close
 {
     [super close];
-    if (self.exportSession.outputURL) {
-        [self removeTempFile];
+    // Delete the temporary file at path where the video was exported to.
+    if (self.videoAssetExportSession.outputURL) {
+        [[NSFileManager defaultManager] removeItemAtURL:self.videoAssetExportSession.outputURL error:nil];
     }
     // Nil out export session and do other cleanups.
-    self.exportSession = nil;
-    self.tempVideoURL = nil;
+    self.videoAssetExportSession = nil;
     self.dataConsumed = nil;
     self.mediaStreamStatus = NSStreamStatusClosed;
-}
-
--(void)removeTempFile
-{
-    NSError *error;
-    //substring to remove the prepended "file://" string
-    NSString *path = [[NSString stringWithFormat:@"%@",self.exportSession.outputURL] substringFromIndex:7];
-    
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    
-    if([fileManager fileExistsAtPath:path] == YES) {
-        [fileManager removeItemAtPath:path error:&error];
-        if (error) {
-            self.mediaStreamStatus = NSStreamStatusError;
-            self.mediaStreamError = error;
-            ATLMediaInputStreamLog(@"error:%@", error);
-        }
-    }else {
-        self.mediaStreamStatus = NSStreamStatusError;
-        ATLMediaInputStreamLog(@"Temp file does not exist");
-    }
 }
 
 - (void)startConsumption
 {
     self.mediaStreamStatus = NSStreamStatusReading;
-    [self.exportSession exportAsynchronouslyWithCompletionHandler:^
-     {
-         switch (self.exportSession.status) {
-             case AVAssetExportSessionStatusFailed: {
-                 ATLMediaInputStreamLog(@"AVAssetExportSessionStatusFailed");
-                 self.mediaStreamError = self.exportSession.error;
-                 self.mediaStreamStatus = NSStreamStatusError;
-                 dispatch_semaphore_signal(self.streamFlowRequesterSemaphore);
-                 break;
-             }
-             case AVAssetExportSessionStatusCompleted: {
-                 ATLMediaInputStreamLog(@"AVAssetExportSessionStatusCompleted");
-                 [self consumeData];
-                 break;
-             }
-             default: {
-                 dispatch_semaphore_signal(self.streamFlowRequesterSemaphore);
-                 break;
-             }
-         }
-     }];
+    [self.videoAssetExportSession exportAsynchronouslyWithCompletionHandler:^{
+        switch (self.videoAssetExportSession.status) {
+            case AVAssetExportSessionStatusFailed: {
+                ATLMediaInputStreamLog(@"consumer: failed exporting the video with error=%@", self.exportSession.error);
+                self.mediaStreamError = self.videoAssetExportSession.error;
+                self.mediaStreamStatus = NSStreamStatusError;
+                dispatch_semaphore_signal(self.streamFlowRequesterSemaphore);
+                break;
+            }
+            case AVAssetExportSessionStatusCompleted: {
+                ATLMediaInputStreamLog(@"consumer: export completed");
+                [self consumeData];
+                break;
+            }
+            default: {
+                self.mediaStreamError = [NSError errorWithDomain:ATLMediaInputStreamErrorDomain code:ATLMediaInputStreamErrorVideoExportFailed userInfo:@{ NSLocalizedDescriptionKey: @"Could not export the video.", @"exporterror": self.videoAssetExportSession.error ?: [NSNull null], @"exportstatus": @(self.videoAssetExportSession.status) }];
+                self.mediaStreamStatus = NSStreamStatusError;
+                ATLMediaInputStreamLog(@"consumer: failed exporting the video with error=%@", self.mediaStreamError);
+                dispatch_semaphore_signal(self.streamFlowRequesterSemaphore);
+                break;
+            }
+        }
+    }];
 }
 
--(void)consumeData
+- (void)consumeData
 {
-    self.exportedVideoFileInputStream = [[NSInputStream alloc]initWithURL:self.exportSession.outputURL];
+    NSInputStream *exportedVideoFileInputStream = [[NSInputStream alloc]initWithURL:self.videoAssetExportSession.outputURL];
     NSMutableData *dataFromStream = [NSMutableData data];
-    uint8_t *buffer = malloc(self.numberOfBytesRequested);
+    uint8_t *buffer = malloc(ATLMediaInputDefaultFileStreamBuffer);
     NSInteger bytesRead;
     
-    [self.exportedVideoFileInputStream open];
+    // Open the expoted video file input stream.
+    [exportedVideoFileInputStream open];
     
-    if (self.exportedVideoFileInputStream.streamStatus != NSStreamStatusOpen) {
-        self.mediaStreamStatus = self.exportedVideoFileInputStream.streamStatus;
+    if (exportedVideoFileInputStream.streamStatus != NSStreamStatusOpen) {
+        self.mediaStreamError = exportedVideoFileInputStream.streamError;
+        self.mediaStreamStatus = exportedVideoFileInputStream.streamStatus;
         dispatch_semaphore_signal(self.streamFlowRequesterSemaphore);
         return;
     }
     
     do {
-        bytesRead = [self.exportedVideoFileInputStream read:buffer maxLength:self.numberOfBytesRequested];
+        bytesRead = [exportedVideoFileInputStream read:buffer maxLength:MIN(ATLMediaInputDefaultFileStreamBuffer, self.numberOfBytesRequested)];
         if (bytesRead != 0) {
             [dataFromStream appendBytes:buffer length:self.numberOfBytesRequested];
         } else if (bytesRead < 0) {
-            self.mediaStreamStatus = NSStreamStatusError;
-            ATLMediaInputStreamLog(@"Was unable to read file");
-            self.mediaStreamStatus = NSStreamStatusAtEnd;
+            self.mediaStreamStatus = exportedVideoFileInputStream.streamStatus;
+            self.mediaStreamError = exportedVideoFileInputStream.streamError;
+            ATLMediaInputStreamLog(@"consumer: failed streaming the exported video file with error=%@", exportedVideoFileInputStream.streamError);
+            break;
         }
         // Consumption continues, after flow control logic in readBytes:len: signals it.
         dispatch_sync(self.transferBufferSerialGuard, ^{
@@ -626,14 +613,12 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
         dispatch_semaphore_signal(self.streamFlowRequesterSemaphore);
         ATLMediaInputStreamLog(@"return %lu", (unsigned long)bytesConsumed);
     } while (bytesRead != 0);
+    [exportedVideoFileInputStream close];
+
     free(buffer);
-    
-    [self.exportedVideoFileInputStream close];
     
     if (bytesRead == 0) {
         self.mediaStreamStatus = NSStreamStatusAtEnd;
-    } else {
-        self.mediaStreamStatus = NSStreamStatusError;
     }
     dispatch_semaphore_signal(self.streamFlowRequesterSemaphore);
 }
@@ -675,7 +660,7 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
     if (UTTypeConformsTo(fileUTI, kUTTypeImage)) {
         return [[ATLPhotoFileInputStream alloc] initWithPhotoFileURL:fileURL];
     } else if (UTTypeConformsTo(fileUTI, kUTTypeMovie)) {
-        return [[ATLRecordedVideoInputStream alloc] initWithVideoURL:fileURL];
+        return [[ATLFileVideoInputStream alloc] initWithFileURL:fileURL];
     } else {
         NSLog(@"Failed to initialize an input stream for an unkown type: '%@'", (__bridge NSString *)UTTypeCopyDescription(fileUTI));
         return nil;
