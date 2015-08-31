@@ -211,6 +211,9 @@ static CGFloat const ATLMaxScrollDistanceFromBottom = 150;
 
 - (void)keyboardWillShow:(NSNotification *)notification
 {
+    if ([[self navigationController] modalPresentationStyle] == UIModalPresentationPopover) {
+        return;
+    }
     [self configureWithKeyboardNotification:notification];
 }
 
