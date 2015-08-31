@@ -237,8 +237,7 @@ CGFloat const ATLAvatarImageTailPadding = 7.0f;
     }
     LYRMessagePart *previewImagePart = ATLMessagePartForMIMEType(self.message, ATLMIMETypeImageJPEGPreview);
     
-    __block UIImage *displayingImage;
-    
+    UIImage *displayingImage;
     if (previewImagePart.fileURL) {
         displayingImage = [UIImage imageWithContentsOfFile:previewImagePart.fileURL.path];
     } else {
@@ -251,28 +250,7 @@ CGFloat const ATLAvatarImageTailPadding = 7.0f;
         size = ATLImageSizeForJSONData(sizePart.data);
         size = ATLConstrainImageSizeToCellSize(size);
     }
-    __weak typeof(self) weakSelf = self;
-    __block LYRMessage *previousMessage = weakSelf.message;
     [self.bubbleView updateWithVideoThumbnail:displayingImage width:size.width];
-
-    dispatch_async(self.imageProcessingConcurrentQueue, ^{
-        if (previewImagePart.fileURL) {
-            displayingImage = [UIImage imageWithContentsOfFile:previewImagePart.fileURL.path];
-        } else if (previewImagePart.data) {
-            displayingImage = [UIImage imageWithData:previewImagePart.data];
-        }
-        
-        CGSize size = CGSizeZero;
-        LYRMessagePart *sizePart = ATLMessagePartForMIMEType(self.message, ATLMIMETypeImageSize);
-        if (sizePart) {
-            size = ATLImageSizeForJSONData(sizePart.data);
-            size = ATLConstrainImageSizeToCellSize(size);
-        }
-        if (CGSizeEqualToSize(size, CGSizeZero)) {
-            // Resort to image's size, if no dimensions metadata message parts found.
-            size = ATLImageSizeForData(fullResVideoPart.data);
-        }
-    });
 }
 
 - (void)configureBubbleViewForGIFContent
