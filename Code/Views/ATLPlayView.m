@@ -33,7 +33,7 @@ float ATLDegreeToRadians1(float degrees)
 {
     
     UIBezierPath *aPath = [UIBezierPath bezierPathWithArcCenter:CGPointMake(self.frame.size.width / 2.0, self.frame.size.height / 2.0)
-                                                         radius:25
+                                                         radius:24
                                                      startAngle:0
                                                        endAngle:ATLDegreeToRadians1(365)
                                                       clockwise:YES];
