@@ -229,9 +229,12 @@ NSString *const ATLConversationListViewControllerDeletionModeGlobal = @"Global";
         }
     }
     
-    self.queryController = [self.layerClient queryControllerWithQuery:query];
-    self.queryController.delegate = self;
     NSError *error;
+    self.queryController = [self.layerClient queryControllerWithQuery:query error:&error];
+    if (!self.queryController) {
+        NSLog(@"LayerKit failed to create a query controller with error: %@", error);
+    }
+    self.queryController.delegate = self;
     BOOL success = [self.queryController execute:&error];
     if (!success) {
         NSLog(@"LayerKit failed to execute query with error: %@", error);
@@ -468,9 +471,13 @@ NSString *const ATLConversationListViewControllerDeletionModeGlobal = @"Global";
             LYRQuery *query = [LYRQuery queryWithQueryableClass:[LYRConversation class]];
             query.predicate = [LYRPredicate predicateWithProperty:@"participants" predicateOperator:LYRPredicateOperatorIsIn value:participantIdentifiers];
             query.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"lastMessage.receivedAt" ascending:NO]];
-            self.searchQueryController = [self.layerClient queryControllerWithQuery:query];
             
             NSError *error;
+            self.searchQueryController = [self.layerClient queryControllerWithQuery:query error:&error];
+            if (!self.queryController) {
+                NSLog(@"LayerKit failed to create a query controller with error: %@", error);
+            }
+
             [self.searchQueryController execute:&error];
             [self.searchController.searchResultsTableView reloadData];
         }];
