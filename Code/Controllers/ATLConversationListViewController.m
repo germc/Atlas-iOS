@@ -233,11 +233,13 @@ NSString *const ATLConversationListViewControllerDeletionModeGlobal = @"Global";
     self.queryController = [self.layerClient queryControllerWithQuery:query error:&error];
     if (!self.queryController) {
         NSLog(@"LayerKit failed to create a query controller with error: %@", error);
+        return;
     }
     self.queryController.delegate = self;
     BOOL success = [self.queryController execute:&error];
     if (!success) {
         NSLog(@"LayerKit failed to execute query with error: %@", error);
+        return;
     }
     [self.tableView reloadData];
 }
@@ -476,6 +478,7 @@ NSString *const ATLConversationListViewControllerDeletionModeGlobal = @"Global";
             self.searchQueryController = [self.layerClient queryControllerWithQuery:query error:&error];
             if (!self.queryController) {
                 NSLog(@"LayerKit failed to create a query controller with error: %@", error);
+                return;
             }
 
             [self.searchQueryController execute:&error];
