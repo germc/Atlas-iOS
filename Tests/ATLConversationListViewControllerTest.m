@@ -52,15 +52,14 @@ extern NSString *const ATLAvatarImageViewAccessibilityLabel;
 
 - (void)tearDown
 {
+    [super tearDown];
+    [tester waitForAnimationsToFinish];
     [self.testInterface dismissPresentedViewController];
-    self.viewController.queryController = nil;
-    self.viewController = nil;
+    if (self.viewController) self.viewController = nil;
     
     [[LYRMockContentStore sharedStore] resetContentStore];
     [self resetAppearance];
     self.testInterface = nil;
-    
-    [super tearDown];
 }
 
 - (void)testToVerifyConversationListBaseUI
@@ -298,6 +297,7 @@ extern NSString *const ATLAvatarImageViewAccessibilityLabel;
     }] conversationListViewController:[OCMArg any] avatarItemForConversation:[OCMArg any]];
     
     conversation = (LYRConversation *)[self newConversationWithMockUser:mockUser1 lastMessageText:@"Test Message"];
+    [delegateMock verify];
 }
 
 #pragma mark - ATLConversationListViewControllerDelegate
@@ -327,7 +327,6 @@ extern NSString *const ATLAvatarImageViewAccessibilityLabel;
     [tester tapViewWithAccessibilityLabel:[self.testInterface conversationLabelForConversation:conversation1]];
     [delegateMock verify];
 }
-
 
 - (void)testToVerifyDelegateIsNotifiedOfGlobalConversationDeletion
 {
@@ -512,7 +511,7 @@ extern NSString *const ATLAvatarImageViewAccessibilityLabel;
     [self setRootViewController:self.viewController];
     [delegateMock verifyWithDelay:2];
     
-    expect(self.viewController.queryController.query.sortDescriptors).to.contain(sortDescriptor);
+    expect(self.viewController.queryController.query.sortDescriptors).will.contain(sortDescriptor);
 }
 
 - (void)testToVerifyAvatarImageURLLoad
