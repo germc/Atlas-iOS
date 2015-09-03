@@ -91,7 +91,7 @@ extern NSString *const ATLConversationCollectionViewAccessibilityIdentifier;
     
     ATLMessageCollectionViewCell *cell = [ATLMessageCollectionViewCell new];
     [cell presentMessage:(LYRMessage *)message];
-    expect(cell.bubbleView.bubbleImageView.image).toNot.beNil;
+    expect(cell.bubbleView.bubbleImageView.image).willNot.beNil;
     expect(cell.bubbleView.bubbleViewLabel.text).to.beNil;
 }
 
@@ -102,7 +102,7 @@ extern NSString *const ATLConversationCollectionViewAccessibilityIdentifier;
     
     ATLMessageCollectionViewCell *cell = [ATLMessageCollectionViewCell new];
     [cell presentMessage:(LYRMessage *)message];
-    expect(cell.bubbleView.bubbleImageView.image).toNot.beNil;
+    expect(cell.bubbleView.bubbleImageView.image).willNot.beNil;
     expect(cell.bubbleView.bubbleViewLabel.text).to.beNil;
 }
 

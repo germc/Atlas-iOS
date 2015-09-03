@@ -28,7 +28,7 @@
 @property (nonatomic, readonly) NSURL *identifier LYR_QUERYABLE_PROPERTY;
 @property (nonatomic, readonly) NSSet *participants LYR_QUERYABLE_PROPERTY;
 @property (nonatomic, readonly) NSDate *createdAt LYR_QUERYABLE_PROPERTY;
-@property (nonatomic, readonly) LYRMessageMock *lastMessage LYR_QUERYABLE_PROPERTY;
+@property (nonatomic, readonly, weak) LYRMessageMock *lastMessage LYR_QUERYABLE_PROPERTY;
 @property (nonatomic, readonly) BOOL hasUnreadMessages LYR_QUERYABLE_PROPERTY;
 @property (nonatomic, readonly) BOOL isDeleted;
 @property (nonatomic, readonly) NSDictionary *metadata;
