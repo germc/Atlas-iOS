@@ -88,10 +88,10 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
         _bubbleImageView.contentMode = UIViewContentModeScaleAspectFill;
         [self addSubview:_bubbleImageView];
         
-        _playView = [[ATLPlayView alloc]initWithFrame:CGRectMake(0,0, 50.0f, 50.0f)];
+        _playView = [[ATLPlayView alloc]initWithFrame:CGRectMake(0,0, 128.0f, 128.0f)];
         _playView.translatesAutoresizingMaskIntoConstraints = NO;
         _playView.backgroundColor = [UIColor clearColor];
-        [_playView setHiddenValue:YES];
+        _playView.hidden = YES;
         [self addSubview:_playView];
         
         _progressView = [[ATLProgressView alloc] initWithFrame:CGRectMake(0, 0, 128.0f, 128.0f)];
@@ -135,7 +135,7 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
 {
     self.bubbleImageView.image = nil;
     [self applyImageWidthConstraint:NO];
-    [_playView setHiddenValue:YES];
+    self.playView.hidden = YES;
     [self setBubbleViewContentType:ATLBubbleViewContentTypeText];
 }
 
@@ -158,7 +158,7 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
 {
     self.bubbleImageView.image = image;
     self.imageWidthConstraint.constant = width;
-    [_playView setHiddenValue:NO];
+    self.playView.hidden = NO;
     [self applyImageWidthConstraint:YES];
     [self setBubbleViewContentType:ATLBubbleViewContentTypeVideo];
 }
@@ -452,7 +452,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     [self addConstraint:[NSLayoutConstraint constraintWithItem:_bubbleImageView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0]];
     [self addConstraint:[NSLayoutConstraint constraintWithItem:_bubbleImageView attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0]];
     _imageWidthConstraint = [NSLayoutConstraint constraintWithItem:_bubbleImageView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:0];
-
 }
 
 - (void)configureProgressViewConstraints

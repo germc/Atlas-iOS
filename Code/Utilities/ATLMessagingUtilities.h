@@ -79,6 +79,8 @@ CGSize ATLTextPlainSize(NSString *string, UIFont *font);
 
 CGRect ATLImageRectConstrainedToSize(CGSize imageSize, CGSize maxSize);
 
+CGFloat ATLDegreeToRadians(CGFloat degrees);
+
 //-----------------------------
 // @name Message Part Utilities
 //-----------------------------

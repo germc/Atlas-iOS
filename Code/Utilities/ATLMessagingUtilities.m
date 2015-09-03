@@ -132,6 +132,11 @@ CGRect ATLImageRectConstrainedToSize(CGSize imageSize, CGSize maxSize)
     return thumbRect;
 }
 
+CGFloat ATLDegreeToRadians(CGFloat degrees)
+{
+    return ((M_PI * degrees)/ 180);
+}
+
 #pragma mark - Private Message Part Helpers
 
 CGSize  ATLSizeFromOriginalSizeWithConstraint(CGSize originalSize, CGFloat constraint)
