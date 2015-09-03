@@ -243,6 +243,9 @@ static NSInteger const ATLPhotoActionSheet = 1000;
     }
     
     self.conversationDataSource = [ATLConversationDataSource dataSourceWithLayerClient:self.layerClient query:query];
+    if (!self.conversationDataSource) {
+        return;
+    }
     self.conversationDataSource.queryController.delegate = self;
     self.queryController = self.conversationDataSource.queryController;
     self.showingMoreMessagesIndicator = [self.conversationDataSource moreMessagesAvailable];

@@ -2,9 +2,26 @@
 
 ## 1.0.11
 
+### Public API Changes
+
+* Implemented `conversationViewController:configureCell:forMessage:` to allow `ATLConversationViewController` subclasses to add extra cell configuration.
+* Added `shouldDisplayAvatarItemForAuthenticatedUser` to `ATLConversationViewController` to display avatar items for the authenticated user.
+* Added `ATLAvatarItemDisplayFrequency` property to `ATLConversationViewController` to allow customization of avatar frequency.
+* Exposed `LYRQueryController` on `ATLConversationViewController`.
+* Added `NSTextCheckingType` on `ATLMessageBubbleView`.
+* Added `menuControllerActions` on `ATLMessageBubbleView` to customize UIMenuController actions.
+
+### Enhancements
+
+* `ATLConversationViewController` caches unsent media attachments in the `ATLMessageInputToolbar` upon deallocation, and re-inserts them on creation.
+* Added Localization support.
+* Asynchronous image and GIF loading in `ATLMessageCollectionViewCell`.
+
 ### Bug Fixes
 
 * Fixed bug that caused avatar images to flicker when loading photos from remote URLs.
+* Fixed bug that caused UIMenuController to stay on screen during pan gesture.
+* Fixed bug that caused images to stretch if smaller than the minimum cell size.
 
 ## 1.0.10
 
