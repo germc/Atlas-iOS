@@ -90,7 +90,7 @@ NSString *const LYRMockObjectChangeChangeTypeKey = @"mockObjectChangeChangeTypeK
     return [[LYRMockContentStore sharedStore] fetchObjectsWithClass:query.queryableClass predicate:query.predicate sortDescriptior:query.sortDescriptors].count;
 }
 
-- (LYRQueryControllerMock *)queryControllerWithQuery:(LYRQuery *)query
+- (LYRQueryControllerMock *)queryControllerWithQuery:(LYRQuery *)query error:(NSError *__autoreleasing *)error
 {
     LYRQueryControllerMock *mock = [LYRQueryControllerMock initWithQuery:query];
     mock.layerClient = self;

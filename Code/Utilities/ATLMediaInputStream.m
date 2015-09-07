@@ -215,7 +215,7 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
     
     // iOS7 specific
     BOOL success;
-    if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_7_1) {
+    if (&kCGImageDestinationImageMaxPixelSize == NULL) {
         success = [self setupiOS7SpecificConsumerPrerequisite:&error];
         if (!success) {
             self.mediaStreamStatus = NSStreamStatusError;
@@ -408,7 +408,7 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
  */
 - (BOOL)setupiOS7SpecificConsumerPrerequisite:(NSError **)error
 {
-    if (self.maximumSize > 0 && NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_7_1) {
+    if (self.maximumSize > 0 && &kCGImageDestinationImageMaxPixelSize == NULL) {
         CFDataRef cfDataPNGRepresentation;
         if (!self.sourceAssetURL && self.sourceImage) {
             // In case the we need to resample an UIImage (which might be
@@ -467,7 +467,7 @@ static size_t ATLMediaInputStreamPutBytesIntoStreamCallback(void *assetStreamRef
     NSMutableDictionary *destinationOptions = self.metadata ? [self.metadata mutableCopy] : [NSMutableDictionary dictionary];
     if (self.maximumSize > 0) {
         // Resample image if requested.
-        if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_7_1) {
+        if (&kCGImageDestinationImageMaxPixelSize != NULL) {
             // Unfortunately, this feature is only available on iOS8+. If we're
             // on <= iOS7.1, image had to be resampled beforehand (see setupiOS7SpecificConsumerPrerequisite:).
             [destinationOptions setObject:@(self.maximumSize) forKey:(NSString *)kCGImageDestinationImageMaxPixelSize];

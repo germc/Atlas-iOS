@@ -29,6 +29,7 @@ CGFloat const ATLMessageBubbleMapHeight = 200.0f;
 CGFloat const ATLMessageBubbleDefaultHeight = 40.0f;
 
 NSString *const ATLUserDidTapLinkNotification = @"ATLUserDidTapLinkNotification";
+NSString *const ATLUserDidTapPhoneNumberNotification = @"ATLUserDidTapPhoneNumberNotification";
 
 typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
     ATLBubbleViewContentTypeText,
@@ -44,6 +45,7 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
 @property (nonatomic) UITapGestureRecognizer *tapGestureRecognizer;
 @property (nonatomic) UIPanGestureRecognizer *panGestureRecognizer;
 @property (nonatomic) NSURL *tappedURL;
+@property (nonatomic) NSString *tappedPhoneNumber;
 @property (nonatomic) NSLayoutConstraint *imageWidthConstraint;
 @property (nonatomic) MKMapSnapshotter *snapshotter;
 @property (nonatomic) ATLProgressView *progressView;
@@ -81,6 +83,8 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
         _bubbleImageView.contentMode = UIViewContentModeScaleAspectFill;
         [self addSubview:_bubbleImageView];
 
+        _textCheckingTypes = NSTextCheckingTypeLink;
+        
         _progressView = [[ATLProgressView alloc] initWithFrame:CGRectMake(0, 0, 128.0f, 128.0f)];
         _progressView.translatesAutoresizingMaskIntoConstraints = NO;
         _progressView.alpha = 1.0f;
@@ -100,6 +104,9 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
 
         UILongPressGestureRecognizer *gestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
         [self addGestureRecognizer:gestureRecognizer];
+        
+        UIMenuItem *resetMenuItem = [[UIMenuItem alloc] initWithTitle:@"Copy" action:@selector(copyItem)];
+        _menuControllerActions = @[resetMenuItem];
 
         [self prepareForReuse];
     }
@@ -230,6 +237,16 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
     }
 }
 
+- (void)setMenuControllerActions:(NSArray *)menuControllerActions
+{
+    for (id object in menuControllerActions) {
+        if (![object isKindOfClass:[UIMenuItem class]]) {
+            [NSException raise:NSInternalInconsistencyException format:@"Menu controller actions must be of type UIMenuItem"];
+        }
+    }
+    _menuControllerActions = menuControllerActions;
+}
+
 #pragma mark - Copy / Paste Support
 
 - (void)copyItem
@@ -238,7 +255,8 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
     if (!self.bubbleViewLabel.isHidden) {
         pasteboard.string = self.bubbleViewLabel.text;
     } else {
-        pasteboard.image = self.bubbleImageView.image;
+        NSData *imageData = UIImagePNGRepresentation(self.bubbleImageView.image);
+        [pasteboard setData:imageData forPasteboardType:ATLPasteboardImageKey];
     }
 }
 
@@ -259,6 +277,8 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
 - (void)handleLongPress:(UILongPressGestureRecognizer *)recognizer
 {
     if ([recognizer state] == UIGestureRecognizerStateBegan && !self.longPressMask) {
+        
+        if (!self.menuControllerActions || self.menuControllerActions.count == 0) return;
 
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(menuControllerDisappeared)
@@ -274,8 +294,7 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
         [self addSubview:self.longPressMask];
 
         UIMenuController *menuController = [UIMenuController sharedMenuController];
-        UIMenuItem *resetMenuItem = [[UIMenuItem alloc] initWithTitle:@"Copy" action:@selector(copyItem)];
-        [menuController setMenuItems:@[resetMenuItem]];
+        [menuController setMenuItems:self.menuControllerActions];
 
         // If we're in a scroll view, we might need to position the UIMenuController differently
         UIView *superview = self.superview;
@@ -346,11 +365,16 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
     NSUInteger characterIndex = [layoutManager characterIndexForPoint:tapLocation
                                                       inTextContainer:textContainer
                              fractionOfDistanceBetweenInsertionPoints:NULL];
-    NSArray *results = ATLLinkResultsForText(self.bubbleViewLabel.attributedText.string);
+    NSArray *results = ATLTextCheckingResultsForText(self.bubbleViewLabel.attributedText.string, self.textCheckingTypes);
     for (NSTextCheckingResult *result in results) {
         if (NSLocationInRange(characterIndex, result.range)) {
-            self.tappedURL = result.URL;
-            return YES;
+            if (result.resultType == NSTextCheckingTypeLink && self.textCheckingTypes & NSTextCheckingTypeLink) {
+                self.tappedURL = result.URL;
+                return YES;
+            } else if (result.resultType == NSTextCheckingTypePhoneNumber && self.textCheckingTypes & NSTextCheckingTypePhoneNumber) {
+                self.tappedPhoneNumber = result.phoneNumber;
+                return YES;
+            }
         }
     }
     return NO;
@@ -368,8 +392,15 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 
 - (void)handleLabelTap:(UITapGestureRecognizer *)tapGestureRecognizer
 {
-    [[NSNotificationCenter defaultCenter] postNotificationName:ATLUserDidTapLinkNotification object:self.tappedURL];
-    self.tappedURL = nil;
+    if (self.tappedURL) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:ATLUserDidTapLinkNotification object:self.tappedURL];
+        self.tappedURL = nil;
+    }
+    
+    if (self.tappedPhoneNumber) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:ATLUserDidTapPhoneNumberNotification object:self.tappedPhoneNumber];
+        self.tappedURL = nil;
+    }
 }
 
 - (void)dealloc
@@ -384,7 +415,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     [self addConstraint:[NSLayoutConstraint constraintWithItem:_bubbleViewLabel attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeTop multiplier:1.0 constant:ATLMessageBubbleLabelVerticalPadding]];
     [self addConstraint:[NSLayoutConstraint constraintWithItem:_bubbleViewLabel attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeLeft multiplier:1.0 constant:ATLMessageBubbleLabelHorizontalPadding]];
     [self addConstraint:[NSLayoutConstraint constraintWithItem:_bubbleViewLabel attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeRight multiplier:1.0 constant:-ATLMessageBubbleLabelHorizontalPadding]];
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:_bubbleViewLabel attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationGreaterThanOrEqual toItem:self attribute:NSLayoutAttributeBottom multiplier:1.0 constant:-ATLMessageBubbleLabelVerticalPadding]];
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:_bubbleViewLabel attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationLessThanOrEqual toItem:self attribute:NSLayoutAttributeBottom multiplier:1.0 constant:-ATLMessageBubbleLabelVerticalPadding]];
 }
 
 - (void)configureBubbleImageViewConstraints

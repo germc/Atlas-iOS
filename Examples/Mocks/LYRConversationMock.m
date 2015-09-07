@@ -67,7 +67,6 @@ NSData *MediaAttachmentDataFromInputStream(NSInputStream *inputStream)
 {
     LYRConversationMock *mock = [[self alloc] initWithParticipants:participants];
     mock.metadata = [options valueForKey:LYRConversationOptionsMetadataKey];
-    mock.identifier = [NSURL URLWithString:@"test"];
     return mock;
 }
 
