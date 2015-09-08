@@ -529,6 +529,10 @@ static NSInteger const ATLPhotoActionSheet = 1000;
     if (!self.shouldDisplayAvatarItem) return NO;
    
     LYRMessage *message = [self.conversationDataSource messageAtCollectionViewIndexPath:indexPath];
+    if (message.sender.userID == nil) {
+        return NO;
+    }
+    
     if ([message.sender.userID isEqualToString:self.layerClient.authenticatedUserID] && !self.shouldDisplayAvatarItemForAuthenticatedUser) {
         return NO;
     }
