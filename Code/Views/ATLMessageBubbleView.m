@@ -333,7 +333,10 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
             menuController.arrowDirection = UIMenuControllerArrowDefault;
         }
 
+        self.panGestureRecognizer.enabled = NO;
         [menuController setMenuVisible:YES animated:YES];
+    } else if ([recognizer state] == UIGestureRecognizerStateEnded) {
+        self.panGestureRecognizer.enabled = YES;
     }
 }
 
