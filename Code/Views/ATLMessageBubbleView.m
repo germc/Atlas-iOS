@@ -264,6 +264,7 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
 {
     [self.longPressMask removeFromSuperview];
     self.longPressMask = nil;
+    [[UIMenuController sharedMenuController] setMenuItems:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
