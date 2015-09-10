@@ -44,6 +44,7 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
 @property (nonatomic) CLLocationCoordinate2D locationShown;
 @property (nonatomic) UITapGestureRecognizer *tapGestureRecognizer;
 @property (nonatomic) UIPanGestureRecognizer *panGestureRecognizer;
+@property (nonatomic) UILongPressGestureRecognizer *longPressGestureRecognizer;
 @property (nonatomic) NSURL *tappedURL;
 @property (nonatomic) NSString *tappedPhoneNumber;
 @property (nonatomic) NSLayoutConstraint *imageWidthConstraint;
@@ -102,8 +103,9 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
         _panGestureRecognizer.delegate = self;
         [self addGestureRecognizer:_panGestureRecognizer];
 
-        UILongPressGestureRecognizer *gestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
-        [self addGestureRecognizer:gestureRecognizer];
+        _longPressGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
+        _longPressGestureRecognizer.delegate = self;
+        [self addGestureRecognizer:_longPressGestureRecognizer];
         
         UIMenuItem *resetMenuItem = [[UIMenuItem alloc] initWithTitle:@"Copy" action:@selector(copyItem)];
         _menuControllerActions = @[resetMenuItem];
@@ -387,6 +389,9 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
 shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
     if (gestureRecognizer == self.panGestureRecognizer || otherGestureRecognizer == self.panGestureRecognizer) {
+        return YES;
+    }
+    if ((gestureRecognizer == self.longPressGestureRecognizer || otherGestureRecognizer == self.longPressGestureRecognizer) && (!self.menuControllerActions || self.menuControllerActions.count == 0)) {
         return YES;
     }
     return NO;
