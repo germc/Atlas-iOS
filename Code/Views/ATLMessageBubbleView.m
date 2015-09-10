@@ -264,8 +264,12 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
 
 - (void)menuControllerDisappeared
 {
-    [self.longPressMask removeFromSuperview];
-    self.longPressMask = nil;
+    [UIView animateWithDuration:0.1 animations:^{
+        self.longPressMask.alpha = 0;
+    } completion:^(BOOL finished) {
+        [self.longPressMask removeFromSuperview];
+        self.longPressMask = nil;
+    }];
     [[UIMenuController sharedMenuController] setMenuItems:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
@@ -293,7 +297,10 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
         self.longPressMask = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.frame.size.width, self.frame.size.height)];
         self.longPressMask.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         self.longPressMask.backgroundColor = [UIColor blackColor];
-        self.longPressMask.alpha = 0.1;
+        self.longPressMask.alpha = 0;
+        [UIView animateWithDuration:0.1 animations:^{
+            self.longPressMask.alpha = 0.1;
+        }];
         [self addSubview:self.longPressMask];
 
         UIMenuController *menuController = [UIMenuController sharedMenuController];
