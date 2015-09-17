@@ -738,17 +738,17 @@ static NSInteger const ATLPhotoActionSheet = 1000;
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
     ATLMediaAttachment *mediaAttachment;
-    NSURL *assetURL = (NSURL *)info[UIImagePickerControllerReferenceURL];
-    
-    if (assetURL) { //asset exists locally
-        mediaAttachment = [ATLMediaAttachment mediaAttachmentWithAssetURL:assetURL thumbnailSize:ATLDefaultThumbnailSize];
-    } else if (info[UIImagePickerControllerOriginalImage]){ //live photo is taken
-        mediaAttachment = [ATLMediaAttachment mediaAttachmentWithImage:info[UIImagePickerControllerOriginalImage]
-                                                              metadata:info[UIImagePickerControllerMediaMetadata]
-                                                         thumbnailSize:ATLDefaultThumbnailSize];
-    } else if (info[UIImagePickerControllerMediaURL]) { //live video is taken
+    if (info[UIImagePickerControllerOriginalImage]) {
+        // Image picked from the image picker.
+        mediaAttachment = [ATLMediaAttachment mediaAttachmentWithImage:info[UIImagePickerControllerOriginalImage] metadata:info[UIImagePickerControllerMediaMetadata] thumbnailSize:ATLDefaultThumbnailSize];
+    } else if (info[UIImagePickerControllerMediaURL]) {
+        // Video recorded within the app or was picked and edited in
+        // the image picker.
         NSURL *moviePath = [NSURL fileURLWithPath:(NSString *)[[info objectForKey:UIImagePickerControllerMediaURL] path]];
         mediaAttachment = [ATLMediaAttachment mediaAttachmentWithFileURL:moviePath thumbnailSize:ATLDefaultThumbnailSize];
+    } else if (info[UIImagePickerControllerReferenceURL]) {
+        // Video recorded within the app.
+        mediaAttachment = [ATLMediaAttachment mediaAttachmentWithAssetURL:info[UIImagePickerControllerReferenceURL] thumbnailSize:ATLDefaultThumbnailSize];
     } else {
         return;
     }
