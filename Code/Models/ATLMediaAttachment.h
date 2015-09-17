@@ -39,7 +39,7 @@ typedef NS_ENUM(NSUInteger, ATLMediaAttachmentType) {
     ATLMediaAttachmentTypeImage,
     /**
      @constant Media attachment containing video data.
-     @discussion Sets mediaMIMEType = @"video/mp4"; thumbnailMIMEType = @"video/mp4+preview"; metadataMIMEType = @"application/json+imageSize"; textRepresentation = @"Attachment: Video";
+     @discussion Sets mediaMIMEType = @"video/mp4"; thumbnailMIMEType = @"video/jpeg+preview"; metadataMIMEType = @"application/json+imageSize"; textRepresentation = @"Attachment: Video";
      */
     ATLMediaAttachmentTypeVideo
 };
