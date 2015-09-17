@@ -31,6 +31,13 @@
  @return An `ALAsset` if successfully retrieved from asset library, otherwise `nil`.
  */
 ALAsset *ATLMediaAttachmentFromAssetURL(NSURL *assetURL, ALAssetsLibrary *assetLibrary);
+
+/**
+ @abstract A helper function that streams data straight from an NSInputStream
+   into the NSData.
+ @param inputStream The `NSInputStream` where the data will be consumed from.
+ @return An `NSData` object with data.
+ */
 NSData *ATLMediaAttachmentDataFromInputStream(NSInputStream *inputStream);
 
 /**
