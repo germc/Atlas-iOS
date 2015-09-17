@@ -568,8 +568,10 @@ static NSInteger const ATLPhotoActionSheet = 1000;
     if (!self.conversation) {
         return;
     }
+    
+    // If there's no content in the input field, send the location.
     NSOrderedSet *messages = [self messagesForMediaAttachments:messageInputToolbar.mediaAttachments];
-    if (messages && messages.count == 0 && messageInputToolbar.textInputView.text.length == 0) {
+    if (messages.count == 0 && messageInputToolbar.textInputView.text.length == 0) {
         [self sendLocationMessage];
     } else {
         for (LYRMessage *message in messages) {
