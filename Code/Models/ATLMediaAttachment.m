@@ -42,6 +42,13 @@ NSData *ATLMediaAttachmentDataFromInputStream(NSInputStream *inputStream);
  */
 UIImage *ATLMediaAttachmentGenerateThumbnailFromVideoFileURL(NSURL *videoFileURL);
 
+/**
+ @abstract Extracts the video orientation based on assetTtrack's affine transform.
+ @param assetTrack The `AVAssetTrack` for which to extract the video orientation from.
+ @return Orientation information in a form of `UIImageOrientation`.
+ */
+UIImageOrientation ATLMediaAttachmentVideoOrientationForAVAssetTrack(AVAssetTrack *assetVideoTrack);
+
 static int const ATLMediaAttachmentTIFFOrientationToImageOrientationMap[9] = { 0, 0, 6, 1, 5, 4, 4, 7, 2 };
 static char const ATLMediaAttachmentAsyncToBlockingQueueName[] = "com.layer.Atlas.ATLMediaAttachment.blocking";
 static NSUInteger const ATLMediaAttachmentDataFromStreamBufferSize = 1024 * 1024;
@@ -253,6 +260,11 @@ static float const ATLMediaAttachmentDefaultThumbnailJPEGCompression = 0.5f;
         AVAsset *videoAsset = [AVAsset assetWithURL:fileURL];
         AVAssetTrack *firstVideoAssetTrack = [[videoAsset tracksWithMediaType:AVMediaTypeVideo] firstObject];
         mediaDimensions = firstVideoAssetTrack.naturalSize;
+        mediaOrientation = ATLMediaAttachmentVideoOrientationForAVAssetTrack(firstVideoAssetTrack);
+        if (mediaOrientation == UIImageOrientationUp || mediaOrientation == UIImageOrientationDown) {
+            // Flip the media dimension.
+            mediaDimensions = CGSizeMake(mediaDimensions.height, mediaDimensions.width);
+        }
     }
 
     NSDictionary *mediaMetadata = @{ @"width": @(mediaDimensions.width),
@@ -537,15 +549,30 @@ UIImage *ATLMediaAttachmentGenerateThumbnailFromVideoFileURL(NSURL *videoFileURL
     AVAssetTrack *videoAssetTrack = [[URLasset tracksWithMediaType:AVMediaTypeVideo] firstObject];
     CMTime time;
     if (videoAssetTrack) {
-        time = CMTimeMake(1, videoAssetTrack.nominalFrameRate);
+        time = CMTimeMake(0, videoAssetTrack.nominalFrameRate);
     }
     CGImageRef imageRef = [assetImageGenerator copyCGImageAtTime:time actualTime:NULL error:&error];
-    
     if (error) {
         NSLog(@"Failed to create thumbnail!");
     }
     UIImage *outputImage = [UIImage imageWithCGImage:imageRef];
     CGImageRelease(imageRef);
     return outputImage;
-    
 }
+
+UIImageOrientation ATLMediaAttachmentVideoOrientationForAVAssetTrack(AVAssetTrack *assetVideoTrack)
+{
+    CGAffineTransform transform = assetVideoTrack.preferredTransform;
+    int videoAngleInDegrees = (int)((float)atan2(transform.b, transform.a) * (float)180 / (float)M_PI);
+    switch (videoAngleInDegrees) {
+        case 90:
+            return UIImageOrientationUp;
+        case 180:
+            return UIImageOrientationLeft;
+        case -90:
+            return UIImageOrientationDown;
+        default:
+            return UIImageOrientationRight;
+    }
+}
+
