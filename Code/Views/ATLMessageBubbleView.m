@@ -20,6 +20,7 @@
 
 #import "ATLMessageBubbleView.h"
 #import "ATLMessagingUtilities.h"
+#import "ATLPlayView.h"
 
 CGFloat const ATLMessageBubbleLabelVerticalPadding = 8.0f;
 CGFloat const ATLMessageBubbleLabelHorizontalPadding = 13.0f;
@@ -34,6 +35,7 @@ NSString *const ATLUserDidTapPhoneNumberNotification = @"ATLUserDidTapPhoneNumbe
 typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
     ATLBubbleViewContentTypeText,
     ATLBubbleViewContentTypeImage,
+    ATLBubbleViewContentTypeVideo,
     ATLBubbleViewContentTypeLocation,
 };
 
@@ -41,14 +43,15 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
 
 @property (nonatomic) ATLBubbleViewContentType contentType;
 @property (nonatomic) UIView *longPressMask;
+@property (nonatomic) NSString *tappedPhoneNumber;
 @property (nonatomic) CLLocationCoordinate2D locationShown;
 @property (nonatomic) UITapGestureRecognizer *tapGestureRecognizer;
 @property (nonatomic) UIPanGestureRecognizer *panGestureRecognizer;
 @property (nonatomic) NSURL *tappedURL;
-@property (nonatomic) NSString *tappedPhoneNumber;
 @property (nonatomic) NSLayoutConstraint *imageWidthConstraint;
 @property (nonatomic) MKMapSnapshotter *snapshotter;
 @property (nonatomic) ATLProgressView *progressView;
+@property (nonatomic) ATLPlayView *playView;
 
 @end
 
@@ -77,23 +80,30 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
         _bubbleViewLabel.translatesAutoresizingMaskIntoConstraints = NO;
         [_bubbleViewLabel setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh + 1 forAxis:UILayoutConstraintAxisHorizontal];
         [self addSubview:_bubbleViewLabel];
-
+        
+        _textCheckingTypes = NSTextCheckingTypeLink;
+        
         _bubbleImageView = [[UIImageView alloc] init];
         _bubbleImageView.translatesAutoresizingMaskIntoConstraints = NO;
         _bubbleImageView.contentMode = UIViewContentModeScaleAspectFill;
         [self addSubview:_bubbleImageView];
-
-        _textCheckingTypes = NSTextCheckingTypeLink;
+        
+        _playView = [[ATLPlayView alloc]initWithFrame:CGRectMake(0,0, 128.0f, 128.0f)];
+        _playView.translatesAutoresizingMaskIntoConstraints = NO;
+        _playView.backgroundColor = [UIColor clearColor];
+        _playView.hidden = YES;
+        [self addSubview:_playView];
         
         _progressView = [[ATLProgressView alloc] initWithFrame:CGRectMake(0, 0, 128.0f, 128.0f)];
         _progressView.translatesAutoresizingMaskIntoConstraints = NO;
         _progressView.alpha = 1.0f;
         [self addSubview:_progressView];
-
+        
         [self configureBubbleViewLabelConstraints];
         [self configureBubbleImageViewConstraints];
         [self configureProgressViewConstraints];
-
+        [self configurePlayViewConstraints];
+        
         _tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleLabelTap:)];
         _tapGestureRecognizer.delegate = self;
         [self.bubbleViewLabel addGestureRecognizer:_tapGestureRecognizer];
@@ -125,6 +135,7 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
 {
     self.bubbleImageView.image = nil;
     [self applyImageWidthConstraint:NO];
+    self.playView.hidden = YES;
     [self setBubbleViewContentType:ATLBubbleViewContentTypeText];
 }
 
@@ -141,6 +152,15 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
     self.imageWidthConstraint.constant = width;
     [self applyImageWidthConstraint:YES];
     [self setBubbleViewContentType:ATLBubbleViewContentTypeImage];
+}
+
+- (void)updateWithVideoThumbnail:(UIImage *)image width:(CGFloat)width
+{
+    self.bubbleImageView.image = image;
+    self.imageWidthConstraint.constant = width;
+    self.playView.hidden = NO;
+    [self applyImageWidthConstraint:YES];
+    [self setBubbleViewContentType:ATLBubbleViewContentTypeVideo];
 }
 
 - (void)updateWithLocation:(CLLocationCoordinate2D)location
@@ -203,6 +223,13 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
             break;
 
         case ATLBubbleViewContentTypeImage:
+            self.bubbleViewLabel.hidden = YES;
+            self.bubbleImageView.hidden = NO;
+            self.locationShown = kCLLocationCoordinate2DInvalid;
+            self.bubbleViewLabel.text = nil;
+            break;
+            
+        case ATLBubbleViewContentTypeVideo:
             self.bubbleViewLabel.hidden = YES;
             self.bubbleImageView.hidden = NO;
             self.locationShown = kCLLocationCoordinate2DInvalid;
@@ -301,7 +328,6 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
         while (superview && ![superview isKindOfClass:[UIScrollView class]]) {
             superview = superview.superview;
         }
-
         if ([superview isKindOfClass:[UIScrollView class]]) {
             UIScrollView *containingScrollView = (UIScrollView *)superview;
             CGPoint contentOffset = containingScrollView.contentOffset;
@@ -331,7 +357,6 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
             [menuController setTargetRect:CGRectMake(self.frame.size.width / 2, 0.0f, 0.0f, 0.0f) inView:self];
             menuController.arrowDirection = UIMenuControllerArrowDefault;
         }
-
         [menuController setMenuVisible:YES animated:YES];
     }
 }
@@ -375,6 +400,8 @@ typedef NS_ENUM(NSInteger, ATLBubbleViewContentType) {
                 self.tappedPhoneNumber = result.phoneNumber;
                 return YES;
             }
+            self.tappedURL = result.URL;
+            return YES;
         }
     }
     return NO;
@@ -425,7 +452,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     [self addConstraint:[NSLayoutConstraint constraintWithItem:_bubbleImageView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0]];
     [self addConstraint:[NSLayoutConstraint constraintWithItem:_bubbleImageView attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0]];
     _imageWidthConstraint = [NSLayoutConstraint constraintWithItem:_bubbleImageView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:0];
-
 }
 
 - (void)configureProgressViewConstraints
@@ -434,6 +460,14 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     [self addConstraint:[NSLayoutConstraint constraintWithItem:_progressView attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0]];
     [self addConstraint:[NSLayoutConstraint constraintWithItem:_progressView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:64.0f]];
     [self addConstraint:[NSLayoutConstraint constraintWithItem:_progressView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:64.0f]];
+}
+
+- (void)configurePlayViewConstraints
+{
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:_playView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0]];
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:_playView attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0]];
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:_playView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:64.0f]];
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:_playView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:64.0f]];
 }
 
 @end
