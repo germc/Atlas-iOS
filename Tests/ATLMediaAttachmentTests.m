@@ -410,7 +410,7 @@
     // Verifying image metadata JSON
     NSData *videoSizeMetadataJSON = ATLTestAttachmentDataFromStream(mediaAttachment.metadataInputStream);
     expect(videoSizeMetadataJSON).toNot.beNil();
-    expect([NSJSONSerialization JSONObjectWithData:videoSizeMetadataJSON options:NSJSONReadingAllowFragments error:nil]).to.equal(@{ @"width": @1280, @"height": @720, @"orientation": @(UIImageOrientationUp) });
+    expect([NSJSONSerialization JSONObjectWithData:videoSizeMetadataJSON options:NSJSONReadingAllowFragments error:nil]).to.equal(@{ @"width": @1280, @"height": @720, @"orientation": @(UIImageOrientationRight) });
 }
 
 @end
