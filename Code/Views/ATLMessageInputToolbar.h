@@ -159,4 +159,15 @@ extern NSString *const ATLMessageInputToolbarAccessibilityLabel;
  */
 @property (nonatomic, readonly) NSArray *mediaAttachments;
 
+//-------------------
+// Layout Accessories
+//-------------------
+
+/**
+ @abstract The view controller whose input accessory view is the `ATLMessageInputToolbar`.
+ @discussion This property is set internally in the `ATLBaseConversationViewController` to change the view's frame
+ to support UISplitViewController usage.  This property should only be set when subclassing `ATLMessageInputToolbar`.
+ */
+@property (nonatomic, weak) UIViewController *containerViewController;
+
 @end
