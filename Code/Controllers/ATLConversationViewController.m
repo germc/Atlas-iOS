@@ -626,12 +626,10 @@ static NSInteger const ATLPhotoActionSheet = 1000;
         completePushText = [NSString stringWithFormat:@"%@: %@", senderName, pushText];
     }
     
-    LYRPushNotificationConfiguration *defaultConfiguration = [LYRPushNotificationConfiguration new];
-    defaultConfiguration.alert = completePushText;
-    defaultConfiguration.sound = ATLPushNotificationSoundName;
-    NSDictionary *options = @{ LYRMessageOptionsPushNotificationConfigurationKey:  defaultConfiguration };
+    NSDictionary *pushOptions = @{LYRMessageOptionsPushNotificationAlertKey : completePushText,
+                                  LYRMessageOptionsPushNotificationSoundNameKey : ATLPushNotificationSoundName};
     NSError *error;
-    LYRMessage *message = [self.layerClient newMessageWithParts:parts options:options error:&error];
+    LYRMessage *message = [self.layerClient newMessageWithParts:parts options:pushOptions error:&error];
     if (error) {
         return nil;
     }
