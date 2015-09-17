@@ -205,6 +205,28 @@ extern NSString *const ATLMessageInputToolbarSendButton;
     expect(testTextAttachment2.textRepresentation).to.equal(@"test2");
 }
 
+- (void)testToVerifyInputToolbarIsAppropriateWidth
+{
+    self.viewController = [ATLSampleConversationViewController conversationViewControllerWithLayerClient:(LYRClient *)self.testInterface.layerClient];
+    
+    UIViewController *parentViewController = [UIViewController new];
+    [parentViewController addChildViewController:self.viewController];
+    [parentViewController.view addSubview:self.viewController.view];
+    [self.viewController didMoveToParentViewController:parentViewController];
+    self.viewController.view.frame = parentViewController.view.frame;
+
+    [self setRootViewController:parentViewController];
+    [tester waitForAnimationsToFinish];
+    
+    CGRect frame = self.viewController.view.frame;
+    frame.size.width = frame.size.width/2;
+    self.viewController.view.frame = frame;
+    
+    ATLMessageInputToolbar *toolBar = (ATLMessageInputToolbar *)[tester waitForViewWithAccessibilityLabel:@"Message Input Toolbar"];
+    [toolBar layoutIfNeeded];
+    expect(toolBar.frame.size.width).will.equal(frame.size.width);
+}
+
 #pragma mark - ATLConversationViewControllerDelegate
 
 //- (void)conversationViewController:(ATLConversationViewController *)viewController didSendMessage:(LYRMessage *)message;

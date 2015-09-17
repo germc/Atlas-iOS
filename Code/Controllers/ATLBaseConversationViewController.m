@@ -77,6 +77,7 @@ static CGFloat const ATLMaxScrollDistanceFromBottom = 150;
     // An apparent system bug causes a view controller to not be deallocated
     // if the view controller's own inputAccessoryView property is used.
     self.view.inputAccessoryView = self.messageInputToolbar;
+    self.messageInputToolbar.containerViewController = self;
     
     // Add typing indicator
     self.typingIndicatorController = [[ATLTypingIndicatorViewController alloc] init];
