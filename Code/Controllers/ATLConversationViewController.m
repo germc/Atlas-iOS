@@ -270,7 +270,7 @@ static NSInteger const ATLPhotoActionSheet = 1000;
     self.messageInputToolbar.leftAccessoryButton.enabled = shouldEnableButton;
     
     // Mark all messages as read if needed
-    if (self.conversation.lastMessage) {
+    if (self.conversation.lastMessage && self.marksMessagesAsRead) {
         [self.conversation markAllMessagesAsRead:nil];
     }
 }
@@ -425,7 +425,7 @@ static NSInteger const ATLPhotoActionSheet = 1000;
     } else {
         [cell updateWithSender:nil];
     }
-    if (message.isUnread && [[UIApplication sharedApplication] applicationState] == UIApplicationStateActive) {
+    if (message.isUnread && [[UIApplication sharedApplication] applicationState] == UIApplicationStateActive && self.marksMessagesAsRead) {
         [message markAsRead:nil];
     }
 }
@@ -812,7 +812,7 @@ static NSInteger const ATLPhotoActionSheet = 1000;
 
 - (void)handleApplicationWillEnterForeground:(NSNotification *)notification
 {
-    if (self.conversation) {
+    if (self.conversation && self.marksMessagesAsRead) {
         NSError *error;
         BOOL success = [self.conversation markAllMessagesAsRead:&error];
         if (!success) {
