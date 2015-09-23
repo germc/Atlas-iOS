@@ -74,6 +74,8 @@ static CGFloat const ATLMaxScrollDistanceFromBottom = 150;
     
     // Add message input tool bar
     self.messageInputToolbar = [ATLMessageInputToolbar new];
+    // Fixes an ios9 bug that causes the background of the input accessory view to be black when being presented on screen.
+    self.messageInputToolbar.translucent = NO;
     // An apparent system bug causes a view controller to not be deallocated
     // if the view controller's own inputAccessoryView property is used.
     self.view.inputAccessoryView = self.messageInputToolbar;
@@ -111,6 +113,12 @@ static CGFloat const ATLMaxScrollDistanceFromBottom = 150;
     [self updateBottomCollectionViewInset];
 }
 
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    self.messageInputToolbar.translucent = YES;
+}
+
 - (void)viewDidLayoutSubviews
 {
     [super viewDidLayoutSubviews];
@@ -133,6 +141,7 @@ static CGFloat const ATLMaxScrollDistanceFromBottom = 150;
 {
     [super viewWillDisappear:animated];
     
+    self.messageInputToolbar.translucent = NO;
     // Workaround for view's content flashing onscreen after pop animation concludes on iOS 8.
     BOOL isPopping = ![self.navigationController.viewControllers containsObject:self];
     if (isPopping) {
