@@ -37,8 +37,28 @@ NSData *ATLTestAttachmentDataFromStream(NSInputStream *inputStream);
 UIImage *ATLTestAttachmentMakeImageWithSize(CGSize size);
 
 /**
+ @abstract Generates a test image with the given size.
+ @param size The size of the output image.
+ @param animationSequenceFrame The sequence frame of the animation.
+ @return An `UIImage` instance.
+ */
+UIImage *ATLTestAttachmentMakeImageWithSizeAndAnimationSequenceFrame(CGSize imageSize, NSUInteger animationSequenceFrame);
+
+/**
  @abstract Synhchronously grabs the last photo from the Photos Library.
  @param library The library to grab the last photo from.
  @return Returns ALAsset instance of the last image located in the Photos Library, or `nil` in case of a failure.
  */
 ALAsset *ATLAssetTestObtainLastImageFromAssetLibrary(ALAssetsLibrary *library);
+
+ALAsset *ATLVideoAssetTestObtainLastVideoFromAssetLibrary(ALAssetsLibrary *library);
+
+/**
+ @abstract Renders a test video with a given size, framerate and duration.
+ @param outputFileURL The output path URL where the video file will be located.
+ @param videoSize The desired size of the video (must conform to h264 size restrictions).
+ @param framesPerSecond Video framerate in frames per second.
+ @param duration The length of the video in seconds.
+ @return Returns `YES` if the file was successfully written to disk; otherwise `NO`.
+ */
+BOOL ATLTestMakeVideo(NSURL *outputFileURL, CGSize videoSize, NSUInteger framesPerSecond, NSTimeInterval duration);

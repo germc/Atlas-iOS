@@ -19,14 +19,10 @@
 //
 
 #import "ATLProgressView.h"
+#import "ATLMessagingUtilities.h"
 
 static NSTimeInterval const ATLProgressViewDefaultBorderWidth = 8.00f;
 static NSTimeInterval const ATLProgressViewDefaultTimeInterval = 0.25f;
-
-float ATLDegreeToRadians(float degrees)
-{
-    return ((M_PI * degrees)/ 180);
-}
 
 @interface ATLProgressView ()
 
@@ -34,7 +30,6 @@ float ATLDegreeToRadians(float degrees)
 @property (nonatomic) CAShapeLayer *progressRingLayer;
 @property (nonatomic) UIColor *defaultBackgroundRingColor;
 @property (nonatomic) UIColor *defaultForegroundRingColor;
-@property (nonatomic) UIBezierPath *progressArcPath;
 @property (nonatomic) CGFloat borderWidth;
 @property (nonatomic, readonly) CGFloat radius;
 @property (nonatomic) NSTimeInterval animationDuration;

@@ -57,6 +57,11 @@ extern NSString *const ATLUserDidTapPhoneNumberNotification;
 - (void)updateWithImage:(UIImage *)image width:(CGFloat)width;
 
 /**
+ @abstract Tells the bubble view to display the thumbnail for a video.
+ */
+- (void)updateWithVideoThumbnail:(UIImage *)image width:(CGFloat)width;
+
+/**
  @abstract Tells the bubble view to display a map image for a given location.
  */
 - (void)updateWithLocation:(CLLocationCoordinate2D)location;
