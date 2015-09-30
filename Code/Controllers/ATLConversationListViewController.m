@@ -85,6 +85,7 @@ NSString *const ATLConversationListViewControllerDeletionModeGlobal = @"Global";
     _displaysAvatarItem = NO;
     _allowsEditing = YES;
     _rowHeight = 76.0f;
+    _shouldDisplaySearchController = YES;
 }
 
 - (id)init
@@ -114,20 +115,22 @@ NSString *const ATLConversationListViewControllerDeletionModeGlobal = @"Global";
     self.tableView.isAccessibilityElement = YES;
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
     
-    self.searchBar = [[UISearchBar alloc] initWithFrame:CGRectZero];
-    [self.searchBar sizeToFit];
-    self.searchBar.translucent = NO;
-    self.searchBar.accessibilityLabel = @"Search Bar";
-    self.searchBar.delegate = self;
-    self.tableView.tableHeaderView = self.searchBar;
-    
+    if (self.shouldDisplaySearchController) {
+        self.searchBar = [[UISearchBar alloc] initWithFrame:CGRectZero];
+        [self.searchBar sizeToFit];
+        self.searchBar.translucent = NO;
+        self.searchBar.accessibilityLabel = @"Search Bar";
+        self.searchBar.delegate = self;
+        self.tableView.tableHeaderView = self.searchBar;
+        
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-    self.searchController = [[UISearchDisplayController alloc] initWithSearchBar:self.searchBar contentsController:self];
+        self.searchController = [[UISearchDisplayController alloc] initWithSearchBar:self.searchBar contentsController:self];
 #pragma GCC diagnostic pop
-    self.searchController.delegate = self;
-    self.searchController.searchResultsDelegate = self;
-    self.searchController.searchResultsDataSource = self;
+        self.searchController.delegate = self;
+        self.searchController.searchResultsDelegate = self;
+        self.searchController.searchResultsDataSource = self;
+    }
 }
 
 - (void)viewWillAppear:(BOOL)animated
