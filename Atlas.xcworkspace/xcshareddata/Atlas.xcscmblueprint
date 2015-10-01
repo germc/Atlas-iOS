@@ -1,0 +1,37 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "FAC91FF60B60E6856BFECF250238B5EE8E4E482B",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "704F552CEB6415A9F52EE9446435355DF9848168" : 0,
+    "555B8AD8B8A34913DE837AE8E32AA22302CA6BED" : 0,
+    "FAC91FF60B60E6856BFECF250238B5EE8E4E482B" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "C4191603-79C5-4296-96BF-0FC5CD5D26AC",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "704F552CEB6415A9F52EE9446435355DF9848168" : "",
+    "555B8AD8B8A34913DE837AE8E32AA22302CA6BED" : "",
+    "FAC91FF60B60E6856BFECF250238B5EE8E4E482B" : "Atlas"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "Atlas",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "Atlas.xcworkspace",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:layerhq\/Atlas-Messenger-iOS.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "555B8AD8B8A34913DE837AE8E32AA22302CA6BED"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:layerhq\/Layer-Messenger-iOS.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "704F552CEB6415A9F52EE9446435355DF9848168"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:layerhq\/Atlas-iOS.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "FAC91FF60B60E6856BFECF250238B5EE8E4E482B"
+    }
+  ]
+}

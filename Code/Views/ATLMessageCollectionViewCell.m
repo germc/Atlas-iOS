@@ -34,6 +34,7 @@ CGFloat const ATLMessageCellMinimumHeight = 10.0f;
 CGFloat const ATLMessageCellHorizontalMargin = 16.0f;
 CGFloat const ATLAvatarImageLeadPadding = 12.0f;
 CGFloat const ATLAvatarImageTailPadding = 7.0f;
+NSInteger const kATLSharedCellTag = 1000;
 
 @interface ATLMessageCollectionViewCell () <LYRProgressDelegate>
 
@@ -54,8 +55,20 @@ CGFloat const ATLAvatarImageTailPadding = 7.0f;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         _sharedCell = [[self class] new];
+        _sharedCell.tag = kATLSharedCellTag;
+        _sharedCell.hidden = YES;
     });
     return _sharedCell;
+}
+
++ (NSCache *)sharedHeightCache
+{
+    static NSCache *sharedHeightCache;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        sharedHeightCache = [NSCache new];
+    });
+    return sharedHeightCache;
 }
 
 - (id)initWithFrame:(CGRect)frame
@@ -478,10 +491,14 @@ CGFloat const ATLAvatarImageTailPadding = 7.0f;
 
 + (CGFloat)cellHeightForTextMessage:(LYRMessage *)message inView:(id)view
 {
-    // Temporarily adding  the view to the hierarchy so that UIAppearance property values will be set based on containment.
+    if ([[self sharedHeightCache] objectForKey:message.identifier]) {
+        return [[[self sharedHeightCache] objectForKey:message.identifier] floatValue];
+    }
+    //  Adding  the view to the hierarchy so that UIAppearance property values will be set based on containment.
     ATLMessageCollectionViewCell *cell = [self sharedCell];
-    [view addSubview:cell];
-    [cell removeFromSuperview];
+    if (![view viewWithTag:kATLSharedCellTag]) {
+        [view addSubview:cell];
+    }
     
     LYRMessagePart *part = message.parts.firstObject;
     NSString *text = [[NSString alloc] initWithData:part.data encoding:NSUTF8StringEncoding];
@@ -490,7 +507,11 @@ CGFloat const ATLAvatarImageTailPadding = 7.0f;
         font = cell.messageTextFont;
     }
     CGSize size = ATLTextPlainSize(text, font);
-    return size.height + ATLMessageBubbleLabelVerticalPadding * 2;
+    CGFloat height = size.height + ATLMessageBubbleLabelVerticalPadding * 2;
+    if (![[self sharedHeightCache] objectForKey:message.identifier]) {
+        [[self sharedHeightCache] setObject:@(height) forKey:message.identifier];
+    }
+    return height;
 }
 
 + (CGFloat)cellHeightForImageMessage:(LYRMessage *)message
