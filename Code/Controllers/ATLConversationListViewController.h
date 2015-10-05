@@ -246,6 +246,13 @@
  */
 @property (nonatomic, readonly) UISearchDisplayController *searchController;
 
+/**
+ @abstract A boolean value that determines if the controller should show a search bar and search display controller.
+ @discussion When `YES`, a search bar with a search display controller is shown on top of the tableview.
+ Should be set before the controller is presented on screen.
+ @default `YES`.
+ */
+@property (nonatomic, assign) BOOL shouldDisplaySearchController;
 
 ///------------------------------
 /// @name Reloading Conversations
