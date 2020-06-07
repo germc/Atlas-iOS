@@ -92,6 +92,57 @@
  */
 - (id<ATLAvatarItem>)conversationListViewController:(ATLConversationListViewController *)conversationListViewController avatarItemForConversation:(LYRConversation *)conversation;
 
+/**
+ @abstract Asks the data source for the table view cell reuse identifier for a conversation.
+ @param conversationListViewController The `ATLConversationListViewController` requesting the string.
+ @return A string that will be used to dequeue a cell from the table view.
+ @discussion Applications that wish to use prototype cells from a UIStoryboard in the ATLConversationListViewController cannot register their cells programmatically.
+ The cell must be given a reuse identifier in the UIStoryboard and that string needs to be passed into the ATLConversationListViewController so it can properly dequeue a
+ reuseable cell. If 'nil' is returned, the table view will default to internal values for reuse identifiers.
+ */
+- (NSString *)reuseIdentifierForConversationListViewController:(ATLConversationListViewController *)conversationListViewController;
+
+/**
+ @abstract Asks the data source for a string to display on the delete button for a given deletion mode.
+ @param conversationListViewController The `LYRConversationListViewController` in which the button title will appear.
+ @param deletionMode The `LYRDeletionMode` for which a button has to be displayed.
+ @return The string to be displayed on the delete button for a given deletion mode in the conversation list.
+ */
+- (NSString *)conversationListViewController:(ATLConversationListViewController *)conversationListViewController textForButtonWithDeletionMode:(LYRDeletionMode)deletionMode;
+
+/**
+ @abstract Asks the data source for a color to apply to the delete button for a given deletion mode.
+ @param conversationListViewController The `LYRConversationListViewController` in which the button title will appear.
+ @param deletionMode The `LYRDeletionMode` for which a button has to be displayed.
+ @return The color to apply on the delete button for a given deletion mode in the conversation list.
+ */
+- (UIColor *)conversationListViewController:(ATLConversationListViewController *)conversationListViewController colorForButtonWithDeletionMode:(LYRDeletionMode)deletionMode;
+
+/**
+ @abstract Asks the data source for the string to display as the conversation's last sent message.
+ @params conversation The conversation for which the last message text should be returned.
+ @return A string representing the content of the last message.  If `nil` is returned the controller will fall back to default behavior.
+ @discussion This is used when the application uses custom `MIMEType`s and wants to customize how they are displayed.
+ */
+- (NSString *)conversationListViewController:(ATLConversationListViewController *)conversationListViewController lastMessageTextForConversation:(LYRConversation *)conversation;
+
+/**
+ @abstract Asks the data source to configure the query used to fetch content for the controller if necessary.
+ @discussion The `LYRConversationListViewController` uses the following default query:
+ 
+     LYRQuery *query = [LYRQuery queryWithQueryableClass:[LYRConversation class]];
+     query.predicate = [LYRPredicate predicateWithProperty:@"participants" predicateOperator:LYRPredicateOperatorIsIn value:self.layerClient.authenticatedUserID];
+     query.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"lastMessage.receivedAt" ascending:NO]];
+ 
+ Applications that require advanced query configuration can do so by implementing this data source method.
+ 
+ @param viewController The `ATLConversationViewController` requesting the configuration.
+ @param defaultQuery An `LYRQuery` object with the default configuration for the controller.
+ @return An `LYRQuery` object with any additional configuration.
+@raises `NSInvalidArgumentException` if an `LYRQuery` object is not returned.
+ */
+- (LYRQuery *)conversationListViewController:(ATLConversationListViewController *)viewController willLoadWithQuery:(LYRQuery *)defaultQuery;
+
 @end
 
 /**
@@ -100,9 +151,9 @@
  */
 @interface ATLConversationListViewController : UITableViewController
 
-///---------------------------------------
-/// @name Initializing a Controller
-///---------------------------------------
+///-------------------------------------------------------
+/// @name Initializing a Conversation List View Controller
+///-------------------------------------------------------
 
 /**
  @abstract Creates and returns a new conversation list initialized with a given `LYRClient` object.
@@ -110,6 +161,17 @@
  @return An `LYRConversationListViewController` object.
  */
 + (instancetype)conversationListViewControllerWithLayerClient:(LYRClient *)layerClient;
+
+/**
+ @abstract Initializes a new `ATLConversationListViewController` object with the given `LYRClient` object.
+ @param layerClient The `LYRClient` object from which conversations will be fetched for display.
+ @return An `LYRConversationListViewController` object initialized with the given `LYRClient` object.
+ */
+- (instancetype)initWithLayerClient:(LYRClient *)layerClient;
+
+///-------------------------------------------------------
+/// @name Configuring Layer Client, Delegate & Data Source
+///-------------------------------------------------------
 
 /**
  @abstract The `LYRClient` object used to initialize the controller. 
@@ -130,7 +192,7 @@
 @property (nonatomic, weak) id<ATLConversationListViewControllerDataSource> dataSource;
 
 ///----------------------------------------
-/// @name Configuration
+/// @name Configuring the Conversation List
 ///----------------------------------------
 
 /**
@@ -154,7 +216,7 @@
  @abstract Informs the receiver if it should display an avatar item representing a conversation.
  @discussion When `YES`, an avatar item will be displayed for every conversation cell.
  Typically, this image will be an avatar image representing the user or group of users.
- @default `YES`
+ @default `NO`
  @raises NSInternalInconsistencyException Raised if the value is mutated after the receiver has been presented.
  */
 @property (nonatomic, assign) BOOL displaysAvatarItem;
@@ -174,5 +236,32 @@
  @raises NSInternalInconsistencyException Raised if the value is mutated after the receiver has been presented.
  */
 @property (nonatomic, assign) CGFloat rowHeight;
+
+///-------------
+/// @name Search
+///-------------
+
+/**
+ @abstract The controller used to display search results.
+ */
+@property (nonatomic, readonly) UISearchDisplayController *searchController;
+
+/**
+ @abstract A boolean value that determines if the controller should show a search bar and search display controller.
+ @discussion When `YES`, a search bar with a search display controller is shown on top of the tableview.
+ Should be set before the controller is presented on screen.
+ @default `YES`.
+ */
+@property (nonatomic, assign) BOOL shouldDisplaySearchController;
+
+///------------------------------
+/// @name Reloading Conversations
+///------------------------------
+
+/**
+ @abstract Reloads the cell for the given Conversation.
+ @param conversation The Conversation object to reload the corresponding cell of. Cannot be `nil`.
+ */
+- (void)reloadCellForConversation:(LYRConversation *)conversation;
 
 @end

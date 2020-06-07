@@ -31,6 +31,7 @@ NSString *const ATLMessageInputToolbarDidChangeHeightNotification = @"ATLMessage
 @property (nonatomic) UITextView *dummyTextView;
 @property (nonatomic) CGFloat textViewMaxHeight;
 @property (nonatomic) CGFloat buttonCenterY;
+@property (nonatomic) BOOL firstAppearance;
 
 @end
 
@@ -52,6 +53,14 @@ static CGFloat const ATLLeftAccessoryButtonWidth = 40.0f;
 static CGFloat const ATLRightAccessoryButtonWidth = 46.0f;
 static CGFloat const ATLButtonHeight = 28.0f;
 
++ (void)initialize
+{
+    ATLMessageInputToolbar *proxy = [self appearance];
+    proxy.rightAccessoryButtonActiveColor = ATLBlueColor();
+    proxy.rightAccessoryButtonDisabledColor = [UIColor grayColor];
+    proxy.rightAccessoryButtonFont = [UIFont boldSystemFontOfSize:17];
+}
+
 - (id)init
 {
     self = [super init];
@@ -59,11 +68,16 @@ static CGFloat const ATLButtonHeight = 28.0f;
         self.accessibilityLabel = ATLMessageInputToolbarAccessibilityLabel;
         self.translatesAutoresizingMaskIntoConstraints = NO;
         self.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-
+        
+        self.leftAccessoryImage = [UIImage imageNamed:@"AtlasResource.bundle/camera_dark"];
+        self.rightAccessoryImage = [UIImage imageNamed:@"AtlasResource.bundle/location_dark"];
+        self.displaysRightAccessoryImage = YES;
+        self.firstAppearance = YES;
+        
         self.leftAccessoryButton = [[UIButton alloc] init];
         self.leftAccessoryButton.accessibilityLabel = ATLMessageInputToolbarCameraButton;
         self.leftAccessoryButton.contentMode = UIViewContentModeScaleAspectFit;
-        [self.leftAccessoryButton setImage:[UIImage imageNamed:@"AtlasResource.bundle/camera_dark"] forState:UIControlStateNormal];
+        [self.leftAccessoryButton setImage:self.leftAccessoryImage forState:UIControlStateNormal];
         [self.leftAccessoryButton addTarget:self action:@selector(leftAccessoryButtonTapped) forControlEvents:UIControlEventTouchUpInside];
         [self addSubview:self.leftAccessoryButton];
         
@@ -79,7 +93,7 @@ static CGFloat const ATLButtonHeight = 28.0f;
         [self.rightAccessoryButton addTarget:self action:@selector(rightAccessoryButtonTapped) forControlEvents:UIControlEventTouchUpInside];
         [self addSubview:self.rightAccessoryButton];
         [self configureRightAccessoryButtonState];
-
+        
         // Calling sizeThatFits: or contentSize on the displayed UITextView causes the cursor's position to momentarily appear out of place and prevent scrolling to the selected range. So we use another text view for height calculations.
         self.dummyTextView = [[ATLMessageComposeTextView alloc] init];
         self.maxNumberOfLines = 8;
@@ -90,14 +104,34 @@ static CGFloat const ATLButtonHeight = 28.0f;
 - (void)layoutSubviews
 {
     [super layoutSubviews];
-
+    
+    if (self.firstAppearance) {
+        [self configureRightAccessoryButtonState];
+        self.firstAppearance = NO;
+    }
+    
+    // set the font for the dummy text view as well
+    self.dummyTextView.font = self.textInputView.font;
+    
     // We layout the views manually since using Auto Layout seems to cause issues in this context (i.e. an auto height resizing text view in an input accessory view) especially with iOS 7.1.
     CGRect frame = self.frame;
     CGRect leftButtonFrame = self.leftAccessoryButton.frame;
     CGRect rightButtonFrame = self.rightAccessoryButton.frame;
     CGRect textViewFrame = self.textInputView.frame;
 
-    leftButtonFrame.size.width = ATLLeftAccessoryButtonWidth;
+    if (!self.leftAccessoryButton) {
+        leftButtonFrame.size.width = 0;
+    } else {
+        leftButtonFrame.size.width = ATLLeftAccessoryButtonWidth;
+    }
+    
+    // This makes the input accessory view work with UISplitViewController to manage the frame width.
+    if (self.containerViewController) {
+        CGRect windowRect = [self.containerViewController.view convertRect:self.containerViewController.view.frame toView:nil];
+        frame.size.width = windowRect.size.width;
+        frame.origin.x = windowRect.origin.x;
+    }
+    
     leftButtonFrame.size.height = ATLButtonHeight;
     leftButtonFrame.origin.x = ATLLeftButtonHorizontalMargin;
 
@@ -139,15 +173,13 @@ static CGFloat const ATLButtonHeight = 28.0f;
 
 - (void)paste:(id)sender
 {
-    NSArray *images = [UIPasteboard generalPasteboard].images;
-    if (images.count > 0) {
-        for (UIImage *image in images) {
-            ATLMediaAttachment *mediaAttachment = [ATLMediaAttachment mediaAttachmentWithImage:image
-                                                                                      metadata:nil
-                                                                                 thumbnailSize:ATLDefaultThumbnailSize];
-            [self insertMediaAttachment:mediaAttachment];
-        }
-        return;
+    NSData *imageData = [[UIPasteboard generalPasteboard] dataForPasteboardType:ATLPasteboardImageKey];
+    if (imageData) {
+        UIImage *image = [UIImage imageWithData:imageData];
+        ATLMediaAttachment *mediaAttachment = [ATLMediaAttachment mediaAttachmentWithImage:image
+                                                                                  metadata:nil
+                                                                             thumbnailSize:ATLDefaultThumbnailSize];
+        [self insertMediaAttachment:mediaAttachment withEndLineBreak:YES];
     }
 }
 
@@ -160,7 +192,7 @@ static CGFloat const ATLButtonHeight = 28.0f;
     [self setNeedsLayout];
 }
 
-- (void)insertMediaAttachment:(ATLMediaAttachment *)mediaAttachment
+- (void)insertMediaAttachment:(ATLMediaAttachment *)mediaAttachment withEndLineBreak:(BOOL)endLineBreak;
 {
     UITextView *textView = self.textInputView;
 
@@ -170,11 +202,15 @@ static CGFloat const ATLButtonHeight = 28.0f;
         [attributedString appendAttributedString:lineBreak];
     }
 
-    NSMutableAttributedString *attachmentString = [[NSAttributedString attributedStringWithAttachment:mediaAttachment] mutableCopy];
-    [attachmentString addAttribute:NSFontAttributeName value:textView.font range:NSMakeRange(0, attachmentString.length)];
+    NSMutableAttributedString *attachmentString = (mediaAttachment.mediaMIMEType == ATLMIMETypeTextPlain) ? [[NSAttributedString alloc] initWithString:mediaAttachment.textRepresentation] : [[NSAttributedString attributedStringWithAttachment:mediaAttachment] mutableCopy];
     [attributedString appendAttributedString:attachmentString];
-    [attributedString appendAttributedString:lineBreak];
-
+    if (endLineBreak) {
+        [attributedString appendAttributedString:lineBreak];
+    }
+    [attributedString addAttribute:NSFontAttributeName value:textView.font range:NSMakeRange(0, attributedString.length)];
+    if (textView.textColor) {
+        [attributedString addAttribute:NSForegroundColorAttributeName value:textView.textColor range:NSMakeRange(0, attributedString.length)];
+    }
     textView.attributedText = attributedString;
     if ([self.inputToolBarDelegate respondsToSelector:@selector(messageInputToolbarDidType:)]) {
         [self.inputToolBarDelegate messageInputToolbarDidType:self];
@@ -191,6 +227,36 @@ static CGFloat const ATLButtonHeight = 28.0f;
         _mediaAttachments = [self mediaAttachmentsFromAttributedString:attributedString];
     }
     return _mediaAttachments;
+}
+
+- (void)setLeftAccessoryImage:(UIImage *)leftAccessoryImage
+{
+    _leftAccessoryImage = leftAccessoryImage;
+    [self.leftAccessoryButton setImage:leftAccessoryImage  forState:UIControlStateNormal];
+}
+
+- (void)setRightAccessoryImage:(UIImage *)rightAccessoryImage
+{
+    _rightAccessoryImage = rightAccessoryImage;
+    [self.rightAccessoryButton setImage:rightAccessoryImage forState:UIControlStateNormal];
+}
+
+- (void)setRightAccessoryButtonActiveColor:(UIColor *)rightAccessoryButtonActiveColor
+{
+    _rightAccessoryButtonActiveColor = rightAccessoryButtonActiveColor;
+    [self.rightAccessoryButton setTitleColor:rightAccessoryButtonActiveColor forState:UIControlStateNormal];
+}
+
+- (void)setRightAccessoryButtonDisabledColor:(UIColor *)rightAccessoryButtonDisabledColor
+{
+    _rightAccessoryButtonDisabledColor = rightAccessoryButtonDisabledColor;
+    [self.rightAccessoryButton setTitleColor:rightAccessoryButtonDisabledColor forState:UIControlStateDisabled];
+}
+
+- (void)setRightAccessoryButtonFont:(UIFont *)rightAccessoryButtonFont
+{
+    _rightAccessoryButtonFont = rightAccessoryButtonFont;
+    [self.rightAccessoryButton.titleLabel setFont:rightAccessoryButtonFont];
 }
 
 #pragma mark - Actions
@@ -297,19 +363,43 @@ static CGFloat const ATLButtonHeight = 28.0f;
 - (void)configureRightAccessoryButtonState
 {
     if (self.textInputView.text.length) {
-        self.rightAccessoryButton.accessibilityLabel = ATLMessageInputToolbarSendButton;
-        [self.rightAccessoryButton setImage:nil forState:UIControlStateNormal];
-        self.rightAccessoryButton.contentEdgeInsets = UIEdgeInsetsMake(2, 0, 0, 0);
-        self.rightAccessoryButton.titleLabel.font = [UIFont boldSystemFontOfSize:17];
-        [self.rightAccessoryButton setTitle:@"Send" forState:UIControlStateNormal];
-        [self.rightAccessoryButton setTitleColor:[UIColor grayColor] forState:UIControlStateDisabled];
-        [self.rightAccessoryButton setTitleColor:ATLBlueColor() forState:UIControlStateNormal];
+        [self configureRightAccessoryButtonForText];
+        self.rightAccessoryButton.enabled = YES;
     } else {
-        self.rightAccessoryButton.accessibilityLabel = ATLMessageInputToolbarLocationButton;
-        [self.rightAccessoryButton setTitle:nil forState:UIControlStateNormal];
-        self.rightAccessoryButton.contentEdgeInsets = UIEdgeInsetsZero;
-        [self.rightAccessoryButton setImage:[UIImage imageNamed:@"AtlasResource.bundle/location_dark"] forState:UIControlStateNormal];
+        if (self.displaysRightAccessoryImage) {
+            [self configureRightAccessoryButtonForImage];
+            self.rightAccessoryButton.enabled = YES;
+        } else {
+            [self configureRightAccessoryButtonForText];
+            self.rightAccessoryButton.enabled = NO;
+        }
     }
 }
+
+- (void)configureRightAccessoryButtonForText
+{
+    self.rightAccessoryButton.accessibilityLabel = ATLMessageInputToolbarSendButton;
+    [self.rightAccessoryButton setImage:nil forState:UIControlStateNormal];
+    self.rightAccessoryButton.contentEdgeInsets = UIEdgeInsetsMake(2, 0, 0, 0);
+    self.rightAccessoryButton.titleLabel.font = self.rightAccessoryButtonFont;
+    [self.rightAccessoryButton setTitle:ATLLocalizedString(@"atl.messagetoolbar.send.key", @"Send", nil) forState:UIControlStateNormal];
+    [self.rightAccessoryButton setTitleColor:self.rightAccessoryButtonActiveColor forState:UIControlStateNormal];
+    [self.rightAccessoryButton setTitleColor:self.rightAccessoryButtonDisabledColor forState:UIControlStateDisabled];
+    if (!self.displaysRightAccessoryImage && !self.textInputView.text.length) {
+        self.rightAccessoryButton.enabled = NO;
+    } else {
+        self.rightAccessoryButton.enabled = YES;
+    }
+}
+
+- (void)configureRightAccessoryButtonForImage
+{
+    self.rightAccessoryButton.enabled = YES;
+    self.rightAccessoryButton.accessibilityLabel = ATLMessageInputToolbarLocationButton;
+    self.rightAccessoryButton.contentEdgeInsets = UIEdgeInsetsZero;
+    [self.rightAccessoryButton setTitle:nil forState:UIControlStateNormal];
+    [self.rightAccessoryButton setImage:self.rightAccessoryImage forState:UIControlStateNormal];
+}
+
 
 @end

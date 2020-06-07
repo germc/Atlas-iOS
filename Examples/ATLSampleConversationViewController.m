@@ -36,7 +36,7 @@
     [super viewDidLoad];
     self.dataSource = self;
     self.addressBarController.delegate = self;
-  
+    
     // Setup the dateformatter used by the dataSource.
     self.dateFormatter = [[NSDateFormatter alloc] init];
     self.dateFormatter.dateStyle = NSDateFormatterShortStyle;
@@ -44,6 +44,7 @@
     [self configureTitle];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userDidTapLink:) name:ATLUserDidTapLinkNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(userDidTapPhoneNumber:) name:ATLUserDidTapPhoneNumberNotification object:nil];
 }
 
 #pragma mark - ATLConversationViewControllerDataSource methods
@@ -124,6 +125,11 @@
 - (void)userDidTapLink:(NSNotification *)notification
 {
     [[UIApplication sharedApplication] openURL:notification.object];
+}
+
+- (void)userDidTapPhoneNumber:(NSNotification *)notification
+{
+    
 }
 
 @end

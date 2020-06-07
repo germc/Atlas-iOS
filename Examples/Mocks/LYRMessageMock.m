@@ -20,13 +20,16 @@
 #import "LYRMessageMock.h"
 #import "LYRMockContentStore.h"
 
+@implementation LYRActorMock
+@end
+
 @interface LYRMessageMock ()
 
 @property (nonatomic, readwrite) NSURL *identifier;
 @property (nonatomic, readwrite) BOOL isSent;
 @property (nonatomic, readwrite) BOOL isDeleted;
 @property (nonatomic, readwrite) BOOL isUnread;
-@property (nonatomic, readwrite) NSString *sentByUserID;
+@property (nonatomic, readwrite) LYRActorMock *sender;
 
 @end
 
@@ -37,14 +40,36 @@
     self = [super init];
     if (self) {
         _parts = messageParts;
-        _sentByUserID = senderID;
+        _sender = [LYRActorMock new];
+        _sender.userID = senderID;
     }
     return self;    
+}
+
+- (id)initWithMessageParts:(NSArray *)messageParts senderName:(NSString *)senderName
+{
+    self = [super init];
+    if (self) {
+        _parts = messageParts;
+        _sender = [LYRActorMock new];
+        _sender.name = senderName;
+    }
+    return self;
 }
 
 + (instancetype)newMessageWithParts:(NSArray *)messageParts senderID:(NSString *)senderID
 {
     LYRMessageMock *mock = [[self alloc] initWithMessageParts:messageParts senderID:senderID];
+    mock.identifier = [NSURL URLWithString:[[NSUUID UUID] UUIDString]];
+    mock.isSent = NO;
+    mock.isDeleted = NO;
+    mock.isUnread = YES;
+    return mock;
+}
+
++ (instancetype)newMessageWithParts:(NSArray *)messageParts senderName:(NSString *)senderName
+{
+    LYRMessageMock *mock = [[self alloc] initWithMessageParts:messageParts senderName:senderName];
     mock.identifier = [NSURL URLWithString:[[NSUUID UUID] UUIDString]];
     mock.isSent = NO;
     mock.isDeleted = NO;

@@ -78,9 +78,6 @@ static CGFloat const ATLConversationTitleLabelRightPadding = 2.0f;
 static CGFloat const ATLUnreadMessageCountLabelSize = 14.0f;
 static CGFloat const ATLChevronIconViewRightPadding = 14.0f;
 
-NSString *const ATLImageMIMETypePlaceholderText = @"Attachment: Image";
-NSString *const ATLLocationMIMETypePlaceholderText = @"Attachment: Location";
-
 + (void)initialize
 {
     // UIAppearance Proxy Defaults
@@ -199,6 +196,7 @@ NSString *const ATLLocationMIMETypePlaceholderText = @"Attachment: Location";
 - (void)prepareForReuse
 {
     [super prepareForReuse];
+    [self.conversationImageView resetView];
     self.conversationImageView.hidden = YES;
     [self setNeedsUpdateConstraints];
 }
@@ -258,22 +256,12 @@ NSString *const ATLLocationMIMETypePlaceholderText = @"Attachment: Location";
 - (void)presentConversation:(LYRConversation *)conversation
 {
     self.dateLabel.text = [self dateLabelForLastMessage:conversation.lastMessage];
-    
-    LYRMessage *message = conversation.lastMessage;
-    LYRMessagePart *messagePart = message.parts.firstObject;
-    if ([messagePart.MIMEType isEqualToString:ATLMIMETypeTextPlain]) {
-        NSString *messageText = [[NSString alloc] initWithData:messagePart.data encoding:NSUTF8StringEncoding];
-        self.lastMessageLabel.attributedText = [self attributedStringForMessageText:messageText];
-    } else if ([messagePart.MIMEType isEqualToString:ATLMIMETypeImageJPEG]) {
-        self.lastMessageLabel.text = ATLImageMIMETypePlaceholderText;
-    } else if ([messagePart.MIMEType isEqualToString:ATLMIMETypeImagePNG]) {
-        self.lastMessageLabel.text = ATLImageMIMETypePlaceholderText;
-    } else if ([messagePart.MIMEType isEqualToString:ATLMIMETypeLocation]) {
-        self.lastMessageLabel.text = ATLLocationMIMETypePlaceholderText;
-    } else {
-        self.lastMessageLabel.text = ATLImageMIMETypePlaceholderText;
-    }
     [self updateUnreadMessageIndicatorWithConversation:conversation];
+}
+
+- (void)updateWithLastMessageText:(NSString *)lastMessageText
+{
+    self.lastMessageLabel.attributedText = [self attributedStringForMessageText:lastMessageText];
 }
 
 - (NSAttributedString *)attributedStringForMessageText:(NSString *)messageText

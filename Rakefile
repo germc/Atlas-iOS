@@ -55,17 +55,16 @@ task :init do
 end
 
 if defined?(XCTasks)
-  XCTasks::TestTask.new(test: :sim) do |t|
+  XCTasks::TestTask.new(:test) do |t|
     t.workspace = 'Atlas.xcworkspace'
     t.schemes_dir = 'Tests/Schemes'
     t.runner = :xcpretty
     t.output_log = 'xcodebuild.log'
-    t.subtask(app: 'ProgrammaticTests') do |s|
-      s.destination do |d|
-        d.platform = :iossimulator
-        d.name = 'Atlas-Test-Device'
-        d.os = :latest
-      end
+    t.subtasks = { progammatic: 'ProgrammaticTests'}
+    t.destination do |d|
+      d.platform = :iossimulator
+      d.os = :latest
+      d.name = 'iPhone 6 Plus'
     end    
   end
 end
@@ -173,7 +172,7 @@ task :release => [:fetch_origin] do
     with_clean_env do
       podspec = File.join(root_dir, "Atlas.podspec")
       puts green("Pushing podspec to CocoaPods trunk")
-      run "pod trunk push #{podspec}"
+      run "pod trunk push --use-libraries #{podspec}"
     end
   end
 end

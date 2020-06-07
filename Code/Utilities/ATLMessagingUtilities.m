@@ -21,18 +21,24 @@
 #import "ATLMessagingUtilities.h"
 #import "ATLErrors.h"
 #import <AssetsLibrary/AssetsLibrary.h>
+#import "ATLMessageCollectionViewCell.h"
 
 NSString *const ATLMIMETypeTextPlain = @"text/plain";
 NSString *const ATLMIMETypeTextHTML = @"text/HTML";
 NSString *const ATLMIMETypeImagePNG = @"image/png";
+NSString *const ATLMIMETypeImageGIF = @"image/gif";
+NSString *const ATLMIMETypeVideoQuickTime = @"video/quicktime";
 NSString *const ATLMIMETypeImageSize = @"application/json+imageSize";
 NSString *const ATLMIMETypeImageJPEG = @"image/jpeg";
 NSString *const ATLMIMETypeImageJPEGPreview = @"image/jpeg+preview";
+NSString *const ATLMIMETypeImageGIFPreview = @"image/gif+preview";
 NSString *const ATLMIMETypeLocation = @"location/coordinate";
 NSString *const ATLMIMETypeDate = @"text/date";
-
+NSString *const ATLMIMETypeVideoMP4 = @"video/mp4";
 NSUInteger const ATLDefaultThumbnailSize = 512;
+NSUInteger const ATLDefaultGIFThumbnailSize = 64;
 
+NSString *const ATLPasteboardImageKey = @"image";
 NSString *const ATLImagePreviewWidthKey = @"width";
 NSString *const ATLImagePreviewHeightKey = @"height";
 NSString *const ATLLocationLatitudeKey = @"lat";
@@ -54,6 +60,7 @@ CGFloat ATLMaxCellHeight()
 
 CGSize ATLSizeProportionallyConstrainedToSize(CGSize nativeSize, CGSize maxSize)
 {
+    if (nativeSize.width < maxSize.width && nativeSize.height < maxSize.height) return nativeSize;
     CGSize itemSize;
     CGFloat widthScale = maxSize.width / nativeSize.width;
     CGFloat heightScale = maxSize.height / nativeSize.height;
@@ -125,6 +132,11 @@ CGRect ATLImageRectConstrainedToSize(CGSize imageSize, CGSize maxSize)
     return thumbRect;
 }
 
+CGFloat ATLDegreeToRadians(CGFloat degrees)
+{
+    return ((M_PI * degrees)/ 180);
+}
+
 #pragma mark - Private Message Part Helpers
 
 CGSize  ATLSizeFromOriginalSizeWithConstraint(CGSize originalSize, CGFloat constraint)
@@ -184,7 +196,7 @@ void ATLAssetURLOfLastPhotoTaken(void(^completionHandler)(NSURL *assetURL, NSErr
         if (!group) return;
 
         // Within the group enumeration block, filter to enumerate just photos.
-        [group setAssetsFilter:[ALAssetsFilter allPhotos]];
+        [group setAssetsFilter:[ALAssetsFilter allAssets]];
 
         if ([group numberOfAssets] == 0) {
             completionHandler(nil, [NSError errorWithDomain:ATLErrorDomain code:ATLErrorNoPhotos userInfo:@{NSLocalizedDescriptionKey: @"There are no photos."}]);
@@ -262,12 +274,12 @@ UIImage *ATLPinPhotoForSnapshot(MKMapSnapshot *snapshot, CLLocationCoordinate2D 
     return finalImage;
 }
 
-NSArray *ATLLinkResultsForText(NSString *text)
+NSArray *ATLTextCheckingResultsForText(NSString *text, NSTextCheckingType linkTypes)
 {
     if (!text) return nil;
     
     NSError *error;
-    NSDataDetector *detector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeLink
+    NSDataDetector *detector = [NSDataDetector dataDetectorWithTypes:linkTypes
                                                                error:&error];
     if (error) return nil;
     return [detector matchesInString:text options:kNilOptions range:NSMakeRange(0, text.length)];

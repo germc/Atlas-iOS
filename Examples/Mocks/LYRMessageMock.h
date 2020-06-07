@@ -22,21 +22,29 @@
 
 @class LYRConversationMock;
 
+@interface LYRActorMock : NSObject
+
+@property (nonatomic, readwrite) NSString *userID;
+@property (nonatomic, readwrite) NSString *name;
+
+@end
 @interface LYRMessageMock : NSObject <LYRQueryable>
 
 @property (nonatomic, readonly) NSURL *identifier LYR_QUERYABLE_PROPERTY;
-@property (nonatomic) NSUInteger index LYR_QUERYABLE_PROPERTY;
-@property (nonatomic) LYRConversationMock *conversation LYR_QUERYABLE_PROPERTY;
+@property (nonatomic) NSUInteger position LYR_QUERYABLE_PROPERTY;
+@property (nonatomic, weak) LYRConversationMock *conversation LYR_QUERYABLE_PROPERTY;
 @property (nonatomic) NSArray *parts;
 @property (nonatomic, readonly) BOOL isSent LYR_QUERYABLE_PROPERTY;
 @property (nonatomic, readonly) BOOL isDeleted;
 @property (nonatomic, readonly) BOOL isUnread LYR_QUERYABLE_PROPERTY;
 @property (nonatomic) NSDate *sentAt LYR_QUERYABLE_PROPERTY;
 @property (nonatomic) NSDate *receivedAt LYR_QUERYABLE_PROPERTY;
-@property (nonatomic, readonly) NSString *sentByUserID LYR_QUERYABLE_PROPERTY;
+@property (nonatomic, readonly) LYRActorMock *sender;
 @property (nonatomic) NSDictionary *recipientStatusByUserID;
 
 + (instancetype)newMessageWithParts:(NSArray *)messageParts senderID:(NSString *)senderID;
+
++ (instancetype)newMessageWithParts:(NSArray *)messageParts senderName:(NSString *)senderName;
 
 - (BOOL)markAsRead:(NSError **)error;
 

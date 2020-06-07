@@ -41,6 +41,7 @@ NSString *const ATLMockUserIDAmar = @"5";
         _lastName = lastName;
         _participantIdentifier = participantIdentifier;
         _fullName = [NSString stringWithFormat:@"%@ %@", firstName, lastName];
+        _avatarImageURL = [NSURL URLWithString:@"http://lorempixel.com/400/200/"];
     }
     return self;
 }
@@ -115,7 +116,7 @@ NSString *const ATLMockUserIDAmar = @"5";
     NSMutableArray *users = [NSMutableArray new];
     NSMutableSet *allUsers = [[self allMockParticipants] mutableCopy];
     for (ATLUserMock *mock in allUsers) {
-        if ([mock.fullName containsString:text]) {
+        if ([mock.fullName rangeOfString:text options:NSCaseInsensitiveSearch].location != NSNotFound) {
             [users addObject:mock];
         }
     }

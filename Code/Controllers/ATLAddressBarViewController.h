@@ -105,16 +105,34 @@
  */
 @property (nonatomic) ATLAddressBarView *addressBarView;
 
+///------------------------------------
+// @name Managing Participant Selection
+///------------------------------------
+
 /**
- @abstract The `NSOrderedSet` of currently selected participants.
+ @abstract An ordered set of the currently selected participants.
  */
 @property (nonatomic) NSOrderedSet *selectedParticipants;
 
 /**
  @abstract Informs the receiver that a selection occurred outside of the controller and a participant should be added to the address
  bar.
+ @param participant The participant to select.
  */
 - (void)selectParticipant:(id<ATLParticipant>)participant;
+
+///-------------------------
+/// @name Reloading the View
+///-------------------------
+
+/**
+ @abstract Tells the receiver to reload the view with the latest details of the participants.
+ */
+- (void)reloadView;
+
+///----------------------
+/// @name Disabling Input
+///----------------------
 
 /**
 @abstract Disables user input and searching.

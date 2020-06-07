@@ -46,7 +46,7 @@ extern NSString *const ATLConversationCollectionViewAccessibilityIdentifier;
     LYRClientMock *layerClient = [LYRClientMock layerClientMockWithAuthenticatedUserID:mockUser.participantIdentifier];
     self.testInterface = [ATLTestInterface testIntefaceWithLayerClient:layerClient];
     [self setRootViewController];
-   
+    [self resetAppearance];
 }
 
 - (void)tearDown
@@ -55,7 +55,6 @@ extern NSString *const ATLConversationCollectionViewAccessibilityIdentifier;
     self.conversation = nil;
     self.controller = nil;
     [[LYRMockContentStore sharedStore] resetContentStore];
-    [self resetAppearance];
     [super tearDown];
 }
 
@@ -92,7 +91,18 @@ extern NSString *const ATLConversationCollectionViewAccessibilityIdentifier;
     
     ATLMessageCollectionViewCell *cell = [ATLMessageCollectionViewCell new];
     [cell presentMessage:(LYRMessage *)message];
-    expect(cell.bubbleView.bubbleImageView.image).toNot.beNil;
+    expect(cell.bubbleView.bubbleImageView.image).willNot.beNil;
+    expect(cell.bubbleView.bubbleViewLabel.text).to.beNil;
+}
+
+- (void)testToVerifyMessageBubbleViewWithGIF
+{
+    LYRMessagePartMock *imagePart = ATLMessagePartWithGIFImage([UIImage new]);
+    LYRMessageMock *message = [self.testInterface.layerClient newMessageWithParts:@[imagePart] options:nil error:nil];
+    
+    ATLMessageCollectionViewCell *cell = [ATLMessageCollectionViewCell new];
+    [cell presentMessage:(LYRMessage *)message];
+    expect(cell.bubbleView.bubbleImageView.image).willNot.beNil;
     expect(cell.bubbleView.bubbleViewLabel.text).to.beNil;
 }
 
@@ -107,6 +117,66 @@ extern NSString *const ATLConversationCollectionViewAccessibilityIdentifier;
     [cell presentMessage:(LYRMessage *)message];
     expect(cell.bubbleView.bubbleImageView.image).toNot.beNil;
     expect(cell.bubbleView.bubbleViewLabel.text).to.beNil;
+}
+
+- (void)testToVerifyTextCheckingTypeLink
+{
+    NSString *link = @"www.layer.com";
+    NSString *phoneNumber = @"734-769-6526";
+    NSString *linkAndPhoneNumber = [NSString stringWithFormat:@"%@ and %@", link, phoneNumber];
+    LYRMessagePartMock *part = [LYRMessagePartMock messagePartWithText:linkAndPhoneNumber];    LYRMessageMock *message = [self.testInterface.layerClient newMessageWithParts:@[part] options:nil error:nil];
+    
+    ATLMessageCollectionViewCell *cell = [ATLMessageCollectionViewCell new];
+    [cell presentMessage:(LYRMessage *)message];
+    
+    NSRange linkRange = [linkAndPhoneNumber rangeOfString:link];
+    NSDictionary *linkAttributes = [cell.bubbleView.bubbleViewLabel.attributedText attributesAtIndex:linkRange.location effectiveRange:&linkRange];
+    expect(linkAttributes[NSUnderlineStyleAttributeName]).to.equal(NSUnderlineStyleSingle);
+    
+    NSRange phoneNumberRange = [linkAndPhoneNumber rangeOfString:phoneNumber];
+    NSDictionary *phoneNumberAttributes = [cell.bubbleView.bubbleViewLabel.attributedText attributesAtIndex:phoneNumberRange.location effectiveRange:&phoneNumberRange];
+    expect(phoneNumberAttributes[NSUnderlineStyleAttributeName]).toNot.equal(NSUnderlineStyleSingle);
+}
+
+- (void)testToVerifyTextCheckingTypePhoneNumber
+{
+    NSString *link = @"www.layer.com";
+    NSString *phoneNumber = @"734-769-6526";
+    NSString *linkAndPhoneNumber = [NSString stringWithFormat:@"%@ and %@", link, phoneNumber];
+    LYRMessagePartMock *part = [LYRMessagePartMock messagePartWithText:linkAndPhoneNumber];    LYRMessageMock *message = [self.testInterface.layerClient newMessageWithParts:@[part] options:nil error:nil];
+    
+    ATLMessageCollectionViewCell *cell = [ATLMessageCollectionViewCell new];
+    cell.messageTextCheckingTypes = NSTextCheckingTypePhoneNumber;
+    [cell presentMessage:(LYRMessage *)message];
+    
+    NSRange linkRange = [linkAndPhoneNumber rangeOfString:link];
+    NSDictionary *linkAttributes = [cell.bubbleView.bubbleViewLabel.attributedText attributesAtIndex:linkRange.location effectiveRange:&linkRange];
+    expect(linkAttributes[NSUnderlineStyleAttributeName]).toNot.equal(NSUnderlineStyleSingle);
+    
+    NSRange phoneNumberRange = [linkAndPhoneNumber rangeOfString:phoneNumber];
+    NSDictionary *phoneNumberAttributes = [cell.bubbleView.bubbleViewLabel.attributedText attributesAtIndex:phoneNumberRange.location effectiveRange:&phoneNumberRange];
+    expect(phoneNumberAttributes[NSUnderlineStyleAttributeName]).to.equal(NSUnderlineStyleSingle);
+}
+
+- (void)testToVerifytextCheckingTypeLinkAndPhoneNumber
+{
+    NSString *link = @"www.layer.com";
+    NSString *phoneNumber = @"734-769-6526";
+    NSString *linkAndPhoneNumber = [NSString stringWithFormat:@"%@ and %@", link, phoneNumber];
+    LYRMessagePartMock *part = [LYRMessagePartMock messagePartWithText:linkAndPhoneNumber];
+    LYRMessageMock *message = [self.testInterface.layerClient newMessageWithParts:@[part] options:nil error:nil];
+    
+    ATLMessageCollectionViewCell *cell = [ATLMessageCollectionViewCell new];
+    cell.messageTextCheckingTypes = NSTextCheckingTypeLink | NSTextCheckingTypePhoneNumber;
+    [cell presentMessage:(LYRMessage *)message];
+    
+    NSRange linkRange = [linkAndPhoneNumber rangeOfString:link];
+    NSDictionary *linkAttributes = [cell.bubbleView.bubbleViewLabel.attributedText attributesAtIndex:linkRange.location effectiveRange:&linkRange];
+    expect(linkAttributes[NSUnderlineStyleAttributeName]).to.equal(NSUnderlineStyleSingle);
+    
+    NSRange phoneNumberRange = [linkAndPhoneNumber rangeOfString:phoneNumber];
+    NSDictionary *phoneNumberAttributes = [cell.bubbleView.bubbleViewLabel.attributedText attributesAtIndex:phoneNumberRange.location effectiveRange:&phoneNumberRange];
+    expect(phoneNumberAttributes[NSUnderlineStyleAttributeName]).to.equal(NSUnderlineStyleSingle);
 }
 
 #pragma mark - Outgoing Customization
@@ -271,6 +341,7 @@ extern NSString *const ATLConversationCollectionViewAccessibilityIdentifier;
     LYRMessagePartMock *part = [LYRMessagePartMock messagePartWithText:text];
     LYRMessageMock *message = [layerClient newMessageWithParts:@[part] options:nil error:nil];
     [self.conversation sendMessage:message error:nil];
+    [tester waitForAnimationsToFinish];
 }
 
 - (void)setRootViewController

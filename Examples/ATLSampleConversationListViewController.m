@@ -30,8 +30,6 @@
 
 @implementation ATLSampleConversationListViewController
 
-#pragma mark - Conversation List View Controller Delegate Methods
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -56,10 +54,13 @@
     [self.navigationController pushViewController:controller animated:YES];
 }
 
+#pragma mark - Conversation List View Controller Delegate Methods
+
 - (void)conversationListViewController:(ATLConversationListViewController *)conversationListViewController didSelectConversation:(LYRConversation *)conversation
 {
     ATLSampleConversationViewController *controller = [ATLSampleConversationViewController conversationViewControllerWithLayerClient:self.layerClient];
     controller.conversation = conversation;
+    controller.hidesBottomBarWhenPushed = YES;
     [self.navigationController pushViewController:controller animated:YES];
 }
 
@@ -78,6 +79,13 @@
     return [ATLSampleConversationAvatarItem new];
 }
 
+- (void)conversationListViewController:(ATLConversationListViewController *)conversationListViewController didSearchForText:(NSString *)searchText completion:(void (^)(NSSet *))completion
+{
+    NSSet *participants = [ATLUserMock allMockParticipants];
+    NSSet *filteredParticipants = [participants filteredSetUsingPredicate:[NSPredicate predicateWithFormat:@"SELF.fullName CONTAINS[cd] %@", searchText]];
+    completion(filteredParticipants);
+}
+
 #pragma mark - Conversation List View Controller Data Source Methods
 
 - (NSString *)conversationListViewController:(ATLConversationListViewController *)conversationListViewController titleForConversation:(LYRConversation *)conversation
@@ -93,9 +101,9 @@
     
     // Put the latest message sender's name first
     ATLUserMock *firstUser;
-    if (![conversation.lastMessage.sentByUserID isEqualToString:self.layerClient.authenticatedUserID]) {
+    if (![conversation.lastMessage.sender.userID isEqualToString:self.layerClient.authenticatedUserID]) {
         if (conversation.lastMessage) {
-            NSPredicate *searchPredicate = [NSPredicate predicateWithFormat:@"SELF.participantIdentifier IN %@", conversation.lastMessage.sentByUserID];
+            NSPredicate *searchPredicate = [NSPredicate predicateWithFormat:@"SELF.participantIdentifier IN %@", conversation.lastMessage.sender.userID];
             ATLUserMock *lastMessageSender = [[[participants filteredSetUsingPredicate:searchPredicate] allObjects] lastObject];
             if (lastMessageSender) {
                 firstUser = lastMessageSender;

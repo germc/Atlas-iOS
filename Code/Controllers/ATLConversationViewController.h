@@ -24,6 +24,11 @@
 #import "ATLParticipant.h"
 #import "ATLBaseConversationViewController.h"
 
+typedef NS_ENUM(NSUInteger, ATLAvatarItemDisplayFrequency) {
+    ATLAvatarItemDisplayFrequencySection,
+    ATLAvatarItemDisplayFrequencyCluster,
+    ATLAvatarItemDisplayFrequencyAll
+};
 
 @class ATLConversationViewController;
 @protocol ATLMessagePresenting;
@@ -69,17 +74,27 @@
 - (CGFloat)conversationViewController:(ATLConversationViewController *)viewController heightForMessage:(LYRMessage *)message withCellWidth:(CGFloat)cellWidth;
 
 /**
+ @abstract Informs the delegate of a cell being configured for the specified message.
+ @param viewController The `ATLConversationViewController` where the message cell will appear.
+ @param cell The `UICollectionViewCell` object that confirms to the `ATLMessagePresenting` protocol that will be displayed in the controller.
+ @param message The `LYRMessage` object that will be displayed in the cell.
+ @discussion Applications should implement this method if they want add further configuration that is not set up during cell initialization, such as gesture recognizers.
+ It is up to the application to typecast the cell to access custom cell properties.
+ */
+- (void)conversationViewController:(ATLConversationViewController *)conversationViewController configureCell:(UICollectionViewCell<ATLMessagePresenting> *)cell forMessage:(LYRMessage *)message;
+
+/**
  @abstract Asks the delegate for an `NSOrderedSet` of `LYRMessage` objects representing an `NSArray` of content parts.
  @param viewController The `ATLConversationViewController` supplying the content parts.
  @param mediaAttachments The array of `ATLMediaAttachment` items supplied via user input into the `messageInputToolbar` property of the controller.
  @return An `NSOrderedSet` of `LYRMessage` objects. If `nil` is returned, the controller will fall back to default behavior. If an empty
  `NSOrderedSet` is returned, the controller will not send any messages.
- @discussion Called when a user taps the `SEND` button on an `ATLMessageInputToolbar`. The media attachments array supplied can contain
- any media type, such as text, images, GPS location information. Applications who wish to send `LYRMessage` objects with custom `LYRMessagePart`
- MIME types not supported by default by Atlas can do so by implementing this method. All `LYRMessage` objects returned will be immediately 
- sent into the current conversation for the controller. If implemented, applications should also register custom `UICollectionViewCell` classes 
- with the controller via a call to `registerClass:forMessageCellWithReuseIdentifier:`. They should also implement the optional data source method,
- `conversationViewController:reuseIdentifierForMessage:`.
+ @discussion Called when a user taps the `rightAccessoryButton` on an `ATLMessageInputToolbar`. The media attachments array supplied can contain
+ any media type, such as text, images, GPS location information.  The media attachment array can also be empty, which indicates the `rightAccessoryButton`
+ was tapped when it contained no content, ie. the location share. Applications who wish to send `LYRMessage` objects with custom `LYRMessagePart` MIME
+ types not supported by default by Atlas can do so by implementing this method. All `LYRMessage` objects returned will be immediately sent into the
+ current conversation for the controller. If implemented, applications should also register custom `UICollectionViewCell` classes with the controller via
+ a call to `registerClass:forMessageCellWithReuseIdentifier:`. They should also implement the optional data source method, `conversationViewController:reuseIdentifierForMessage:`.
  */
 - (NSOrderedSet *)conversationViewController:(ATLConversationViewController *)viewController messagesForMediaAttachments:(NSArray *)mediaAttachments;
 
@@ -142,6 +157,23 @@
  */
 - (LYRConversation *)conversationViewController:(ATLConversationViewController *)viewController conversationWithParticipants:(NSSet *)participants;
 
+/**
+ @abstract Asks the data source to configure the default query used to fetch content for the controller if necessary.
+ @discussion The `LYRConversationViewController` uses the following default query:
+ 
+     LYRQuery *query = [LYRQuery queryWithQueryableClass:[LYRMessage class]];
+     query.predicate = [LYRPredicate predicateWithProperty:@"conversation" predicateOperator:LYRPredicateOperatorIsEqualTo value:self.conversation];
+     query.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"position" ascending:YES]];
+ 
+ Applications that require advanced query configuration can do so by implementing this data source method.
+ 
+ @param viewController The `ATLConversationViewController` requesting the configuration.
+ @param defaultQuery An `LYRQuery` object with the default configuration for the controller.
+ @return An `LYRQuery` object with any additional configuration.
+ @raises `NSInvalidArgumentException` if an `LYRQuery` object is not returned.
+ */
+- (LYRQuery *)conversationViewController:(ATLConversationViewController *)viewController willLoadWithQuery:(LYRQuery *)defaultQuery;
+
 @end
 
 /**
@@ -149,7 +181,7 @@
  a Layer conversation and the ability to send messages. The controller's design and functionality closely correlates with
  the conversation view controller in Messages.
 */
-@interface ATLConversationViewController : ATLBaseConversationViewController <ATLAddressBarViewControllerDelegate>
+@interface ATLConversationViewController : ATLBaseConversationViewController <ATLAddressBarViewControllerDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, LYRQueryControllerDelegate>
 
 ///---------------------------------------
 /// @name Initializing a Controller
@@ -163,6 +195,13 @@
 + (instancetype)conversationViewControllerWithLayerClient:(LYRClient *)layerClient;
 
 /**
+ @abstract Initializes a new `ATLConversationViewController` object with the given `LYRClient` object.
+ @param layerClient The `LYRClient` object from which to retrieve the messages for display.
+ @return An `LYRConversationViewController` object initialized with the given `LYRClient` object.
+ */
+- (instancetype)initWithLayerClient:(LYRClient *)layerClient;
+
+/**
  @abstract The `LYRClient` object used to initialize the controller.
  @discussion If using storyboards, the property must be set explicitly.
  @raises NSInternalInconsistencyException Raised if the value is mutated after the receiver has been presented.
@@ -173,6 +212,11 @@
  @abstract The `LYRConversation` object whose messages will be displayed in the controller.
  */
 @property (nonatomic) LYRConversation *conversation;
+
+/**
+ @abstract The `LYRQueryController` object managing data displayed in the controller.
+ */
+@property (nonatomic, readonly) LYRQueryController *queryController;
 
 /**
  @abstract The `ATLConversationViewControllerDelegate` class informs the receiver to specific events that occurred within the controller.
@@ -192,13 +236,17 @@
 - (void)registerClass:(Class<ATLMessagePresenting>)cellClass forMessageCellWithReuseIdentifier:(NSString *)reuseIdentifier;
 
 /**
- @abstract Returns the `UICollectionViewCell` corresponding to the provided `LYRMessage` object.
- @param message The LYRMessage object used to acquire the cell.
- @return A `UICollectionViewCell` object conforming to the `ATLMessagePresenting` protocol.
- @discussion If the provided `LYRMessage` object is not in the current results set of the controller, or the corresponding cell is
- not currently visible, the method may return nil.
+ @abstract Reloads the cell for the given Message.
+ @param message The Message object to reload the corresponding cell of. Cannot be `nil`.
  */
-- (UICollectionViewCell<ATLMessagePresenting> *)collectionViewCellForMessage:(LYRMessage *)message;
+- (void)reloadCellForMessage:(LYRMessage *)message;
+
+/**
+ @abstract Reloads the cells for all messages sent by the participant with the given identifier.
+ @discussion This method is useful after the completion of asynchronous user resolution activities.
+ @param participantIdentifier The identifier of the participant whose messages are to be reloaded.
+ */
+- (void)reloadCellsForMessagesSentByParticipantWithIdentifier:(NSString *)participantIdentifier;
 
 /**
  @abstract Informs the reciever that it should send a message with the current location of the device.
@@ -206,9 +254,9 @@
  */
 - (void)sendLocationMessage;
 
-///---------------------------------------
-/// @name Configuration
-///---------------------------------------
+///---------------------------
+/// @name Configuring Behavior
+///---------------------------
 
 /**
  @abstract The time interval at which message dates should be displayed in seconds. Default is 60 minutes meaning that
@@ -217,10 +265,29 @@
 @property (nonatomic) NSTimeInterval dateDisplayTimeInterval;
 
 /**
-@abstract A Boolean value that determines whether or not the controller marks all messages as read.
+ @abstract A Boolean value that determines whether or not the controller marks all messages as read.
  @discussion If `YES`, the controller will mark all messages in the conversation as read when it is presented.
  @default `YES`.
  */
 @property (nonatomic) BOOL marksMessagesAsRead;
+
+/**
+ @abstract A Boolean value that determines whether or not an avatar is shown if there is only one other participant in the conversation.
+ @default `NO`.
+ Should be set before `[super viewDidLoad]` is called.
+ */
+@property (nonatomic) BOOL shouldDisplayAvatarItemForOneOtherParticipant;
+
+/**
+ @abstract A Boolean value that determines whether or not an avatar is shown next to the outgoing messages
+ @default `NO`.
+ */
+@property (nonatomic) BOOL shouldDisplayAvatarItemForAuthenticatedUser;
+
+/**
+ @abstract An Enum value that determines how often avatar items should be shown next to messages.
+ @default 'ATLAvatarItemDisplayFrequencySection'.
+ */
+@property (nonatomic) ATLAvatarItemDisplayFrequency avatarItemDisplayFrequency;
 
 @end

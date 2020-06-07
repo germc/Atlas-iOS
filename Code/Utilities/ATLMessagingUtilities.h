@@ -28,16 +28,27 @@ extern NSString *const ATLMIMETypeTextPlain;          // text/plain
 extern NSString *const ATLMIMETypeImagePNG;           // image/png
 extern NSString *const ATLMIMETypeImageJPEG;          // image/jpeg
 extern NSString *const ATLMIMETypeImageJPEGPreview;   // image/jpeg+preview
+extern NSString *const ATLMIMETypeImageGIF;           // image/gif
+extern NSString *const ATLMIMETypeImageGIFPreview;    // image/gif+preview
 extern NSString *const ATLMIMETypeImageSize;          // application/json+imageSize
+extern NSString *const ATLMIMETypeVideoQuickTime;     // video/quicktime
 extern NSString *const ATLMIMETypeLocation;           // location/coordinate
 extern NSString *const ATLMIMETypeDate;               // text/date
-
+extern NSString *const ATLMIMETypeVideoMP4;           // video/mp4
 extern NSUInteger const ATLDefaultThumbnailSize;      // 512px
+extern NSUInteger const ATLDefaultGIFThumbnailSize;   // 64px
 
+extern NSString *const ATLPasteboardImageKey;
 extern NSString *const ATLImagePreviewWidthKey;
 extern NSString *const ATLImagePreviewHeightKey;
 extern NSString *const ATLLocationLatitudeKey;
 extern NSString *const ATLLocationLongitudeKey;
+
+//---------------------------------
+// @name Internationalization Macro
+//---------------------------------
+
+#define ATLLocalizedString(key, value, comment) NSLocalizedStringWithDefaultValue(key, nil, [NSBundle mainBundle], value, comment)
 
 //--------------------------
 // @name Max Cell Dimensions
@@ -68,6 +79,8 @@ CGSize ATLTextPlainSize(NSString *string, UIFont *font);
 
 CGRect ATLImageRectConstrainedToSize(CGSize imageSize, CGSize maxSize);
 
+CGFloat ATLDegreeToRadians(CGFloat degrees);
+
 //-----------------------------
 // @name Message Part Utilities
 //-----------------------------
@@ -86,4 +99,4 @@ void ATLLastPhotoTaken(void(^completionHandler)(UIImage *image, NSError *error))
 
 UIImage *ATLPinPhotoForSnapshot(MKMapSnapshot *snapshot, CLLocationCoordinate2D location);
 
-NSArray *ATLLinkResultsForText(NSString *text);
+NSArray *ATLTextCheckingResultsForText(NSString *text, NSTextCheckingType linkTypes);

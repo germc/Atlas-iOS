@@ -138,6 +138,12 @@
     _updatableProperties = updatableProperties;
 }
 
+- (NSDictionary *)indexPathsForObjectsWithIdentifiers:(NSSet *)objectIdentifiers;
+{
+    NSUInteger maxIndex = [[LYRMockContentStore sharedStore] allMessages].count - 1;
+    return [[NSDictionary alloc] initWithObjects:@[[NSIndexPath indexPathForRow:0 inSection:maxIndex]] forKeys:@[self.layerClient.authenticatedUserID]];
+}
+
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];

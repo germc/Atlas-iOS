@@ -78,6 +78,7 @@
 {
     [super prepareForReuse];
     self.accessoryView = nil;
+    [self.avatarImageView resetView];
 }
 
 - (void)setHighlighted:(BOOL)highlighted animated:(BOOL)animated

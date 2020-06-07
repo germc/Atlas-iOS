@@ -57,6 +57,8 @@
 
 - (BOOL)execute:(NSError **)error;
 
+- (NSDictionary *)indexPathsForObjectsWithIdentifiers:(NSSet *)objectIdentifiers;
+
 @end
 
 

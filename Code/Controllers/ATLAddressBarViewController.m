@@ -21,10 +21,10 @@
 #import "ATLAddressBarViewController.h"
 #import "ATLConstants.h"
 #import "ATLAddressBarContainerView.h"
+#import "ATLMessagingUtilities.h"
 
 @interface ATLAddressBarViewController () <UITextViewDelegate, UITableViewDataSource, UITableViewDelegate>
 
-@property (nonatomic) ATLAddressBarContainerView *view;
 @property (nonatomic) UITableView *tableView;
 @property (nonatomic) NSArray *participants;
 @property (nonatomic, getter=isDisabled) BOOL disabled;
@@ -130,6 +130,11 @@ static NSString *const ATLAddressBarParticipantAttributeName = @"ATLAddressBarPa
     [self searchEnded];
 }
 
+- (void)reloadView
+{
+    [self.tableView reloadData];
+}
+
 #pragma mark - UITableViewDataSource
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -144,7 +149,7 @@ static NSString *const ATLAddressBarParticipantAttributeName = @"ATLAddressBarPa
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell *cell =[tableView dequeueReusableCellWithIdentifier:ATLMParticpantCellIdentifier];
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:ATLMParticpantCellIdentifier];
     id<ATLParticipant> participant = self.participants[indexPath.row];
     cell.textLabel.text = participant.fullName;
     cell.textLabel.font = ATLMediumFont(16);
@@ -482,8 +487,8 @@ static NSString *const ATLAddressBarParticipantAttributeName = @"ATLAddressBarPa
 
 - (NSString *)otherStringWithRemainingParticipants:(NSUInteger)remainingParticipants
 {
-    NSString *othersString = (remainingParticipants > 1) ? @"others" : @"other";
-    return [NSString stringWithFormat:@"and %lu %@", (unsigned long)remainingParticipants, othersString];
+    NSString *othersString = (remainingParticipants > 1) ? ATLLocalizedString(@"atl.addressbar.others.key", @"other", nil) : ATLLocalizedString(@"atl.addressbar.other.key", @"other", nil);
+    return [NSString stringWithFormat:@"%@ %lu %@", ATLLocalizedString(@"atl.addressbar.and.key", @"and", nil), (unsigned long)remainingParticipants, othersString];
 }
 
 - (BOOL)textViewHasSpaceForParticipantString:(NSString *)participantString

@@ -25,6 +25,12 @@
 #import "ATLAvatarImageView.h"
 
 extern CGFloat const ATLMessageCellHorizontalMargin;
+extern NSString *const ATLGIFAccessibilityLabel;
+extern NSString *const ATLImageAccessibilityLabel;
+extern NSString *const ATLVideoAccessibilityLabel;
+
+extern CGFloat const ATLAvatarImageLeadPadding;
+extern CGFloat const ATLAvatarImageTailPadding;
 
 /**
  @abstract The `ATLMessageCollectionViewCell` class provides a lightweight, customizable collection
@@ -54,6 +60,13 @@ extern CGFloat const ATLMessageCellHorizontalMargin;
 @property (nonatomic) UIColor *bubbleViewColor UI_APPEARANCE_SELECTOR;
 
 /**
+  @abstract The NSTextCheckingTypes that will be passed to the bubbleView
+  @discussion Currently supports NSTextCheckingTypeLink and NSTextCheckingTypePhoneNumber
+  @default NSTextCheckingTypeLink
+*/
+@property (nonatomic) NSTextCheckingType messageTextCheckingTypes UI_APPEARANCE_SELECTOR;
+
+/**
  @abstract The corner radius of the bubble view displayed in the cell. Default is 16.
  */
 @property (nonatomic) CGFloat bubbleViewCornerRadius UI_APPEARANCE_SELECTOR;
@@ -67,6 +80,11 @@ extern CGFloat const ATLMessageCellHorizontalMargin;
  @abstract The optional avatar image view representing a user.
  */
 @property (nonatomic) ATLAvatarImageView *avatarImageView;
+
+/**
+ @abstract The `LYRMessage` object passed in `ATLMessagePresenting` protocol `presentMessage:`.
+ */
+@property (nonatomic) LYRMessage *message;
 
 /**
  @abstract Performs calculations to determine a cell's height.

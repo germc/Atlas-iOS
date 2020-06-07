@@ -37,6 +37,8 @@ LYRMessagePartMock *ATLMessagePartWithText(NSString *text);
 
 LYRMessagePartMock *ATLMessagePartWithJPEGImage(UIImage *image);
 
+LYRMessagePartMock *ATLMessagePartWithGIFImage(UIImage *image);
+
 LYRMessagePartMock *ATLMessagePartForImageSize(UIImage *image);
 
 LYRMessagePartMock *ATLMessagePartWithLocation(CLLocation *location);

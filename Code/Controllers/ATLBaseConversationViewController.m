@@ -33,6 +33,8 @@
 
 @implementation ATLBaseConversationViewController
 
+@dynamic view;
+
 static CGFloat const ATLTypingIndicatorHeight = 20;
 static CGFloat const ATLMaxScrollDistanceFromBottom = 150;
 
@@ -59,7 +61,6 @@ static CGFloat const ATLMaxScrollDistanceFromBottom = 150;
     _displaysAddressBar = NO;
     _typingParticipantIDs = [NSMutableArray new];
     _firstAppearance = YES;
-    _displaysAddressBar = YES;
 }
 
 - (void)loadView
@@ -73,9 +74,12 @@ static CGFloat const ATLMaxScrollDistanceFromBottom = 150;
     
     // Add message input tool bar
     self.messageInputToolbar = [ATLMessageInputToolbar new];
+    // Fixes an ios9 bug that causes the background of the input accessory view to be black when being presented on screen.
+    self.messageInputToolbar.translucent = NO;
     // An apparent system bug causes a view controller to not be deallocated
     // if the view controller's own inputAccessoryView property is used.
     self.view.inputAccessoryView = self.messageInputToolbar;
+    self.messageInputToolbar.containerViewController = self;
     
     // Add typing indicator
     self.typingIndicatorController = [[ATLTypingIndicatorViewController alloc] init];
@@ -104,10 +108,15 @@ static CGFloat const ATLMaxScrollDistanceFromBottom = 150;
         [self.view becomeFirstResponder];
     }
     if (self.addressBarController && self.firstAppearance) {
-        [self.addressBarController.view layoutIfNeeded];
         [self updateTopCollectionViewInset];
     }
     [self updateBottomCollectionViewInset];
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    self.messageInputToolbar.translucent = YES;
 }
 
 - (void)viewDidLayoutSubviews
@@ -128,11 +137,11 @@ static CGFloat const ATLMaxScrollDistanceFromBottom = 150;
     }
 }
 
-
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
     
+    self.messageInputToolbar.translucent = NO;
     // Workaround for view's content flashing onscreen after pop animation concludes on iOS 8.
     BOOL isPopping = ![self.navigationController.viewControllers containsObject:self];
     if (isPopping) {
@@ -179,11 +188,16 @@ static CGFloat const ATLMaxScrollDistanceFromBottom = 150;
     [self.collectionView setContentOffset:[self bottomOffsetForContentSize:contentSize] animated:animated];
 }
 
+#pragma mark - Content Inset Management  
+
 - (void)updateTopCollectionViewInset
 {
+    [self.addressBarController.view layoutIfNeeded];
+    
     UIEdgeInsets contentInset = self.collectionView.contentInset;
     UIEdgeInsets scrollIndicatorInsets = self.collectionView.scrollIndicatorInsets;
     CGRect frame = [self.view convertRect:self.addressBarController.addressBarView.frame fromView:self.addressBarController.addressBarView.superview];
+    
     contentInset.top = CGRectGetMaxY(frame);
     scrollIndicatorInsets.top = contentInset.top;
     self.collectionView.contentInset = contentInset;
@@ -200,9 +214,6 @@ static CGFloat const ATLMaxScrollDistanceFromBottom = 150;
     insets.bottom = keyboardHeight + self.typingIndicatorInset;
     self.collectionView.scrollIndicatorInsets = insets;
     self.collectionView.contentInset = insets;
-    if ([self shouldScrollToBottom]) {
-        [self scrollToBottomAnimated:YES];
-    }
     self.typingIndicatorViewBottomConstraint.constant = -keyboardHeight;
 }
 
@@ -210,6 +221,9 @@ static CGFloat const ATLMaxScrollDistanceFromBottom = 150;
 
 - (void)keyboardWillShow:(NSNotification *)notification
 {
+    if ([[self navigationController] modalPresentationStyle] == UIModalPresentationPopover) {
+        return;
+    }
     [self configureWithKeyboardNotification:notification];
 }
 
@@ -227,20 +241,16 @@ static CGFloat const ATLMaxScrollDistanceFromBottom = 150;
        return;
     }
     
-    CGPoint existingOffset = self.collectionView.contentOffset;
-    CGPoint bottomOffset = [self bottomOffsetForContentSize:self.collectionView.contentSize];
-    CGFloat distanceToBottom = bottomOffset.y - existingOffset.y;
-    BOOL shouldScrollToBottom = distanceToBottom <= ATLMaxScrollDistanceFromBottom;
-    
     CGRect toolbarFrame = [self.view convertRect:self.messageInputToolbar.frame fromView:self.messageInputToolbar.superview];
     CGFloat keyboardOnscreenHeight = CGRectGetHeight(self.view.frame) - CGRectGetMinY(toolbarFrame);
     if (keyboardOnscreenHeight == self.keyboardHeight) return;
-    self.keyboardHeight = keyboardOnscreenHeight;
-    [self updateBottomCollectionViewInset];
-    self.typingIndicatorViewBottomConstraint.constant = -self.collectionView.scrollIndicatorInsets.bottom;
     
-    if (shouldScrollToBottom) {
-        self.collectionView.contentOffset = existingOffset;
+    BOOL messagebarDidGrow = keyboardOnscreenHeight > self.keyboardHeight;
+    self.keyboardHeight = keyboardOnscreenHeight;
+     self.typingIndicatorViewBottomConstraint.constant = -self.collectionView.scrollIndicatorInsets.bottom;
+    [self updateBottomCollectionViewInset];
+    
+    if ([self shouldScrollToBottom] && messagebarDidGrow) {
         [self scrollToBottomAnimated:YES];
     }
 }
@@ -323,7 +333,7 @@ static CGFloat const ATLMaxScrollDistanceFromBottom = 150;
 
 - (void)configureTypingIndicatorLayoutConstraints
 {
-    // Typing Indicatr
+    // Typing Indicator
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.typingIndicatorController.view attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0]];
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.typingIndicatorController.view attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeWidth multiplier:1.0 constant:0]];
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.typingIndicatorController.view attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1.0 constant:ATLTypingIndicatorHeight]];

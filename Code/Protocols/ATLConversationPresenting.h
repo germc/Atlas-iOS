@@ -48,4 +48,10 @@
  */
 - (void)updateWithAvatarItem:(id<ATLAvatarItem>)avatarItem;
 
+/**
+ @abstract Provides a string to display representing the conversation's last message.
+ @param lastMessageText The last message text to display.
+ */
+- (void)updateWithLastMessageText:(NSString *)lastMessageText;
+
 @end

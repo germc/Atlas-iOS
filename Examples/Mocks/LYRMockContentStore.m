@@ -193,10 +193,10 @@
 
 - (void)reindexMessagesForConversation:(LYRConversationMock *)conversation
 {
-    LYRPredicate *predicate = [LYRPredicate predicateWithProperty:@"conversation" operator:LYRPredicateOperatorIsEqualTo value:conversation];
+    LYRPredicate *predicate = [LYRPredicate predicateWithProperty:@"conversation" predicateOperator:LYRPredicateOperatorIsEqualTo value:conversation];
     NSOrderedSet *message = [self fetchObjectsWithClass:[LYRMessage class] predicate:predicate sortDescriptior:@[[NSSortDescriptor sortDescriptorWithKey:@"index" ascending:YES]]];
     [message enumerateObjectsWithOptions:NSEnumerationConcurrent usingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-        [(LYRMessageMock *)obj setIndex:idx];
+        [(LYRMessageMock *)obj setPosition:idx];
     }];
 }
 
@@ -212,8 +212,12 @@
     if ([objectClass isSubclassOfClass:[LYRConversation class]]) {
         NSOrderedSet *filteredSet;
         if (predicate) {
-            NSPredicate *conversationPredicate = [self constructPredicateForMockPredicate:predicate];
-            filteredSet = [[NSOrderedSet alloc] initWithSet:[self.conversations filteredSetUsingPredicate:conversationPredicate]];
+            if ([predicate isKindOfClass:[LYRCompoundPredicate class]]) {
+                filteredSet = [[NSOrderedSet alloc] initWithSet:self.conversations];
+            } else {
+                NSPredicate *conversationPredicate = [self constructPredicateForMockPredicate:predicate];
+                filteredSet = [[NSOrderedSet alloc] initWithSet:[self.conversations filteredSetUsingPredicate:conversationPredicate]];
+            }
         } else {
             filteredSet = [[NSOrderedSet alloc] initWithSet:self.conversations];
         }
@@ -222,8 +226,12 @@
     } else if ([objectClass isSubclassOfClass:[LYRMessage class]]) {
         NSOrderedSet *filteredSet;
         if (predicate) {
-            NSPredicate *messagePredicate = [self constructPredicateForMockPredicate:predicate];
-            filteredSet = [[NSOrderedSet alloc] initWithSet:[self.messages filteredSetUsingPredicate:messagePredicate]];
+            if ([predicate isKindOfClass:[LYRCompoundPredicate class]]) {
+                filteredSet = [[NSOrderedSet alloc] initWithSet:self.messages];
+            } else {
+                NSPredicate *messagePredicate = [self constructPredicateForMockPredicate:predicate];
+                filteredSet = [[NSOrderedSet alloc] initWithSet:[self.messages filteredSetUsingPredicate:messagePredicate]];
+            }
         } else {
             filteredSet = [[NSOrderedSet alloc] initWithSet:self.messages];
         }
@@ -255,7 +263,10 @@
             return [NSPredicate predicateWithFormat:@"SELF.%@ <= %@", predicate.property, predicate.value];
 
         case LYRPredicateOperatorIsIn: {
-            NSPredicate *predicatee = [NSPredicate predicateWithFormat:@"%@ IN SELF.%@", predicate.value, predicate.property];
+            if ([predicate.value isKindOfClass:[NSSet class]]) {
+              return [NSPredicate predicateWithFormat:@"ANY SELF.%K IN %@", predicate.property, predicate.value];
+            }
+            NSPredicate *predicatee = [NSPredicate predicateWithFormat:@"SELF.%@ CONTAINS %@ ", predicate.property,  predicate.value];
             return predicatee;
         }
         case LYRPredicateOperatorIsNotIn:
@@ -269,7 +280,7 @@
 
 - (void)broadcastChanges
 {
-    if (self.shouldBroadcastChanges) {
+    if (self.shouldBroadcastChanges && self.mockObjectChanges.count) {
         [[NSNotificationCenter defaultCenter] postNotificationName:LYRMockObjectsDidChangeNotification object:self.mockObjectChanges];
     }
     [self.mockObjectChanges removeAllObjects];

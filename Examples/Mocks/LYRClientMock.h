@@ -42,9 +42,10 @@ extern NSString *const LYRMockObjectChangeChangeTypeKey;
 
 - (LYRConversationMock *)newConversationWithParticipants:(NSSet *)participants options:(NSDictionary *)options error:(NSError **)error;
 - (LYRMessageMock *)newMessageWithParts:(NSArray *)messageParts options:(NSDictionary *)options error:(NSError **)error;
+- (LYRMessageMock *)newPlatformMessageWithParts:(NSArray *)messageParts senderName:(NSString *)senderName options:(NSDictionary *)options error:(NSError **)error;
 - (NSOrderedSet *)executeQuery:(LYRQuery *)query error:(NSError **)error;
 - (NSUInteger)countForQuery:(LYRQuery *)query error:(NSError **)error;
-- (LYRQueryControllerMock *)queryControllerWithQuery:(LYRQuery *)query;
+- (LYRQueryControllerMock *)queryControllerWithQuery:(LYRQuery *)query error:(NSError **)error;
 
 @end
 

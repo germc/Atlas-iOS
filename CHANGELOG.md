@@ -1,5 +1,110 @@
 # Atlas Changelog
 
+## 1.0.11
+
+### Public API Changes
+
+* Implemented `conversationViewController:configureCell:forMessage:` to allow `ATLConversationViewController` subclasses to add extra cell configuration.
+* Added `shouldDisplayAvatarItemForAuthenticatedUser` to `ATLConversationViewController` to display avatar items for the authenticated user.
+* Added `ATLAvatarItemDisplayFrequency` property to `ATLConversationViewController` to allow customization of avatar frequency.
+* Exposed `LYRQueryController` on `ATLConversationViewController`.
+* Added `NSTextCheckingType` on `ATLMessageBubbleView`.
+* Added `menuControllerActions` on `ATLMessageBubbleView` to customize UIMenuController actions.
+
+### Enhancements
+
+* `ATLConversationViewController` caches unsent media attachments in the `ATLMessageInputToolbar` upon deallocation, and re-inserts them on creation.
+* Added Localization support.
+* Asynchronous image and GIF loading in `ATLMessageCollectionViewCell`.
+
+### Bug Fixes
+
+* Fixed bug that caused avatar images to flicker when loading photos from remote URLs.
+* Fixed bug that caused UIMenuController to stay on screen during pan gesture.
+* Fixed bug that caused images to stretch if smaller than the minimum cell size.
+
+## 1.0.10
+
+### Bug Fixes
+
+* Fixed bug introduced in 1.0.9 relating to media attachment text color for attributed string.
+
+## 1.0.9
+
+### Public API Changes
+
+* Exposed private initializers of `ATLConversationViewController` and `ATLConversationListViewController` to allow subclassing for custom initialization.
+
+### Bug Fixes
+
+* Removed compiler warnings that showed from direct installation due to deprecations.
+
+## 1.0.8
+
+### Enhancements
+
+* Updated change notification handling code due to LayerKit library upgrade to v0.13.3, which has some braking changes in change notifications dictionary.
+
+## 1.0.7
+
+### Public API Changes
+
+* Implemented `conversationListViewController:configurationForDefaultQuery:` to provide for query customization in the `ATLConversationListViewController`. 
+* Implemented `conversationViewController:configurationForDefaultQuery:` to provide for query customization in the `ATLConversationViewController`. 
+
+## 1.0.6
+
+### Bug Fixes
+
+* Removed all compiler warnings. 
+
+## 1.0.5
+
+### Public API Changes
+
+* Added `avatarImageURL` property to `ATLAvatarItem`. 
+
+### Enhancements
+
+* Added logic to fetch image from a URL to `ATLAvatarImageView`. 
+* Added image cache to `ATLAvatarImageView`. 
+
+### Bug Fixes
+
+* Fixed bug which caused `ATLConversationViewController` animation assertions when attempting to reload cells via the public API. 
+* Fixed bug which prevented cell font customizations from being appied. 
+
+## 1.0.4
+
+### Public API Changes
+
+* Moved `searchController` property to public API on `ATLConversationListViewController`. 
+* Moved `UIImagePickerControllerDelegate` and `UINavigationControllerDelegate` declarations to header of `ATLConversationViewController`.
+* Added `leftAccessoryImage`, `rightAccessoryImage` and `displaysRightAccessoryImage` to `ATLMessageInputToolbar`. 
+
+## 1.0.3
+
+### Enhancements
+
+* Introduced new functionality to facilitate reloading content after asynchronous reloads of user information.
+
+### Public API Changes
+
+* Added `reloadCellsForMessagesSentByParticipantWithIdentitifier:` to `ATLConversationViewController`.
+* Removed `collectionViewCellForMessage:` from `ATLConversationViewController`.
+
+## 1.0.2
+
+### Public API Changes
+
+* Added `conversationListViewController:textForButtonWithDeletionMode:` to `ATLConversationListViewController`
+* Added `conversationListViewController:colorForButtonWithDeletionMode:` to `ATLConversationListViewController`
+ 		
+## 1.0.1
+
+* Updated LayerKit dependency to v0.10.3
+* New compatible with CocoaPods >= 0.36.0
+
 ## 1.0.0
 
 * Initial public release of Atlas.

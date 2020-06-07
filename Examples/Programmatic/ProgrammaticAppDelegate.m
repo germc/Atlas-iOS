@@ -11,6 +11,11 @@
 #import "LayerKitMock.h"
 #import <Atlas/Atlas.h>
 
+static BOOL ATLIsRunningTests()
+{
+    return (NSClassFromString(@"XCTestCase") || [[[NSProcessInfo processInfo] environment] valueForKey:@"XCInjectBundle"]);
+}
+
 @interface ProgrammaticAppDelegate ()
 
 @end
@@ -23,8 +28,13 @@
     LYRClientMock *layerClient = [LYRClientMock layerClientMockWithAuthenticatedUserID:mockUser.participantIdentifier];
     [[LYRMockContentStore sharedStore] hydrateConversationsForAuthenticatedUserID:layerClient.authenticatedUserID count:1];
     
-    ATLSampleConversationListViewController *controller = [ATLSampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)layerClient];
-    controller.view.backgroundColor = [UIColor whiteColor];
+    UIViewController *controller;
+    if (ATLIsRunningTests()) {
+        controller = [UIViewController new];
+    } else {
+        controller = [ATLSampleConversationListViewController conversationListViewControllerWithLayerClient:(LYRClient *)layerClient];
+        controller.view.backgroundColor = [UIColor whiteColor];
+    }
     UINavigationController *rootViewController = [[UINavigationController alloc] initWithRootViewController:controller];
     
     self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];

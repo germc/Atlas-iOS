@@ -23,6 +23,7 @@
 #import "ATLParticipantSectionHeaderView.h"
 #import "ATLConstants.h"
 #import "ATLAvatarImageView.h"
+#import "ATLMessagingUtilities.h"
 
 static NSString *const ATLParticipantTableSectionHeaderIdentifier = @"ATLParticipantTableSectionHeaderIdentifier";
 static NSString *const ATLParticipantCellIdentifier = @"ATLParticipantCellIdentifier";
@@ -32,15 +33,20 @@ static NSString *const ATLParticipantCellIdentifier = @"ATLParticipantCellIdenti
 @property (nonatomic) ATLParticipantTableDataSet *unfilteredDataSet;
 @property (nonatomic) ATLParticipantTableDataSet *filteredDataSet;
 @property (nonatomic) NSMutableSet *selectedParticipants;
-@property (nonatomic) UISearchDisplayController *searchController;
 @property (nonatomic) UISearchBar *searchBar;
 @property (nonatomic) BOOL hasAppeared;
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+@property (nonatomic) UISearchDisplayController *searchController;
+#pragma GCC diagnostic pop
 
 @end
 
 @implementation ATLParticipantTableViewController
 
 NSString *const ATLParticipantTableViewAccessibilityIdentifier = @"Participant Table View Controller";
+NSString *const ATLParticipantTableViewControllerTitle = @"Participants";
 
 + (instancetype)participantTableViewControllerWithParticipants:(NSSet *)participants sortType:(ATLParticipantPickerSortType)sortType
 {
@@ -101,12 +107,15 @@ NSString *const ATLParticipantTableViewAccessibilityIdentifier = @"Participant T
     self.searchBar.userInteractionEnabled = YES;
     self.tableView.tableHeaderView = self.searchBar;
     
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
     self.searchController = [[UISearchDisplayController alloc] initWithSearchBar:self.searchBar contentsController:self];
+#pragma GCC diagnostic pop
     self.searchController.delegate = self;
     self.searchController.searchResultsDelegate = self;
     self.searchController.searchResultsDataSource = self;
 
-    self.title = @"Participants";
+    self.title = ATLLocalizedString(@"alt.participant.tableview.title.key", ATLParticipantTableViewControllerTitle, nil);
 }
 
 - (void)viewWillAppear:(BOOL)animated

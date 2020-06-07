@@ -22,12 +22,12 @@
 
 /**
  @abstract A custom progress view that displays the progress in a circular
- shape. It includes two visual components: a subtle transparent background 
- ring as a placeholder and a foreground ring representing the current
- progress state.
+   shape. It includes two visual components: a subtle transparent background
+   ring as a placeholder and a foreground ring representing the current
+   progress state.
  
- Progress changes can be animated using the `setProgress:animated:` method
- where a `YES` value has to be passed as the `animated` argument.
+   Progress changes can be animated using the `setProgress:animated:` method
+   where a `YES` value has to be passed as the `animated` argument.
  */
 @interface ATLProgressView : UIView
 
@@ -40,7 +40,8 @@
 /**
  @abstract Sets the `progress` float value.
  @param newProgress The value the progress will be set to.
- @param animated Pass `YES` to animate the progress change, or `NO` to do an immediate update.
+ @param animated Pass `YES` to animate the progress change, or `NO` to do
+   an immediate update.
  */
 - (void)setProgress:(float)newProgress animated:(BOOL)animated;
 

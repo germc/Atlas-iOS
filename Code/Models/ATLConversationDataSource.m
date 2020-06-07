@@ -31,26 +31,27 @@
 NSInteger const ATLNumberOfSectionsBeforeFirstMessageSection = 1;
 NSInteger const ATLQueryControllerPaginationWindow = 30;
 
-+ (instancetype)dataSourceWithLayerClient:(LYRClient *)layerClient conversation:(LYRConversation *)conversation
++ (instancetype)dataSourceWithLayerClient:(LYRClient *)layerClient query:(LYRQuery *)query
 {
-    return [[self alloc] initWithLayerClient:layerClient conversation:conversation];
+    return [[self alloc] initWithLayerClient:layerClient query:query];
 }
 
-- (id)initWithLayerClient:(LYRClient *)layerClient conversation:(LYRConversation *)conversation
+- (id)initWithLayerClient:(LYRClient *)layerClient query:(LYRQuery *)query
 {
     self = [super init];
     if (self) {
-        LYRQuery *query = [LYRQuery queryWithClass:[LYRMessage class]];
-        query.predicate = [LYRPredicate predicateWithProperty:@"conversation" operator:LYRPredicateOperatorIsEqualTo value:conversation];
-        query.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"index" ascending:YES]];
-       
         NSUInteger numberOfMessagesAvailable = [layerClient countForQuery:query error:nil];
         NSUInteger numberOfMessagesToDisplay = MIN(numberOfMessagesAvailable, ATLQueryControllerPaginationWindow);
     
-        _queryController = [layerClient queryControllerWithQuery:query];
+        NSError *error = nil;
+        _queryController = [layerClient queryControllerWithQuery:query error:&error];
+        if (!_queryController) {
+            NSLog(@"LayerKit failed to create a query controller with error: %@", error);
+            return nil;
+        }
         _queryController.updatableProperties = [NSSet setWithObjects:@"parts.transferStatus", @"recipientStatusByUserID", @"sentAt", nil];
         _queryController.paginationWindow = -numberOfMessagesToDisplay;
-        NSError *error = nil;
+        
         BOOL success = [_queryController execute:&error];
         if (!success) NSLog(@"LayerKit failed to execute query with error: %@", error);
     }
@@ -60,10 +61,16 @@ NSInteger const ATLQueryControllerPaginationWindow = 30;
 - (void)expandPaginationWindow
 {
     self.expandingPaginationWindow = YES;
-    if (!self.queryController) return;
+    if (!self.queryController) {
+        self.expandingPaginationWindow = NO;
+        return;
+    }
     
     BOOL moreMessagesAvailable = self.queryController.totalNumberOfObjects > ABS(self.queryController.paginationWindow);
-    if (!moreMessagesAvailable) return;
+    if (!moreMessagesAvailable) {
+        self.expandingPaginationWindow = NO;
+        return;
+    }
     
     NSUInteger numberOfMessagesToDisplay = MIN(-self.queryController.paginationWindow + ATLQueryControllerPaginationWindow, self.queryController.totalNumberOfObjects);
     self.queryController.paginationWindow = -numberOfMessagesToDisplay;
